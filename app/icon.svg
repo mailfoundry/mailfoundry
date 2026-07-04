@@ -1,0 +1,22 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ember" x1="50" y1="0" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFD37A"/>
+      <stop offset="55%" stop-color="#FF8A33"/>
+      <stop offset="100%" stop-color="#E64A0E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="100%" r="50%">
+      <stop offset="0%" stop-color="#E64A0E" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#E64A0E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="20" fill="#1B2430"/>
+  <ellipse cx="50" cy="88" rx="34" ry="12" fill="url(#glow)"/>
+  <path d="M30 82 L70 82 L66 74 L34 74 Z" fill="#E64A0E" opacity="0.18"/>
+  <path d="M30 82 L70 82 L66 74 L34 74 Z" stroke="#FF8A33" stroke-width="1" opacity="0.5"/>
+  <rect x="17" y="40" width="66" height="36" rx="4" fill="#253040" stroke="#334A5E" stroke-width="1.5"/>
+  <path d="M17 40 L50 61 L83 40" fill="none" stroke="#334A5E" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M19 41 L50 14 L81 41" fill="url(#ember)"/>
+  <circle cx="50" cy="13" r="4.5" fill="#FFD37A"/>
+  <circle cx="50" cy="13" r="2.5" fill="#FFFFFF" opacity="0.6"/>
+</svg>
