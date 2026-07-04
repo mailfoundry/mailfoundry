@@ -32,6 +32,7 @@ export async function sendEmail({
 
   const command = new SendEmailCommand({
     FromEmailAddress: fromEmail,
+    ConfigurationSetName: "mailfoundry",
     Destination: {
       ToAddresses: [to],
     },
