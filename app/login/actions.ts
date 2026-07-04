@@ -31,7 +31,9 @@ export async function login(formData: FormData) {
   });
 
   const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
-  const verifyUrl = `${appBaseUrl}/api/auth/verify?token=${token}`;
+  // Link goes to a confirmation PAGE — not a GET API route.
+  // This prevents email scanners from consuming the token before the user clicks.
+  const verifyUrl = `${appBaseUrl}/login/verify?token=${token}`;
 
   await sendEmail({
     to: email,
@@ -59,6 +61,41 @@ export async function login(formData: FormData) {
   });
 
   redirect(`/login/check-email?email=${encodeURIComponent(email)}`);
+}
+
+// Called when the user clicks "Sign in to MailFoundry" on the verify page.
+// Using a Server Action guarantees cookies().set() works correctly.
+export async function confirmVerify(formData: FormData) {
+  const token = String(formData.get("token") || "");
+
+  if (!token) {
+    redirect("/login?error=invalid-token");
+  }
+
+  const loginToken = await prisma.loginToken.findUnique({ where: { token } });
+
+  if (!loginToken || loginToken.usedAt || loginToken.expiresAt < new Date()) {
+    redirect("/login?error=invalid-token");
+  }
+
+  // Mark as used
+  await prisma.loginToken.update({
+    where: { id: loginToken.id },
+    data: { usedAt: new Date() },
+  });
+
+  // Set auth cookie — this works correctly inside a Server Action
+  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
+  const cookieStore = await cookies();
+  cookieStore.set(cookieName, "1", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 8,
+  });
+
+  redirect("/dashboard");
 }
 
 export async function logout() {
