@@ -1,17 +1,22 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import Logo from "../src/components/logo";
 
-export default function MarketingPage() {
+export default async function MarketingPage() {
+  const cookieStore = await cookies();
+  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
+  const isLoggedIn = cookieStore.get(cookieName)?.value === "1";
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-6">
         <Logo height={28} />
         <Link
-          href="/login"
+          href={isLoggedIn ? "/dashboard" : "/login"}
           className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
         >
-          Sign in
+          {isLoggedIn ? "Open dashboard" : "Sign in"}
         </Link>
       </nav>
 
