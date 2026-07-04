@@ -17,7 +17,7 @@
     <rect x="46" y="56" width="108" height="60" rx="4" fill="#E8EDF2"/>
     <path d="M46 58 L100 96 L154 58" fill="none" stroke="#1B2430" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
     <rect x="46" y="56" width="108" height="60" rx="4" fill="none" stroke="#1B2430" stroke-width="4"/>
-    <rect x="34" y="122" width="132" height="6" fill="rgba(0,0,0,0.2)"/>
+    <rect x="34" y="122" width="132" height="6" fill="#000000" fill-opacity="0.2"/>
     <path d="M100 134 C92 144 84 154 84 164 C84 174 91 180 100 180 C109 180 116 174 116 164 C116 156 111 148 105 141 C104 147 101 150 100 145 C99 139 100 134 100 134 Z" fill="url(#mf-flame-h)"/>
     <path d="M92 176 L108 176 L100 202 Z" fill="url(#mf-flame-h)"/>
   </g>
