@@ -13,7 +13,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
       <div className="w-full max-w-md text-center">
         <Link href="/" className="mb-8 inline-block">
-          <Logo size={36} />
+          <Logo height={36} />
         </Link>
 
         {/* Envelope animation */}

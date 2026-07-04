@@ -30,7 +30,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       {/* Left panel — branding */}
       <div className="hidden flex-col justify-between p-12 lg:flex lg:w-1/2">
         <Link href="/">
-          <Logo size={36} />
+          <Logo height={36} />
         </Link>
 
         <div>
@@ -72,7 +72,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <Link href="/" className="mb-8 block lg:hidden">
-            <Logo size={28} />
+            <Logo height={28} />
           </Link>
 
           <h2 className="text-2xl font-bold">Welcome back</h2>
