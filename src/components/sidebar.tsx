@@ -20,17 +20,14 @@ export default function Sidebar({ active }: SidebarProps) {
   return (
     <aside className="w-64 border-r border-slate-800 bg-slate-900 p-6">
       <div className="mb-10">
-        <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-          Internal Build V1
-        </p>
-        <Link href="/" className="mt-3 block text-2xl font-bold">
+        <Link href="/dashboard" className="block text-2xl font-bold">
           MailFoundry
         </Link>
       </div>
 
       <nav className="space-y-3 text-sm">
         <Link
-          href="/"
+          href="/dashboard"
           className={active === "dashboard" ? activeLinkClass : baseLinkClass}
         >
           Dashboard
