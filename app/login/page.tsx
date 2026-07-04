@@ -21,7 +21,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           ? "Login is not configured correctly."
           : error === "invalid-token"
             ? "This sign-in link has expired or already been used. Please try again."
-            : null;
+            : error === "restricted"
+              ? "Access to this account is restricted."
+              : null;
 
   return (
     <main className="flex min-h-screen bg-slate-950 text-white">

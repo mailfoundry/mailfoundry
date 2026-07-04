@@ -22,6 +22,43 @@ export async function login(formData: FormData) {
     redirect("/login?error=invalid");
   }
 
+  // Check email against allowed list
+  const allowedEmails = (process.env.ALLOWED_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (allowedEmails.length > 0 && !allowedEmails.includes(email)) {
+    // Notify all allowed users that someone tried to get in
+    const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+    for (const adminEmail of allowedEmails) {
+      try {
+        await sendEmail({
+          to: adminEmail,
+          subject: "MailFoundry: Unauthorised access attempt",
+          text: `Someone attempted to sign in to MailFoundry.\n\nEmail used: ${email}\nSite: ${appBaseUrl}\n\nThey entered the correct password but are not on the allowed list. No access was granted.`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
+              <div style="background: #0f172a; padding: 32px; border-radius: 12px;">
+                <p style="color: #f97316; font-size: 20px; font-weight: bold; margin: 0 0 16px;">MailFoundry</p>
+                <h1 style="color: #ffffff; font-size: 20px; margin: 0 0 12px;">Unauthorised access attempt</h1>
+                <p style="color: #94a3b8; margin: 0 0 16px;">Someone tried to sign in with the correct password but is not on your allowed list.</p>
+                <div style="background: #1e293b; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                  <p style="color: #64748b; font-size: 12px; margin: 0 0 4px;">Email used</p>
+                  <p style="color: #f1f5f9; font-size: 15px; margin: 0;">${email}</p>
+                </div>
+                <p style="color: #475569; font-size: 12px; margin: 0;">No access was granted.</p>
+              </div>
+            </div>
+          `,
+        });
+      } catch {
+        // Don't block the redirect if notification fails
+      }
+    }
+    redirect("/login?error=restricted");
+  }
+
   // Create a single-use verification token (expires in 15 minutes)
   const token = crypto.randomUUID();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
