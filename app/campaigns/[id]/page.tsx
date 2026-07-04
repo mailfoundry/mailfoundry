@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AppShell from "../../../src/components/app-shell";
 import SendCampaignButton from "../../../src/components/send-campaign-button";
+import SendTestEmailForm from "../../../src/components/send-test-email-form";
 import { prisma } from "../../../src/lib/prisma";
 
 type CampaignPageProps = {
@@ -264,11 +265,14 @@ export default async function CampaignDetailPage({
         </div>
       </div>
 
-      <div className="mt-8">
-        <SendCampaignButton
-          campaignId={campaign.id}
-          campaignStatus={campaign.status}
-        />
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <SendTestEmailForm campaignId={campaign.id} />
+        <div className="flex items-end">
+          <SendCampaignButton
+            campaignId={campaign.id}
+            campaignStatus={campaign.status}
+          />
+        </div>
       </div>
 
       <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">

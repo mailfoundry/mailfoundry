@@ -201,6 +201,13 @@ export default async function ContactsPage({
           </div>
 
           <Link
+            href="/contacts/import"
+            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          >
+            Import CSV
+          </Link>
+
+          <Link
             href="/contacts/new"
             className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
           >
