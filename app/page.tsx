@@ -1,11 +1,12 @@
 import Link from "next/link";
+import Logo from "../src/components/logo";
 
 export default function MarketingPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-6">
-        <span className="text-xl font-bold tracking-tight">MailFoundry</span>
+        <Logo size={28} />
         <Link
           href="/login"
           className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"

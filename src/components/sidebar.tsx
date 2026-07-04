@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "./logo";
 import { logout } from "../../app/login/actions";
 
 type SidebarProps = {
@@ -20,8 +21,8 @@ export default function Sidebar({ active }: SidebarProps) {
   return (
     <aside className="w-64 border-r border-slate-800 bg-slate-900 p-6">
       <div className="mb-10">
-        <Link href="/dashboard" className="block text-2xl font-bold">
-          MailFoundry
+        <Link href="/dashboard">
+          <Logo size={26} />
         </Link>
       </div>
 

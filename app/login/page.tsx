@@ -1,10 +1,10 @@
 import Link from "next/link";
+import Logo from "../../src/components/logo";
 import { login } from "./actions";
 
 type LoginPageProps = {
   searchParams: Promise<{
     error?: string;
-    next?: string;
   }>;
 };
 
@@ -12,12 +12,23 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const error = params.error;
 
+  const errorMessage =
+    error === "invalid"
+      ? "Incorrect password. Please try again."
+      : error === "missing-email"
+        ? "Please enter your email address."
+        : error === "missing-config"
+          ? "Login is not configured correctly."
+          : error === "invalid-token"
+            ? "This sign-in link has expired or already been used. Please try again."
+            : null;
+
   return (
     <main className="flex min-h-screen bg-slate-950 text-white">
       {/* Left panel — branding */}
       <div className="hidden flex-col justify-between p-12 lg:flex lg:w-1/2">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          MailFoundry
+        <Link href="/">
+          <Logo size={36} />
         </Link>
 
         <div>
@@ -58,28 +69,37 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="flex flex-1 items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
-          <Link href="/" className="mb-8 block text-xl font-bold lg:hidden">
-            MailFoundry
+          <Link href="/" className="mb-8 block lg:hidden">
+            <Logo size={28} />
           </Link>
 
           <h2 className="text-2xl font-bold">Welcome back</h2>
           <p className="mt-2 text-sm text-slate-400">
-            Enter your password to access your account.
+            Enter your email and password. We&apos;ll send you a sign-in link to confirm it&apos;s you.
           </p>
 
-          {error === "invalid" && (
+          {errorMessage && (
             <div className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
-              Incorrect password. Try again.
-            </div>
-          )}
-
-          {error === "missing-config" && (
-            <div className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
-              Login password is not configured.
+              {errorMessage}
             </div>
           )}
 
           <form action={login} className="mt-8 space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Email address
+              </label>
+              <input
+                type="email"
+                name="email"
+                required
+                autoFocus
+                autoComplete="email"
+                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-orange-500"
+                placeholder="you@example.com"
+              />
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Password
@@ -88,7 +108,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 type="password"
                 name="password"
                 required
-                autoFocus
+                autoComplete="current-password"
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-orange-500"
                 placeholder="Enter your password"
               />
@@ -98,7 +118,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               type="submit"
               className="w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600"
             >
-              Sign in
+              Send sign-in link
             </button>
           </form>
         </div>
