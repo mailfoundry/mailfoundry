@@ -70,13 +70,14 @@ model Campaign {
 }
 
 model CampaignSend {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   campaignId String
   contactId  String?
   email      String
   status     String
   error      String?
-  sentAt     DateTime @default(now())
+  sentAt     DateTime  @default(now())
+  openedAt   DateTime?
 
   campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   contact  Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)

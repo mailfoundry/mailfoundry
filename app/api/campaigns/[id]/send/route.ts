@@ -199,6 +199,8 @@ export async function POST(
       });
     }
 
+    const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+
     for (const contact of contacts) {
       try {
         const baseHtmlContent =
@@ -210,7 +212,16 @@ export async function POST(
               </div>
             `;
 
-        const htmlContent = addEmailFooter(baseHtmlContent, contact.email);
+        const htmlWithFooter = addEmailFooter(baseHtmlContent, contact.email);
+
+        // Pre-generate the send ID so we can embed it in the tracking pixel
+        // before creating the DB record
+        const sendId = crypto.randomUUID();
+        const pixelUrl = `${appBaseUrl}/api/track/open?s=${sendId}`;
+        const pixelTag = `<img src="${pixelUrl}" width="1" height="1" style="display:none" alt="" />`;
+        const htmlContent = htmlWithFooter.includes("</body>")
+          ? htmlWithFooter.replace("</body>", `${pixelTag}</body>`)
+          : `${htmlWithFooter}${pixelTag}`;
 
         await sendEmail({
           to: contact.email,
@@ -221,6 +232,7 @@ export async function POST(
 
         await prisma.campaignSend.create({
           data: {
+            id: sendId,
             campaignId: id,
             contactId: contact.id,
             email: contact.email,

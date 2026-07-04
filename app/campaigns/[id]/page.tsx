@@ -122,6 +122,11 @@ export default async function CampaignDetailPage({
   );
 
   const sentSends = campaign.sends.filter((send) => send.status === "sent");
+  const openedSends = sentSends.filter((send) => send.openedAt !== null);
+  const openRate =
+    sentSends.length > 0
+      ? Math.round((openedSends.length / sentSends.length) * 100)
+      : 0;
 
   const failedSends = campaign.sends.filter((send) => send.status === "failed");
 
@@ -283,6 +288,20 @@ export default async function CampaignDetailPage({
           </div>
 
           <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <p className="text-sm text-slate-400">Opened</p>
+            <p className="mt-2 text-2xl font-bold text-sky-400">
+              {openedSends.length}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <p className="text-sm text-slate-400">Open Rate</p>
+            <p className="mt-2 text-2xl font-bold text-sky-400">
+              {openRate}%
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
             <p className="text-sm text-slate-400">Failed</p>
             <p className="mt-2 text-2xl font-bold text-red-400">
               {failedSends.length}
@@ -339,6 +358,7 @@ export default async function CampaignDetailPage({
                   <th className="px-4 py-3 font-medium">Email</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Sent At</th>
+                  <th className="px-4 py-3 font-medium">Opened</th>
                   <th className="px-4 py-3 font-medium">Error</th>
                 </tr>
               </thead>
@@ -353,6 +373,11 @@ export default async function CampaignDetailPage({
                     </td>
                     <td className="px-4 py-3 text-slate-400">
                       {new Date(send.sentAt).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-slate-400">
+                      {send.openedAt
+                        ? new Date(send.openedAt).toLocaleString()
+                        : "—"}
                     </td>
                     <td className="px-4 py-3 text-slate-500">
                       {getFriendlySendError(send.error)}
