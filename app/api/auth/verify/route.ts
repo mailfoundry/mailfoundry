@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
 
 export async function GET(request: Request) {
@@ -23,10 +22,10 @@ export async function GET(request: Request) {
     data: { usedAt: new Date() },
   });
 
-  // Set auth cookie
+  // Set the auth cookie directly on the redirect response
   const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const cookieStore = await cookies();
-  cookieStore.set(cookieName, "1", {
+  const response = NextResponse.redirect(new URL("/dashboard", request.url));
+  response.cookies.set(cookieName, "1", {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -34,5 +33,5 @@ export async function GET(request: Request) {
     maxAge: 60 * 60 * 8,
   });
 
-  return NextResponse.redirect(new URL("/dashboard", request.url));
+  return response;
 }
