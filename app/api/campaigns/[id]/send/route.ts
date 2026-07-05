@@ -214,14 +214,24 @@ export async function POST(
 
         const htmlWithFooter = addEmailFooter(baseHtmlContent, contact.email);
 
-        // Pre-generate the send ID so we can embed it in the tracking pixel
-        // before creating the DB record
+        // Pre-generate the send ID so we can embed tracking before the DB record
         const sendId = crypto.randomUUID();
+
+        // Rewrite all <a href="..."> links through the click tracker
+        const htmlWithClicks = htmlWithFooter.replace(
+          /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
+          (_match, pre, url, post) => {
+            const tracked = `${appBaseUrl}/api/track/click?s=${sendId}&u=${encodeURIComponent(url)}`;
+            return `<a ${pre}href="${tracked}"${post}>`;
+          }
+        );
+
+        // Inject open tracking pixel
         const pixelUrl = `${appBaseUrl}/api/track/open?s=${sendId}`;
         const pixelTag = `<img src="${pixelUrl}" width="1" height="1" style="display:none" alt="" />`;
-        const htmlContent = htmlWithFooter.includes("</body>")
-          ? htmlWithFooter.replace("</body>", `${pixelTag}</body>`)
-          : `${htmlWithFooter}${pixelTag}`;
+        const htmlContent = htmlWithClicks.includes("</body>")
+          ? htmlWithClicks.replace("</body>", `${pixelTag}</body>`)
+          : `${htmlWithClicks}${pixelTag}`;
 
         await sendEmail({
           to: contact.email,

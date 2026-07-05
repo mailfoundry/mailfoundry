@@ -54,19 +54,34 @@ model ContactList {
   @@unique([contactId, listId])
 }
 
-model Campaign {
+model Template {
   id        String   @id @default(cuid())
   name      String
   subject   String
   body      String
   html      String?
-  status    String   @default("draft")
-  listId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  list  List           @relation(fields: [listId], references: [id], onDelete: Cascade)
-  sends CampaignSend[]
+  campaigns Campaign[]
+}
+
+model Campaign {
+  id          String    @id @default(cuid())
+  name        String
+  subject     String
+  body        String
+  html        String?
+  status      String    @default("draft")
+  listId      String
+  templateId  String?
+  scheduledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  list     List           @relation(fields: [listId], references: [id], onDelete: Cascade)
+  template Template?      @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  sends    CampaignSend[]
 }
 
 model LoginToken {
@@ -88,6 +103,16 @@ model CampaignSend {
   sentAt     DateTime  @default(now())
   openedAt   DateTime?
 
-  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  contact  Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  campaign Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contact  Contact?       @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  clicks   CampaignClick[]
+}
+
+model CampaignClick {
+  id        String   @id @default(cuid())
+  sendId    String
+  url       String
+  clickedAt DateTime @default(now())
+
+  send CampaignSend @relation(fields: [sendId], references: [id], onDelete: Cascade)
 }

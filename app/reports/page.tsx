@@ -2,215 +2,130 @@ import Link from "next/link";
 import AppShell from "../../src/components/app-shell";
 import { prisma } from "../../src/lib/prisma";
 
-function getSendStatusClassName(status: string) {
-  if (status === "sent") {
-    return "rounded-full bg-green-500/10 px-2 py-1 text-xs font-semibold text-green-400";
-  }
-
-  if (status === "skipped_unsubscribed") {
-    return "rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-semibold text-yellow-400";
-  }
-
-  if (status === "skipped_archived") {
-    return "rounded-full bg-slate-500/10 px-2 py-1 text-xs font-semibold text-slate-300";
-  }
-
-  if (status === "skipped_bounced") {
-    return "rounded-full bg-orange-500/10 px-2 py-1 text-xs font-semibold text-orange-400";
-  }
-
-  if (status === "skipped_complained") {
-    return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-400";
-  }
-
-  if (status === "skipped_unknown") {
-    return "rounded-full bg-slate-500/10 px-2 py-1 text-xs font-semibold text-slate-400";
-  }
-
-  return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-400";
-}
-
-function getFriendlySendError(error: string | null) {
-  if (!error) {
-    return "—";
-  }
-
-  if (error.includes("Email address is not verified")) {
-    return "SES sandbox: recipient not verified";
-  }
-
-  return error;
-}
-
 export default async function ReportsPage() {
-  const [
-    totalCampaigns,
-    totalEmailsSent,
-    failedSends,
-    skippedUnsubscribedSends,
-    skippedArchivedSends,
-    skippedBouncedSends,
-    skippedComplainedSends,
-    skippedUnknownSends,
-    recentSends,
-  ] = await Promise.all([
-    prisma.campaign.count(),
-    prisma.campaignSend.count({
-      where: {
-        status: "sent",
-      },
-    }),
-    prisma.campaignSend.count({
-      where: {
-        status: "failed",
-      },
-    }),
-    prisma.campaignSend.count({
-      where: {
-        status: "skipped_unsubscribed",
-      },
-    }),
-    prisma.campaignSend.count({
-      where: {
-        status: "skipped_archived",
-      },
-    }),
-    prisma.campaignSend.count({
-      where: {
-        status: "skipped_bounced",
-      },
-    }),
-    prisma.campaignSend.count({
-      where: {
-        status: "skipped_complained",
-      },
-    }),
-    prisma.campaignSend.count({
-      where: {
-        status: "skipped_unknown",
-      },
-    }),
-    prisma.campaignSend.findMany({
-      orderBy: {
-        sentAt: "desc",
-      },
-      take: 10,
+  const [totals, campaigns] = await Promise.all([
+    Promise.all([
+      prisma.campaign.count(),
+      prisma.campaignSend.count({ where: { status: "sent" } }),
+      prisma.campaignSend.count({ where: { status: "failed" } }),
+      prisma.campaignSend.count({ where: { openedAt: { not: null } } }),
+      prisma.campaignClick.count(),
+    ]),
+    prisma.campaign.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50,
       include: {
-        campaign: true,
-        contact: true,
+        list: { select: { name: true } },
+        _count: { select: { sends: true } },
+        sends: {
+          select: { status: true, openedAt: true },
+        },
       },
     }),
   ]);
+
+  const [totalCampaigns, totalSent, totalFailed, totalOpens, totalClicks] = totals;
+
+  const overallOpenRate = totalSent > 0 ? Math.round((totalOpens / totalSent) * 100) : 0;
+  const overallClickRate = totalSent > 0 ? Math.round((totalClicks / totalSent) * 100) : 0;
+
+  const campaignRows = campaigns.map((c) => {
+    const sent = c.sends.filter((s) => s.status === "sent").length;
+    const opens = c.sends.filter((s) => s.openedAt !== null).length;
+    const skipped = c.sends.filter((s) => s.status.startsWith("skipped_")).length;
+    const failed = c.sends.filter((s) => s.status === "failed").length;
+    const openRate = sent > 0 ? Math.round((opens / sent) * 100) : 0;
+    return { ...c, sent, opens, skipped, failed, openRate };
+  });
 
   return (
     <AppShell active="reports">
       <header className="mb-10">
         <p className="text-sm text-slate-400">Analytics</p>
         <h2 className="text-3xl font-bold">Reports</h2>
-        <p className="mt-2 text-sm text-slate-400">
-          A quick overview of campaign sending activity.
-        </p>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Total Campaigns</p>
-          <p className="mt-3 text-3xl font-bold">{totalCampaigns}</p>
-        </div>
+      {/* Top-level stats */}
+      <div className="mb-10 grid gap-4 md:grid-cols-3 xl:grid-cols-5">
+        {[
+          { label: "Campaigns", value: totalCampaigns, color: "text-white" },
+          { label: "Emails Sent", value: totalSent, color: "text-green-400" },
+          { label: "Total Opens", value: totalOpens, color: "text-sky-400" },
+          { label: "Total Clicks", value: totalClicks, color: "text-orange-400" },
+          { label: "Failed Sends", value: totalFailed, color: "text-red-400" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <p className="text-sm text-slate-400">{s.label}</p>
+            <p className={`mt-3 text-3xl font-bold ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
+      </div>
 
+      {/* Overall rates */}
+      <div className="mb-10 grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Emails Sent</p>
-          <p className="mt-3 text-3xl font-bold text-green-400">
-            {totalEmailsSent}
-          </p>
+          <p className="text-sm text-slate-400">Overall Open Rate</p>
+          <p className="mt-3 text-4xl font-bold text-sky-400">{overallOpenRate}%</p>
+          <div className="mt-4 h-2 w-full rounded-full bg-slate-800">
+            <div className="h-2 rounded-full bg-sky-500" style={{ width: `${overallOpenRate}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-slate-500">{totalOpens} opens from {totalSent} sent</p>
         </div>
-
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Failed Sends</p>
-          <p className="mt-3 text-3xl font-bold text-red-400">{failedSends}</p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Skipped Unsubscribed</p>
-          <p className="mt-3 text-3xl font-bold text-yellow-400">
-            {skippedUnsubscribedSends}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Skipped Archived</p>
-          <p className="mt-3 text-3xl font-bold text-slate-300">
-            {skippedArchivedSends}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Skipped Bounced</p>
-          <p className="mt-3 text-3xl font-bold text-orange-400">
-            {skippedBouncedSends}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Skipped Complained</p>
-          <p className="mt-3 text-3xl font-bold text-red-400">
-            {skippedComplainedSends}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Skipped Unknown</p>
-          <p className="mt-3 text-3xl font-bold text-slate-300">
-            {skippedUnknownSends}
-          </p>
+          <p className="text-sm text-slate-400">Overall Click Rate</p>
+          <p className="mt-3 text-4xl font-bold text-orange-400">{overallClickRate}%</p>
+          <div className="mt-4 h-2 w-full rounded-full bg-slate-800">
+            <div className="h-2 rounded-full bg-orange-500" style={{ width: `${overallClickRate}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-slate-500">{totalClicks} clicks from {totalSent} sent</p>
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
-        <h3 className="text-xl font-semibold">Recent Send Activity</h3>
-
-        {recentSends.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-500">No send activity yet.</p>
+      {/* Per-campaign table */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900">
+        <div className="border-b border-slate-800 px-6 py-4">
+          <h3 className="text-lg font-semibold">Campaign Breakdown</h3>
+        </div>
+        {campaignRows.length === 0 ? (
+          <p className="px-6 py-8 text-sm text-slate-500">No campaigns yet.</p>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-800">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950 text-slate-400">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Campaign</th>
-                  <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Sent At</th>
-                  <th className="px-4 py-3 font-medium">Error</th>
+          <table className="min-w-full text-sm">
+            <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
+              <tr>
+                <th className="px-6 py-4 font-medium">Campaign</th>
+                <th className="px-6 py-4 font-medium">List</th>
+                <th className="px-6 py-4 font-medium">Sent</th>
+                <th className="px-6 py-4 font-medium">Opens</th>
+                <th className="px-6 py-4 font-medium">Open Rate</th>
+                <th className="px-6 py-4 font-medium">Skipped</th>
+                <th className="px-6 py-4 font-medium">Failed</th>
+                <th className="px-6 py-4 font-medium">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campaignRows.map((c) => (
+                <tr key={c.id} className="border-t border-slate-800 hover:bg-slate-950/30">
+                  <td className="px-6 py-4">
+                    <Link href={`/campaigns/${c.id}`} className="hover:underline">{c.name}</Link>
+                  </td>
+                  <td className="px-6 py-4 text-slate-400">{c.list.name}</td>
+                  <td className="px-6 py-4 text-green-400 font-semibold">{c.sent}</td>
+                  <td className="px-6 py-4 text-sky-400">{c.opens}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-16 rounded-full bg-slate-800">
+                        <div className="h-1.5 rounded-full bg-sky-500" style={{ width: `${c.openRate}%` }} />
+                      </div>
+                      <span className="text-slate-300">{c.openRate}%</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-slate-400">{c.skipped}</td>
+                  <td className="px-6 py-4 text-red-400">{c.failed || "—"}</td>
+                  <td className="px-6 py-4 text-slate-400">{new Date(c.createdAt).toLocaleDateString()}</td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {recentSends.map((send) => (
-                  <tr key={send.id}>
-                    <td className="px-4 py-3 text-slate-300">
-                      <Link
-                        href={`/campaigns/${send.campaign.id}`}
-                        className="hover:underline"
-                      >
-                        {send.campaign.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-slate-300">{send.email}</td>
-                    <td className="px-4 py-3">
-                      <span className={getSendStatusClassName(send.status)}>
-                        {send.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-400">
-                      {new Date(send.sentAt).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">
-                      {getFriendlySendError(send.error)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </AppShell>

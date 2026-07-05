@@ -7,6 +7,7 @@ type SidebarProps = {
     | "dashboard"
     | "contacts"
     | "lists"
+    | "templates"
     | "campaigns"
     | "reports"
     | "settings";
@@ -48,13 +49,20 @@ export default function Sidebar({ active }: SidebarProps) {
           Lists
         </Link>
 
-        <div className="rounded-lg px-3 py-2 text-slate-400">Templates</div>
+        <Link
+          href="/templates"
+          className={active === "templates" ? activeLinkClass : baseLinkClass}
+        >
+          Templates
+        </Link>
+
         <Link
           href="/campaigns"
           className={active === "campaigns" ? activeLinkClass : baseLinkClass}
         >
           Campaigns
         </Link>
+
         <Link
           href="/reports"
           className={active === "reports" ? activeLinkClass : baseLinkClass}

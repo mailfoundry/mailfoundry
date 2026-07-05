@@ -11,16 +11,14 @@ function getCampaignStatusBadge(status: string) {
   }
 
   if (status === "partially_sent") {
-    return {
-      label: "Partially Sent",
-      className: "bg-yellow-500/10 text-yellow-400",
-    };
+    return { label: "Partially Sent", className: "bg-yellow-500/10 text-yellow-400" };
   }
 
-  return {
-    label: "Draft",
-    className: "bg-slate-500/10 text-slate-300",
-  };
+  if (status === "scheduled") {
+    return { label: "Scheduled", className: "bg-sky-500/10 text-sky-400" };
+  }
+
+  return { label: "Draft", className: "bg-slate-500/10 text-slate-300" };
 }
 
 export default async function CampaignsPage() {
@@ -65,6 +63,7 @@ export default async function CampaignsPage() {
                 <th className="px-6 py-4 font-medium">Subject</th>
                 <th className="px-6 py-4 font-medium">List</th>
                 <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium">Scheduled</th>
                 <th className="px-6 py-4 font-medium">Created</th>
               </tr>
             </thead>
@@ -93,6 +92,11 @@ export default async function CampaignsPage() {
                         </span>
                       );
                     })()}
+                  </td>
+                  <td className="px-6 py-4 text-slate-400">
+                    {campaign.scheduledAt
+                      ? new Date(campaign.scheduledAt).toLocaleString()
+                      : "—"}
                   </td>
                   <td className="px-6 py-4">
                     {new Date(campaign.createdAt).toLocaleDateString()}

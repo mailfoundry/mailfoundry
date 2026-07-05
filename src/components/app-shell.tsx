@@ -6,6 +6,7 @@ type AppShellProps = {
     | "dashboard"
     | "contacts"
     | "lists"
+    | "templates"
     | "campaigns"
     | "reports"
     | "settings";

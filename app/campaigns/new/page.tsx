@@ -173,7 +173,21 @@ export default async function NewCampaignPage({
             </p>
           </div>
 
-          <SubmitButton pendingText="Saving draft...">Save Draft</SubmitButton>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Schedule Send <span className="text-slate-500">(optional)</span>
+            </label>
+            <input
+              type="datetime-local"
+              name="scheduledAt"
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-orange-500"
+            />
+            <p className="mt-2 text-sm text-slate-500">
+              Leave blank to save as a draft and send manually. Set a time to schedule automatic sending.
+            </p>
+          </div>
+
+          <SubmitButton pendingText="Saving...">Save Campaign</SubmitButton>
         </form>
       </div>
     </AppShell>
