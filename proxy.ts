@@ -12,12 +12,17 @@ function isPublicPath(pathname: string) {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
+  const isLoggedIn = request.cookies.get(cookieName)?.value === "1";
+
+  // Logged-in users hitting the homepage go straight to the dashboard
+  if (pathname === "/" && isLoggedIn) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
   if (isPublicPath(pathname) || pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
-
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const isLoggedIn = request.cookies.get(cookieName)?.value === "1";
 
   if (!isLoggedIn) {
     const loginUrl = new URL("/login", request.url);
