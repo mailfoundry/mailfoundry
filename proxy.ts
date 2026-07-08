@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth"];
+const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
@@ -13,10 +13,11 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const isLoggedIn = request.cookies.get(cookieName)?.value === "1";
+  const isMainLoggedIn = request.cookies.get(cookieName)?.value === "1";
+  const isIbsaLoggedIn = request.cookies.get("ibsa_auth")?.value === "1";
 
   // Logged-in users hitting the homepage go straight to the dashboard
-  if (pathname === "/" && isLoggedIn) {
+  if (pathname === "/" && isMainLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
@@ -24,7 +25,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!isLoggedIn) {
+  // IBSA routes: accessible with either main auth or ibsa_auth cookie
+  if (pathname.startsWith("/ibsa")) {
+    if (isMainLoggedIn || isIbsaLoggedIn) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL("/ibsa/login", request.url));
+  }
+
+  // All other routes require main auth
+  if (!isMainLoggedIn) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
