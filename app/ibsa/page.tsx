@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
-import AppShell from "../../src/components/app-shell";
+import IbsaAppShell from "../../src/components/ibsa-app-shell";
 import { archiveConvention } from "./actions";
 
 const fmtDate = (d: Date, opts?: Intl.DateTimeFormatOptions) =>
@@ -88,7 +88,7 @@ export default async function IbsaPage() {
   const orderedCount = conventions.filter((c) => c.status === "ordered").length;
 
   return (
-    <AppShell active="ibsa">
+    <IbsaAppShell active="ibsa">
       <header className="mb-8 flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-400">IBSA · Xylo Supplies</p>
@@ -192,7 +192,7 @@ export default async function IbsaPage() {
           </div>
         </section>
       )}
-    </AppShell>
+    </IbsaAppShell>
   );
 }
 

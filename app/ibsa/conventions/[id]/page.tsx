@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
-import AppShell from "../../../../src/components/app-shell";
+import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import {
   updateConventionStatus,
   updateDeliveryDate,
@@ -76,7 +76,7 @@ export default async function ConventionDetailPage({
   const itemsWithQty = convention.orderItems.filter((i) => i.qty > 0).length;
 
   return (
-    <AppShell active="ibsa">
+    <IbsaAppShell active="ibsa">
       {/* Header */}
       <header className="mb-8 flex items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
@@ -346,6 +346,6 @@ export default async function ConventionDetailPage({
         conventionId={convention.id}
         title="First Aid"
       />
-    </AppShell>
+    </IbsaAppShell>
   );
 }

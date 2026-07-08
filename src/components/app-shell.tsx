@@ -13,13 +13,14 @@ type AppShellProps = {
     | "ibsa"
     | "ibsa-products";
   children: ReactNode;
+  ibsaOnly?: boolean;
 };
 
-export default function AppShell({ active, children }: AppShellProps) {
+export default function AppShell({ active, children, ibsaOnly = false }: AppShellProps) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <div className="flex min-h-screen">
-        <Sidebar active={active} />
+        <Sidebar active={active} ibsaOnly={ibsaOnly} />
         <section className="flex-1 p-10">{children}</section>
       </div>
     </main>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "../../../src/lib/prisma";
-import AppShell from "../../../src/components/app-shell";
+import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 import ProductStockInput from "./ProductStockInput";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -41,7 +41,7 @@ export default async function IbsaProductsPage({
   const stockValue = products.reduce((s, p) => s + p.unitCost * (p.inStock + p.git), 0);
 
   return (
-    <AppShell active="ibsa-products">
+    <IbsaAppShell active="ibsa-products">
       <header className="mb-10 flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-400">IBSA · Xylo Supplies</p>
@@ -168,6 +168,6 @@ export default async function IbsaProductsPage({
           </div>
         </section>
       ))}
-    </AppShell>
+    </IbsaAppShell>
   );
 }
