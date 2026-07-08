@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
 import AppShell from "../../../../src/components/app-shell";
-import { updateOrderQty, updateConventionStatus, updateDeliveryDate } from "./actions";
+import { updateConventionStatus, updateDeliveryDate, updateShippingCost } from "./actions";
+import ConventionQtyInput from "./ConventionQtyInput";
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
@@ -11,6 +12,9 @@ const CATEGORY_LABELS: Record<string, string> = {
   special: "Special Order",
   firstaid: "First Aid",
 };
+
+const fmtGbp = (n: number) =>
+  n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default async function ConventionDetailPage({
   params,
@@ -38,10 +42,14 @@ export default async function ConventionDetailPage({
   const csProducts = allProducts.filter((p) => p.type === "CS");
   const faProducts = allProducts.filter((p) => p.type === "FA");
 
-  const totalValue = convention.orderItems.reduce(
-    (sum, item) => sum + item.qty * item.product.unitCost,
-    0
+  const orderSaleTotal = convention.orderItems.reduce(
+    (sum, item) => sum + item.qty * item.product.unitCost, 0
   );
+  const orderCostTotal = convention.orderItems.reduce(
+    (sum, item) => sum + item.qty * (item.product.xyloCost ?? item.product.unitCost), 0
+  );
+  const orderProfit = orderSaleTotal - orderCostTotal;
+  const orderMarginPct = orderSaleTotal > 0 ? (orderProfit / orderSaleTotal) * 100 : 0;
   const itemsWithQty = convention.orderItems.filter((i) => i.qty > 0).length;
 
   return (
@@ -54,7 +62,6 @@ export default async function ConventionDetailPage({
           <h2 className="text-3xl font-bold">{convention.name}</h2>
           {convention.venue && <p className="mt-1 text-slate-400">{convention.venue}</p>}
         </div>
-
         <div className="flex gap-2">
           {(["pending", "ordered", "complete"] as const).map((s) => (
             <form key={s} action={updateConventionStatus}>
@@ -75,19 +82,18 @@ export default async function ConventionDetailPage({
         </div>
       </header>
 
-      {/* Key dates & summary */}
-      <div className="mb-8 grid grid-cols-4 gap-4">
+      {/* Stats — 2 rows of 3 */}
+      <div className="mb-8 grid grid-cols-3 gap-4">
+        {/* Row 1 */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-xs text-slate-500">Convention Date</p>
           <p className="mt-1 font-semibold">
             {convention.conventionDate.toLocaleDateString("en-GB", {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-              year: "numeric",
+              weekday: "short", day: "numeric", month: "short", year: "numeric",
             })}
           </p>
         </div>
+
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <p className="mb-1 text-xs text-slate-500">Delivery Date</p>
           <form action={updateDeliveryDate} className="flex items-center gap-2">
@@ -98,30 +104,56 @@ export default async function ConventionDetailPage({
               defaultValue={convention.deliveryDate ? convention.deliveryDate.toISOString().split("T")[0] : ""}
               className="w-full bg-transparent text-sm text-white outline-none"
             />
-            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">
-              ✓
-            </button>
+            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">✓</button>
           </form>
         </div>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="mb-1 text-xs text-slate-500">Shipping Cost</p>
+          <form action={updateShippingCost} className="flex items-center gap-1">
+            <input type="hidden" name="conventionId" value={convention.id} />
+            <span className="text-sm text-slate-400">£</span>
+            <input
+              type="number"
+              name="shippingCost"
+              min="0"
+              step="0.01"
+              defaultValue={convention.shippingCost > 0 ? convention.shippingCost : ""}
+              placeholder="0.00"
+              className="w-full bg-transparent text-sm text-white outline-none"
+            />
+            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">✓</button>
+          </form>
+        </div>
+
+        {/* Row 2 */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-xs text-slate-500">Order Lines</p>
           <p className="mt-1 text-2xl font-bold">{itemsWithQty}</p>
         </div>
+
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-xs text-slate-500">Order Value (ex VAT)</p>
-          <p className="mt-1 text-2xl font-bold">
-            £{totalValue.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <p className="mt-1 text-2xl font-bold">£{fmtGbp(orderSaleTotal)}</p>
+          {convention.shippingCost > 0 && (
+            <p className="mt-0.5 text-xs text-slate-500">+ £{fmtGbp(convention.shippingCost)} shipping</p>
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Order Profit</p>
+          <p className={`mt-1 text-2xl font-bold ${orderProfit >= 0 ? "text-green-400" : "text-red-400"}`}>
+            £{fmtGbp(orderProfit)}
           </p>
+          <p className="mt-0.5 text-xs text-slate-500">{orderMarginPct.toFixed(1)}% margin</p>
         </div>
       </div>
 
-      {/* Cleaning Supplies */}
       <section className="mb-10">
         <h3 className="mb-4 text-lg font-semibold">Cleaning Supplies</h3>
         <ProductTable products={csProducts} qtyMap={qtyMap} conventionId={convention.id} />
       </section>
 
-      {/* First Aid */}
       <section>
         <h3 className="mb-4 text-lg font-semibold">First Aid</h3>
         <ProductTable products={faProducts} qtyMap={qtyMap} conventionId={convention.id} />
@@ -135,11 +167,17 @@ function ProductTable({
   qtyMap,
   conventionId,
 }: {
-  products: { id: string; name: string; variant: string | null; code: string; unitCost: number; category: string }[];
+  products: {
+    id: string;
+    name: string;
+    variant: string | null;
+    unitCost: number;
+    xyloCost: number | null;
+    category: string;
+  }[];
   qtyMap: Map<string, number>;
   conventionId: string;
 }) {
-  // Group by category
   const grouped = products.reduce<Record<string, typeof products>>((acc, p) => {
     if (!acc[p.category]) acc[p.category] = [];
     acc[p.category].push(p);
@@ -150,56 +188,60 @@ function ProductTable({
     <div className="space-y-6">
       {Object.entries(grouped).map(([category, items]) => (
         <div key={category}>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
             {CATEGORY_LABELS[category] ?? category}
           </p>
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+          <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
             <table className="min-w-full text-sm">
-              <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-500">
+              <thead className="border-b border-slate-700 bg-slate-700/50 text-slate-200">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 font-medium">Variant</th>
-                  <th className="px-5 py-3 font-medium text-right">Unit Cost</th>
-                  <th className="px-5 py-3 font-medium text-right">Qty</th>
-                  <th className="px-5 py-3 font-medium text-right">Line Total</th>
+                  <th className="px-4 py-3 text-left font-semibold">Product</th>
+                  <th className="px-4 py-3 text-left font-semibold">Variant</th>
+                  <th className="px-4 py-3 text-right font-semibold">Sale</th>
+                  <th className="px-4 py-3 text-right font-semibold">Cost</th>
+                  <th className="px-4 py-3 text-center font-semibold">Qty</th>
+                  <th className="px-4 py-3 text-right font-semibold">Line Sale</th>
+                  <th className="px-4 py-3 text-right font-semibold">Margin £</th>
+                  <th className="px-4 py-3 text-right font-semibold">Margin %</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((p) => {
                   const qty = qtyMap.get(p.id) ?? 0;
-                  const lineTotal = qty * p.unitCost;
+                  const xyloCost = p.xyloCost ?? p.unitCost;
+                  const lineSale = qty * p.unitCost;
+                  const lineMarginGbp = qty * (p.unitCost - xyloCost);
+                  const marginPct = p.unitCost > 0 ? ((p.unitCost - xyloCost) / p.unitCost) * 100 : 0;
+                  const marginColour = marginPct >= 30 ? "text-green-400" : marginPct >= 15 ? "text-amber-400" : "text-red-400";
+
                   return (
                     <tr
                       key={p.id}
-                      className={`border-t border-slate-800 ${qty === 0 ? "opacity-40 hover:opacity-100" : ""}`}
+                      className={`border-t border-slate-700 hover:bg-slate-700/30 transition-opacity ${
+                        qty === 0 ? "opacity-40 hover:opacity-100" : ""
+                      }`}
                     >
-                      <td className="px-5 py-3 font-medium text-white">{p.name}</td>
-                      <td className="px-5 py-3 text-slate-400">{p.variant ?? "—"}</td>
-                      <td className="px-5 py-3 text-right text-slate-400">£{p.unitCost.toFixed(2)}</td>
-                      <td className="px-5 py-3 text-right">
-                        <form action={updateOrderQty} className="flex items-center justify-end gap-1">
-                          <input type="hidden" name="conventionId" value={conventionId} />
-                          <input type="hidden" name="productId" value={p.id} />
-                          <input
-                            type="number"
-                            name="qty"
-                            min="0"
-                            defaultValue={qty || ""}
-                            placeholder="0"
-                            className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-white outline-none focus:border-orange-500"
-                          />
-                          <button
-                            type="submit"
-                            className="rounded bg-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-600"
-                          >
-                            ✓
-                          </button>
-                        </form>
+                      <td className="px-4 py-3 font-medium text-white">{p.name}</td>
+                      <td className="px-4 py-3 text-slate-300">{p.variant ?? "—"}</td>
+                      <td className="px-4 py-3 text-right text-slate-200">£{p.unitCost.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-right text-slate-400">£{xyloCost.toFixed(2)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-center">
+                          <ConventionQtyInput conventionId={conventionId} productId={p.id} qty={qty} />
+                        </div>
                       </td>
-                      <td className="px-5 py-3 text-right font-medium text-slate-300">
-                        {lineTotal > 0
-                          ? `£${lineTotal.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                          : "—"}
+                      <td className="px-4 py-3 text-right text-slate-200">
+                        {lineSale > 0 ? `£${fmtGbp(lineSale)}` : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        {qty > 0 ? (
+                          <span className={lineMarginGbp >= 0 ? "text-green-400" : "text-red-400"}>
+                            £{fmtGbp(lineMarginGbp)}
+                          </span>
+                        ) : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <span className={marginColour}>{marginPct.toFixed(1)}%</span>
                       </td>
                     </tr>
                   );

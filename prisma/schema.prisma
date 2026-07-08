@@ -143,6 +143,7 @@ model IbsaConvention {
   conventionDate DateTime
   deliveryDate   DateTime?
   status         String    @default("pending") // pending | ordered | complete
+  shippingCost   Float     @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
