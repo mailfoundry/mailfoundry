@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "../../../src/lib/prisma";
 import AppShell from "../../../src/components/app-shell";
-import { updateProductStock } from "./actions";
+import ProductStockInput from "./ProductStockInput";
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
@@ -148,47 +148,11 @@ export default async function IbsaProductsPage({
                           : <span className="text-slate-500">—</span>}
                       </td>
 
-                      {/* In Stock — editable */}
-                      <td className="px-5 py-3 text-right">
-                        <form action={updateProductStock} className="flex items-center justify-end gap-1">
-                          <input type="hidden" name="productId" value={p.id} />
-                          <input type="hidden" name="git" value={p.git} />
-                          <input
-                            type="number"
-                            name="inStock"
-                            min="0"
-                            defaultValue={p.inStock}
-                            className="w-20 rounded border border-slate-500 bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-green-400"
-                          />
-                          <button
-                            type="submit"
-                            className="rounded bg-slate-600 px-2 py-1 text-xs text-white hover:bg-slate-500"
-                          >
-                            ✓
-                          </button>
-                        </form>
-                      </td>
-
-                      {/* GIT — editable */}
-                      <td className="px-5 py-3 text-right">
-                        <form action={updateProductStock} className="flex items-center justify-end gap-1">
-                          <input type="hidden" name="productId" value={p.id} />
-                          <input type="hidden" name="inStock" value={p.inStock} />
-                          <input
-                            type="number"
-                            name="git"
-                            min="0"
-                            defaultValue={p.git}
-                            className="w-20 rounded border border-slate-500 bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-amber-400"
-                          />
-                          <button
-                            type="submit"
-                            className="rounded bg-slate-600 px-2 py-1 text-xs text-white hover:bg-slate-500"
-                          >
-                            ✓
-                          </button>
-                        </form>
-                      </td>
+                      <ProductStockInput
+                        productId={p.id}
+                        inStock={p.inStock}
+                        git={p.git}
+                      />
 
                       {/* Total Stock — computed */}
                       <td className="px-5 py-3 text-right font-semibold">
