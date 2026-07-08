@@ -137,15 +137,22 @@ model IbsaProduct {
 }
 
 model IbsaConvention {
-  id             String    @id @default(cuid())
-  name           String
-  venue          String?
-  conventionDate DateTime
-  deliveryDate   DateTime?
-  status         String    @default("pending") // pending | ordered | complete
-  shippingCost   Float     @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  name            String
+  venue           String?
+  conventionDate  DateTime
+  deliveryDate    DateTime?
+  collectionDate  DateTime?
+  status          String    @default("pending") // pending | ordered | complete
+  shippingCost    Float     @default(0)
+  paymentDueDate  DateTime?
+  paidAt          DateTime?
+  deliveryAddress String?
+  contactName     String?
+  contactEmail    String?
+  contactMobile   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   orderItems IbsaOrderItem[]
 }

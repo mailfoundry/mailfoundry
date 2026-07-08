@@ -2,18 +2,53 @@ import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
 import AppShell from "../../src/components/app-shell";
 
-function statusBadge(status: string, conventionDate: Date) {
-  const isPast = conventionDate < new Date();
-  if (isPast && status === "pending") {
-    return { label: "Complete", className: "bg-slate-500/10 text-slate-400" };
+const fmtDate = (d: Date, opts?: Intl.DateTimeFormatOptions) =>
+  d.toLocaleDateString("en-GB", opts ?? { day: "numeric", month: "short" });
+
+const fmtGbp = (n: number) =>
+  n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function daysUntil(d: Date): number {
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const now = new Date();
+  return Math.ceil(
+    (d.setHours(0, 0, 0, 0) - now.setHours(0, 0, 0, 0)) / msPerDay
+  );
+}
+
+function CountdownPill({ days }: { days: number }) {
+  if (days < 0) return <span className="text-slate-600 text-xs">–</span>;
+  const colour =
+    days <= 7
+      ? "bg-red-950/40 text-red-400 border border-red-700/40"
+      : days <= 14
+      ? "bg-amber-950/40 text-amber-400 border border-amber-700/40"
+      : "bg-green-950/30 text-green-400 border border-green-800/40";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums ${colour}`}>
+      {days}d
+    </span>
+  );
+}
+
+function StatusBadge({ status, isPast }: { status: string; isPast: boolean }) {
+  if (isPast || status === "complete")
+    return <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-500">Complete</span>;
+  if (status === "ordered")
+    return <span className="rounded-full bg-green-900/40 px-2 py-0.5 text-xs text-green-400 border border-green-800/50">Ordered</span>;
+  return <span className="rounded-full bg-amber-900/30 px-2 py-0.5 text-xs text-amber-400 border border-amber-800/40">Pending</span>;
+}
+
+function PaymentBadge({ paidAt, paymentDueDate }: { paidAt: Date | null; paymentDueDate: Date | null }) {
+  if (paidAt) {
+    return <span className="rounded-full bg-green-900/40 px-2 py-0.5 text-xs text-green-400 border border-green-800/50">✓ Paid</span>;
   }
-  if (status === "complete") {
-    return { label: "Complete", className: "bg-slate-500/10 text-slate-400" };
+  if (paymentDueDate) {
+    const days = daysUntil(new Date(paymentDueDate));
+    const colour = days <= 7 ? "text-red-400 border-red-800/40 bg-red-950/30" : "text-amber-400 border-amber-800/40 bg-amber-950/30";
+    return <span className={`rounded-full px-2 py-0.5 text-xs border ${colour}`}>Due {fmtDate(paymentDueDate)}</span>;
   }
-  if (status === "ordered") {
-    return { label: "Ordered", className: "bg-green-500/10 text-green-400" };
-  }
-  return { label: "Pending", className: "bg-amber-500/10 text-amber-400" };
+  return <span className="text-slate-600 text-xs">—</span>;
 }
 
 export default async function IbsaPage() {
@@ -21,144 +56,226 @@ export default async function IbsaPage() {
     orderBy: { conventionDate: "asc" },
     include: {
       _count: { select: { orderItems: true } },
-      orderItems: { select: { qty: true, product: { select: { unitCost: true } } } },
+      orderItems: {
+        select: {
+          qty: true,
+          product: { select: { unitCost: true, xyloCost: true } },
+        },
+      },
     },
   });
 
   const now = new Date();
   const upcoming = conventions.filter((c) => c.conventionDate >= now);
   const past = conventions.filter((c) => c.conventionDate < now);
-  const ordered = conventions.filter((c) => c.status === "ordered");
+
+  const totalValue = conventions.reduce(
+    (sum, c) => sum + c.orderItems.reduce((s, i) => s + i.qty * i.product.unitCost, 0),
+    0
+  );
+  const totalProfit = conventions.reduce(
+    (sum, c) =>
+      sum +
+      c.orderItems.reduce(
+        (s, i) => s + i.qty * (i.product.unitCost - (i.product.xyloCost ?? i.product.unitCost)),
+        0
+      ),
+    0
+  );
+  const unpaidCount = upcoming.filter((c) => !c.paidAt).length;
+  const orderedCount = conventions.filter((c) => c.status === "ordered").length;
 
   return (
     <AppShell active="ibsa">
-      <header className="mb-10 flex items-center justify-between">
+      <header className="mb-8 flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-400">IBSA · Xylo Supplies</p>
           <h2 className="text-3xl font-bold">Conventions 2026</h2>
         </div>
+        <Link
+          href="/ibsa/products"
+          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+        >
+          Products →
+        </Link>
       </header>
 
-      {/* Stats */}
-      <div className="mb-8 grid grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Total Conventions</p>
-          <p className="mt-1 text-3xl font-bold">{conventions.length}</p>
+      {/* Summary stats */}
+      <div className="mb-8 grid grid-cols-4 gap-4">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Upcoming</p>
+          <p className="mt-1 text-2xl font-bold">{upcoming.length}</p>
+          <p className="mt-0.5 text-xs text-slate-600">{orderedCount} ordered</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Upcoming</p>
-          <p className="mt-1 text-3xl font-bold text-amber-400">{upcoming.length}</p>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Total Revenue</p>
+          <p className="mt-1 text-2xl font-bold">£{fmtGbp(totalValue)}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Orders Placed</p>
-          <p className="mt-1 text-3xl font-bold text-green-400">{ordered.length}</p>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Total Profit</p>
+          <p className={`mt-1 text-2xl font-bold ${totalProfit >= 0 ? "text-green-400" : "text-red-400"}`}>
+            £{fmtGbp(totalProfit)}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Awaiting Payment</p>
+          <p className={`mt-1 text-2xl font-bold ${unpaidCount > 0 ? "text-amber-400" : "text-slate-400"}`}>
+            {unpaidCount}
+          </p>
         </div>
       </div>
 
-      {/* Upcoming */}
+      {/* Upcoming conventions */}
       {upcoming.length > 0 && (
         <section className="mb-10">
-          <h3 className="mb-4 text-lg font-semibold text-slate-300">Upcoming</h3>
-          <ConventionTable conventions={upcoming} />
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
+            Upcoming — sorted by date
+          </h3>
+          <ConventionCards conventions={upcoming} />
         </section>
       )}
 
-      {/* Past */}
+      {/* Past conventions */}
       {past.length > 0 && (
         <section>
-          <h3 className="mb-4 text-lg font-semibold text-slate-500">Past / Complete</h3>
-          <ConventionTable conventions={past} muted />
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">
+            Past / Complete
+          </h3>
+          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 opacity-60">
+            <table className="min-w-full text-sm">
+              <thead className="border-b border-slate-800 text-left text-xs text-slate-500">
+                <tr>
+                  <th className="px-5 py-3 font-medium">Convention</th>
+                  <th className="px-5 py-3 font-medium">Date</th>
+                  <th className="px-5 py-3 font-medium">Revenue</th>
+                  <th className="px-5 py-3 font-medium">Payment</th>
+                </tr>
+              </thead>
+              <tbody>
+                {past.map((c) => {
+                  const value = c.orderItems.reduce((s, i) => s + i.qty * i.product.unitCost, 0);
+                  return (
+                    <tr key={c.id} className="border-t border-slate-800">
+                      <td className="px-5 py-3 font-medium">
+                        <Link href={`/ibsa/conventions/${c.id}`} className="hover:underline">
+                          {c.name}
+                        </Link>
+                      </td>
+                      <td className="px-5 py-3 text-slate-500">
+                        {fmtDate(c.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
+                      </td>
+                      <td className="px-5 py-3 text-slate-400">
+                        {value > 0 ? `£${fmtGbp(value)}` : "—"}
+                      </td>
+                      <td className="px-5 py-3">
+                        <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
     </AppShell>
   );
 }
 
-type ConventionWithCounts = Awaited<
-  ReturnType<typeof prisma.ibsaConvention.findMany>
->[number] & {
+type Convention = Awaited<ReturnType<typeof prisma.ibsaConvention.findMany>>[number] & {
   _count: { orderItems: number };
-  orderItems: { qty: number; product: { unitCost: number } }[];
+  orderItems: { qty: number; product: { unitCost: number; xyloCost: number | null } }[];
 };
 
-function ConventionTable({
-  conventions,
-  muted = false,
-}: {
-  conventions: ConventionWithCounts[];
-  muted?: boolean;
-}) {
+function ConventionCards({ conventions }: { conventions: Convention[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-      <table className="min-w-full text-sm">
-        <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
-          <tr>
-            <th className="px-6 py-4 font-medium">Convention</th>
-            <th className="px-6 py-4 font-medium">Venue</th>
-            <th className="px-6 py-4 font-medium">Date</th>
-            <th className="px-6 py-4 font-medium">Delivery</th>
-            <th className="px-6 py-4 font-medium">Items</th>
-            <th className="px-6 py-4 font-medium">Order Value</th>
-            <th className="px-6 py-4 font-medium">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {conventions.map((c) => {
-            const badge = statusBadge(c.status, c.conventionDate);
-            const totalValue = c.orderItems.reduce(
-              (sum, item) => sum + item.qty * item.product.unitCost,
-              0
-            );
-            const itemCount = c.orderItems.filter((i) => i.qty > 0).length;
-            return (
-              <tr
-                key={c.id}
-                className={`border-t border-slate-800 ${muted ? "opacity-50" : ""}`}
-              >
-                <td className="px-6 py-4 font-medium">
-                  <Link
-                    href={`/ibsa/conventions/${c.id}`}
-                    className="hover:underline"
-                  >
-                    {c.name}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 text-slate-400">{c.venue ?? "—"}</td>
-                <td className="px-6 py-4 text-slate-300">
-                  {c.conventionDate.toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </td>
-                <td className="px-6 py-4 text-slate-400">
-                  {c.deliveryDate
-                    ? c.deliveryDate.toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                      })
-                    : "—"}
-                </td>
-                <td className="px-6 py-4 text-slate-300">
-                  {itemCount > 0 ? itemCount : "—"}
-                </td>
-                <td className="px-6 py-4 text-slate-300">
-                  {totalValue > 0
-                    ? `£${totalValue.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                    : "—"}
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`rounded-full px-2 py-1 text-xs font-semibold ${badge.className}`}
-                  >
-                    {badge.label}
+    <div className="grid grid-cols-1 gap-4">
+      {conventions.map((c) => {
+        const now = new Date();
+        const isPast = c.conventionDate < now;
+        const value = c.orderItems.reduce((s, i) => s + i.qty * i.product.unitCost, 0);
+        const profit = c.orderItems.reduce(
+          (s, i) => s + i.qty * (i.product.unitCost - (i.product.xyloCost ?? i.product.unitCost)),
+          0
+        );
+        const itemCount = c.orderItems.filter((i) => i.qty > 0).length;
+        const daysToCollection = c.collectionDate ? daysUntil(new Date(c.collectionDate)) : null;
+        const daysToConvention = daysUntil(new Date(c.conventionDate));
+
+        return (
+          <Link
+            key={c.id}
+            href={`/ibsa/conventions/${c.id}`}
+            className="block rounded-2xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-700 hover:bg-slate-800/60"
+          >
+            <div className="flex items-start justify-between gap-4">
+              {/* Left: name + venue + badges */}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-base font-bold text-white">{c.name}</span>
+                  <StatusBadge status={c.status} isPast={isPast} />
+                  <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
+                </div>
+                {c.venue && <p className="mt-0.5 text-xs text-slate-500">{c.venue}</p>}
+
+                {/* Date row */}
+                <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
+                  <span>
+                    <span className="text-slate-600">Convention</span>{" "}
+                    <span className="font-medium text-slate-300">
+                      {fmtDate(c.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
                   </span>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  {c.deliveryDate && (
+                    <span>
+                      <span className="text-slate-600">Delivery</span>{" "}
+                      <span className="font-medium text-slate-300">{fmtDate(c.deliveryDate)}</span>
+                    </span>
+                  )}
+                  {c.collectionDate && (
+                    <span>
+                      <span className="text-slate-600">Collection</span>{" "}
+                      <span className="font-medium text-slate-300">{fmtDate(c.collectionDate)}</span>
+                    </span>
+                  )}
+                  {c.contactName && (
+                    <span>
+                      <span className="text-slate-600">Contact</span>{" "}
+                      <span className="font-medium text-slate-300">{c.contactName}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: financials + countdowns */}
+              <div className="flex shrink-0 items-center gap-6">
+                {/* Financials */}
+                {value > 0 && (
+                  <div className="text-right">
+                    <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
+                    <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
+                    <p className="text-xs text-slate-500">{itemCount} lines</p>
+                  </div>
+                )}
+
+                {/* Countdowns */}
+                <div className="flex gap-3">
+                  {daysToCollection !== null && (
+                    <div className="text-center">
+                      <CountdownPill days={daysToCollection} />
+                      <p className="mt-1 text-xs text-slate-600">collect</p>
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <CountdownPill days={daysToConvention} />
+                    <p className="mt-1 text-xs text-slate-600">conv</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }

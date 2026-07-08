@@ -53,3 +53,51 @@ export async function updateDeliveryDate(formData: FormData) {
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
 }
+
+export async function updateLogistics(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+
+  const collectionDate = formData.get("collectionDate")?.toString() ?? "";
+  const paymentDueDate = formData.get("paymentDueDate")?.toString() ?? "";
+  const deliveryAddress = formData.get("deliveryAddress")?.toString() ?? "";
+  const contactName = formData.get("contactName")?.toString() ?? "";
+  const contactEmail = formData.get("contactEmail")?.toString() ?? "";
+  const contactMobile = formData.get("contactMobile")?.toString() ?? "";
+
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: {
+      collectionDate: collectionDate ? new Date(collectionDate) : null,
+      paymentDueDate: paymentDueDate ? new Date(paymentDueDate) : null,
+      deliveryAddress: deliveryAddress || null,
+      contactName: contactName || null,
+      contactEmail: contactEmail || null,
+      contactMobile: contactMobile || null,
+    },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
+export async function markPaid(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { paidAt: new Date() },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
+export async function markUnpaid(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { paidAt: null },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
