@@ -10,6 +10,7 @@ import {
   markPaid,
   markUnpaid,
 } from "./actions";
+import { updateConventionDetails } from "../../actions";
 import ConventionProductTable from "./ConventionProductTable";
 import CountdownBadge from "./CountdownBadge";
 
@@ -77,15 +78,36 @@ export default async function ConventionDetailPage({
   return (
     <AppShell active="ibsa">
       {/* Header */}
-      <header className="mb-8 flex items-center justify-between">
-        <div>
+      <header className="mb-8 flex items-start justify-between gap-6">
+        <div className="min-w-0 flex-1">
           <Link href="/ibsa" className="mb-1 block text-sm text-slate-400 hover:text-white">
             ← All Conventions
           </Link>
-          <h2 className="text-3xl font-bold">{convention.name}</h2>
-          {convention.venue && <p className="mt-1 text-slate-400">{convention.venue}</p>}
+          {/* Editable name + venue */}
+          <form action={updateConventionDetails} className="group flex flex-col gap-1">
+            <input type="hidden" name="conventionId" value={convention.id} />
+            <input
+              type="text"
+              name="name"
+              defaultValue={convention.name}
+              className="w-full bg-transparent text-3xl font-bold text-white outline-none focus:border-b focus:border-orange-500 group-hover:border-b group-hover:border-slate-700"
+            />
+            <input
+              type="text"
+              name="venue"
+              defaultValue={convention.venue ?? ""}
+              placeholder="Venue"
+              className="w-full bg-transparent text-sm text-slate-400 outline-none placeholder:text-slate-700 focus:border-b focus:border-orange-500 group-hover:border-b group-hover:border-slate-800"
+            />
+            <button
+              type="submit"
+              className="mt-1 self-start text-xs text-slate-700 hover:text-orange-400 transition-colors"
+            >
+              Save name
+            </button>
+          </form>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           {(["pending", "ordered", "complete"] as const).map((s) => (
             <form key={s} action={updateConventionStatus}>
               <input type="hidden" name="conventionId" value={convention.id} />

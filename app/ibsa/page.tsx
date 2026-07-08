@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
 import AppShell from "../../src/components/app-shell";
+import { archiveConvention } from "./actions";
 
 const fmtDate = (d: Date, opts?: Intl.DateTimeFormatOptions) =>
   d.toLocaleDateString("en-GB", opts ?? { day: "numeric", month: "short" });
@@ -53,6 +54,7 @@ function PaymentBadge({ paidAt, paymentDueDate }: { paidAt: Date | null; payment
 
 export default async function IbsaPage() {
   const conventions = await prisma.ibsaConvention.findMany({
+    where: { archivedAt: null },
     orderBy: { conventionDate: "asc" },
     include: {
       _count: { select: { orderItems: true } },
@@ -149,6 +151,7 @@ export default async function IbsaPage() {
                   <th className="px-5 py-3 font-medium">Date</th>
                   <th className="px-5 py-3 font-medium">Revenue</th>
                   <th className="px-5 py-3 font-medium">Payment</th>
+                  <th className="px-5 py-3 font-medium"></th>
                 </tr>
               </thead>
               <tbody>
@@ -169,6 +172,17 @@ export default async function IbsaPage() {
                       </td>
                       <td className="px-5 py-3">
                         <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
+                      </td>
+                      <td className="px-5 py-3">
+                        <form action={archiveConvention}>
+                          <input type="hidden" name="conventionId" value={c.id} />
+                          <button
+                            type="submit"
+                            className="text-xs text-slate-600 hover:text-red-400 transition-colors"
+                          >
+                            Remove
+                          </button>
+                        </form>
                       </td>
                     </tr>
                   );
