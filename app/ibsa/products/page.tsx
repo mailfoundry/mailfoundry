@@ -118,8 +118,8 @@ export default async function IbsaProductsPage({
                   <th className="px-5 py-3 font-semibold text-right">Sale Price</th>
                   <th className="px-5 py-3 font-semibold text-right">Xylo Cost</th>
                   <th className="px-5 py-3 font-semibold text-right">Margin %</th>
-                  <th className="px-5 py-3 font-semibold text-right">In Stock</th>
-                  <th className="px-5 py-3 font-semibold text-right">GIT</th>
+                  <th className="px-5 py-3 font-semibold text-center">In Stock</th>
+                  <th className="px-5 py-3 font-semibold text-center">GIT</th>
                   <th className="px-5 py-3 font-semibold text-right">Total Stock</th>
                 </tr>
               </thead>

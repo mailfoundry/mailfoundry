@@ -26,29 +26,33 @@ export default function ProductStockInput({ productId, inStock, git }: Props) {
 
   return (
     <>
-      <td className="px-5 py-3 text-right">
-        <input
-          ref={inStockRef}
-          type="number"
-          min="0"
-          defaultValue={inStock}
-          onBlur={save}
-          className={`w-20 rounded border bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-green-400 ${
-            isPending ? "border-slate-400 opacity-60" : "border-slate-500"
-          }`}
-        />
+      <td className="px-5 py-3">
+        <div className="flex justify-center">
+          <input
+            ref={inStockRef}
+            type="number"
+            min="0"
+            defaultValue={inStock}
+            onBlur={save}
+            className={`w-20 rounded border bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-green-400 ${
+              isPending ? "border-slate-400 opacity-60" : "border-slate-500"
+            }`}
+          />
+        </div>
       </td>
-      <td className="px-5 py-3 text-right">
-        <input
-          ref={gitRef}
-          type="number"
-          min="0"
-          defaultValue={git}
-          onBlur={save}
-          className={`w-20 rounded border bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-amber-400 ${
-            isPending ? "border-slate-400 opacity-60" : "border-slate-500"
-          }`}
-        />
+      <td className="px-5 py-3">
+        <div className="flex justify-center">
+          <input
+            ref={gitRef}
+            type="number"
+            min="0"
+            defaultValue={git}
+            onBlur={save}
+            className={`w-20 rounded border bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-amber-400 ${
+              isPending ? "border-slate-400 opacity-60" : "border-slate-500"
+            }`}
+          />
+        </div>
       </td>
     </>
   );
