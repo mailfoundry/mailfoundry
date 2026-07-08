@@ -1,0 +1,217 @@
+[
+  {
+    "name": "NEWCASTLE",
+    "venue": "UTILITA ARENA",
+    "conventionDate": "2026-06-26T00:00:00"
+  },
+  {
+    "name": "SHEFFIELD",
+    "venue": "UTILITA ARENA",
+    "conventionDate": "2026-06-26T00:00:00"
+  },
+  {
+    "name": "LINGALA",
+    "venue": "NTH LONDON ASSEMBLY HALL",
+    "conventionDate": "2026-06-26T00:00:00"
+  },
+  {
+    "name": "BRIGHTON",
+    "venue": "BRIGHTON & HOVE ALBION",
+    "conventionDate": "2026-07-03T00:00:00"
+  },
+  {
+    "name": "EXETER A",
+    "venue": "WESTPOINT CENTRE",
+    "conventionDate": "2026-07-03T00:00:00"
+  },
+  {
+    "name": "LEEDS",
+    "venue": "FIRST DIRECT ARENA",
+    "conventionDate": "2026-07-03T00:00:00"
+  },
+  {
+    "name": "TAGALOG",
+    "venue": "NTH LONDON ASSEMBLY HALL",
+    "conventionDate": "2026-07-03T00:00:00"
+  },
+  {
+    "name": "DUBLIN",
+    "venue": "ROYAL DUBLIN SOCIETY",
+    "conventionDate": "2026-07-10T00:00:00"
+  },
+  {
+    "name": "EXETER B",
+    "venue": "WESTPOINT CENTRE",
+    "conventionDate": "2026-07-10T00:00:00"
+  },
+  {
+    "name": "MILTON KEYNES A",
+    "venue": "MK STADIUM",
+    "conventionDate": "2026-07-10T00:00:00"
+  },
+  {
+    "name": "CORK",
+    "venue": "SILVER SPRINGS HOTEL CORK",
+    "conventionDate": "2026-07-17T00:00:00"
+  },
+  {
+    "name": "NEWPORT A",
+    "venue": "ICC WALES NEWPORT",
+    "conventionDate": "2026-07-17T00:00:00"
+  },
+  {
+    "name": "NORTH- LONDON",
+    "venue": "OVO ARENA WEMBLY",
+    "conventionDate": "2026-07-17T00:00:00"
+  },
+  {
+    "name": "ROMAINIAN",
+    "venue": "MK STADIUM",
+    "conventionDate": "2026-07-17T00:00:00"
+  },
+  {
+    "name": "GREEK",
+    "venue": "EDGWARE  KINGDOM HALL",
+    "conventionDate": "2026-07-17T00:00:00"
+  },
+  {
+    "name": "ATHLONE",
+    "venue": "ATHLONE TUS",
+    "conventionDate": "2026-07-24T00:00:00"
+  },
+  {
+    "name": "MANCHESTER",
+    "venue": "MANCHESTER ARENA",
+    "conventionDate": "2026-07-24T00:00:00"
+  },
+  {
+    "name": "MILTON KEYNES B",
+    "venue": "MK STADIUM",
+    "conventionDate": "2026-07-24T00:00:00"
+  },
+  {
+    "name": "NEWPORT B",
+    "venue": "ICC WALES",
+    "conventionDate": "2026-07-24T00:00:00"
+  },
+  {
+    "name": "RUSSIAN",
+    "venue": "NTH LONDON ASSEMBLY HALL",
+    "conventionDate": "2026-07-24T00:00:00"
+  },
+  {
+    "name": "BELFAST",
+    "venue": "EIKON EXHIBITION CENTRE",
+    "conventionDate": "2026-07-31T00:00:00"
+  },
+  {
+    "name": "HUNGARIAN MANCHESTER",
+    "venue": null,
+    "conventionDate": "2026-07-31T00:00:00"
+  },
+  {
+    "name": "TWI",
+    "venue": "MK ARENA",
+    "conventionDate": "2026-07-31T00:00:00"
+  },
+  {
+    "name": "BOURNEMOUTH",
+    "venue": "INTERNATION CENTRE",
+    "conventionDate": "2026-08-07T00:00:00"
+  },
+  {
+    "name": "LONDON SURREY A",
+    "venue": "S.A.HALL",
+    "conventionDate": "2026-08-07T00:00:00"
+  },
+  {
+    "name": "MILTON KEYNES C",
+    "venue": "MK STADIUM",
+    "conventionDate": "2026-08-07T00:00:00"
+  },
+  {
+    "name": "NORFOLK A",
+    "venue": "NORFOLK SHOWGROUND",
+    "conventionDate": "2026-08-07T00:00:00"
+  },
+  {
+    "name": "CHINESE",
+    "venue": "DUDLEY",
+    "conventionDate": "2026-08-07T00:00:00"
+  },
+  {
+    "name": "LIVERPOOL A",
+    "venue": "M & S ARENA",
+    "conventionDate": "2026-08-14T00:00:00"
+  },
+  {
+    "name": "LONDON NORTH ASSEMBLY HALL",
+    "venue": null,
+    "conventionDate": "2026-08-14T00:00:00"
+  },
+  {
+    "name": "LONDON TWICKENHAM",
+    "venue": null,
+    "conventionDate": "2026-08-14T00:00:00"
+  },
+  {
+    "name": "LONDON SURREY B",
+    "venue": "S.A.HALL",
+    "conventionDate": "2026-08-14T00:00:00"
+  },
+  {
+    "name": "SPANISH & PROTUGUESE SOME SESSIONS ALLIANZ",
+    "venue": null,
+    "conventionDate": "2026-08-14T00:00:00"
+  },
+  {
+    "name": "BIRMINGHAM",
+    "venue": "N.E.C.",
+    "conventionDate": "2026-08-21T00:00:00"
+  },
+  {
+    "name": "GLASGOW",
+    "venue": "OVO HYDRO",
+    "conventionDate": "2026-08-21T00:00:00"
+  },
+  {
+    "name": "LONDON EAST A",
+    "venue": "LEE VALLEY VELOPARK",
+    "conventionDate": "2026-08-21T00:00:00"
+  },
+  {
+    "name": "BSL",
+    "venue": "DUDLEY",
+    "conventionDate": "2026-08-21T00:00:00"
+  },
+  {
+    "name": "POLISH",
+    "venue": null,
+    "conventionDate": "2026-08-21T00:00:00"
+  },
+  {
+    "name": "WELSH",
+    "venue": null,
+    "conventionDate": "2026-08-21T00:00:00"
+  },
+  {
+    "name": "TELFORD",
+    "venue": "TELFORD INTERNATIONAL CENTRE",
+    "conventionDate": "2026-08-28T00:00:00"
+  },
+  {
+    "name": "LONDON EAST B",
+    "venue": "LEE VALLEY VELOPARK",
+    "conventionDate": "2026-08-28T00:00:00"
+  },
+  {
+    "name": "NORFOLK  B",
+    "venue": "NORFOLK SHOWGROUND",
+    "conventionDate": "2026-09-04T00:00:00"
+  },
+  {
+    "name": "PUNJABI",
+    "venue": "DUDLEY",
+    "conventionDate": "2026-09-18T00:00:00"
+  }
+]

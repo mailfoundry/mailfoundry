@@ -9,7 +9,9 @@ type AppShellProps = {
     | "templates"
     | "campaigns"
     | "reports"
-    | "settings";
+    | "settings"
+    | "ibsa"
+    | "ibsa-products";
   children: ReactNode;
 };
 

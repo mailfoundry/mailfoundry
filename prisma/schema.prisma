@@ -116,3 +116,49 @@ model CampaignClick {
 
   send CampaignSend @relation(fields: [sendId], references: [id], onDelete: Cascade)
 }
+
+// ─── IBSA / Xylo Convention Supply ───────────────────────────────────────────
+
+model IbsaProduct {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  variant   String?
+  category  String   // safety_ppe | janitorial | chemicals | special | firstaid
+  type      String   // CS | FA
+  unitCost  Float
+  xyloCost  Float?
+  inStock   Int      @default(0)
+  git       Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems IbsaOrderItem[]
+}
+
+model IbsaConvention {
+  id             String    @id @default(cuid())
+  name           String
+  venue          String?
+  conventionDate DateTime
+  deliveryDate   DateTime?
+  status         String    @default("pending") // pending | ordered | complete
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  orderItems IbsaOrderItem[]
+}
+
+model IbsaOrderItem {
+  id           String   @id @default(cuid())
+  conventionId String
+  productId    String
+  qty          Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  convention IbsaConvention @relation(fields: [conventionId], references: [id], onDelete: Cascade)
+  product    IbsaProduct    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([conventionId, productId])
+}

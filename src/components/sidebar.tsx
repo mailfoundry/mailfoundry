@@ -10,7 +10,9 @@ type SidebarProps = {
     | "templates"
     | "campaigns"
     | "reports"
-    | "settings";
+    | "settings"
+    | "ibsa"
+    | "ibsa-products";
 };
 
 export default function Sidebar({ active }: SidebarProps) {
@@ -76,6 +78,24 @@ export default function Sidebar({ active }: SidebarProps) {
         >
           Settings
         </Link>
+
+        <div className="pt-3">
+          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-600">
+            IBSA · Xylo Supplies
+          </p>
+          <Link
+            href="/ibsa"
+            className={active === "ibsa" ? activeLinkClass : baseLinkClass}
+          >
+            Conventions
+          </Link>
+          <Link
+            href="/ibsa/products"
+            className={`mt-1 ${active === "ibsa-products" ? activeLinkClass : baseLinkClass}`}
+          >
+            Products
+          </Link>
+        </div>
       </nav>
 
       <form action={logout} className="mt-10">

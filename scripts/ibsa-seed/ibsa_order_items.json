@@ -1,0 +1,1752 @@
+[
+  {
+    "productCode": "HI_VIS_YELLOW_BS_M",
+    "conventionName": "Telford",
+    "qty": 30
+  },
+  {
+    "productCode": "HI_VIS_YELLOW_BS_L",
+    "conventionName": "Telford",
+    "qty": 20
+  },
+  {
+    "productCode": "HI_VIS_YELLOW_BS_XL",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "HI_VIS_PINK_M",
+    "conventionName": "Wembley",
+    "qty": 25
+  },
+  {
+    "productCode": "HI_VIS_PINK_L",
+    "conventionName": "Wembley",
+    "qty": 35
+  },
+  {
+    "productCode": "HI_VIS_PINK_XL",
+    "conventionName": "Wembley",
+    "qty": 15
+  },
+  {
+    "productCode": "HI_VIS_BLUE_S",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "HI_VIS_BLUE_M",
+    "conventionName": "Telford",
+    "qty": 12
+  },
+  {
+    "productCode": "HI_VIS_BLUE_L",
+    "conventionName": "Newcastle",
+    "qty": 5
+  },
+  {
+    "productCode": "HI_VIS_BLUE_L",
+    "conventionName": "Telford",
+    "qty": 14
+  },
+  {
+    "productCode": "HI_VIS_BLUE_XL",
+    "conventionName": "Newcastle",
+    "qty": 5
+  },
+  {
+    "productCode": "HI_VIS_BLUE_XL",
+    "conventionName": "Telford",
+    "qty": 1
+  },
+  {
+    "productCode": "HI_VIS_BLUE_XXL",
+    "conventionName": "Telford",
+    "qty": 3
+  },
+  {
+    "productCode": "HI_VIS_YELLOW_S_FA",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "HI_VIS_YELLOW_M_FA",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "HI_VIS_YELLOW_L_FA",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "HI_VIS_YELLOW_XL_FA",
+    "conventionName": "Telford",
+    "qty": 8
+  },
+  {
+    "productCode": "HI_VIS_ORANGE_LS_S",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "HI_VIS_ORANGE_LS_M",
+    "conventionName": "Telford",
+    "qty": 15
+  },
+  {
+    "productCode": "HI_VIS_ORANGE_LS_L",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_SML",
+    "conventionName": "Newcastle",
+    "qty": 40
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_SML",
+    "conventionName": "Belfast",
+    "qty": 8
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_SML",
+    "conventionName": "Telford",
+    "qty": 1
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Newcastle",
+    "qty": 25
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Exeter",
+    "qty": 8
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Milton Keynes",
+    "qty": 25
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Belfast",
+    "qty": 15
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Manchester",
+    "qty": 2
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Liverpool",
+    "qty": 2
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_MED",
+    "conventionName": "Telford",
+    "qty": 52
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Newcastle",
+    "qty": 30
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Exeter",
+    "qty": 10
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Leeds",
+    "qty": 27
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Milton Keynes",
+    "qty": 20
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Belfast",
+    "qty": 9
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Manchester",
+    "qty": 39
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Liverpool",
+    "qty": 39
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_L",
+    "conventionName": "Telford",
+    "qty": 52
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Newcastle",
+    "qty": 20
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Exeter",
+    "qty": 10
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Leeds",
+    "qty": 5
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Belfast",
+    "qty": 4
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Manchester",
+    "qty": 36
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Liverpool",
+    "qty": 36
+  },
+  {
+    "productCode": "GLOVES_VINYL_CLEAR_XL",
+    "conventionName": "Telford",
+    "qty": 51
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_SML",
+    "conventionName": "Wembley",
+    "qty": 5
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_SML",
+    "conventionName": "Norfolk",
+    "qty": 2
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "Dublin",
+    "qty": 14
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "Belfast",
+    "qty": 1
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "Wembley",
+    "qty": 15
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "Norfolk",
+    "qty": 6
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "Twickenham",
+    "qty": 4
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "London East A&B",
+    "qty": 8
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_MED",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "Dublin",
+    "qty": 6
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "Belfast",
+    "qty": 1
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "Wembley",
+    "qty": 10
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "Norfolk",
+    "qty": 7
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "Twickenham",
+    "qty": 4
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "London East A&B",
+    "qty": 6
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_L",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_XL",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_XL",
+    "conventionName": "Wembley",
+    "qty": 4
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_XL",
+    "conventionName": "Manchester",
+    "qty": 10
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_XL",
+    "conventionName": "Norfolk",
+    "qty": 1
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_XL",
+    "conventionName": "Twickenham",
+    "qty": 3
+  },
+  {
+    "productCode": "GLOVES_NITRILE_BLUE_XL",
+    "conventionName": "Liverpool",
+    "qty": 10
+  },
+  {
+    "productCode": "GLOVES_NITRILE-POLY_FOAM_L_10PACK",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "EYEWEAR_SAFETY_GOGGLES_CLEAR",
+    "conventionName": "Liverpool",
+    "qty": 1
+  },
+  {
+    "productCode": "EYEWEAR_SAFETY_GLASSES_CLEAR",
+    "conventionName": "Dublin",
+    "qty": 8
+  },
+  {
+    "productCode": "EYEWEAR_SAFETY_GLASSES_CLEAR",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "MASK_DISP_DUSTCLEAR_50PK",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "MASK_DISP_DUSTCLEAR_50PK",
+    "conventionName": "Belfast",
+    "qty": 1
+  },
+  {
+    "productCode": "MASK_DISP_DUSTCLEAR_50PK",
+    "conventionName": "Manchester",
+    "qty": 1
+  },
+  {
+    "productCode": "MASK_DISP_DUSTCLEAR_50PK",
+    "conventionName": "Liverpool",
+    "qty": 1
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Newcastle",
+    "qty": 10
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Exeter",
+    "qty": 4
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Dublin",
+    "qty": 7
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Belfast",
+    "qty": 15
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Manchester",
+    "qty": 23
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Norfolk",
+    "qty": 6
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Twickenham",
+    "qty": 5
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Liverpool",
+    "qty": 23
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "London East A&B",
+    "qty": 6
+  },
+  {
+    "productCode": "APRONS_FLTPACK_100PK",
+    "conventionName": "Telford",
+    "qty": 20
+  },
+  {
+    "productCode": "BUCKET_OVAL_MOP_14L_RED",
+    "conventionName": "Exeter",
+    "qty": 4
+  },
+  {
+    "productCode": "BUCKET_OVAL_MOP_14L_RED",
+    "conventionName": "Leeds",
+    "qty": 10
+  },
+  {
+    "productCode": "BUCKET_OVAL_MOP_14L_RED",
+    "conventionName": "Manchester",
+    "qty": 31
+  },
+  {
+    "productCode": "BUCKET_OVAL_MOP_14L_RED",
+    "conventionName": "Liverpool",
+    "qty": 27
+  },
+  {
+    "productCode": "BUCKET_OVAL_MOP_14L_BLUE",
+    "conventionName": "Manchester",
+    "qty": 31
+  },
+  {
+    "productCode": "BUCKET_OVAL_MOP_14L_BLUE",
+    "conventionName": "Liverpool",
+    "qty": 30
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_RED",
+    "conventionName": "Exeter",
+    "qty": 8
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_RED",
+    "conventionName": "Norfolk",
+    "qty": 4
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_RED",
+    "conventionName": "Telford",
+    "qty": 4
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_GREEN",
+    "conventionName": "Norfolk",
+    "qty": 4
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_GREEN",
+    "conventionName": "Telford",
+    "qty": 3
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_BLUE",
+    "conventionName": "Exeter",
+    "qty": 8
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_BLUE",
+    "conventionName": "Manchester",
+    "qty": 2
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_BLUE",
+    "conventionName": "Norfolk",
+    "qty": 4
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_BLUE",
+    "conventionName": "Twickenham",
+    "qty": 20
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_BLUE",
+    "conventionName": "Liverpool",
+    "qty": 2
+  },
+  {
+    "productCode": "BUCKET_PLASTIC_10L_BLUE",
+    "conventionName": "Telford",
+    "qty": 3
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_RED",
+    "conventionName": "Exeter",
+    "qty": 8
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_RED",
+    "conventionName": "Dublin",
+    "qty": 4
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_RED",
+    "conventionName": "Manchester",
+    "qty": 40
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_RED",
+    "conventionName": "Liverpool",
+    "qty": 39
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_BLUE",
+    "conventionName": "Manchester",
+    "qty": 40
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_BLUE",
+    "conventionName": "Norfolk",
+    "qty": 30
+  },
+  {
+    "productCode": "MOP_STAND_PY(12)_7OZ_BLUE",
+    "conventionName": "Liverpool",
+    "qty": 42
+  },
+  {
+    "productCode": "HNDL_WOODEN",
+    "conventionName": "Exeter",
+    "qty": 8
+  },
+  {
+    "productCode": "HNDL_WOODEN",
+    "conventionName": "Manchester",
+    "qty": 100
+  },
+  {
+    "productCode": "HNDL_WOODEN",
+    "conventionName": "Liverpool",
+    "qty": 81
+  },
+  {
+    "productCode": "MOP_DISP_RED_10PK",
+    "conventionName": "Dublin",
+    "qty": 3
+  },
+  {
+    "productCode": "MOP_DISP_RED_10PK",
+    "conventionName": "Wembley",
+    "qty": 4
+  },
+  {
+    "productCode": "MOP_DISP_RED_10PK",
+    "conventionName": "Manchester",
+    "qty": 1
+  },
+  {
+    "productCode": "MOP_DISP_RED_10PK",
+    "conventionName": "Telford",
+    "qty": 1
+  },
+  {
+    "productCode": "MOP_DISP_GREEN_10PK",
+    "conventionName": "Telford",
+    "qty": 1
+  },
+  {
+    "productCode": "MOP_DISP_BLUE_10PK",
+    "conventionName": "Wembley",
+    "qty": 4
+  },
+  {
+    "productCode": "MOP_DISP_BLUE_10PK",
+    "conventionName": "Manchester",
+    "qty": 1
+  },
+  {
+    "productCode": "MOP_DISP_BLUE_10PK",
+    "conventionName": "Telford",
+    "qty": 1
+  },
+  {
+    "productCode": "HNDL_WOODEN_1",
+    "conventionName": "Dublin",
+    "qty": 8
+  },
+  {
+    "productCode": "HNDL_WOODEN_1",
+    "conventionName": "Wembley",
+    "qty": 8
+  },
+  {
+    "productCode": "HNDL_WOODEN_1",
+    "conventionName": "Telford",
+    "qty": 11
+  },
+  {
+    "productCode": "SQUEEGEE_METAL_55CM",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "SQUEEGEE_METAL_55CM",
+    "conventionName": "Manchester",
+    "qty": 7
+  },
+  {
+    "productCode": "SQUEEGEE_METAL_55CM",
+    "conventionName": "Twickenham",
+    "qty": 2
+  },
+  {
+    "productCode": "SQUEEGEE_METAL_55CM",
+    "conventionName": "Liverpool",
+    "qty": 7
+  },
+  {
+    "productCode": "HNDL_WOODEN_2",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "HNDL_WOODEN_2",
+    "conventionName": "Manchester",
+    "qty": 7
+  },
+  {
+    "productCode": "HNDL_WOODEN_2",
+    "conventionName": "Twickenham",
+    "qty": 2
+  },
+  {
+    "productCode": "HNDL_WOODEN_2",
+    "conventionName": "Liverpool",
+    "qty": 7
+  },
+  {
+    "productCode": "SQUEEGEE_PLASTIC_55CM",
+    "conventionName": "Wembley",
+    "qty": 3
+  },
+  {
+    "productCode": "HNDL_SQUEEGEE_PLASTIC",
+    "conventionName": "Wembley",
+    "qty": 3
+  },
+  {
+    "productCode": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",
+    "conventionName": "Wembley",
+    "qty": 2
+  },
+  {
+    "productCode": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",
+    "conventionName": "Manchester",
+    "qty": 2
+  },
+  {
+    "productCode": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",
+    "conventionName": "Norfolk",
+    "qty": 4
+  },
+  {
+    "productCode": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_RED",
+    "conventionName": "Dublin",
+    "qty": 3
+  },
+  {
+    "productCode": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_RED",
+    "conventionName": "Wembley",
+    "qty": 2
+  },
+  {
+    "productCode": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLUE",
+    "conventionName": "Wembley",
+    "qty": 2
+  },
+  {
+    "productCode": "BROOM HEAD WASHABLE 30CM SOFT - BLUE",
+    "conventionName": "Leeds",
+    "qty": 100
+  },
+  {
+    "productCode": "BROOM HEAD WASHABLE 30CM SOFT - BLUE",
+    "conventionName": "Wembley",
+    "qty": 4
+  },
+  {
+    "productCode": "BROOM HEAD WASHABLE 30CM SOFT - RED",
+    "conventionName": "Wembley",
+    "qty": 4
+  },
+  {
+    "productCode": "BROOM HEAD WASHABLE 30CM STIFF - BLUE",
+    "conventionName": "Leeds",
+    "qty": 30
+  },
+  {
+    "productCode": "BROOM HEAD WASHABLE 45CM SOFT - BLUE",
+    "conventionName": "Wembley",
+    "qty": 3
+  },
+  {
+    "productCode": "BROOM HEAD WASHABLE 45CM SOFT - RED",
+    "conventionName": "Wembley",
+    "qty": 3
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - BLUE",
+    "conventionName": "Newcastle",
+    "qty": 20
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - BLUE",
+    "conventionName": "Milton Keynes",
+    "qty": 15
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - BLUE",
+    "conventionName": "Wembley",
+    "qty": 7
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - RED",
+    "conventionName": "Newcastle",
+    "qty": 10
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - RED",
+    "conventionName": "Dublin",
+    "qty": 4
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - RED",
+    "conventionName": "Milton Keynes",
+    "qty": 10
+  },
+  {
+    "productCode": "HANDLE HYGIENE 125CM - RED",
+    "conventionName": "Wembley",
+    "qty": 7
+  },
+  {
+    "productCode": "HANDLE HYGIENE 137CM - BLUE",
+    "conventionName": "Leeds",
+    "qty": 40
+  },
+  {
+    "productCode": "KTY MOP FITTING PLASTIC - BLUE",
+    "conventionName": "Leeds",
+    "qty": 10
+  },
+  {
+    "productCode": "KTY MOP FITTING PLASTIC - RED",
+    "conventionName": "Dublin",
+    "qty": 7
+  },
+  {
+    "productCode": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE",
+    "conventionName": "Newcastle",
+    "qty": 1
+  },
+  {
+    "productCode": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE",
+    "conventionName": "Leeds",
+    "qty": 1
+  },
+  {
+    "productCode": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED",
+    "conventionName": "Newcastle",
+    "qty": 1
+  },
+  {
+    "productCode": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "KTY MOP MULTI FLAG 450G",
+    "conventionName": "Belfast",
+    "qty": 5
+  },
+  {
+    "productCode": "KTY Buffalo Bucket & Wringer 25L - Red",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "SKT MOP HYGIEMIX T1D 200G - BLUE",
+    "conventionName": "Newcastle",
+    "qty": 200
+  },
+  {
+    "productCode": "SKT MOP HYGIEMIX T1D 200G - BLUE",
+    "conventionName": "Milton Keynes",
+    "qty": 120
+  },
+  {
+    "productCode": "SKT MOP HYGIEMIX T1D 200G - RED",
+    "conventionName": "Newcastle",
+    "qty": 100
+  },
+  {
+    "productCode": "SKT MOP HYGIEMIX T1D 200G - RED",
+    "conventionName": "Milton Keynes",
+    "qty": 90
+  },
+  {
+    "productCode": "SKT MOP HYGIEMIX T1D 250G - RED",
+    "conventionName": "Leeds",
+    "qty": 115
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_RED",
+    "conventionName": "Newcastle",
+    "qty": 30
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_RED",
+    "conventionName": "Exeter",
+    "qty": 20
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_RED",
+    "conventionName": "Manchester",
+    "qty": 139
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_RED",
+    "conventionName": "Twickenham",
+    "qty": 8
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_RED",
+    "conventionName": "Liverpool",
+    "qty": 139
+  },
+  {
+    "productCode": "BRUSH_STIFF_45CM + ALLOY_HANDLE_RED",
+    "conventionName": "Manchester",
+    "qty": 20
+  },
+  {
+    "productCode": "BRUSH_STIFF_45CM + ALLOY_HANDLE_RED",
+    "conventionName": "Liverpool",
+    "qty": 16
+  },
+  {
+    "productCode": "BRUSH_SOFT_45CM + ALLOY_HANDLE_RED",
+    "conventionName": "Norfolk",
+    "qty": 6
+  },
+  {
+    "productCode": "BRUSH_STIFF_28CM + HANDLE_BLUE",
+    "conventionName": "Dublin",
+    "qty": 10
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_BLUE",
+    "conventionName": "Newcastle",
+    "qty": 120
+  },
+  {
+    "productCode": "BRUSH_SOFT_28CM + HANDLE_BLUE",
+    "conventionName": "Milton Keynes",
+    "qty": 40
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_RED",
+    "conventionName": "Newcastle",
+    "qty": 5
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_RED",
+    "conventionName": "Wembley",
+    "qty": 6
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_RED",
+    "conventionName": "Manchester",
+    "qty": 56
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_RED",
+    "conventionName": "Norfolk",
+    "qty": 5
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_RED",
+    "conventionName": "Liverpool",
+    "qty": 56
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_RED",
+    "conventionName": "Telford",
+    "qty": 2
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_GREEN",
+    "conventionName": "Leeds",
+    "qty": 25
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_GREEN",
+    "conventionName": "Telford",
+    "qty": 2
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Newcastle",
+    "qty": 15
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Exeter",
+    "qty": 40
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Dublin",
+    "qty": 10
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Milton Keynes",
+    "qty": 20
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Wembley",
+    "qty": 6
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Manchester",
+    "qty": 58
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Norfolk",
+    "qty": 5
+  },
+  {
+    "productCode": "DUSTPAN_BRUSH_SET_BLUE",
+    "conventionName": "Liverpool",
+    "qty": 58
+  },
+  {
+    "productCode": "LITTER_PICKER_34INCH",
+    "conventionName": "Exeter",
+    "qty": 15
+  },
+  {
+    "productCode": "LITTER_PICKER_34INCH",
+    "conventionName": "Dublin",
+    "qty": 3
+  },
+  {
+    "productCode": "LITTER_PICKER_34INCH",
+    "conventionName": "Wembley",
+    "qty": 4
+  },
+  {
+    "productCode": "LITTER_PICKER_34INCH",
+    "conventionName": "London East A&B",
+    "qty": 10
+  },
+  {
+    "productCode": "LITTER_PICKER_34INCH",
+    "conventionName": "Telford",
+    "qty": 2
+  },
+  {
+    "productCode": "WET_FLOOR_AFRAME",
+    "conventionName": "Newcastle",
+    "qty": 5
+  },
+  {
+    "productCode": "WET_FLOOR_AFRAME",
+    "conventionName": "Wembley",
+    "qty": 10
+  },
+  {
+    "productCode": "WET_FLOOR_AFRAME",
+    "conventionName": "Manchester",
+    "qty": 32
+  },
+  {
+    "productCode": "WET_FLOOR_AFRAME",
+    "conventionName": "Norfolk",
+    "qty": 4
+  },
+  {
+    "productCode": "WET_FLOOR_AFRAME",
+    "conventionName": "Liverpool",
+    "qty": 32
+  },
+  {
+    "productCode": "WET_FLOOR_AFRAME",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Newcastle",
+    "qty": 40
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Exeter",
+    "qty": 10
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Leeds",
+    "qty": 13
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Dublin",
+    "qty": 35
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Milton Keynes",
+    "qty": 20
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Belfast",
+    "qty": 20
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Manchester",
+    "qty": 25
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Norfolk",
+    "qty": 8
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Liverpool",
+    "qty": 18
+  },
+  {
+    "productCode": "TOILET_BRUSH_HOLDER_WHITE",
+    "conventionName": "Telford",
+    "qty": 90
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Exeter",
+    "qty": 20
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Dublin",
+    "qty": 14
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Milton Keynes",
+    "qty": 15
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Wembley",
+    "qty": 15
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Manchester",
+    "qty": 68
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Liverpool",
+    "qty": 68
+  },
+  {
+    "productCode": "TRG_COMPLETE_RED",
+    "conventionName": "Telford",
+    "qty": 15
+  },
+  {
+    "productCode": "TRG_COMPLETE_GREEN",
+    "conventionName": "Wembley",
+    "qty": 10
+  },
+  {
+    "productCode": "TRG_COMPLETE_GREEN",
+    "conventionName": "Twickenham",
+    "qty": 10
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Exeter",
+    "qty": 20
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Dublin",
+    "qty": 30
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Milton Keynes",
+    "qty": 15
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Manchester",
+    "qty": 63
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Twickenham",
+    "qty": 10
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Liverpool",
+    "qty": 63
+  },
+  {
+    "productCode": "TRG_COMPLETE_BLUE",
+    "conventionName": "Telford",
+    "qty": 35
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Newcastle",
+    "qty": 40
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Exeter",
+    "qty": 25
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Leeds",
+    "qty": 20
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Belfast",
+    "qty": 30
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Wembley",
+    "qty": 15
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Manchester",
+    "qty": 29
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Norfolk",
+    "qty": 32
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Liverpool",
+    "qty": 29
+  },
+  {
+    "productCode": "CLOTH_OCEAN_RED_50PK",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "CLOTH_OCEAN_GREEN_50PK",
+    "conventionName": "Belfast",
+    "qty": 2
+  },
+  {
+    "productCode": "CLOTH_OCEAN_GREEN_50PK",
+    "conventionName": "Wembley",
+    "qty": 15
+  },
+  {
+    "productCode": "CLOTH_OCEAN_GREEN_50PK",
+    "conventionName": "Norfolk",
+    "qty": 8
+  },
+  {
+    "productCode": "CLOTH_OCEAN_GREEN_50PK",
+    "conventionName": "Telford",
+    "qty": 2
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Newcastle",
+    "qty": 50
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Exeter",
+    "qty": 25
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Leeds",
+    "qty": 10
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Milton Keynes",
+    "qty": 10
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Belfast",
+    "qty": 30
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Wembley",
+    "qty": 15
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Manchester",
+    "qty": 31
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Norfolk",
+    "qty": 10
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Liverpool",
+    "qty": 31
+  },
+  {
+    "productCode": "CLOTH_OCEAN_BLUE_50PK",
+    "conventionName": "Telford",
+    "qty": 10
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_BLUE_10PK",
+    "conventionName": "Newcastle",
+    "qty": 10
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_BLUE_10PK",
+    "conventionName": "Exeter",
+    "qty": 6
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_BLUE_10PK",
+    "conventionName": "Wembley",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_BLUE_10PK",
+    "conventionName": "Twickenham",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_BLUE_10PK",
+    "conventionName": "London East A&B",
+    "qty": 30
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_BLUE_10PK",
+    "conventionName": "Telford",
+    "qty": 2
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_PINK_10PK",
+    "conventionName": "Newcastle",
+    "qty": 6
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_PINK_10PK",
+    "conventionName": "Twickenham",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_PINK_10PK",
+    "conventionName": "Telford",
+    "qty": 4
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_WHITE_10PK",
+    "conventionName": "Twickenham",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_GREEN_10PK",
+    "conventionName": "Telford",
+    "qty": 2
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_YELLOW_10PK",
+    "conventionName": "Dublin",
+    "qty": 3
+  },
+  {
+    "productCode": "CLOTH_MFIBRE_YELLOW_10PK",
+    "conventionName": "London East A&B",
+    "qty": 10
+  },
+  {
+    "productCode": "TR_STANDARD_WHITE_36PK",
+    "conventionName": "Milton Keynes",
+    "qty": 2
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "Exeter",
+    "qty": 8
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "Milton Keynes",
+    "qty": 25
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "Norfolk",
+    "qty": 2
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "Twickenham",
+    "qty": 10
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "London East A&B",
+    "qty": 2
+  },
+  {
+    "productCode": "CENTRE_FEED_ST_BLUE_6PK",
+    "conventionName": "Telford",
+    "qty": 50
+  },
+  {
+    "productCode": "CENTRE_FEED_BLUE_DL_6PK",
+    "conventionName": "Leeds",
+    "qty": 4
+  },
+  {
+    "productCode": "CENTRE_FEED_BLUE_DL_6PK",
+    "conventionName": "Wembley",
+    "qty": 5
+  },
+  {
+    "productCode": "REFUSE_SACK_BLACK_100PK",
+    "conventionName": "Exeter",
+    "qty": 2
+  },
+  {
+    "productCode": "REFUSE_SACK_BLACK_100PK",
+    "conventionName": "Leeds",
+    "qty": 2
+  },
+  {
+    "productCode": "REFUSE_SACK_BLACK_100PK",
+    "conventionName": "Milton Keynes",
+    "qty": 20
+  },
+  {
+    "productCode": "REFUSE_SACK_BLACK_100PK",
+    "conventionName": "Wembley",
+    "qty": 1
+  },
+  {
+    "productCode": "REFUSE_SACK_BLACK_100PK",
+    "conventionName": "Norfolk",
+    "qty": 2
+  },
+  {
+    "productCode": "REFUSE_SACK_BLACK_100PK",
+    "conventionName": "Telford",
+    "qty": 200
+  },
+  {
+    "productCode": "REFUSE_SACK_CLEAR_100PK",
+    "conventionName": "Newcastle",
+    "qty": 3
+  },
+  {
+    "productCode": "REFUSE_SACK_CLEAR_100PK",
+    "conventionName": "Twickenham",
+    "qty": 1
+  },
+  {
+    "productCode": "REFUSE_SACK_CLEAR_100PK",
+    "conventionName": "London East A&B",
+    "qty": 5
+  },
+  {
+    "productCode": "SCRAPER",
+    "conventionName": "Leeds",
+    "qty": 3
+  },
+  {
+    "productCode": "SCRAPER",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "SCRAPER",
+    "conventionName": "Manchester",
+    "qty": 5
+  },
+  {
+    "productCode": "JUG_FUNNEL_6\"",
+    "conventionName": "Exeter",
+    "qty": 1
+  },
+  {
+    "productCode": "JUG_FUNNEL_6\"",
+    "conventionName": "Leeds",
+    "qty": 1
+  },
+  {
+    "productCode": "JUG_FUNNEL_6\"",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "JUG_FUNNEL_6\"",
+    "conventionName": "Milton Keynes",
+    "qty": 1
+  },
+  {
+    "productCode": "JUG_FUNNEL_6\"",
+    "conventionName": "Liverpool",
+    "qty": 4
+  },
+  {
+    "productCode": "JUG_MEASURING_1LITRE",
+    "conventionName": "Exeter",
+    "qty": 1
+  },
+  {
+    "productCode": "JUG_MEASURING_1LITRE",
+    "conventionName": "Leeds",
+    "qty": 1
+  },
+  {
+    "productCode": "JUG_MEASURING_1LITRE",
+    "conventionName": "Milton Keynes",
+    "qty": 1
+  },
+  {
+    "productCode": "JUG_MEASURING_1LITRE",
+    "conventionName": "Manchester",
+    "qty": 2
+  },
+  {
+    "productCode": "JUG_MEASURING_1LITRE",
+    "conventionName": "Liverpool",
+    "qty": 4
+  },
+  {
+    "productCode": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "conventionName": "Leeds",
+    "qty": 2
+  },
+  {
+    "productCode": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "conventionName": "Belfast",
+    "qty": 1
+  },
+  {
+    "productCode": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "conventionName": "Manchester",
+    "qty": 2
+  },
+  {
+    "productCode": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "conventionName": "Norfolk",
+    "qty": 1
+  },
+  {
+    "productCode": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "conventionName": "Liverpool",
+    "qty": 2
+  },
+  {
+    "productCode": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "conventionName": "Telford",
+    "qty": 3
+  },
+  {
+    "productCode": "SHARPS_CONTAINER_7L",
+    "conventionName": "Newcastle",
+    "qty": 2
+  },
+  {
+    "productCode": "SHARPS_CONTAINER_7L",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "SHARPS_CONTAINER_2L",
+    "conventionName": "Milton Keynes",
+    "qty": 1
+  },
+  {
+    "productCode": "SHARPS_CONTAINER_1L",
+    "conventionName": "Exeter",
+    "qty": 1
+  },
+  {
+    "productCode": "SHARPS_CONTAINER_1L",
+    "conventionName": "Manchester",
+    "qty": 2
+  },
+  {
+    "productCode": "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",
+    "conventionName": "Exeter",
+    "qty": 2
+  },
+  {
+    "productCode": "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",
+    "conventionName": "Leeds",
+    "qty": 2
+  },
+  {
+    "productCode": "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",
+    "conventionName": "Belfast",
+    "qty": 2
+  },
+  {
+    "productCode": "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",
+    "conventionName": "Wembley",
+    "qty": 2
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_1L",
+    "conventionName": "Manchester",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Newcastle",
+    "qty": 1
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Exeter",
+    "qty": 3
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Milton Keynes",
+    "qty": 3
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Belfast",
+    "qty": 12
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Wembley",
+    "qty": 3
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Manchester",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Norfolk",
+    "qty": 6
+  },
+  {
+    "productCode": "CLOVER_ULTRAFRESH_5L",
+    "conventionName": "Liverpool",
+    "qty": 5
+  },
+  {
+    "productCode": "CLOVER_DETAK_750ML",
+    "conventionName": "Leeds",
+    "qty": 1
+  },
+  {
+    "productCode": "CLOVER_AHS_300ML",
+    "conventionName": "Dublin",
+    "qty": 6
+  },
+  {
+    "productCode": "CLOVER_AHS_300ML",
+    "conventionName": "Belfast",
+    "qty": 20
+  },
+  {
+    "productCode": "CLOVER_AHS_300ML",
+    "conventionName": "Telford",
+    "qty": 19
+  },
+  {
+    "productCode": "CLOVER_AHS_5L",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Exeter",
+    "qty": 4
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Leeds",
+    "qty": 3
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Milton Keynes",
+    "qty": 5
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Belfast",
+    "qty": 5
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Manchester",
+    "qty": 6
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Norfolk",
+    "qty": 6
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "Twickenham",
+    "qty": 10
+  },
+  {
+    "productCode": "BIO_HAZARD_KITS",
+    "conventionName": "London East A&B",
+    "qty": 6
+  },
+  {
+    "productCode": "PUMP_30CC_FOR_5L",
+    "conventionName": "Newcastle",
+    "qty": 3
+  },
+  {
+    "productCode": "PUMP_30CC_FOR_5L",
+    "conventionName": "Exeter",
+    "qty": 2
+  },
+  {
+    "productCode": "PUMP_30CC_FOR_5L",
+    "conventionName": "Dublin",
+    "qty": 1
+  },
+  {
+    "productCode": "PUMP_30CC_FOR_5L",
+    "conventionName": "Wembley",
+    "qty": 3
+  },
+  {
+    "productCode": "MAINTENCE REFILL PADS_X20",
+    "conventionName": "Dublin",
+    "qty": 2
+  },
+  {
+    "productCode": "MAINTENCE REFILL PADS_X20",
+    "conventionName": "Belfast",
+    "qty": 1
+  },
+  {
+    "productCode": "MAINTENCE REFILL PADS_X20",
+    "conventionName": "Twickenham",
+    "qty": 3
+  },
+  {
+    "productCode": "MAINTENCE REFILL PADS_X20",
+    "conventionName": "London East A&B",
+    "qty": 3
+  },
+  {
+    "productCode": "SPILL_KITS_MAINTENANCE_10L",
+    "conventionName": "Belfast",
+    "qty": 1
+  },
+  {
+    "productCode": "SPILL_KITS_MAINTENANCE_10L",
+    "conventionName": "Twickenham",
+    "qty": 8
+  },
+  {
+    "productCode": "SPILL_KITS_MAINTENANCE_10L",
+    "conventionName": "Telford",
+    "qty": 5
+  },
+  {
+    "productCode": "WRAP_CELLOPHANE_CLEAR",
+    "conventionName": "Milton Keynes",
+    "qty": 1
+  }
+]
