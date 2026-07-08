@@ -105,31 +105,31 @@ export default async function IbsaProductsPage({
       {/* Products by category */}
       {Object.entries(grouped).map(([category, items]) => (
         <section key={category} className="mb-8">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
             {CATEGORY_LABELS[category] ?? category}
           </h3>
-          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+          <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
             <table className="min-w-full text-sm">
-              <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
+              <thead className="border-b border-slate-700 bg-slate-700/50 text-left text-slate-200">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 font-medium">Variant / Size</th>
-                  <th className="px-5 py-3 font-medium">Code</th>
-                  <th className="px-5 py-3 font-medium text-right">Unit Cost</th>
-                  <th className="px-5 py-3 font-medium text-right">In Stock</th>
-                  <th className="px-5 py-3 font-medium text-right">GIT</th>
-                  <th className="px-5 py-3 font-medium text-right">Total Stock</th>
+                  <th className="px-5 py-3 font-semibold">Product</th>
+                  <th className="px-5 py-3 font-semibold">Variant / Size</th>
+                  <th className="px-5 py-3 font-semibold">Code</th>
+                  <th className="px-5 py-3 font-semibold text-right">Unit Cost</th>
+                  <th className="px-5 py-3 font-semibold text-right">In Stock</th>
+                  <th className="px-5 py-3 font-semibold text-right">GIT</th>
+                  <th className="px-5 py-3 font-semibold text-right">Total Stock</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((p) => {
                   const total = p.inStock + p.git;
                   return (
-                    <tr key={p.id} className="border-t border-slate-800">
+                    <tr key={p.id} className="border-t border-slate-700 hover:bg-slate-700/40">
                       <td className="px-5 py-3 font-medium text-white">{p.name}</td>
-                      <td className="px-5 py-3 text-slate-400">{p.variant ?? "—"}</td>
-                      <td className="px-5 py-3 font-mono text-xs text-slate-500">{p.code}</td>
-                      <td className="px-5 py-3 text-right text-slate-300">£{p.unitCost.toFixed(2)}</td>
+                      <td className="px-5 py-3 text-slate-300">{p.variant ?? "—"}</td>
+                      <td className="px-5 py-3 font-mono text-xs text-slate-400">{p.code}</td>
+                      <td className="px-5 py-3 text-right text-slate-200">£{p.unitCost.toFixed(2)}</td>
 
                       {/* In Stock — editable */}
                       <td className="px-5 py-3 text-right">
@@ -141,11 +141,11 @@ export default async function IbsaProductsPage({
                             name="inStock"
                             min="0"
                             defaultValue={p.inStock}
-                            className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-white outline-none focus:border-green-500"
+                            className="w-20 rounded border border-slate-500 bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-green-400"
                           />
                           <button
                             type="submit"
-                            className="rounded bg-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-600"
+                            className="rounded bg-slate-600 px-2 py-1 text-xs text-white hover:bg-slate-500"
                           >
                             ✓
                           </button>
@@ -162,11 +162,11 @@ export default async function IbsaProductsPage({
                             name="git"
                             min="0"
                             defaultValue={p.git}
-                            className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-white outline-none focus:border-amber-500"
+                            className="w-20 rounded border border-slate-500 bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-amber-400"
                           />
                           <button
                             type="submit"
-                            className="rounded bg-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-600"
+                            className="rounded bg-slate-600 px-2 py-1 text-xs text-white hover:bg-slate-500"
                           >
                             ✓
                           </button>
@@ -175,7 +175,7 @@ export default async function IbsaProductsPage({
 
                       {/* Total Stock — computed */}
                       <td className="px-5 py-3 text-right font-semibold">
-                        <span className={total > 0 ? "text-white" : "text-slate-600"}>
+                        <span className={total > 0 ? "text-white" : "text-slate-400"}>
                           {total}
                         </span>
                       </td>
