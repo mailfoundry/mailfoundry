@@ -115,7 +115,9 @@ export default async function IbsaProductsPage({
                   <th className="px-5 py-3 font-semibold">Product</th>
                   <th className="px-5 py-3 font-semibold">Variant / Size</th>
                   <th className="px-5 py-3 font-semibold">Code</th>
-                  <th className="px-5 py-3 font-semibold text-right">Unit Cost</th>
+                  <th className="px-5 py-3 font-semibold text-right">Sale Price</th>
+                  <th className="px-5 py-3 font-semibold text-right">Xylo Cost</th>
+                  <th className="px-5 py-3 font-semibold text-right">Margin %</th>
                   <th className="px-5 py-3 font-semibold text-right">In Stock</th>
                   <th className="px-5 py-3 font-semibold text-right">GIT</th>
                   <th className="px-5 py-3 font-semibold text-right">Total Stock</th>
@@ -130,6 +132,21 @@ export default async function IbsaProductsPage({
                       <td className="px-5 py-3 text-slate-300">{p.variant ?? "—"}</td>
                       <td className="px-5 py-3 font-mono text-xs text-slate-400">{p.code}</td>
                       <td className="px-5 py-3 text-right text-slate-200">£{p.unitCost.toFixed(2)}</td>
+                      <td className="px-5 py-3 text-right text-slate-300">
+                        {p.xyloCost != null ? `£${p.xyloCost.toFixed(2)}` : "—"}
+                      </td>
+                      <td className="px-5 py-3 text-right font-medium">
+                        {p.xyloCost != null && p.unitCost > 0
+                          ? (() => {
+                              const margin = ((p.unitCost - p.xyloCost) / p.unitCost) * 100;
+                              return (
+                                <span className={margin >= 30 ? "text-green-400" : margin >= 15 ? "text-amber-400" : "text-red-400"}>
+                                  {margin.toFixed(1)}%
+                                </span>
+                              );
+                            })()
+                          : <span className="text-slate-500">—</span>}
+                      </td>
 
                       {/* In Stock — editable */}
                       <td className="px-5 py-3 text-right">

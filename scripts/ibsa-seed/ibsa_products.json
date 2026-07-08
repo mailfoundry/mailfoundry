@@ -1,7 +1,7 @@
 [
   {
     "code": "HI_VIS_YELLOW_BS_S",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Hi Vis Vest - Economy/Basic",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -9,7 +9,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_BS_M",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Hi Vis Vest - Economy/Basic",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -17,7 +17,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_BS_L",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Hi Vis Vest - Economy/Basic",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -25,7 +25,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_BS_XL",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Hi Vis Vest - Economy/Basic",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -33,7 +33,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_BS_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Hi Vis Vest - Economy/Basic",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -41,7 +41,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_S",
-    "name": "Order Delivery Date:",
+    "name": "Orange High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -49,7 +49,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_M",
-    "name": "Order Delivery Date:",
+    "name": "Orange High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -57,7 +57,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_L",
-    "name": "Order Delivery Date:",
+    "name": "Orange High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -65,7 +65,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_XL",
-    "name": "Order Delivery Date:",
+    "name": "Orange High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -73,7 +73,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Orange High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -81,7 +81,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_S",
-    "name": "Order Delivery Date:",
+    "name": "Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -89,7 +89,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_M",
-    "name": "Order Delivery Date:",
+    "name": "Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -97,7 +97,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_L",
-    "name": "Order Delivery Date:",
+    "name": "Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -105,7 +105,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_XL",
-    "name": "Order Delivery Date:",
+    "name": "Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -113,7 +113,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -121,7 +121,7 @@
   },
   {
     "code": "HI_VIS_PINK_S",
-    "name": "Order Delivery Date:",
+    "name": "Pink Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -129,7 +129,7 @@
   },
   {
     "code": "HI_VIS_PINK_M",
-    "name": "Order Delivery Date:",
+    "name": "Pink Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -137,7 +137,7 @@
   },
   {
     "code": "HI_VIS_PINK_L",
-    "name": "Order Delivery Date:",
+    "name": "Pink Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -145,7 +145,7 @@
   },
   {
     "code": "HI_VIS_PINK_XL",
-    "name": "Order Delivery Date:",
+    "name": "Pink Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -153,7 +153,7 @@
   },
   {
     "code": "HI_VIS_PINK_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Pink Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -161,7 +161,7 @@
   },
   {
     "code": "HI_VIS_BLUE_S",
-    "name": "Order Delivery Date:",
+    "name": "Blue Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -169,7 +169,7 @@
   },
   {
     "code": "HI_VIS_BLUE_M",
-    "name": "Order Delivery Date:",
+    "name": "Blue Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -177,7 +177,7 @@
   },
   {
     "code": "HI_VIS_BLUE_L",
-    "name": "Order Delivery Date:",
+    "name": "Blue Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -185,7 +185,7 @@
   },
   {
     "code": "HI_VIS_BLUE_XL",
-    "name": "Order Delivery Date:",
+    "name": "Blue Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -193,7 +193,7 @@
   },
   {
     "code": "HI_VIS_BLUE_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Blue Hi Vis Vest - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -201,7 +201,7 @@
   },
   {
     "code": "HI_VIS_RED_S",
-    "name": "Order Delivery Date:",
+    "name": "Red High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -209,7 +209,7 @@
   },
   {
     "code": "HI_VIS_RED_M",
-    "name": "Order Delivery Date:",
+    "name": "Red High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -217,7 +217,7 @@
   },
   {
     "code": "HI_VIS_RED_L",
-    "name": "Order Delivery Date:",
+    "name": "Red High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -225,7 +225,7 @@
   },
   {
     "code": "HI_VIS_RED_XL",
-    "name": "Order Delivery Date:",
+    "name": "Red High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -233,7 +233,7 @@
   },
   {
     "code": "HI_VIS_RED_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Red High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -241,7 +241,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_S_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -249,7 +249,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_M_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -257,7 +257,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_L_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -265,7 +265,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_XL_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -273,7 +273,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_XXL_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -281,7 +281,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_LS_S",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -289,7 +289,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_LS_M",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -297,7 +297,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_LS_L",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -305,7 +305,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_LS_XL",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -313,7 +313,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_LS_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Yellow Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -321,7 +321,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_LS_S",
-    "name": "Order Delivery Date:",
+    "name": "Orange Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -329,7 +329,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_LS_M",
-    "name": "Order Delivery Date:",
+    "name": "Orange Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -337,7 +337,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_LS_L",
-    "name": "Order Delivery Date:",
+    "name": "Orange Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -345,7 +345,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_LS_XL",
-    "name": "Order Delivery Date:",
+    "name": "Orange Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -353,7 +353,7 @@
   },
   {
     "code": "HI_VIS_ORANGE_LS_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Orange Long Sleeve High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -361,7 +361,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_EXEC_S",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Yellow Executive High Visibility Vest with Telephone and Badge Holder & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -369,7 +369,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_EXEC_M",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Yellow Executive High Visibility Vest with Telephone and Badge Holder & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -377,7 +377,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_EXEC_L",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Yellow Executive High Visibility Vest with Telephone and Badge Holder & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -385,7 +385,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_EXEC_XL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Yellow Executive High Visibility Vest with Telephone and Badge Holder & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -393,7 +393,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_EXEC_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Yellow Executive High Visibility Vest with Telephone and Badge Holder & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -401,7 +401,7 @@
   },
   {
     "code": "HI_VIS_YELL/R.NAVY_EXEC_S",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Yellow & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -409,7 +409,7 @@
   },
   {
     "code": "HI_VIS_YELL/R.NAVY_EXEC_M",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Yellow & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -417,7 +417,7 @@
   },
   {
     "code": "HI_VIS_YELL/R.NAVY_EXEC_L",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Yellow & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -425,7 +425,7 @@
   },
   {
     "code": "HI_VIS_YELL/R.NAVY_EXEC_XL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Yellow & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -433,7 +433,7 @@
   },
   {
     "code": "HI_VIS_YELL/R.NAVY_EXEC_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Yellow & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -441,7 +441,7 @@
   },
   {
     "code": "HI_VIS_ORG/BLUE_EXEC_S",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -449,7 +449,7 @@
   },
   {
     "code": "HI_VIS_ORG/BLUE_EXEC_M",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -457,7 +457,7 @@
   },
   {
     "code": "HI_VIS_ORG/BLUE_EXEC_L",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -465,7 +465,7 @@
   },
   {
     "code": "HI_VIS_ORG/BLUE_EXEC_XL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -473,7 +473,7 @@
   },
   {
     "code": "HI_VIS_ORG/BLUE_EXEC_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Orange & Blue Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -481,7 +481,7 @@
   },
   {
     "code": "HI_VIS_RED/GREY_EXEC_S",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Red & Grey Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -489,7 +489,7 @@
   },
   {
     "code": "HI_VIS_RED/GREY_EXEC_M",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Red & Grey Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -497,7 +497,7 @@
   },
   {
     "code": "HI_VIS_RED/GREY_EXEC_L",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Red & Grey Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -505,7 +505,7 @@
   },
   {
     "code": "HI_VIS_RED/GREY_EXEC_XL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Red & Grey Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -513,7 +513,7 @@
   },
   {
     "code": "HI_VIS_RED/GREY_EXEC_XXL",
-    "name": "Order Delivery Date:",
+    "name": "Zipped Red & Grey Executive High Visibility Vest with Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -521,7 +521,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_SML",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -529,7 +529,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_MED",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -537,7 +537,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_L",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -545,7 +545,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_XL",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -553,7 +553,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_SML",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "Small",
     "category": "safety_ppe",
     "type": "CS",
@@ -561,7 +561,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_MED",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "Medium",
     "category": "safety_ppe",
     "type": "CS",
@@ -569,7 +569,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_L",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "Large",
     "category": "safety_ppe",
     "type": "CS",
@@ -577,7 +577,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_XL",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "XLarge",
     "category": "safety_ppe",
     "type": "CS",
@@ -585,7 +585,7 @@
   },
   {
     "code": "GLOVES_NITRILE-POLY_FOAM_S_10PACK",
-    "name": "Order Delivery Date:",
+    "name": "Work Gloves - Compliant with \u2022 EN388: 2016\n\u2022 Level 4 - Abrasion\n\u2022 Level X - Cut Resistance\n\u2022 Level 2 - Tear Resistance\n\u2022 Level 1 - Puncture",
     "variant": "Nitrile-Poly Foam Gloves - Small - Pack of 10",
     "category": "safety_ppe",
     "type": "CS",
@@ -593,7 +593,7 @@
   },
   {
     "code": "GLOVES_NITRILE-POLY_FOAM_M_10PACK",
-    "name": "Order Delivery Date:",
+    "name": "Work Gloves - Compliant with \u2022 EN388: 2016\n\u2022 Level 4 - Abrasion\n\u2022 Level X - Cut Resistance\n\u2022 Level 2 - Tear Resistance\n\u2022 Level 1 - Puncture",
     "variant": "Nitrile-Poly Foam Gloves - Medium - Pack of 10",
     "category": "safety_ppe",
     "type": "CS",
@@ -601,7 +601,7 @@
   },
   {
     "code": "GLOVES_NITRILE-POLY_FOAM_L_10PACK",
-    "name": "Order Delivery Date:",
+    "name": "Work Gloves - Compliant with \u2022 EN388: 2016\n\u2022 Level 4 - Abrasion\n\u2022 Level X - Cut Resistance\n\u2022 Level 2 - Tear Resistance\n\u2022 Level 1 - Puncture",
     "variant": "Nitrile-Poly Foam Gloves - Large - Pack of 10",
     "category": "safety_ppe",
     "type": "CS",
@@ -609,7 +609,7 @@
   },
   {
     "code": "GLOVES_NITRILE-POLY_FOAM_XL_10PACK",
-    "name": "Order Delivery Date:",
+    "name": "Work Gloves - Compliant with \u2022 EN388: 2016\n\u2022 Level 4 - Abrasion\n\u2022 Level X - Cut Resistance\n\u2022 Level 2 - Tear Resistance\n\u2022 Level 1 - Puncture",
     "variant": "Nitrile-Poly Foam Gloves - XLarge - Pack of 10",
     "category": "safety_ppe",
     "type": "CS",
@@ -617,7 +617,7 @@
   },
   {
     "code": "EYEWEAR_SAFETY_GOGGLES_CLEAR",
-    "name": "Order Delivery Date:",
+    "name": "Personal Protection -  Masks,  Safety Goggles & Glasses",
     "variant": "Clear Safety Goggles",
     "category": "safety_ppe",
     "type": "CS",
@@ -625,7 +625,7 @@
   },
   {
     "code": "EYEWEAR_SAFETY_GLASSES_CLEAR",
-    "name": "Order Delivery Date:",
+    "name": "Personal Protection -  Masks,  Safety Goggles & Glasses",
     "variant": "Safety Glasses",
     "category": "safety_ppe",
     "type": "CS",
@@ -633,7 +633,7 @@
   },
   {
     "code": "MASK_DISP_DUSTCLEAR_50PK",
-    "name": "Order Delivery Date:",
+    "name": "Personal Protection -  Masks,  Safety Goggles & Glasses",
     "variant": "TYPE IIR Disposable Medical Face Mask",
     "category": "safety_ppe",
     "type": "CS",
@@ -641,7 +641,7 @@
   },
   {
     "code": "APRONS_FLTPACK_100PK",
-    "name": "Order Delivery Date:",
+    "name": "Disposable White Polythene Aprons",
     "variant": "Flat Pack of 100 Aprons - 10 Microns, 686m (w) x 1000m (h)",
     "category": "safety_ppe",
     "type": "CS",
@@ -649,7 +649,7 @@
   },
   {
     "code": "BUCKET_OVAL_MOP_14L_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Exel Mop Bucket And Wringer 14 Litre",
     "variant": "14L Mop Bucket Complete with Handle & Wringer - Red",
     "category": "janitorial",
     "type": "CS",
@@ -657,7 +657,7 @@
   },
   {
     "code": "BUCKET_OVAL_MOP_14L_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Exel Mop Bucket And Wringer 14 Litre",
     "variant": "14L Mop Bucket Complete with Handle & Wringer - Green",
     "category": "janitorial",
     "type": "CS",
@@ -665,7 +665,7 @@
   },
   {
     "code": "BUCKET_OVAL_MOP_14L_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Exel Mop Bucket And Wringer 14 Litre",
     "variant": "14L Mop Bucket Complete with Handle & Wringer - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -673,7 +673,7 @@
   },
   {
     "code": "BUCKET_OVAL_MOP_14L_YELLOW",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Exel Mop Bucket And Wringer 14 Litre",
     "variant": "14L Mop Bucket Complete with Handle & Wringer - Yellow",
     "category": "janitorial",
     "type": "CS",
@@ -681,7 +681,7 @@
   },
   {
     "code": "BUCKET_PLASTIC_10L_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scoot Plastic Bucket With Handle 10 Litre",
     "variant": "10L Plastic Bucket with Handle - Red",
     "category": "janitorial",
     "type": "CS",
@@ -689,7 +689,7 @@
   },
   {
     "code": "BUCKET_PLASTIC_10L_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scoot Plastic Bucket With Handle 10 Litre",
     "variant": "10L Plastic Bucket with Handle - Green",
     "category": "janitorial",
     "type": "CS",
@@ -697,7 +697,7 @@
   },
   {
     "code": "BUCKET_PLASTIC_10L_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scoot Plastic Bucket With Handle 10 Litre",
     "variant": "10L Plastic Bucket with Handle - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -705,7 +705,7 @@
   },
   {
     "code": "MOP_STAND_PY(12)_7OZ_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Standard PY(12) 7oz   Mop Heads",
     "variant": "Cotton String Mop Heads 150g - Red Socket",
     "category": "janitorial",
     "type": "CS",
@@ -713,7 +713,7 @@
   },
   {
     "code": "MOP_STAND_PY(12)_7OZ_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Standard PY(12) 7oz   Mop Heads",
     "variant": "Cotton String Mop Heads 150g - Green Socket",
     "category": "janitorial",
     "type": "CS",
@@ -721,7 +721,7 @@
   },
   {
     "code": "MOP_STAND_PY(12)_7OZ_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Standard PY(12) 7oz   Mop Heads",
     "variant": "Cotton String Mop Heads 150g - Blue Socket",
     "category": "janitorial",
     "type": "CS",
@@ -729,7 +729,7 @@
   },
   {
     "code": "HNDL_WOODEN",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Standard PY(12) 7oz   Mop Heads",
     "variant": "Wooden Handle - (Per handle)",
     "category": "janitorial",
     "type": "CS",
@@ -737,7 +737,7 @@
   },
   {
     "code": "MOP_DISP_RED_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott  Disposable Mop Heads Pack of 10",
     "variant": "Large Big White 120g - Red Socket",
     "category": "janitorial",
     "type": "CS",
@@ -745,7 +745,7 @@
   },
   {
     "code": "MOP_DISP_GREEN_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott  Disposable Mop Heads Pack of 10",
     "variant": "Large Big White 120g - Green Socket",
     "category": "janitorial",
     "type": "CS",
@@ -753,7 +753,7 @@
   },
   {
     "code": "MOP_DISP_BLUE_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott  Disposable Mop Heads Pack of 10",
     "variant": "Large Big White 120g - Blue Socket",
     "category": "janitorial",
     "type": "CS",
@@ -761,7 +761,7 @@
   },
   {
     "code": "HNDL_WOODEN_1",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott  Disposable Mop Heads Pack of 10",
     "variant": "Wooden Handle - (Per handle)",
     "category": "janitorial",
     "type": "CS",
@@ -769,7 +769,7 @@
   },
   {
     "code": "SQUEEGEE_METAL_55CM",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Floor Squeegee",
     "variant": "55cm Metal Floor Squeegee",
     "category": "janitorial",
     "type": "CS",
@@ -777,7 +777,7 @@
   },
   {
     "code": "HNDL_WOODEN_2",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Floor Squeegee",
     "variant": "Wooden Handle - (Per handle)",
     "category": "janitorial",
     "type": "CS",
@@ -785,7 +785,7 @@
   },
   {
     "code": "SQUEEGEE_PLASTIC_55CM",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Floor Squeegee",
     "variant": "55 cm Plastic Floor Squeegee",
     "category": "janitorial",
     "type": "CS",
@@ -793,7 +793,7 @@
   },
   {
     "code": "HNDL_SQUEEGEE_PLASTIC",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Floor Squeegee",
     "variant": "Plastic Handle",
     "category": "janitorial",
     "type": "CS",
@@ -801,7 +801,7 @@
   },
   {
     "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Long Handled Lobby Brush - Complete Set",
     "variant": "Black",
     "category": "janitorial",
     "type": "CS",
@@ -809,7 +809,7 @@
   },
   {
     "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Long Handled Lobby Brush - Complete Set",
     "variant": "Red",
     "category": "janitorial",
     "type": "CS",
@@ -817,7 +817,7 @@
   },
   {
     "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Long Handled Lobby Brush - Complete Set",
     "variant": "Green",
     "category": "janitorial",
     "type": "CS",
@@ -825,7 +825,7 @@
   },
   {
     "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Long Handled Lobby Brush - Complete Set",
     "variant": "Blue",
     "category": "janitorial",
     "type": "CS",
@@ -833,7 +833,7 @@
   },
   {
     "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_YELLOW",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Long Handled Lobby Brush - Complete Set",
     "variant": "Yellow",
     "category": "janitorial",
     "type": "CS",
@@ -841,7 +841,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 30CM SOFT - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 30CM Soft",
     "category": "janitorial",
     "type": "CS",
@@ -849,7 +849,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 30CM SOFT - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 30CM Soft",
     "category": "janitorial",
     "type": "CS",
@@ -857,7 +857,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 30CM STIFF - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 30CM Stiff",
     "category": "janitorial",
     "type": "CS",
@@ -865,7 +865,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 30CM STIFF - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 30CM Stiff",
     "category": "janitorial",
     "type": "CS",
@@ -873,7 +873,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 45CM SOFT - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 45CM Soft",
     "category": "janitorial",
     "type": "CS",
@@ -881,7 +881,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 45CM SOFT - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 45CM Soft",
     "category": "janitorial",
     "type": "CS",
@@ -889,7 +889,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 45CM STIFF - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 45CM Stiff",
     "category": "janitorial",
     "type": "CS",
@@ -897,7 +897,7 @@
   },
   {
     "code": "BROOM HEAD WASHABLE 45CM STIFF - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Broom Head   (For Use with Hygiene Handle)",
     "variant": "Broom Head Washable 45CM Sifff",
     "category": "janitorial",
     "type": "CS",
@@ -905,7 +905,7 @@
   },
   {
     "code": "HANDLE HYGIENE 125CM - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiene Handle",
     "variant": "Alloy Hygiene Handle Screw In Fitting 125CM",
     "category": "janitorial",
     "type": "CS",
@@ -913,7 +913,7 @@
   },
   {
     "code": "HANDLE HYGIENE 125CM - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiene Handle",
     "variant": "Alloy Hygiene Handle Screw In Fitting 125CM",
     "category": "janitorial",
     "type": "CS",
@@ -921,7 +921,7 @@
   },
   {
     "code": "HANDLE HYGIENE 137CM - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiene Handle",
     "variant": "Alloy Hygiene Handle Screw In Fitting 137CM",
     "category": "janitorial",
     "type": "CS",
@@ -929,7 +929,7 @@
   },
   {
     "code": "HANDLE HYGIENE 137CM - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiene Handle",
     "variant": "Alloy Hygiene Handle Screw In Fitting 137CM",
     "category": "janitorial",
     "type": "CS",
@@ -937,7 +937,7 @@
   },
   {
     "code": "KTY MOP COL HYGIEMIX 450G (10 PACK) - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Coloured Hygiemix Kentucky Mop 450g",
     "category": "janitorial",
     "type": "CS",
@@ -945,7 +945,7 @@
   },
   {
     "code": "KTY MOP COL HYGIEMIX 450G (10 PACK) - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Coloured Hygiemix Kentucky Mop 450g",
     "category": "janitorial",
     "type": "CS",
@@ -953,7 +953,7 @@
   },
   {
     "code": "KTY MOP FITTING PLASTIC - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Kentucky Mop Fitting Plastic",
     "category": "janitorial",
     "type": "CS",
@@ -961,7 +961,7 @@
   },
   {
     "code": "KTY MOP FITTING PLASTIC - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Kentucky Mop Fitting Plastic",
     "category": "janitorial",
     "type": "CS",
@@ -969,7 +969,7 @@
   },
   {
     "code": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Hygiemix Scratchback Stayflat Kentucky Mop 450g",
     "category": "janitorial",
     "type": "CS",
@@ -977,7 +977,7 @@
   },
   {
     "code": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Hygiemix Scratchback Stayflat Kentucky Mop 450g",
     "category": "janitorial",
     "type": "CS",
@@ -985,7 +985,7 @@
   },
   {
     "code": "KTY MOP MULTI FLAG 450G",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Multi-Yarn Kentucky Mop Flag 450g",
     "category": "janitorial",
     "type": "CS",
@@ -993,7 +993,7 @@
   },
   {
     "code": "KTY Buffalo Bucket & Wringer 25L - Blue",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Kentucky Buffalo Bucket & Wringer 25L - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1001,7 +1001,7 @@
   },
   {
     "code": "KTY Buffalo Bucket & Wringer 25L - Red",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Kentucky Mop & Fittings  (For Use with Hygiene Handle)",
     "variant": "Kentucky Buffalo Bucket & Wringer 25L - Red",
     "category": "janitorial",
     "type": "CS",
@@ -1009,7 +1009,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 180G - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 180g",
     "category": "janitorial",
     "type": "CS",
@@ -1017,7 +1017,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 180G - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 180g",
     "category": "janitorial",
     "type": "CS",
@@ -1025,7 +1025,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 200G - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 200g",
     "category": "janitorial",
     "type": "CS",
@@ -1033,7 +1033,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 200G - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 200g",
     "category": "janitorial",
     "type": "CS",
@@ -1041,7 +1041,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 250G - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 250g",
     "category": "janitorial",
     "type": "CS",
@@ -1049,7 +1049,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 250G - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 250g",
     "category": "janitorial",
     "type": "CS",
@@ -1057,7 +1057,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 300G - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 300g",
     "category": "janitorial",
     "type": "CS",
@@ -1065,7 +1065,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 300G - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 300g",
     "category": "janitorial",
     "type": "CS",
@@ -1073,7 +1073,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 350G - BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 350g",
     "category": "janitorial",
     "type": "CS",
@@ -1081,7 +1081,7 @@
   },
   {
     "code": "SKT MOP HYGIEMIX T1D 350G - RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Hygiemix Mop Range (For Use with Hygiene Handle)",
     "variant": "Hygiemix T1D Socket Mop 350g",
     "category": "janitorial",
     "type": "CS",
@@ -1089,7 +1089,7 @@
   },
   {
     "code": "BRUSH_STIFF_28CM + HANDLE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Red Stiff or Soft Brush with Coloured Metal handle",
     "variant": "28cm Stiff Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1097,7 +1097,7 @@
   },
   {
     "code": "BRUSH_SOFT_28CM + HANDLE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Red Stiff or Soft Brush with Coloured Metal handle",
     "variant": "28cm Soft Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1105,7 +1105,7 @@
   },
   {
     "code": "BRUSH_STIFF_45CM + ALLOY_HANDLE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Red Stiff or Soft Brush with strong Alloy Handle",
     "variant": "45cm Stiff Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1113,7 +1113,7 @@
   },
   {
     "code": "BRUSH_SOFT_45CM + ALLOY_HANDLE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Red Stiff or Soft Brush with strong Alloy Handle",
     "variant": "45cm Soft Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1121,7 +1121,7 @@
   },
   {
     "code": "BRUSH_STIFF_30CM + ALLOY_HANDLE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Red Stiff or Soft Brush with strong Alloy Handle",
     "variant": "30cm Stiff Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1129,7 +1129,7 @@
   },
   {
     "code": "BRUSH_SOFT_30CM + ALLOY_HANDLE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Red Stiff or Soft Brush with strong Alloy Handle",
     "variant": "30cm Soft Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1137,7 +1137,7 @@
   },
   {
     "code": "BRUSH_STIFF_28CM + HANDLE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Blue Stiff or Soft Brush with Coloured Metal handle",
     "variant": "28cm Stiff Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1145,7 +1145,7 @@
   },
   {
     "code": "BRUSH_SOFT_28CM + HANDLE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Blue Stiff or Soft Brush with Coloured Metal handle",
     "variant": "28cm Soft Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1153,7 +1153,7 @@
   },
   {
     "code": "BRUSH_STIFF_45CM + ALLOY_HANDLE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Blue Stiff or Soft Brush with strong Alloy Handle",
     "variant": "45cm Stiff Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1161,7 +1161,7 @@
   },
   {
     "code": "BRUSH_SOFT_45CM + ALLOY_HANDLE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Blue Stiff or Soft Brush with strong Alloy Handle",
     "variant": "45cm Soft Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1169,7 +1169,7 @@
   },
   {
     "code": "BRUSH_STIFF_30CM + ALLOY_HANDLE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Blue Stiff or Soft Brush with strong Alloy Handle",
     "variant": "30cm Stiff Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1177,7 +1177,7 @@
   },
   {
     "code": "BRUSH_SOFT_30CM + ALLOY_HANDLE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Hygiene Blue Stiff or Soft Brush with strong Alloy Handle",
     "variant": "30cm Soft Brush & Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1185,7 +1185,7 @@
   },
   {
     "code": "DUSTPAN_BRUSH_SET_RED",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Dust Pan & Brush Set",
     "variant": "Professional Dustpan & Brush Set - Red",
     "category": "janitorial",
     "type": "CS",
@@ -1193,7 +1193,7 @@
   },
   {
     "code": "DUSTPAN_BRUSH_SET_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Dust Pan & Brush Set",
     "variant": "Professional Dustpan & Brush Set - Green",
     "category": "janitorial",
     "type": "CS",
@@ -1201,7 +1201,7 @@
   },
   {
     "code": "DUSTPAN_BRUSH_SET_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Dust Pan & Brush Set",
     "variant": "Professional Dustpan & Brush Set - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1209,7 +1209,7 @@
   },
   {
     "code": "DUSTPAN_BRUSH_SET_YELLOW",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Dust Pan & Brush Set",
     "variant": "Professional Dustpan & Brush Set - Yellow",
     "category": "janitorial",
     "type": "CS",
@@ -1217,7 +1217,7 @@
   },
   {
     "code": "LITTER_PICKER_34INCH",
-    "name": "Order Delivery Date:",
+    "name": "Litter Pickers",
     "variant": "Black Long Handled Litter Pick Up Tool",
     "category": "janitorial",
     "type": "CS",
@@ -1225,7 +1225,7 @@
   },
   {
     "code": "WET_FLOOR_AFRAME",
-    "name": "Order Delivery Date:",
+    "name": "Wet Floor Sign",
     "variant": "A Frame 'Caution Wet Floor' Sign",
     "category": "janitorial",
     "type": "CS",
@@ -1233,7 +1233,7 @@
   },
   {
     "code": "TOILET_BRUSH_HOLDER_WHITE",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott - Toilet Brush & Holder",
     "variant": "Brush & Holder - (h)395mm x (w)130mm x (d)130mm - White",
     "category": "janitorial",
     "type": "CS",
@@ -1241,7 +1241,7 @@
   },
   {
     "code": "TRG_COMPLETE_RED",
-    "name": "Order Delivery Date:",
+    "name": "Taylor Davis 750ml Complete Sprayer Bottles & Replacement Trigger Heads",
     "variant": "Solvent Resistant Trigger Spray Head & Bottle - Red",
     "category": "janitorial",
     "type": "CS",
@@ -1249,7 +1249,7 @@
   },
   {
     "code": "TRG_COMPLETE_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Taylor Davis 750ml Complete Sprayer Bottles & Replacement Trigger Heads",
     "variant": "Solvent Resistant Trigger Spray Head & Bottle - Green",
     "category": "janitorial",
     "type": "CS",
@@ -1257,7 +1257,7 @@
   },
   {
     "code": "TRG_COMPLETE_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Taylor Davis 750ml Complete Sprayer Bottles & Replacement Trigger Heads",
     "variant": "Solvent Resistant Trigger Spray Head & Bottle - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1265,7 +1265,7 @@
   },
   {
     "code": "TRG_HEAD_ONLY_RED",
-    "name": "Order Delivery Date:",
+    "name": "Taylor Davis 750ml Complete Sprayer Bottles & Replacement Trigger Heads",
     "variant": "Solvent Resistant Trigger Spray Head - Red",
     "category": "janitorial",
     "type": "CS",
@@ -1273,7 +1273,7 @@
   },
   {
     "code": "TRG_HEAD_ONLY_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "Taylor Davis 750ml Complete Sprayer Bottles & Replacement Trigger Heads",
     "variant": "Solvent Resistant Trigger Spray Head - Green",
     "category": "janitorial",
     "type": "CS",
@@ -1281,7 +1281,7 @@
   },
   {
     "code": "TRG_HEAD_ONLY_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "Taylor Davis 750ml Complete Sprayer Bottles & Replacement Trigger Heads",
     "variant": "Solvent Resistant Trigger Spray Head - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1289,7 +1289,7 @@
   },
   {
     "code": "CLOTH_OCEAN_RED_50PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Anti-Bacterial Cleaning Ocean Cloths - Pack of 50",
     "variant": "Large Handy Wipes - 600mm x 300mm - Red",
     "category": "janitorial",
     "type": "CS",
@@ -1297,7 +1297,7 @@
   },
   {
     "code": "CLOTH_OCEAN_GREEN_50PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Anti-Bacterial Cleaning Ocean Cloths - Pack of 50",
     "variant": "Large Handy Wipes - 600mm x 300mm - Green",
     "category": "janitorial",
     "type": "CS",
@@ -1305,7 +1305,7 @@
   },
   {
     "code": "CLOTH_OCEAN_BLUE_50PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Anti-Bacterial Cleaning Ocean Cloths - Pack of 50",
     "variant": "Large Handy Wipes - 600mm x 300mm - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1313,7 +1313,7 @@
   },
   {
     "code": "CLOTH_FLOOR_WHITE_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Large Bleached White Dish Cloth - Pack of 10",
     "variant": "White Cloth with Red Trim - 1275mm x 965mm",
     "category": "janitorial",
     "type": "CS",
@@ -1321,7 +1321,7 @@
   },
   {
     "code": "AIRLAID_TOWELS_WHITE_CASE",
-    "name": "Order Delivery Date:",
+    "name": "Airlaid - White - Luxury Paper Hand Towels",
     "variant": "10 Packs x 50 Executive Airlaid Towels (40cm x 40cm)",
     "category": "janitorial",
     "type": "CS",
@@ -1329,7 +1329,7 @@
   },
   {
     "code": "CLOTH_MFIBRE_BLUE_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Microfibre Exel Supercloth Pack of 10",
     "variant": "Premium Micofibre Cloth - 400mm x 400mm - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1337,7 +1337,7 @@
   },
   {
     "code": "CLOTH_MFIBRE_PINK_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Microfibre Exel Supercloth Pack of 10",
     "variant": "Premium Micofibre Cloth - 400mm x 400mm - Pink",
     "category": "janitorial",
     "type": "CS",
@@ -1345,7 +1345,7 @@
   },
   {
     "code": "CLOTH_MFIBRE_WHITE_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Microfibre Exel Supercloth Pack of 10",
     "variant": "Premium Micofibre Cloth - 400mm x 400mm - White",
     "category": "janitorial",
     "type": "CS",
@@ -1353,7 +1353,7 @@
   },
   {
     "code": "CLOTH_MFIBRE_GREEN_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Microfibre Exel Supercloth Pack of 10",
     "variant": "Premium Micofibre Cloth - 400mm x 400mm - Green",
     "category": "janitorial",
     "type": "CS",
@@ -1361,7 +1361,7 @@
   },
   {
     "code": "CLOTH_MFIBRE_YELLOW_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Robert Scott Professional Microfibre Exel Supercloth Pack of 10",
     "variant": "Premium Micofibre Cloth - 400mm x 400mm - Yellow",
     "category": "janitorial",
     "type": "CS",
@@ -1369,7 +1369,7 @@
   },
   {
     "code": "TR_JUMBO_MINI_12PK",
-    "name": "Order Delivery Date:",
+    "name": "Toilet Rolls (Price on Application - Qty Dependant)",
     "variant": "12 Pack Mini Jumbo Toilet Rolls",
     "category": "janitorial",
     "type": "CS",
@@ -1377,7 +1377,7 @@
   },
   {
     "code": "TR_STANDARD_WHITE_36PK",
-    "name": "Order Delivery Date:",
+    "name": "Toilet Rolls (Price on Application - Qty Dependant)",
     "variant": "36 Pack Standard Toilet Rolls",
     "category": "janitorial",
     "type": "CS",
@@ -1385,7 +1385,7 @@
   },
   {
     "code": "CENTRE_FEED_ST_BLUE_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls - Economy",
     "variant": "Soft Touch Roll, 50m length - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1393,7 +1393,7 @@
   },
   {
     "code": "CENTRE_FEED_ST_WHITE_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls - Economy",
     "variant": "Soft Touch Roll, 50m length - White",
     "category": "janitorial",
     "type": "CS",
@@ -1401,7 +1401,7 @@
   },
   {
     "code": "CENTRE_FEED_BLUE_DL_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls",
     "variant": "Premium Touch Roll, 120m length, 2 Ply Roll - Blue",
     "category": "janitorial",
     "type": "CS",
@@ -1409,7 +1409,7 @@
   },
   {
     "code": "CENTRE_FEED_WHITE_DL_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls",
     "variant": "Premium Touch Roll, 120m length, 2 Ply Roll - White",
     "category": "janitorial",
     "type": "CS",
@@ -1417,7 +1417,7 @@
   },
   {
     "code": "CFOLD_2295_2PLY_WHITE",
-    "name": "Order Delivery Date:",
+    "name": "C-Fold Hand Towels, Case of 2400  (Price on Application - Qty Dependant)",
     "variant": "White - 2Ply",
     "category": "janitorial",
     "type": "CS",
@@ -1425,7 +1425,7 @@
   },
   {
     "code": "CFOLD_2400_1PLY_BLUE",
-    "name": "Order Delivery Date:",
+    "name": "C-Fold Hand Towels, Case of 2400  (Price on Application - Qty Dependant)",
     "variant": "Blue - 1Ply",
     "category": "janitorial",
     "type": "CS",
@@ -1433,7 +1433,7 @@
   },
   {
     "code": "CFOLD_2400_1PLY_GREEN",
-    "name": "Order Delivery Date:",
+    "name": "C-Fold Hand Towels, Case of 2400  (Price on Application - Qty Dependant)",
     "variant": "Green - 1Ply",
     "category": "janitorial",
     "type": "CS",
@@ -1441,7 +1441,7 @@
   },
   {
     "code": "REFUSE_SACK_BLACK_100PK",
-    "name": "Order Delivery Date:",
+    "name": "Refuse / Bin Liners Bags",
     "variant": "X100 Black Refuse Sacks",
     "category": "janitorial",
     "type": "CS",
@@ -1449,7 +1449,7 @@
   },
   {
     "code": "REFUSE_SACK_CLEAR__100PK",
-    "name": "Order Delivery Date:",
+    "name": "Refuse / Bin Liners Bags",
     "variant": "X100 Clear Refuse Sacks",
     "category": "janitorial",
     "type": "CS",
@@ -1457,7 +1457,7 @@
   },
   {
     "code": "REFUSE_BIN_LINERS_CLEAR_1000PK",
-    "name": "Order Delivery Date:",
+    "name": "Refuse / Bin Liners Bags",
     "variant": "Office Bin Liners X1000",
     "category": "janitorial",
     "type": "CS",
@@ -1465,7 +1465,7 @@
   },
   {
     "code": "SCRAPER",
-    "name": "Order Delivery Date:",
+    "name": "Scraper",
     "variant": "76mm (3\") Stiff Blade Scraper with Softgrip Handle",
     "category": "janitorial",
     "type": "CS",
@@ -1473,7 +1473,7 @@
   },
   {
     "code": "JUG_FUNNEL_6\"",
-    "name": "Order Delivery Date:",
+    "name": "Plastic Pouring Funnel",
     "variant": "6\" Funnel",
     "category": "janitorial",
     "type": "CS",
@@ -1481,7 +1481,7 @@
   },
   {
     "code": "JUG_MEASURING_1LITRE",
-    "name": "Order Delivery Date:",
+    "name": "Plastic Pouring Jug",
     "variant": "1L Measuring Jug",
     "category": "janitorial",
     "type": "CS",
@@ -1489,7 +1489,7 @@
   },
   {
     "code": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
-    "name": "Order Delivery Date:",
+    "name": "Non-Adhesive Hazard Warning Tape - 500m per Roll",
     "variant": "Red & White Hazard Warning Roll (Non-Adhesive)",
     "category": "janitorial",
     "type": "CS",
@@ -1497,7 +1497,7 @@
   },
   {
     "code": "BARRIER_TAPE_NON_ADHESIVE_BLACK/YELLOW",
-    "name": "Order Delivery Date:",
+    "name": "Non-Adhesive Hazard Warning Tape - 500m per Roll",
     "variant": "Black & Yellow Hazard Warning Roll (Non-Adhesive)",
     "category": "janitorial",
     "type": "CS",
@@ -1505,7 +1505,7 @@
   },
   {
     "code": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Non-Adhesive Hazard Warning Tape - 500m per Roll",
     "variant": "Red & White Box of 10 Rolls (Non-Adhesive)",
     "category": "janitorial",
     "type": "CS",
@@ -1513,7 +1513,7 @@
   },
   {
     "code": "BARRIER_TAPE_NON_ADHESIVE_BLACK/YELLOW_10PK",
-    "name": "Order Delivery Date:",
+    "name": "Non-Adhesive Hazard Warning Tape - 500m per Roll",
     "variant": "Black & Yellow Box of 10 Rolls (Non-Adhesive)",
     "category": "janitorial",
     "type": "CS",
@@ -1521,7 +1521,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_13L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "13L Sharps Container -  Internal Capacity: 10.4L Overall Bin Dimension: (h)195 x (l)195 x (w)292mm",
     "category": "janitorial",
     "type": "CS",
@@ -1529,7 +1529,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_7L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "7L Sharps Container -  Internal Capacity: 5.8L Overall Bin Dimension: (h)380 x (l)175 x (w)175mm",
     "category": "janitorial",
     "type": "CS",
@@ -1537,7 +1537,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_2L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "2L Sharps Container -  Internal Capacity: 1.7L Overall Bin Dimension: (h)177 x (l)197 x (w)126mm",
     "category": "janitorial",
     "type": "CS",
@@ -1545,7 +1545,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_1L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "1L Sharps Container -  Internal Capacity: 0.85L Overall Bin Dimension: (h)187 x (l)90 x (w)108mm",
     "category": "janitorial",
     "type": "CS",
@@ -1553,7 +1553,7 @@
   },
   {
     "code": "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",
-    "name": "Order Delivery Date:",
+    "name": "Zesty Lemon Floor Cleaner & Degreaser",
     "variant": "5L Bottle - 1:120 Dilution Rate",
     "category": "chemicals",
     "type": "CS",
@@ -1561,7 +1561,7 @@
   },
   {
     "code": "CLOVER_ULTRAFRESH_1L",
-    "name": "Order Delivery Date:",
+    "name": "Impact Professional Washroom  Cleaner (1:50 Dilution Rate)",
     "variant": "1L Bottle - 1:50 Dilution Rate",
     "category": "chemicals",
     "type": "CS",
@@ -1569,7 +1569,7 @@
   },
   {
     "code": "CLOVER_ULTRAFRESH_5L",
-    "name": "Order Delivery Date:",
+    "name": "Impact Professional Washroom  Cleaner (1:50 Dilution Rate)",
     "variant": "5L Bottle - 1:50 Dilution Rate",
     "category": "chemicals",
     "type": "CS",
@@ -1577,7 +1577,7 @@
   },
   {
     "code": "CLOVER_DETAK_750ML",
-    "name": "Order Delivery Date:",
+    "name": "Chewing Gum Remover",
     "variant": "Detak Chewing Gum Remover 300ml",
     "category": "chemicals",
     "type": "CS",
@@ -1585,7 +1585,7 @@
   },
   {
     "code": "CLOVER_HAND_SOAP_1L",
-    "name": "Order Delivery Date:",
+    "name": "Anti Bacterial Hand Soap",
     "variant": "1L Pump Bottle",
     "category": "chemicals",
     "type": "CS",
@@ -1593,7 +1593,7 @@
   },
   {
     "code": "CLOVER_HAND_SOAP_5L",
-    "name": "Order Delivery Date:",
+    "name": "Anti Bacterial Hand Soap",
     "variant": "5L Bottle",
     "category": "chemicals",
     "type": "CS",
@@ -1601,7 +1601,7 @@
   },
   {
     "code": "CLOVER_AHS_300ML",
-    "name": "Order Delivery Date:",
+    "name": "Anti Bacterial Hand Sanitizer/Gel 70% Alcohol)",
     "variant": "300ml Bottle",
     "category": "chemicals",
     "type": "CS",
@@ -1609,7 +1609,7 @@
   },
   {
     "code": "CLOVER_AHS_5L",
-    "name": "Order Delivery Date:",
+    "name": "Anti Bacterial Hand Sanitizer/Gel 70% Alcohol)",
     "variant": "5L Bottle",
     "category": "chemicals",
     "type": "CS",
@@ -1617,7 +1617,7 @@
   },
   {
     "code": "BIO_HAZARD_KITS",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "1 Disinfectant Spray (8ml) / 1 Absorbent Granules (10g)\n1 Disposable Gloves (pair) / 1 Polythene Apron\n1 Scoop/Scraper / 2 Dry Wipes\n1 Biohazard Bag / 1 Disinfectant Wipe\n1 Pack Tissues (10)",
     "category": "chemicals",
     "type": "CS",
@@ -1625,7 +1625,7 @@
   },
   {
     "code": "PUMP_30CC_FOR_5L",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "30cc To fit 5L Chemical Bottle",
     "category": "chemicals",
     "type": "CS",
@@ -1633,7 +1633,7 @@
   },
   {
     "code": "MAINTENCE REFILL PADS_X20",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "Maintenance Spill Pads \u2013 Spill Kit Refills\nHighly absorbent pads for rapid response to drink spills and small leaks around the convention venue. Supplied in bundles to replenish maintenance spill kits and keep teams ready to respond.",
     "category": "chemicals",
     "type": "CS",
@@ -1641,7 +1641,7 @@
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_10L",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "10L Rapid Response Spill Kit - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 10 x Maintenance Absorbent Pads\n- 1 x 1.2m Maintenance Absorbent Socks\n- 1 x Haz Waste Bags\n- 1 x Clip Top Bag\n- 1 x Tie",
     "category": "chemicals",
     "type": "CS",
@@ -1649,7 +1649,7 @@
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_15L",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "15L Rapid Response Spill Kit - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 15 x Maintenance Absorbent Pads\n- 1 x 1.2m Maintenance Absorbent Socks\n- 1 x Haz Waste Bags\n- 1 x Clip Top Bag\n- 1 x Tie",
     "category": "chemicals",
     "type": "CS",
@@ -1657,7 +1657,7 @@
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_20L",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "20L Maintenance Spill Kits - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 20 x Maintenance Absorbent Pads\n- 2 x 1.2m Maintenance Absorbent Socks\n- 1 x Haz Waste Bags\n- 1 x Clip Top Bag\n- 1 x Tie",
     "category": "chemicals",
     "type": "CS",
@@ -1665,7 +1665,7 @@
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_50L",
-    "name": "Order Delivery Date:",
+    "name": "Bio Hazard Spill Kit",
     "variant": "50L Maintenance Spill Kits - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 50 x Pads\n- 4 x 1.2m Socks\n- 5 x Haz Waste Bags\n- 1 x Instruction Sheet\n- 5 x Tie\n- 1 x Holdall",
     "category": "chemicals",
     "type": "CS",
@@ -1673,7 +1673,7 @@
   },
   {
     "code": "ASSURED_BW_500M_3PACK",
-    "name": "Order Delivery Date:",
+    "name": "Bubble Wrap",
     "variant": "3 Pack of 500mm x 100m",
     "category": "special",
     "type": "CS",
@@ -1681,7 +1681,7 @@
   },
   {
     "code": "WRAP_CELLOPHANE_CLEAR",
-    "name": "Order Delivery Date:",
+    "name": "Cellophane Wrap",
     "variant": "Wrap Cellophone Clear",
     "category": "special",
     "type": "CS",
@@ -1689,127 +1689,127 @@
   },
   {
     "code": "A4_ACCIDENT_REPORT_BOOK",
-    "name": "Order Delivery Date:",
-    "variant": "A4 Accident Record Book",
+    "name": "A4 Accident Record Book",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 9.59
   },
   {
     "code": "FIRSTAID_KIT_LARGE_188P",
-    "name": "Order Delivery Date:",
-    "variant": "First Aid Kit (BS8599:2019 Complaint)",
+    "name": "First Aid Kit (BS8599:2019 Complaint)",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 42.89
   },
   {
     "code": "FIRSTAID_KIT_MEDIUM_126P",
-    "name": "Order Delivery Date:",
-    "variant": "First Aid Kit (BS8599:2019 Complaint)",
+    "name": "First Aid Kit (BS8599:2019 Complaint)",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 32.59
   },
   {
     "code": "10PACK_LARGE_FOIL_BLANKETS",
-    "name": "Order Delivery Date:",
-    "variant": "Large Foil Blanket 1.3m x 2.1m - 10 Pack of Foil Blankets",
+    "name": "Large Foil Blanket 1.3m x 2.1m - 10 Pack of Foil Blankets",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 4.89
   },
   {
     "code": "100PACK_ASSORTED_WATERPROOF_PLASTERS",
-    "name": "Order Delivery Date:",
-    "variant": "100 Pack - Assorted Washproof Plasters",
+    "name": "100 Pack - Assorted Washproof Plasters",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 4.79
   },
   {
     "code": "EAB_INJURY_BANDAGE_5CMX4.5M",
-    "name": "Order Delivery Date:",
-    "variant": "Premium quality EAB is a versatile multi-function injury dressing designed for strapping, taping and supporting both joints and non-adhesive dressings.",
+    "name": "Premium quality EAB is a versatile multi-function injury dressing designed for strapping, taping and supporting both joints and non-adhesive dressings.",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 2.29
   },
   {
     "code": "ECB_BANDAGE_5CMX4M",
-    "name": "Order Delivery Date:",
-    "variant": "Elastic Conforming Bandage 5cm x 4m",
+    "name": "Elastic Conforming Bandage 5cm x 4m",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 0.49
   },
   {
     "code": "MEDIPAL_AW_150P",
-    "name": "Order Delivery Date:",
-    "variant": "Medipal Alcohol Wipes kill most bacteria and viruses, proven to meet key European standards\u2014including EN16615.",
+    "name": "Medipal Alcohol Wipes kill most bacteria and viruses, proven to meet key European standards\u2014including EN16615.",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 4.29
   },
   {
     "code": "COCLENS_SKINSOL_500ML",
-    "name": "Order Delivery Date:",
-    "variant": "General Skin Disinfectant Solution",
+    "name": "General Skin Disinfectant Solution",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 7.29
   },
   {
     "code": "KOOLPAK_RESUSE_13CMx14CM",
-    "name": "Order Delivery Date:",
-    "variant": "Koolpak Reusable Hot & Cold Pack - 13 x 14cm",
+    "name": "Koolpak Reusable Hot & Cold Pack - 13 x 14cm",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 1.59
   },
   {
     "code": "SCISSORS_SUPERSNIP_SS",
-    "name": "Order Delivery Date:",
-    "variant": "Scissors Supersnip Sterile Stainless Steel",
+    "name": "Scissors Supersnip Sterile Stainless Steel",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 0.89
   },
   {
     "code": "SCISSORS_INSTRAPAC_SS_13CM",
-    "name": "Order Delivery Date:",
-    "variant": "Instrapac Dressing Scissors Sharp/Sharp - 13cm",
+    "name": "Instrapac Dressing Scissors Sharp/Sharp - 13cm",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 2.49
   },
   {
     "code": "STATION_EYEWASH_TRIPLE",
-    "name": "Order Delivery Date:",
-    "variant": "Triple Eye Wash Station \u2013 Blue Aura3 Box",
+    "name": "Triple Eye Wash Station \u2013 Blue Aura3 Box",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 28.99
   },
   {
     "code": "EYEWASH_INCCAP_500ML",
-    "name": "Order Delivery Date:",
-    "variant": "Eye Wash 500ml with Eye Cap",
+    "name": "Eye Wash 500ml with Eye Cap",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 2.99
   },
   {
     "code": "BODYFORM_HYGIENE_PADS_12PACK",
-    "name": "Order Delivery Date:",
-    "variant": "Bodyform - Feminine Hygiene Pads",
+    "name": "Bodyform - Feminine Hygiene Pads",
+    "variant": null,
     "category": "firstaid",
     "type": "FA",
     "unitCost": 1.99
   },
   {
     "code": "HI_VIS_YELLOW_S_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Small",
     "category": "firstaid",
     "type": "FA",
@@ -1817,7 +1817,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_M_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Medium",
     "category": "firstaid",
     "type": "FA",
@@ -1825,7 +1825,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_L_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "Large",
     "category": "firstaid",
     "type": "FA",
@@ -1833,7 +1833,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_XL_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XLarge",
     "category": "firstaid",
     "type": "FA",
@@ -1841,7 +1841,7 @@
   },
   {
     "code": "HI_VIS_YELLOW_XXL_FA",
-    "name": "Order Delivery Date:",
+    "name": "FIRST AID Yellow High Visibility Vest with Velcro Front Fastening & Reflective Strips - EN ISO 20471 Compliant",
     "variant": "XXLarge",
     "category": "firstaid",
     "type": "FA",
@@ -1849,7 +1849,7 @@
   },
   {
     "code": "WET_FLOOR_AFRAME",
-    "name": "Order Delivery Date:",
+    "name": "Wet Floor Sign",
     "variant": "A Frame 'Caution Wet Floor' Sign",
     "category": "firstaid",
     "type": "FA",
@@ -1857,7 +1857,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_SML",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "Small",
     "category": "firstaid",
     "type": "FA",
@@ -1865,7 +1865,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_MED",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "Medium",
     "category": "firstaid",
     "type": "FA",
@@ -1873,7 +1873,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_L",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "Large",
     "category": "firstaid",
     "type": "FA",
@@ -1881,7 +1881,7 @@
   },
   {
     "code": "GLOVES_VINYL_CLEAR_XL",
-    "name": "Order Delivery Date:",
+    "name": "Clear Vinyl Gloves - Powder Free - 50 Pairs per box",
     "variant": "XLarge",
     "category": "firstaid",
     "type": "FA",
@@ -1889,7 +1889,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_SML",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "Small",
     "category": "firstaid",
     "type": "FA",
@@ -1897,7 +1897,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_MED",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "Medium",
     "category": "firstaid",
     "type": "FA",
@@ -1905,7 +1905,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_L",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "Large",
     "category": "firstaid",
     "type": "FA",
@@ -1913,7 +1913,7 @@
   },
   {
     "code": "GLOVES_NITRILE_BLUE_XL",
-    "name": "Order Delivery Date:",
+    "name": "Nitrile Gloves - Latex Free - 50 Pairs per box",
     "variant": "XLarge",
     "category": "firstaid",
     "type": "FA",
@@ -1921,7 +1921,7 @@
   },
   {
     "code": "APRONS_FLTPACK_100PK",
-    "name": "Order Delivery Date:",
+    "name": "Disposable White Polythene Aprons",
     "variant": "Flat Pack of 100 Aprons - 10 Microns, 686m (w) x 1000m (h)",
     "category": "firstaid",
     "type": "FA",
@@ -1929,7 +1929,7 @@
   },
   {
     "code": "FACEMASK_BLUE_50PACK",
-    "name": "Order Delivery Date:",
+    "name": "Disposable White Polythene Aprons",
     "variant": "Type IIR Disposable Medical Face Masks - 50Pack",
     "category": "firstaid",
     "type": "FA",
@@ -1937,7 +1937,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_13L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "13L Sharps Container -  Internal Capacity: 10.4L Overall Bin Dimension: (h)195 x (l)195 x (w)292mm",
     "category": "firstaid",
     "type": "FA",
@@ -1945,7 +1945,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_7L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "7L Sharps Container -  Internal Capacity: 5.8L Overall Bin Dimension: (h)380 x (l)175 x (w)175mm",
     "category": "firstaid",
     "type": "FA",
@@ -1953,7 +1953,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_2L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "2L Sharps Container -  Internal Capacity: 1.7L Overall Bin Dimension: (h)177 x (l)197 x (w)126mm",
     "category": "firstaid",
     "type": "FA",
@@ -1961,7 +1961,7 @@
   },
   {
     "code": "SHARPS_CONTAINER_1L",
-    "name": "Order Delivery Date:",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
     "variant": "1L Sharps Container -  Internal Capacity: 0.85L Overall Bin Dimension: (h)187 x (l)90 x (w)108mm",
     "category": "firstaid",
     "type": "FA",
@@ -1969,71 +1969,71 @@
   },
   {
     "code": "VOMIT_BAGS_50PACK",
-    "name": "Order Delivery Date:",
-    "variant": "Emesis Vomit Bags 1000ml (50 Pack)",
+    "name": "Medical Sharps Bins (Complaint with UN 3291, BS EN ISO 23907:2012 and NF-X-30-500)",
+    "variant": "Emesis Vomit Bags 1000ml (50 Pack)\n\n- 1000ml capacity for safe collection of vomit or bodily fluids\n- Leak-resistant design for added hygiene\n- Clearly marked graduations every 100ml for accurate measurement\n- Easy to seal after use\n- Cleaner and more convenient than traditional basins, enabling faster cleanup",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 14.29
   },
   {
     "code": "BIO_HAZARD_KITS",
-    "name": "Order Delivery Date:",
-    "variant": "1 Disinfectant Spray (8ml) / 1 Absorbent Granules (10g)",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "1 Disinfectant Spray (8ml) / 1 Absorbent Granules (10g)\n- 1 Disposable Gloves (pair) / 1 Polythene Apron\n- 1 Scoop/Scraper / 2 Dry Wipes\n- 1 Biohazard Bag / 1 Disinfectant Wipe\n- 1 Pack Tissues (10)",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 6.59
   },
   {
     "code": "MAINTENCE REFILL PADS_X20",
-    "name": "Order Delivery Date:",
-    "variant": "Maintenance Spill Pads \u2013 Spill Kit Refills",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "Maintenance Spill Pads \u2013 Spill Kit Refills\nHighly absorbent pads for rapid response to drink spills and small leaks around the convention venue. Supplied in bundles to replenish maintenance spill kits and keep teams ready to respond.",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 10.99
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_10L",
-    "name": "Order Delivery Date:",
-    "variant": "10L Rapid Response Spill Kit - Clip Closed Bag",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "10L Rapid Response Spill Kit - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 10 x Maintenance Absorbent Pads\n- 1 x 1.2m Maintenance Absorbent Socks\n- 1 x Haz Waste Bags\n- 1 x Clip Top Bag\n- 1 x Tie",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 8.99
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_15L",
-    "name": "Order Delivery Date:",
-    "variant": "15L Rapid Response Spill Kit - Clip Closed Bag",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "15L Rapid Response Spill Kit - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 15 x Maintenance Absorbent Pads\n- 1 x 1.2m Maintenance Absorbent Socks\n- 1 x Haz Waste Bags\n- 1 x Clip Top Bag\n- 1 x Tie",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 11.99
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_20L",
-    "name": "Order Delivery Date:",
-    "variant": "20L Maintenance Spill Kits - Clip Closed Bag",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "20L Maintenance Spill Kits - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 20 x Maintenance Absorbent Pads\n- 2 x 1.2m Maintenance Absorbent Socks\n- 1 x Haz Waste Bags\n- 1 x Clip Top Bag\n- 1 x Tie",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 15.99
   },
   {
     "code": "SPILL_KITS_MAINTENANCE_50L",
-    "name": "Order Delivery Date:",
-    "variant": "50L Maintenance Spill Kits - Clip Closed Bag",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "50L Maintenance Spill Kits - Clip Closed Bag\nVinyl Bag\n\nPortable carry kit for quickly dealing with drink spills during conventions. Absorbent pads soak up tea, coffee and other liquids far faster than blue roll, while spill socks help contain moving spills and prevent spreading.\n\nKit includes:\n- 50 x Pads\n- 4 x 1.2m Socks\n- 5 x Haz Waste Bags\n- 1 x Instruction Sheet\n- 5 x Tie\n- 1 x Holdall",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 49.99
   },
   {
     "code": "TISSUE_FACIAL_100SHEETS",
-    "name": "Order Delivery Date:",
-    "variant": "Tiboo Luxury Unbleached Facial Tissues - 2ply - 100 Sheets",
+    "name": "Bio Hazard Spill Kit",
+    "variant": "Tiboo Luxury Unbleached Facial Tissues - 2ply - 100 Sheets\n\n- 100% Pure Bamboo\n- The sustainable choice\n- One of the fastest growing plants \u2013 no risk of a shortage\n- 2 ply luxury tissues that are strong and absorbent\n- Naturally hypoallergenic and contains no nasty chemicals\n- Extremely soft \u2013 not only is it eco-friendly, you also don\u2019t have to compromise on softness!\n- Easy to dispense box\n- Sheets measuring 200mm x 180mm\n- Packed 100 tissues per pack",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 0.79
   },
   {
     "code": "CENTRE_FEED_ST_BLUE_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls - Economy",
     "variant": "Soft Touch Roll, 50m length - Blue",
     "category": "firstaid",
     "type": "FA",
@@ -2041,7 +2041,7 @@
   },
   {
     "code": "CENTRE_FEED_ST_WHITE_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls - Economy",
     "variant": "Soft Touch Roll, 50m length - White",
     "category": "firstaid",
     "type": "FA",
@@ -2049,7 +2049,7 @@
   },
   {
     "code": "CENTRE_FEED_BLUE_DL_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls",
     "variant": "Premium Touch Roll, 120m length, 2 Ply Roll - Blue",
     "category": "firstaid",
     "type": "FA",
@@ -2057,7 +2057,7 @@
   },
   {
     "code": "CENTRE_FEED_WHITE_DL_6PK",
-    "name": "Order Delivery Date:",
+    "name": "6 Pack of Centre Feed Paper Rolls",
     "variant": "Premium Touch Roll, 120m length, 2 Ply Roll - White",
     "category": "firstaid",
     "type": "FA",
@@ -2065,40 +2065,40 @@
   },
   {
     "code": "ROLLER_DIVIDE_100CMX200CM",
-    "name": "Order Delivery Date:",
-    "variant": "Roller Banner Screen Dividers",
+    "name": "6 Pack of Centre Feed Paper Rolls",
+    "variant": "Roller Banner Screen Dividers\n\nThese high-quality screens are lightweight, budget-friendly, and quick to set up or take down. The banner retracts neatly into the base for easy transport and compact storage.\n\nDimension: 100cm (w) x 200cm (h).",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 55.99
   },
   {
     "code": "TRAVEL_BED",
-    "name": "Order Delivery Date:",
-    "variant": "Extra Wide Heavy Duty Portable Bed",
+    "name": "6 Pack of Centre Feed Paper Rolls",
+    "variant": "Extra Wide Heavy Duty Portable Bed\n\n- Perfect for tall adults, heavy people, or family kids, teens, toddlers, children.\n- The folding cot for adults measures 75\"\"x28\"\"x15\"\" when open, 1 inch wider than usual. Pack size 41\"\"x9\"\"x7\"\". Weighes 17 pounds. The cot leg tubes measures 1.1\"\"x1.5\"\". The thicker sleeping cot bed ensures single person freedom movement in using.\n- No assembly required. The sleeping cot for adults can be easily installed or folded up into an included storage bag within 10 seconds. Convenient for rest or transport.",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 69.99
   },
   {
     "code": "DISP_PILLOW_50PACK",
-    "name": "Order Delivery Date:",
-    "variant": "Disposable Pillow Cases (Pack of 50)",
+    "name": "6 Pack of Centre Feed Paper Rolls",
+    "variant": "Disposable Pillow Cases (Pack of 50)\n\n- Inner flaps\n- Independently tested for flame retardancy to ignition source 7\n- Sold in packs of 50\n- Size: 76 x 51cm (30\"\" x 20\"\")",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 22.89
   },
   {
     "code": "COUCH_ROLL_50CMX50M",
-    "name": "Order Delivery Date:",
-    "variant": "Couch Roll 50cm(w) x 50m(l)",
+    "name": "6 Pack of Centre Feed Paper Rolls",
+    "variant": "Couch Roll 50cm(w) x 50m(l)\n\nSuitable for covering couches and benches. May also be used for general purpose wiping. Aids high levels of hygiene.\n\nProtects your Examination Couch\nSaves Money on Cleaning Materials\nEconomic in Use\nFits Standard Couch Roll Holders\n50 metres length",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 12.59
   },
   {
     "code": "WHEEL_CHAIR_MKII",
-    "name": "Order Delivery Date:",
-    "variant": "High quality, entry level standard wheelchair.",
+    "name": "6 Pack of Centre Feed Paper Rolls",
+    "variant": "High quality, entry level standard wheelchair. \n\nSuitable for everyday mobility.\n\n- Folds in seconds for transport or storage\n- Made of robust steel\n- Flip up foot rests for ease of access\n- Parking brakes\n- Total weight 18 KG\n- Front 8\"\" and rear 24\"\" full size wheels\n- Length - 108.5cm\n- Width - 61cm\n- Height - 91.5cm\n- Folded Width - 26.5cm\n- Folded Height - 75cm\n- Seat Width - 46cm (18\"\")\n- Seat Height to Ground - 50.5cm\n- Seat Depth - 41cm\n- Weight Capacity: 115kg (18 Stone)",
     "category": "firstaid",
     "type": "FA",
     "unitCost": 114.99

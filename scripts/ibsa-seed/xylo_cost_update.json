@@ -1,0 +1,1057 @@
+[
+  {
+    "code": "HI_VIS_YELLOW_BS_S",
+    "salePrice": 1.69,
+    "xyloCost": 1.1
+  },
+  {
+    "code": "HI_VIS_YELLOW_BS_M",
+    "salePrice": 1.69,
+    "xyloCost": 1.1
+  },
+  {
+    "code": "HI_VIS_YELLOW_BS_L",
+    "salePrice": 1.69,
+    "xyloCost": 1.1
+  },
+  {
+    "code": "HI_VIS_YELLOW_BS_XL",
+    "salePrice": 1.69,
+    "xyloCost": 1.1
+  },
+  {
+    "code": "HI_VIS_YELLOW_BS_XXL",
+    "salePrice": 1.69,
+    "xyloCost": 1.1
+  },
+  {
+    "code": "HI_VIS_ORANGE_S",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_ORANGE_M",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_ORANGE_L",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_ORANGE_XL",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_ORANGE_XXL",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_YELLOW_S",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_YELLOW_M",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_YELLOW_L",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_YELLOW_XL",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_YELLOW_XXL",
+    "salePrice": 2.69,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "HI_VIS_PINK_S",
+    "salePrice": 4.89,
+    "xyloCost": 2.61
+  },
+  {
+    "code": "HI_VIS_PINK_M",
+    "salePrice": 4.89,
+    "xyloCost": 2.61
+  },
+  {
+    "code": "HI_VIS_PINK_L",
+    "salePrice": 4.89,
+    "xyloCost": 2.61
+  },
+  {
+    "code": "HI_VIS_PINK_XL",
+    "salePrice": 4.89,
+    "xyloCost": 2.61
+  },
+  {
+    "code": "HI_VIS_PINK_XXL",
+    "salePrice": 4.89,
+    "xyloCost": 2.61
+  },
+  {
+    "code": "HI_VIS_BLUE_S",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_BLUE_M",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_BLUE_L",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_BLUE_XL",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_BLUE_XXL",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_RED_S",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_RED_M",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_RED_L",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_RED_XL",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_RED_XXL",
+    "salePrice": 4.89,
+    "xyloCost": 2.9
+  },
+  {
+    "code": "HI_VIS_YELLOW_S_FA",
+    "salePrice": 7.29,
+    "xyloCost": 4.5
+  },
+  {
+    "code": "HI_VIS_YELLOW_M_FA",
+    "salePrice": 7.29,
+    "xyloCost": 4.5
+  },
+  {
+    "code": "HI_VIS_YELLOW_L_FA",
+    "salePrice": 7.29,
+    "xyloCost": 4.5
+  },
+  {
+    "code": "HI_VIS_YELLOW_XL_FA",
+    "salePrice": 7.29,
+    "xyloCost": 4.5
+  },
+  {
+    "code": "HI_VIS_YELLOW_XXL_FA",
+    "salePrice": 7.29,
+    "xyloCost": 4.5
+  },
+  {
+    "code": "HI_VIS_YELLOW_LS_S",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_YELLOW_LS_M",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_YELLOW_LS_L",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_YELLOW_LS_XL",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_YELLOW_LS_XXL",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_ORANGE_LS_S",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_ORANGE_LS_M",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_ORANGE_LS_L",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_ORANGE_LS_XL",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_ORANGE_LS_XXL",
+    "salePrice": 6.99,
+    "xyloCost": 4.18
+  },
+  {
+    "code": "HI_VIS_YELLOW_EXEC_S",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_YELLOW_EXEC_M",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_YELLOW_EXEC_L",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_YELLOW_EXEC_XL",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_YELLOW_EXEC_XXL",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_YELL/R.NAVY_EXEC_S",
+    "salePrice": 9.99,
+    "xyloCost": 5.41
+  },
+  {
+    "code": "HI_VIS_YELL/R.NAVY_EXEC_M",
+    "salePrice": 9.99,
+    "xyloCost": 5.41
+  },
+  {
+    "code": "HI_VIS_YELL/R.NAVY_EXEC_L",
+    "salePrice": 9.99,
+    "xyloCost": 5.41
+  },
+  {
+    "code": "HI_VIS_YELL/R.NAVY_EXEC_XL",
+    "salePrice": 9.99,
+    "xyloCost": 5.41
+  },
+  {
+    "code": "HI_VIS_YELL/R.NAVY_EXEC_XXL",
+    "salePrice": 9.99,
+    "xyloCost": 5.41
+  },
+  {
+    "code": "HI_VIS_ORG/BLUE_EXEC_S",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_ORG/BLUE_EXEC_M",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_ORG/BLUE_EXEC_L",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_ORG/BLUE_EXEC_XL",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_ORG/BLUE_EXEC_XXL",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_RED/GREY_EXEC_S",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_RED/GREY_EXEC_M",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_RED/GREY_EXEC_L",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_RED/GREY_EXEC_XL",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "HI_VIS_RED/GREY_EXEC_XXL",
+    "salePrice": 9.99,
+    "xyloCost": 6.05
+  },
+  {
+    "code": "GLOVES_VINYL_CLEAR_SML",
+    "salePrice": 2.69,
+    "xyloCost": 1.52
+  },
+  {
+    "code": "GLOVES_VINYL_CLEAR_MED",
+    "salePrice": 2.69,
+    "xyloCost": 1.52
+  },
+  {
+    "code": "GLOVES_VINYL_CLEAR_L",
+    "salePrice": 2.69,
+    "xyloCost": 1.52
+  },
+  {
+    "code": "GLOVES_VINYL_CLEAR_XL",
+    "salePrice": 2.69,
+    "xyloCost": 1.52
+  },
+  {
+    "code": "GLOVES_NITRILE_BLUE_SML",
+    "salePrice": 4.79,
+    "xyloCost": 2.99
+  },
+  {
+    "code": "GLOVES_NITRILE_BLUE_MED",
+    "salePrice": 4.79,
+    "xyloCost": 2.99
+  },
+  {
+    "code": "GLOVES_NITRILE_BLUE_L",
+    "salePrice": 4.79,
+    "xyloCost": 2.99
+  },
+  {
+    "code": "GLOVES_NITRILE_BLUE_XL",
+    "salePrice": 4.79,
+    "xyloCost": 2.99
+  },
+  {
+    "code": "GLOVES_NITRILE-POLY_FOAM_S_10PACK",
+    "salePrice": 10.99,
+    "xyloCost": 4.94
+  },
+  {
+    "code": "GLOVES_NITRILE-POLY_FOAM_M_10PACK",
+    "salePrice": 10.99,
+    "xyloCost": 4.94
+  },
+  {
+    "code": "GLOVES_NITRILE-POLY_FOAM_L_10PACK",
+    "salePrice": 10.99,
+    "xyloCost": 4.94
+  },
+  {
+    "code": "GLOVES_NITRILE-POLY_FOAM_XL_10PACK",
+    "salePrice": 10.99,
+    "xyloCost": 4.94
+  },
+  {
+    "code": "EYEWEAR_SAFETY_GOGGLES_CLEAR",
+    "salePrice": 1.59,
+    "xyloCost": 0.97
+  },
+  {
+    "code": "EYEWEAR_SAFETY_GLASSES_CLEAR",
+    "salePrice": 3.99,
+    "xyloCost": 1.12
+  },
+  {
+    "code": "MASK_DISP_DUSTCLEAR_50PK",
+    "salePrice": 5.19,
+    "xyloCost": 3.2
+  },
+  {
+    "code": "APRONS_FLTPACK_100PK",
+    "salePrice": 7.49,
+    "xyloCost": 1.58
+  },
+  {
+    "code": "BUCKET_OVAL_MOP_14L_RED",
+    "salePrice": 9.59,
+    "xyloCost": 3.4
+  },
+  {
+    "code": "BUCKET_OVAL_MOP_14L_GREEN",
+    "salePrice": 9.59,
+    "xyloCost": 3.4
+  },
+  {
+    "code": "BUCKET_OVAL_MOP_14L_BLUE",
+    "salePrice": 9.59,
+    "xyloCost": 3.4
+  },
+  {
+    "code": "BUCKET_OVAL_MOP_14L_YELLOW",
+    "salePrice": 9.59,
+    "xyloCost": 3.4
+  },
+  {
+    "code": "BUCKET_PLASTIC_10L_RED",
+    "salePrice": 3.29,
+    "xyloCost": 1.6
+  },
+  {
+    "code": "BUCKET_PLASTIC_10L_GREEN",
+    "salePrice": 3.29,
+    "xyloCost": 1.6
+  },
+  {
+    "code": "BUCKET_PLASTIC_10L_BLUE",
+    "salePrice": 3.29,
+    "xyloCost": 1.6
+  },
+  {
+    "code": "MOP_STAND_PY(12)_7OZ_RED",
+    "salePrice": 1.69,
+    "xyloCost": 0.7
+  },
+  {
+    "code": "MOP_STAND_PY(12)_7OZ_GREEN",
+    "salePrice": 1.69,
+    "xyloCost": 0.7
+  },
+  {
+    "code": "MOP_STAND_PY(12)_7OZ_BLUE",
+    "salePrice": 1.69,
+    "xyloCost": 0.7
+  },
+  {
+    "code": "HNDL_WOODEN",
+    "salePrice": 3.19,
+    "xyloCost": 1.4
+  },
+  {
+    "code": "MOP_DISP_RED_10PK",
+    "salePrice": 12.79,
+    "xyloCost": 6.52
+  },
+  {
+    "code": "MOP_DISP_GREEN_10PK",
+    "salePrice": 12.79,
+    "xyloCost": 6.52
+  },
+  {
+    "code": "MOP_DISP_BLUE_10PK",
+    "salePrice": 12.79,
+    "xyloCost": 6.52
+  },
+  {
+    "code": "HNDL_WOODEN_1",
+    "salePrice": 3.19,
+    "xyloCost": 1.2
+  },
+  {
+    "code": "SQUEEGEE_METAL_55CM",
+    "salePrice": 10.99,
+    "xyloCost": 7.07
+  },
+  {
+    "code": "HNDL_WOODEN_2",
+    "salePrice": 3.19,
+    "xyloCost": 1.4
+  },
+  {
+    "code": "SQUEEGEE_PLASTIC_55CM",
+    "salePrice": 8.29,
+    "xyloCost": 5.15
+  },
+  {
+    "code": "HNDL_SQUEEGEE_PLASTIC",
+    "salePrice": 2.49,
+    "xyloCost": 1.5
+  },
+  {
+    "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",
+    "salePrice": 15.99,
+    "xyloCost": 6.85
+  },
+  {
+    "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_RED",
+    "salePrice": 15.99,
+    "xyloCost": 6.85
+  },
+  {
+    "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_GREEN",
+    "salePrice": 15.99,
+    "xyloCost": 6.85
+  },
+  {
+    "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLUE",
+    "salePrice": 15.99,
+    "xyloCost": 6.85
+  },
+  {
+    "code": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_YELLOW",
+    "salePrice": 15.99,
+    "xyloCost": 6.85
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 30CM SOFT - BLUE",
+    "salePrice": 7.05,
+    "xyloCost": 3.97
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 30CM SOFT - RED",
+    "salePrice": 7.05,
+    "xyloCost": 3.97
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 30CM STIFF - BLUE",
+    "salePrice": 7.05,
+    "xyloCost": 3.97
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 30CM STIFF - RED",
+    "salePrice": 7.05,
+    "xyloCost": 3.97
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 45CM SOFT - BLUE",
+    "salePrice": 9.85,
+    "xyloCost": 5.86
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 45CM SOFT - RED",
+    "salePrice": 9.85,
+    "xyloCost": 5.86
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 45CM STIFF - BLUE",
+    "salePrice": 9.85,
+    "xyloCost": 5.86
+  },
+  {
+    "code": "BROOM HEAD WASHABLE 45CM STIFF - RED",
+    "salePrice": 9.85,
+    "xyloCost": 5.86
+  },
+  {
+    "code": "HANDLE HYGIENE 125CM - BLUE",
+    "salePrice": 3.99,
+    "xyloCost": 2.43
+  },
+  {
+    "code": "HANDLE HYGIENE 125CM - RED",
+    "salePrice": 3.99,
+    "xyloCost": 2.43
+  },
+  {
+    "code": "HANDLE HYGIENE 137CM - BLUE",
+    "salePrice": 4.54,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "HANDLE HYGIENE 137CM - RED",
+    "salePrice": 4.54,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "KTY MOP COL HYGIEMIX 450G (10 PACK) - BLUE",
+    "salePrice": 58.25,
+    "xyloCost": 38.28
+  },
+  {
+    "code": "KTY MOP COL HYGIEMIX 450G (10 PACK) - RED",
+    "salePrice": 58.25,
+    "xyloCost": 38.28
+  },
+  {
+    "code": "KTY MOP FITTING PLASTIC - BLUE",
+    "salePrice": 2.05,
+    "xyloCost": 1.35
+  },
+  {
+    "code": "KTY MOP FITTING PLASTIC - RED",
+    "salePrice": 2.05,
+    "xyloCost": 1.35
+  },
+  {
+    "code": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE",
+    "salePrice": 47.5,
+    "xyloCost": 31.08
+  },
+  {
+    "code": "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED",
+    "salePrice": 47.5,
+    "xyloCost": 31.08
+  },
+  {
+    "code": "KTY MOP MULTI FLAG 450G",
+    "salePrice": 2.2,
+    "xyloCost": 1.43
+  },
+  {
+    "code": "KTY Buffalo Bucket & Wringer 25L - Blue",
+    "salePrice": 76.99,
+    "xyloCost": 40.15
+  },
+  {
+    "code": "KTY Buffalo Bucket & Wringer 25L - Red",
+    "salePrice": 76.99,
+    "xyloCost": 40.15
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 180G - BLUE",
+    "salePrice": 2.5,
+    "xyloCost": 1.6260000000000001
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 180G - RED",
+    "salePrice": 2.5,
+    "xyloCost": 1.6260000000000001
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 200G - BLUE",
+    "salePrice": 2.65,
+    "xyloCost": 1.7285
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 200G - RED",
+    "salePrice": 2.65,
+    "xyloCost": 1.7285
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 250G - BLUE",
+    "salePrice": 3.05,
+    "xyloCost": 1.9846666666666666
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 250G - RED",
+    "salePrice": 3.05,
+    "xyloCost": 1.9846666666666666
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 300G - BLUE",
+    "salePrice": 3.35,
+    "xyloCost": 2.240666666666667
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 300G - RED",
+    "salePrice": 3.35,
+    "xyloCost": 2.240666666666667
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 350G - BLUE",
+    "salePrice": 4.1,
+    "xyloCost": 2.6879999999999997
+  },
+  {
+    "code": "SKT MOP HYGIEMIX T1D 350G - RED",
+    "salePrice": 4.1,
+    "xyloCost": 2.6879999999999997
+  },
+  {
+    "code": "BRUSH_STIFF_28CM + HANDLE_RED",
+    "salePrice": 5.59,
+    "xyloCost": 2.3
+  },
+  {
+    "code": "BRUSH_SOFT_28CM + HANDLE_RED",
+    "salePrice": 5.59,
+    "xyloCost": 2.3
+  },
+  {
+    "code": "BRUSH_STIFF_45CM + ALLOY_HANDLE_RED",
+    "salePrice": 14.39,
+    "xyloCost": 9.0
+  },
+  {
+    "code": "BRUSH_SOFT_45CM + ALLOY_HANDLE_RED",
+    "salePrice": 14.39,
+    "xyloCost": 9.0
+  },
+  {
+    "code": "BRUSH_STIFF_30CM + ALLOY_HANDLE_RED",
+    "salePrice": 11.59,
+    "xyloCost": 7.24
+  },
+  {
+    "code": "BRUSH_SOFT_30CM + ALLOY_HANDLE_RED",
+    "salePrice": 11.59,
+    "xyloCost": 7.24
+  },
+  {
+    "code": "BRUSH_STIFF_28CM + HANDLE_BLUE",
+    "salePrice": 5.59,
+    "xyloCost": 2.3
+  },
+  {
+    "code": "BRUSH_SOFT_28CM + HANDLE_BLUE",
+    "salePrice": 5.59,
+    "xyloCost": 2.3
+  },
+  {
+    "code": "BRUSH_STIFF_45CM + ALLOY_HANDLE_BLUE",
+    "salePrice": 14.39,
+    "xyloCost": 8.61
+  },
+  {
+    "code": "BRUSH_SOFT_45CM + ALLOY_HANDLE_BLUE",
+    "salePrice": 14.69,
+    "xyloCost": 8.61
+  },
+  {
+    "code": "BRUSH_STIFF_30CM + ALLOY_HANDLE_BLUE",
+    "salePrice": 11.59,
+    "xyloCost": 5.61
+  },
+  {
+    "code": "BRUSH_SOFT_30CM + ALLOY_HANDLE_BLUE",
+    "salePrice": 11.59,
+    "xyloCost": 5.61
+  },
+  {
+    "code": "DUSTPAN_BRUSH_SET_RED",
+    "salePrice": 3.29,
+    "xyloCost": 1.38
+  },
+  {
+    "code": "DUSTPAN_BRUSH_SET_GREEN",
+    "salePrice": 3.29,
+    "xyloCost": 1.38
+  },
+  {
+    "code": "DUSTPAN_BRUSH_SET_BLUE",
+    "salePrice": 3.29,
+    "xyloCost": 1.38
+  },
+  {
+    "code": "DUSTPAN_BRUSH_SET_YELLOW",
+    "salePrice": 3.29,
+    "xyloCost": 1.38
+  },
+  {
+    "code": "LITTER_PICKER_34INCH",
+    "salePrice": 3.99,
+    "xyloCost": 2.13
+  },
+  {
+    "code": "WET_FLOOR_AFRAME",
+    "salePrice": 5.99,
+    "xyloCost": 3.72
+  },
+  {
+    "code": "TOILET_BRUSH_HOLDER_WHITE",
+    "salePrice": 1.79,
+    "xyloCost": 1.125
+  },
+  {
+    "code": "TRG_COMPLETE_RED",
+    "salePrice": 2.69,
+    "xyloCost": 0.98
+  },
+  {
+    "code": "TRG_COMPLETE_GREEN",
+    "salePrice": 2.69,
+    "xyloCost": 0.98
+  },
+  {
+    "code": "TRG_COMPLETE_BLUE",
+    "salePrice": 2.69,
+    "xyloCost": 0.98
+  },
+  {
+    "code": "TRG_HEAD_ONLY_RED",
+    "salePrice": 1.49,
+    "xyloCost": 0.88
+  },
+  {
+    "code": "TRG_HEAD_ONLY_GREEN",
+    "salePrice": 1.49,
+    "xyloCost": 0.88
+  },
+  {
+    "code": "TRG_HEAD_ONLY_BLUE",
+    "salePrice": 1.49,
+    "xyloCost": 0.88
+  },
+  {
+    "code": "CLOTH_OCEAN_RED_50PK",
+    "salePrice": 4.29,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_OCEAN_GREEN_50PK",
+    "salePrice": 4.29,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_OCEAN_BLUE_50PK",
+    "salePrice": 4.29,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_FLOOR_WHITE_10PK",
+    "salePrice": 5.69,
+    "xyloCost": 3.5
+  },
+  {
+    "code": "AIRLAID_TOWELS_WHITE_CASE",
+    "salePrice": 59.99,
+    "xyloCost": 42.75
+  },
+  {
+    "code": "CLOTH_MFIBRE_BLUE_10PK",
+    "salePrice": 7.99,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_MFIBRE_PINK_10PK",
+    "salePrice": 7.99,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_MFIBRE_WHITE_10PK",
+    "salePrice": 7.99,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_MFIBRE_GREEN_10PK",
+    "salePrice": 7.99,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "CLOTH_MFIBRE_YELLOW_10PK",
+    "salePrice": 7.99,
+    "xyloCost": 2.75
+  },
+  {
+    "code": "TR_JUMBO_MINI_12PK",
+    "salePrice": 19.5,
+    "xyloCost": 12.99
+  },
+  {
+    "code": "TR_STANDARD_WHITE_36PK",
+    "salePrice": 12.75,
+    "xyloCost": 8.5
+  },
+  {
+    "code": "CENTRE_FEED_ST_BLUE_6PK",
+    "salePrice": 6.49,
+    "xyloCost": 4.0
+  },
+  {
+    "code": "CENTRE_FEED_ST_WHITE_6PK",
+    "salePrice": 7.19,
+    "xyloCost": 4.4
+  },
+  {
+    "code": "CENTRE_FEED_BLUE_DL_6PK",
+    "salePrice": 14.39,
+    "xyloCost": 9.99
+  },
+  {
+    "code": "CENTRE_FEED_WHITE_DL_6PK",
+    "salePrice": 14.39,
+    "xyloCost": 8.99
+  },
+  {
+    "code": "CFOLD_2295_2PLY_WHITE",
+    "salePrice": 25.0,
+    "xyloCost": 16.75
+  },
+  {
+    "code": "CFOLD_2400_1PLY_BLUE",
+    "salePrice": 16.5,
+    "xyloCost": 10.99
+  },
+  {
+    "code": "CFOLD_2400_1PLY_GREEN",
+    "salePrice": 16.5,
+    "xyloCost": 10.99
+  },
+  {
+    "code": "REFUSE_SACK_BLACK_100PK",
+    "salePrice": 5.89,
+    "xyloCost": 2.5
+  },
+  {
+    "code": "REFUSE_SACK_CLEAR_100PK",
+    "salePrice": 15.29,
+    "xyloCost": 9.45
+  },
+  {
+    "code": "REFUSE_BIN_LINERS_CLEAR_1000PK",
+    "salePrice": 15.99,
+    "xyloCost": 0.0
+  },
+  {
+    "code": "SCRAPER",
+    "salePrice": 2.29,
+    "xyloCost": 1.49
+  },
+  {
+    "code": "JUG_FUNNEL_6\"",
+    "salePrice": 2.39,
+    "xyloCost": 0.99
+  },
+  {
+    "code": "JUG_MEASURING_1LITRE",
+    "salePrice": 2.39,
+    "xyloCost": 0.8
+  },
+  {
+    "code": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+    "salePrice": 8.99,
+    "xyloCost": 5.99
+  },
+  {
+    "code": "BARRIER_TAPE_NON_ADHESIVE_BLACK/YELLOW",
+    "salePrice": 8.99,
+    "xyloCost": 5.99
+  },
+  {
+    "code": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE_10PK",
+    "salePrice": 79.99,
+    "xyloCost": 44.4
+  },
+  {
+    "code": "BARRIER_TAPE_NON_ADHESIVE_BLACK/YELLOW_10PK",
+    "salePrice": 79.99,
+    "xyloCost": 44.4
+  },
+  {
+    "code": "SHARPS_CONTAINER_13L",
+    "salePrice": 14.59,
+    "xyloCost": 7.19
+  },
+  {
+    "code": "SHARPS_CONTAINER_7L",
+    "salePrice": 7.99,
+    "xyloCost": 4.75
+  },
+  {
+    "code": "SHARPS_CONTAINER_2L",
+    "salePrice": 6.99,
+    "xyloCost": 3.59
+  },
+  {
+    "code": "SHARPS_CONTAINER_1L",
+    "salePrice": 5.99,
+    "xyloCost": 2.03
+  },
+  {
+    "code": "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",
+    "salePrice": 14.99,
+    "xyloCost": 9.3
+  },
+  {
+    "code": "CLOVER_ULTRAFRESH_1L",
+    "salePrice": 6.99,
+    "xyloCost": 2.21
+  },
+  {
+    "code": "CLOVER_ULTRAFRESH_5L",
+    "salePrice": 17.99,
+    "xyloCost": 13.2
+  },
+  {
+    "code": "CLOVER_DETAK_750ML",
+    "salePrice": 5.99,
+    "xyloCost": 3.4
+  },
+  {
+    "code": "CLOVER_HAND_SOAP_1L",
+    "salePrice": 6.39,
+    "xyloCost": 2.21
+  },
+  {
+    "code": "CLOVER_HAND_SOAP_5L",
+    "salePrice": 9.59,
+    "xyloCost": 5.99
+  },
+  {
+    "code": "CLOVER_AHS_300ML",
+    "salePrice": 6.99,
+    "xyloCost": 4.29
+  },
+  {
+    "code": "CLOVER_AHS_5L",
+    "salePrice": 42.99,
+    "xyloCost": 33.35
+  },
+  {
+    "code": "BIO_HAZARD_KITS",
+    "salePrice": 7.0,
+    "xyloCost": 4.5
+  },
+  {
+    "code": "PUMP_30CC_FOR_5L",
+    "salePrice": 6.5,
+    "xyloCost": 4.42
+  },
+  {
+    "code": "MAINTENCE REFILL PADS_X20",
+    "salePrice": 10.99,
+    "xyloCost": 7.0
+  },
+  {
+    "code": "SPILL_KITS_MAINTENANCE_10L",
+    "salePrice": 8.99,
+    "xyloCost": 5.65
+  },
+  {
+    "code": "SPILL_KITS_MAINTENANCE_15L",
+    "salePrice": 11.99,
+    "xyloCost": 7.31
+  },
+  {
+    "code": "SPILL_KITS_MAINTENANCE_20L",
+    "salePrice": 15.99,
+    "xyloCost": 9.88
+  },
+  {
+    "code": "SPILL_KITS_MAINTENANCE_50L",
+    "salePrice": 49.99,
+    "xyloCost": 33.0
+  },
+  {
+    "code": "ASSURED_BW_500M_3PACK",
+    "salePrice": 43.99,
+    "xyloCost": 27.29
+  },
+  {
+    "code": "WRAP_CELLOPHANE_CLEAR",
+    "salePrice": 12.99,
+    "xyloCost": 7.6
+  }
+]
