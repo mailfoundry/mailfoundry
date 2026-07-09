@@ -60,17 +60,25 @@ export default async function ConventionDetailPage({
     id, code, name, variant, unitCost, xyloCost, category,
   }));
 
-  const orderSaleTotal = convention.orderItems.reduce(
-    (sum, item) => sum + item.qty * item.product.unitCost,
-    0
-  );
-  const orderCostTotal = convention.orderItems.reduce(
+  const csItems = convention.orderItems.filter((i) => i.product.type === "CS");
+  const faItems = convention.orderItems.filter((i) => i.product.type === "FA");
+
+  const orderSaleTotal = csItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
+  const orderCostTotal = csItems.reduce(
     (sum, item) => sum + item.qty * (item.product.xyloCost ?? item.product.unitCost),
     0
   );
   const orderProfit = orderSaleTotal - orderCostTotal;
   const orderMarginPct = orderSaleTotal > 0 ? (orderProfit / orderSaleTotal) * 100 : 0;
-  const itemsWithQty = convention.orderItems.filter((i) => i.qty > 0).length;
+  const itemsWithQty = csItems.filter((i) => i.qty > 0).length;
+
+  const faSaleTotal = faItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
+  const faCostTotal = faItems.reduce(
+    (sum, item) => sum + item.qty * (item.product.xyloCost ?? item.product.unitCost),
+    0
+  );
+  const faProfit = faSaleTotal - faCostTotal;
+  const faItemsWithQty = faItems.filter((i) => i.qty > 0).length;
 
   const hasFaData =
     convention.orderItems.some((i) => i.product.type === "FA") ||
@@ -394,6 +402,30 @@ export default async function ConventionDetailPage({
             </div>
           </div>
         </div>
+
+        {/* FA order mini-stats */}
+        {faItemsWithQty > 0 && (
+          <div className="mb-4 flex gap-6 text-sm">
+            <div>
+              <span className="text-slate-500">FA Lines </span>
+              <span className="font-semibold text-white">{faItemsWithQty}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">Value </span>
+              <span className="font-semibold text-white">£{fmtGbp(faSaleTotal)}</span>
+              {convention.faShippingCost > 0 && (
+                <span className="ml-1 text-xs text-slate-500">+ £{fmtGbp(convention.faShippingCost)} shipping</span>
+              )}
+            </div>
+            <div>
+              <span className="text-slate-500">Profit </span>
+              <span className={`font-semibold ${faProfit >= 0 ? "text-green-400" : "text-red-400"}`}>
+                £{fmtGbp(faProfit)}
+              </span>
+            </div>
+          </div>
+        )}
+
         <form action={updateFaLogistics} className="grid grid-cols-3 gap-x-6 gap-y-4">
           <input type="hidden" name="conventionId" value={convention.id} />
           <div>
