@@ -279,6 +279,40 @@ const INVOICES: Record<string, Invoice> = {
     ],
   },
 
+  "INV-0214": {
+    ref: "INV-0214",
+    conventionSearch: "Norfolk",
+    dept: "CS",
+    invoiceDate: "2026-06-25",
+    paymentDueDate: "2026-07-29",
+    shippingCost: 82.15,
+    items: [
+      { code: "GLOVES_NITRILE_BLUE_SML",                  qty: 2  },
+      { code: "GLOVES_NITRILE_BLUE_MED",                  qty: 6  },
+      { code: "GLOVES_NITRILE_BLUE_L",                    qty: 7  },
+      { code: "GLOVES_NITRILE_BLUE_XL",                   qty: 1  },
+      { code: "APRONS_FLTPACK_100PK",                     qty: 6  },
+      { code: "BUCKET_PLASTIC_10L_RED",                   qty: 4  },
+      { code: "BUCKET_PLASTIC_10L_GREEN",                 qty: 4  },
+      { code: "BUCKET_PLASTIC_10L_BLUE",                  qty: 4  },
+      { code: "MOP_STAND_PY(12)_7OZ_BLUE",               qty: 30 },
+      { code: "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",  qty: 4  },
+      { code: "BRUSH_SOFT_45CM + ALLOY_HANDLE_RED",       qty: 6  },
+      { code: "DUSTPAN_BRUSH_SET_RED",                    qty: 5  },
+      { code: "DUSTPAN_BRUSH_SET_BLUE",                   qty: 5  },
+      { code: "WET_FLOOR_AFRAME",                         qty: 4  },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",                qty: 8  },
+      { code: "CLOTH_OCEAN_RED_50PK",                     qty: 32 },
+      { code: "CLOTH_OCEAN_GREEN_50PK",                   qty: 8  },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                    qty: 10 },
+      { code: "CENTRE_FEED_ST_BLUE_6PK",                  qty: 2  },
+      { code: "REFUSE_SACK_BLACK_100PK",                  qty: 2  },
+      { code: "BARRIER_TAPE_NON_ADHESIVE",               qty: 1  },
+      { code: "CLOVER_ULTRAFRESH_5L",                    qty: 6  },
+      { code: "BIO_HAZARD_KITS",                         qty: 6  },
+    ],
+  },
+
   // Add future invoices here as:
   // "INV-XXXX": { ... }
 };
