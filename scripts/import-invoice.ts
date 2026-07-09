@@ -55,6 +55,8 @@ const CODE_ALIASES: Record<string, string> = {
   "MAINTENANCE_REFILL_PADS_X20":       "MAINTENCE REFILL PADS_X20",
   // Bodyform — invoice typo (HYGEINE vs HYGIENE)
   "BODYFORM_HYGEINE_PADS_12PACK":      "BODYFORM_HYGIENE_PADS_12PACK",
+  // Packaging boxes — invoice uses a space, DB uses underscore
+  "PACKAGING BOXES":                   "PACKAGING_BOXES",
   // Invoice strips spaces around +
   "BRUSH_SOFT_28CM+HANDLE_RED":        "BRUSH_SOFT_28CM + HANDLE_RED",
   "BRUSH_SOFT_28CM+HANDLE_BLUE":       "BRUSH_SOFT_28CM + HANDLE_BLUE",
@@ -277,6 +279,30 @@ const INVOICES: Record<string, Invoice> = {
       { code: "GLOVES_NITRILE_BLUE_SML",              qty: 2  },
       { code: "GLOVES_NITRILE_BLUE_XL",               qty: 2  },
       { code: "BIO_HAZARD_KITS",                      qty: 1  },
+    ],
+  },
+
+  "INV-0215": {
+    ref: "INV-0215",
+    conventionSearch: "Norfolk",
+    dept: "FA",
+    invoiceDate: "2026-06-25",
+    paymentDueDate: "2026-07-29",
+    shippingCost: 0,
+    items: [
+      { code: "FIRSTAID_KIT_LARGE_188P",              qty: 1                },
+      { code: "MEDIPAL_AW_150P",                      qty: 1, unitCost: 4.29  },
+      { code: "STATION_EYEWASH_TRIPLE",               qty: 1, unitCost: 28.99 },
+      { code: "GLOVES_VINYL_CLEAR_MED",               qty: 1                },
+      { code: "GLOVES_VINYL_CLEAR_L",                 qty: 1                },
+      { code: "GLOVES_VINYL_CLEAR_XL",                qty: 1                },
+      { code: "GLOVES_NITRILE_BLUE_MED",              qty: 1                },
+      { code: "GLOVES_NITRILE_BLUE_L",                qty: 1                },
+      { code: "GLOVES_NITRILE_BLUE_XL",               qty: 1                },
+      { code: "APRONS_FLTPACK_100PK",                 qty: 1                },
+      { code: "FACEMASK_BLUE_50PK",                   qty: 1, unitCost: 5.99  },
+      { code: "DISP_PILLOW_50PACK",                   qty: 1, unitCost: 22.89 },
+      { code: "PACKAGING BOXES",                      qty: 1, unitCost: 3.50  },
     ],
   },
 
