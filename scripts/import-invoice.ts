@@ -48,6 +48,11 @@ interface Invoice {
 const CODE_ALIASES: Record<string, string> = {
   "MAINTENANCE_REFILL_PADSX20":        "MAINTENCE REFILL PADS_X20",
   "BARRIER_TAPE_NON_ADHESIVE":         "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
+  // Maintenance pads — two invoice spellings, one DB code
+  "MAINTENANCE_REFILL_PADS_X20":       "MAINTENCE REFILL PADS_X20",
+  // Invoice strips spaces around +
+  "BRUSH_SOFT_28CM+HANDLE_RED":        "BRUSH_SOFT_28CM + HANDLE_RED",
+  "BRUSH_SOFT_28CM+HANDLE_BLUE":       "BRUSH_SOFT_28CM + HANDLE_BLUE",
   // Invoice strips spaces from space-delimited codes
   "BROOMHEADWASHABLE30CMSOFT-BLUE":    "BROOM HEAD WASHABLE 30CM SOFT - BLUE",
   "BROOMHEADWASHABLE30CMSOFT-RED":     "BROOM HEAD WASHABLE 30CM SOFT - RED",
@@ -182,6 +187,35 @@ const INVOICES: Record<string, Invoice> = {
       { code: "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",            qty: 2  },
       { code: "CLOVER_ULTRAFRESH_5L",                       qty: 3  },
       { code: "PUMP_30CC_FOR_5L",                           qty: 3  },
+    ],
+  },
+
+  "INV-0228": {
+    ref: "INV-0228",
+    conventionSearch: "London Twickenham",
+    dept: "CS",
+    invoiceDate: "2026-07-02",
+    paymentDueDate: "2026-08-05",
+    shippingCost: 96.70,
+    items: [
+      { code: "GLOVES_NITRILE_BLUE_MED",       qty: 4  },
+      { code: "GLOVES_NITRILE_BLUE_L",          qty: 4  },
+      { code: "GLOVES_NITRILE_BLUE_XL",         qty: 3  },
+      { code: "APRONS_FLTPACK_100PK",           qty: 5  },
+      { code: "BUCKET_PLASTIC_10L_BLUE",        qty: 20 },
+      { code: "SQUEEGEE_METAL_55CM",            qty: 2  },
+      { code: "HNDL_WOODEN_2",                  qty: 2  },
+      { code: "BRUSH_SOFT_28CM+HANDLE_RED",     qty: 8  },
+      { code: "TRG_COMPLETE_GREEN",             qty: 10 },
+      { code: "TRG_COMPLETE_BLUE",              qty: 10 },
+      { code: "CLOTH_MFIBRE_BLUE_10PK",         qty: 5  },
+      { code: "CLOTH_MFIBRE_PINK_10PK",         qty: 5  },
+      { code: "CLOTH_MFIBRE_WHITE_10PK",        qty: 5  },
+      { code: "CENTRE_FEED_ST_BLUE_6PK",        qty: 10 },
+      { code: "REFUSE_SACK_CLEAR_100PK",        qty: 1  },
+      { code: "BIO_HAZARD_KITS",               qty: 10 },
+      { code: "MAINTENANCE_REFILL_PADS_X20",    qty: 3  },
+      { code: "SPILL_KITS_MAINTENANCE_10L",     qty: 8  },
     ],
   },
 
