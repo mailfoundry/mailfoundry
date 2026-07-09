@@ -44,9 +44,10 @@ interface Invoice {
   items: InvoiceItem[];
 }
 
-// Maps invoice product codes → DB product codes where they differ (e.g. CSV typos)
+// Maps invoice product codes → DB product codes where they differ (e.g. CSV typos or formatting)
 const CODE_ALIASES: Record<string, string> = {
-  "MAINTENANCE_REFILL_PADSX20": "MAINTENCE REFILL PADS_X20",
+  "MAINTENANCE_REFILL_PADSX20":  "MAINTENCE REFILL PADS_X20",
+  "BARRIER_TAPE_NON_ADHESIVE":   "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
 };
 
 const INVOICES: Record<string, Invoice> = {
@@ -68,6 +69,65 @@ const INVOICES: Record<string, Invoice> = {
       { code: "REFUSE_SACK_CLEAR_100PK",     qty: 5  },
       { code: "BIO_HAZARD_KITS",             qty: 6  },
       { code: "MAINTENANCE_REFILL_PADSX20",  qty: 3  },
+    ],
+  },
+
+  "INV-0237": {
+    ref: "INV-0237",
+    conventionSearch: "Telford",
+    dept: "CS",
+    invoiceDate: "2026-07-06",
+    paymentDueDate: "2026-08-13",
+    shippingCost: 307.41, // 3 pallets × £102.47
+    items: [
+      { code: "HI_VIS_YELLOW_BS_M",           qty: 30 },
+      { code: "HI_VIS_YELLOW_BS_L",           qty: 20 },
+      { code: "HI_VIS_YELLOW_BS_XL",          qty: 10 },
+      { code: "HI_VIS_BLUE_S",                qty: 10 },
+      { code: "HI_VIS_BLUE_M",                qty: 12 },
+      { code: "HI_VIS_BLUE_L",                qty: 14 },
+      { code: "HI_VIS_BLUE_XL",               qty: 1  },
+      { code: "HI_VIS_BLUE_XXL",              qty: 3  },
+      { code: "HI_VIS_YELLOW_S_FA",           qty: 5  },
+      { code: "HI_VIS_YELLOW_M_FA",           qty: 5  },
+      { code: "HI_VIS_YELLOW_L_FA",           qty: 5  },
+      { code: "HI_VIS_YELLOW_XL_FA",          qty: 8  },
+      { code: "HI_VIS_ORANGE_LS_S",           qty: 10 },
+      { code: "HI_VIS_ORANGE_LS_M",           qty: 15 },
+      { code: "HI_VIS_ORANGE_LS_L",           qty: 10 },
+      { code: "GLOVES_VINYL_CLEAR_SML",       qty: 1  },
+      { code: "GLOVES_VINYL_CLEAR_MED",       qty: 52 },
+      { code: "GLOVES_VINYL_CLEAR_L",         qty: 52 },
+      { code: "GLOVES_VINYL_CLEAR_XL",        qty: 51 },
+      { code: "GLOVES_NITRILE_BLUE_MED",      qty: 5  },
+      { code: "GLOVES_NITRILE_BLUE_L",        qty: 5  },
+      { code: "EYEWEAR_SAFETY_GLASSES_CLEAR", qty: 10 },
+      { code: "APRONS_FLTPACK_100PK",         qty: 20 },
+      { code: "BUCKET_PLASTIC_10L_RED",       qty: 4  },
+      { code: "BUCKET_PLASTIC_10L_GREEN",     qty: 3  },
+      { code: "BUCKET_PLASTIC_10L_BLUE",      qty: 3  },
+      { code: "MOP_DISP_RED_10PK",            qty: 1  },
+      { code: "MOP_DISP_GREEN_10PK",          qty: 1  },
+      { code: "MOP_DISP_BLUE_10PK",           qty: 1  },
+      { code: "HNDL_WOODEN_1",               qty: 11 },
+      { code: "DUSTPAN_BRUSH_SET_RED",        qty: 2  },
+      { code: "DUSTPAN_BRUSH_SET_GREEN",      qty: 2  },
+      { code: "LITTER_PICKER_34INCH",         qty: 2  },
+      { code: "WET_FLOOR_AFRAME",             qty: 5  },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",    qty: 90 },
+      { code: "TRG_COMPLETE_RED",             qty: 15 },
+      { code: "TRG_COMPLETE_BLUE",            qty: 35 },
+      { code: "CLOTH_OCEAN_RED_50PK",         qty: 10 },
+      { code: "CLOTH_OCEAN_GREEN_50PK",       qty: 2  },
+      { code: "CLOTH_OCEAN_BLUE_50PK",        qty: 10 },
+      { code: "CLOTH_MFIBRE_BLUE_10PK",       qty: 2  },
+      { code: "CLOTH_MFIBRE_PINK_10PK",       qty: 4  },
+      { code: "CLOTH_MFIBRE_GREEN_10PK",      qty: 2  },
+      { code: "CENTRE_FEED_ST_BLUE_6PK",      qty: 50 },
+      { code: "REFUSE_SACK_BLACK_100PK",      qty: 20 },
+      { code: "BARRIER_TAPE_NON_ADHESIVE",    qty: 3  },
+      { code: "CLOVER_AHS_300ML",             qty: 19 },
+      { code: "SPILL_KITS_MAINTENANCE_10L",   qty: 5  },
     ],
   },
 
