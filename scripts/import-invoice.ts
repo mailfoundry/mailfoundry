@@ -219,6 +219,42 @@ const INVOICES: Record<string, Invoice> = {
     ],
   },
 
+  "INV-0232": {
+    ref: "INV-0232",
+    conventionSearch: "Bournemouth",
+    dept: "CS",
+    invoiceDate: "2026-07-02",
+    paymentDueDate: "2026-07-29",
+    shippingCost: 96.70,
+    items: [
+      { code: "HI_VIS_BLUE_M",               qty: 10 },
+      { code: "HI_VIS_RED_M",                qty: 10 },
+      { code: "HI_VIS_RED_L",                qty: 10 },
+      { code: "HI_VIS_RED/GREY_EXEC_M",      qty: 5  },
+      { code: "HI_VIS_RED/GREY_EXEC_L",      qty: 5  },
+      { code: "GLOVES_NITRILE_BLUE_SML",     qty: 1  },
+      { code: "GLOVES_NITRILE_BLUE_MED",     qty: 2  },
+      { code: "GLOVES_NITRILE_BLUE_L",       qty: 2  },
+      { code: "GLOVES_NITRILE_BLUE_XL",      qty: 1  },
+      { code: "APRONS_FLTPACK_100PK",        qty: 1  },
+      { code: "BUCKET_OVAL_MOP_14L_RED",     qty: 1  },
+      { code: "MOP_DISP_RED_10PK",           qty: 1  },
+      { code: "HNDL_WOODEN_1",               qty: 2  },
+      { code: "SQUEEGEE_PLASTIC_55CM",       qty: 1  },
+      { code: "HNDL_SQUEEGEE_PLASTIC",       qty: 1  },
+      { code: "LITTER_PICKER_34INCH",        qty: 2  },
+      { code: "TRG_COMPLETE_GREEN",          qty: 1  },
+      { code: "CLOTH_OCEAN_RED_50PK",        qty: 1  },
+      { code: "CLOTH_OCEAN_BLUE_50PK",       qty: 1  },
+      { code: "CLOTH_MFIBRE_BLUE_10PK",      qty: 3  },
+      { code: "CLOTH_MFIBRE_PINK_10PK",      qty: 2  },
+      { code: "CENTRE_FEED_BLUE_DL_6PK",     qty: 2  },
+      { code: "CLOVER_ULTRAFRESH_1L",        qty: 1  },
+      { code: "CLOVER_ULTRAFRESH_5L",        qty: 1  },
+      { code: "CLOVER_HAND_SOAP_1L",         qty: 1  },
+    ],
+  },
+
   // Add future invoices here as:
   // "INV-XXXX": { ... }
 };
