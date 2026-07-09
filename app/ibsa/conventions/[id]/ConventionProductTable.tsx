@@ -28,12 +28,13 @@ type Product = {
 type Props = {
   products: Product[];
   qtyMap: Record<string, number>;
+  overrideMap: Record<string, number>;
   conventionId: string;
   title: string;
   dept: string;
 };
 
-export default function ConventionProductTable({ products, qtyMap, conventionId, title, dept }: Props) {
+export default function ConventionProductTable({ products, qtyMap, overrideMap, conventionId, title, dept }: Props) {
   const [showAll, setShowAll] = useState(false);
 
   const orderedCount = products.filter((p) => (qtyMap[p.id] ?? 0) > 0).length;

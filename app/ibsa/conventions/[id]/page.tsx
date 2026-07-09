@@ -9,6 +9,7 @@ import {
   updateShippingCost,
   updateLogistics,
   updateFaLogistics,
+  updateNotes,
   markPaid,
   markUnpaid,
   markFaPaid,
@@ -75,6 +76,9 @@ export default async function ConventionDetailPage({
   // Stats based on dept, not product type
   const csItems = convention.orderItems.filter((i) => i.dept !== "FA");
   const faItems = convention.orderItems.filter((i) => i.dept === "FA");
+
+  const csOverrideMap: Record<string, number> = {};
+  const faOverrideMap: Record<string, number> = {};
 
   const orderSaleTotal = csItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
   const orderCostTotal = csItems.reduce(
@@ -481,9 +485,34 @@ export default async function ConventionDetailPage({
       </div>}
 
       {/* ── Cleaning Supplies pick sheet ───────────────────────────── */}
+      {/* ── Notes ─────────────────────────────────────────────────── */}
+      <div className="mb-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">Notes</h3>
+        <form action={updateNotes} className="flex flex-col gap-3">
+          <input type="hidden" name="conventionId" value={convention.id} />
+          <textarea
+            name="notes"
+            defaultValue={convention.notes ?? ""}
+            rows={3}
+            placeholder="e.g. Dublin invoice INV-0206 shows Bio Hazard Kits at £7.00 — invoice error, correct price is £6.59."
+            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-600 focus:border-orange-500 resize-none"
+          />
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600"
+            >
+              Save notes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* ── Cleaning Supplies pick sheet ───────────────────────────── */}
       <ConventionProductTable
         products={csProductRows}
         qtyMap={csQtyMap}
+        overrideMap={csOverrideMap}
         conventionId={convention.id}
         title="Cleaning Supplies Order"
         dept="CS"
@@ -494,6 +523,7 @@ export default async function ConventionDetailPage({
         <ConventionProductTable
           products={faProductRows}
           qtyMap={faQtyMap}
+          overrideMap={faOverrideMap}
           conventionId={convention.id}
           title="First Aid Order"
           dept="FA"

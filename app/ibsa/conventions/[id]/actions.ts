@@ -146,6 +146,17 @@ export async function markFaUnpaid(formData: FormData) {
   revalidatePath("/ibsa");
 }
 
+export async function updateNotes(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  const notes = formData.get("notes")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { notes: notes.trim() || null },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+}
+
 export async function updateFaLogistics(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
