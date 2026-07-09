@@ -72,6 +72,14 @@ export default async function ConventionDetailPage({
   const orderMarginPct = orderSaleTotal > 0 ? (orderProfit / orderSaleTotal) * 100 : 0;
   const itemsWithQty = convention.orderItems.filter((i) => i.qty > 0).length;
 
+  const hasFaData =
+    convention.orderItems.some((i) => i.product.type === "FA") ||
+    !!convention.faCollectionDate ||
+    !!convention.faPaymentDueDate ||
+    !!convention.faDeliveryDate ||
+    !!convention.faDeliveryAddress ||
+    convention.faShippingCost > 0;
+
   return (
     <IbsaAppShell active="ibsa">
       {/* Header */}
@@ -338,8 +346,8 @@ export default async function ConventionDetailPage({
         </form>
       </div>
 
-      {/* ── FA Logistics panel ─────────────────────────────────────── */}
-      <div className="mb-8 rounded-2xl border border-blue-900/40 bg-slate-900 p-6">
+      {/* ── FA Logistics panel (only when FA data exists) ──────────── */}
+      {hasFaData && <div className="mb-8 rounded-2xl border border-blue-900/40 bg-slate-900 p-6">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-blue-400">
             First Aid Logistics
@@ -425,7 +433,7 @@ export default async function ConventionDetailPage({
             </button>
           </div>
         </form>
-      </div>
+      </div>}
 
       {/* ── Product table (all depts combined) ─────────────────────── */}
       <ConventionProductTable

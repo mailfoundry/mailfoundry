@@ -36,13 +36,18 @@ interface InvoiceItem {
 
 interface Invoice {
   ref: string;
-  conventionSearch: string; // search term to match convention name in DB
+  conventionSearch: string; // exact name match (case-insensitive) — must be unique in DB
   dept: "CS" | "FA";
   invoiceDate: string;        // YYYY-MM-DD
   paymentDueDate: string;     // YYYY-MM-DD
   shippingCost: number;
   items: InvoiceItem[];
 }
+
+// Maps invoice product codes → DB product codes where they differ (e.g. CSV typos)
+const CODE_ALIASES: Record<string, string> = {
+  "MAINTENANCE_REFILL_PADSX20": "MAINTENCE REFILL PADS_X20",
+};
 
 const INVOICES: Record<string, Invoice> = {
   "INV-0238": {
@@ -86,10 +91,10 @@ async function main() {
     process.exit(1);
   }
 
-  // Find convention
+  // Find convention — exact name match (case-insensitive)
   const convention = await prisma.ibsaConvention.findFirst({
     where: {
-      name: { contains: inv.conventionSearch, mode: "insensitive" } as never,
+      name: { equals: inv.conventionSearch, mode: "insensitive" } as never,
     },
   } as never);
 
@@ -130,12 +135,13 @@ async function main() {
   let skipped = 0;
 
   for (const item of inv.items) {
+    const dbCode = CODE_ALIASES[item.code] ?? item.code;
     const product = await prisma.ibsaProduct.findUnique({
-      where: { code: item.code },
+      where: { code: dbCode },
     } as never) as { id: string } | null;
 
     if (!product) {
-      console.warn(`  ✗ Product not found: ${item.code} — run seed-cs-products.ts first`);
+      console.warn(`  ✗ Product not found: ${item.code}${dbCode !== item.code ? ` (alias: ${dbCode})` : ""} — run seed-cs-products.ts first`);
       skipped++;
       continue;
     }
