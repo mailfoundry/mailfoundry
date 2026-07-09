@@ -61,8 +61,11 @@ const CODE_ALIASES: Record<string, string> = {
   "KTY MOP FITTING PLASTIC - RED":                                    "KTY_MOP_FITTING_PLASTIC_RED",
   "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED":     "KTY_MOP_HYGIEMIX_S450G_10PACK_RED",
   "KTY BUFFALO BUCKET & WRINGER 25L - RED":                           "KTY_BUFFALO_BUCKET_WRINGER_25L_RED",
+  "KTY MOP MULTI FLAG 450G":           "KTY_MOP_MULTI_FLAG_450G",
   // Brush stiff — future compact form (Dublin invoice already uses the spaced version)
   "BRUSH_STIFF_28CM+HANDLE_BLUE":      "BRUSH_STIFF_28CM + HANDLE_BLUE",
+  // Maintenance refill pads — Belfast invoice uses a space instead of underscore after MAINTENANCE
+  "MAINTENANCE REFILL PADS_X20":       "MAINTENCE REFILL PADS_X20",
   // Invoice strips spaces around +
   "BRUSH_SOFT_28CM+HANDLE_RED":        "BRUSH_SOFT_28CM + HANDLE_RED",
   "BRUSH_SOFT_28CM+HANDLE_BLUE":       "BRUSH_SOFT_28CM + HANDLE_BLUE",
@@ -285,6 +288,37 @@ const INVOICES: Record<string, Invoice> = {
       { code: "GLOVES_NITRILE_BLUE_SML",              qty: 2  },
       { code: "GLOVES_NITRILE_BLUE_XL",               qty: 2  },
       { code: "BIO_HAZARD_KITS",                      qty: 1  },
+    ],
+  },
+
+  "INV-0220": {
+    ref: "INV-0220",
+    conventionSearch: "Belfast",
+    dept: "CS",
+    invoiceDate: "2026-07-01",
+    paymentDueDate: "2026-07-03",
+    shippingCost: 115.22, // "PALLET DELIVERY + TAIL LIFT"
+    items: [
+      { code: "GLOVES_VINYL_CLEAR_SML",               qty: 8                 },
+      { code: "GLOVES_VINYL_CLEAR_MED",               qty: 15                },
+      { code: "GLOVES_VINYL_CLEAR_L",                 qty: 9                 },
+      { code: "GLOVES_VINYL_CLEAR_XL",                qty: 4                 },
+      { code: "GLOVES_NITRILE_BLUE_MED",              qty: 1                 },
+      { code: "GLOVES_NITRILE_BLUE_L",                qty: 1                 },
+      { code: "MASK_DISP_DUSTCLEAR_50PK",             qty: 1                 },
+      { code: "APRONS_FLTPACK_100PK",                 qty: 15                },
+      { code: "KTY MOP MULTI FLAG 450G",              qty: 5,  unitCost: 2.20 },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",            qty: 20                },
+      { code: "CLOTH_OCEAN_RED_50PK",                 qty: 30                },
+      { code: "CLOTH_OCEAN_GREEN_50PK",               qty: 2                 },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                qty: 30                },
+      { code: "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",  qty: 1                 },
+      { code: "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",      qty: 2                 },
+      { code: "CLOVER_ULTRAFRESH_5L",                 qty: 12                },
+      { code: "CLOVER_AHS_300ML",                     qty: 20                },
+      { code: "BIO_HAZARD_KITS",                      qty: 5                 },
+      { code: "MAINTENANCE REFILL PADS_X20",          qty: 1                 },
+      { code: "SPILL_KITS_MAINTENANCE_10L",           qty: 1                 },
     ],
   },
 
