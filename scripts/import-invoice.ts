@@ -32,6 +32,7 @@ const prisma = new PrismaClient({ adapter } as never) as unknown as {
 interface InvoiceItem {
   code: string;
   qty: number;
+  unitCost?: number; // FA invoices: used to create the product if it doesn't exist yet
 }
 
 interface Invoice {
@@ -255,6 +256,26 @@ const INVOICES: Record<string, Invoice> = {
     ],
   },
 
+  "INV-0231": {
+    ref: "INV-0231",
+    conventionSearch: "Bournemouth",
+    dept: "FA",
+    invoiceDate: "2026-07-02",
+    paymentDueDate: "2026-07-29",
+    shippingCost: 0,
+    items: [
+      { code: "FIRSTAID_KIT_LARGE_188P",              qty: 3,  unitCost: 42.89 },
+      { code: "10PACK_LARGE_FOIL_BLANKETS",           qty: 6,  unitCost: 4.89  },
+      { code: "100PACK_ASSORTED_WATERPROOF_PLASTERS", qty: 1,  unitCost: 4.79  },
+      { code: "MEDIPAL_AW_125P",                      qty: 2,  unitCost: 4.29  },
+      { code: "EYEWASH_INCCAP_500ML",                 qty: 1,  unitCost: 2.99  },
+      { code: "BODYFORM_HYGEINE_PADS_12PACK",         qty: 2,  unitCost: 1.99  },
+      { code: "GLOVES_NITRILE_BLUE_SML",              qty: 2  },
+      { code: "GLOVES_NITRILE_BLUE_XL",               qty: 2  },
+      { code: "BIO_HAZARD_KITS",                      qty: 1  },
+    ],
+  },
+
   // Add future invoices here as:
   // "INV-XXXX": { ... }
 };
@@ -320,14 +341,23 @@ async function main() {
 
   for (const item of inv.items) {
     const dbCode = CODE_ALIASES[item.code] ?? item.code;
-    const product = await prisma.ibsaProduct.findUnique({
+    let product = await prisma.ibsaProduct.findUnique({
       where: { code: dbCode },
     } as never) as { id: string } | null;
 
     if (!product) {
-      console.warn(`  ✗ Product not found: ${item.code}${dbCode !== item.code ? ` (alias: ${dbCode})` : ""} — run seed-cs-products.ts first`);
-      skipped++;
-      continue;
+      if (inv.dept === "FA" && item.unitCost !== undefined) {
+        // Auto-create FA products from invoice price
+        const name = dbCode.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+        product = await prisma.ibsaProduct.create({
+          data: { code: dbCode, name, category: "firstaid", type: "FA", unitCost: item.unitCost },
+        } as never) as { id: string };
+        console.log(`  + Created FA product: ${dbCode}`);
+      } else {
+        console.warn(`  ✗ Product not found: ${item.code}${dbCode !== item.code ? ` (alias: ${dbCode})` : ""} — run seed-cs-products.ts first`);
+        skipped++;
+        continue;
+      }
     }
 
     await prisma.ibsaOrderItem.upsert({
