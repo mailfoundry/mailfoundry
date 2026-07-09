@@ -42,6 +42,18 @@ export async function updateShippingCost(formData: FormData) {
   revalidatePath(`/ibsa/conventions/${conventionId}`);
 }
 
+export async function updateConventionDate(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  const date = formData.get("date")?.toString() ?? "";
+  if (!conventionId || !date) return;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { conventionDate: new Date(date) },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
 export async function updateDeliveryDate(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const date = formData.get("date")?.toString() ?? "";

@@ -9,9 +9,8 @@
 
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
-import { PrismaClient } from "../src/generated/prisma";
+import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
 
 const scryptAsync = promisify(scrypt);
 
@@ -35,8 +34,7 @@ async function main() {
     process.exit(1);
   }
 
-  const pool = new pg.Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
+  const adapter = new PrismaPg({ connectionString });
   const prisma = new PrismaClient({ adapter } as never);
 
   const hashedPassword = await hashPassword(password);
@@ -50,7 +48,6 @@ async function main() {
   console.log(`✓ IBSA user created/updated:`, (user as { email: string; name: string }).email, '—', (user as { email: string; name: string }).name);
 
   await prisma.$disconnect();
-  await pool.end();
 }
 
 main().catch((e) => {

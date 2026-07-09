@@ -4,6 +4,7 @@ import { prisma } from "../../../../src/lib/prisma";
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import {
   updateConventionStatus,
+  updateConventionDate,
   updateDeliveryDate,
   updateShippingCost,
   updateLogistics,
@@ -204,8 +205,17 @@ export default async function ConventionDetailPage({
 
         {/* Convention date */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Convention Date</p>
-          <p className="mt-1 font-semibold">{fmtDate(convention.conventionDate)}</p>
+          <p className="mb-1 text-xs text-slate-500">Convention Date</p>
+          <form action={updateConventionDate} className="flex items-center gap-2">
+            <input type="hidden" name="conventionId" value={convention.id} />
+            <input
+              type="date"
+              name="date"
+              defaultValue={toInput(convention.conventionDate)}
+              className="w-full bg-transparent text-sm text-white outline-none"
+            />
+            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">✓</button>
+          </form>
         </div>
 
         {/* Delivery date */}
