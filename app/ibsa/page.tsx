@@ -68,7 +68,15 @@ export default async function IbsaPage() {
   });
 
   const now = new Date();
-  const upcoming = conventions.filter((c) => c.conventionDate >= now);
+  const upcoming = conventions
+    .filter((c) => c.conventionDate >= now)
+    .sort((a, b) => {
+      // Sort by collection date ascending; nulls (no collection date set) go last
+      if (!a.collectionDate && !b.collectionDate) return 0;
+      if (!a.collectionDate) return 1;
+      if (!b.collectionDate) return -1;
+      return a.collectionDate.getTime() - b.collectionDate.getTime();
+    });
   const past = conventions.filter((c) => c.conventionDate < now);
 
   const totalValue = conventions.reduce(
