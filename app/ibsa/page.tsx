@@ -225,77 +225,87 @@ function ConventionCards({ conventions }: { conventions: Convention[] }) {
         const daysToConvention = daysUntil(new Date(c.conventionDate));
 
         return (
-          <Link
-            key={c.id}
-            href={`/ibsa/conventions/${c.id}`}
-            className="block rounded-2xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-700 hover:bg-slate-800/60"
-          >
-            <div className="flex items-start justify-between gap-4">
-              {/* Left: name + venue + badges */}
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-base font-bold text-white">{c.name}</span>
-                  <StatusBadge status={c.status} isPast={isPast} />
-                  <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
-                </div>
-                {c.venue && <p className="mt-0.5 text-xs text-slate-500">{c.venue}</p>}
+          <div key={c.id} className="relative rounded-2xl border border-slate-800 bg-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-800/60">
+            {/* Hide button */}
+            <form action={archiveConvention} className="absolute right-3 top-3 z-10">
+              <input type="hidden" name="conventionId" value={c.id} />
+              <button
+                type="submit"
+                title="Hide this convention"
+                className="rounded px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-800 hover:text-red-400 transition-colors"
+              >
+                Hide
+              </button>
+            </form>
 
-                {/* Date row */}
-                <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
-                  <span>
-                    <span className="text-slate-600">Convention</span>{" "}
-                    <span className="font-medium text-slate-300">
-                      {fmtDate(c.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
-                    </span>
-                  </span>
-                  {c.deliveryDate && (
-                    <span>
-                      <span className="text-slate-600">Delivery</span>{" "}
-                      <span className="font-medium text-slate-300">{fmtDate(c.deliveryDate)}</span>
-                    </span>
-                  )}
-                  {c.collectionDate && (
-                    <span>
-                      <span className="text-slate-600">Collection</span>{" "}
-                      <span className="font-medium text-slate-300">{fmtDate(c.collectionDate)}</span>
-                    </span>
-                  )}
-                  {c.contactName && (
-                    <span>
-                      <span className="text-slate-600">Contact</span>{" "}
-                      <span className="font-medium text-slate-300">{c.contactName}</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Right: financials + countdowns */}
-              <div className="flex shrink-0 items-center gap-6">
-                {/* Financials */}
-                {value > 0 && (
-                  <div className="text-right">
-                    <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
-                    <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
-                    <p className="text-xs text-slate-500">{itemCount} lines</p>
+            <Link href={`/ibsa/conventions/${c.id}`} className="block p-5">
+              <div className="flex items-start justify-between gap-4">
+                {/* Left: name + venue + badges */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-base font-bold text-white">{c.name}</span>
+                    <StatusBadge status={c.status} isPast={isPast} />
+                    <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
                   </div>
-                )}
+                  {c.venue && <p className="mt-0.5 text-xs text-slate-500">{c.venue}</p>}
 
-                {/* Countdowns */}
-                <div className="flex gap-3">
-                  {daysToCollection !== null && (
-                    <div className="text-center">
-                      <CountdownPill days={daysToCollection} />
-                      <p className="mt-1 text-xs text-slate-600">collect</p>
+                  {/* Date row */}
+                  <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
+                    <span>
+                      <span className="text-slate-600">Convention</span>{" "}
+                      <span className="font-medium text-slate-300">
+                        {fmtDate(c.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
+                      </span>
+                    </span>
+                    {c.deliveryDate && (
+                      <span>
+                        <span className="text-slate-600">Delivery</span>{" "}
+                        <span className="font-medium text-slate-300">{fmtDate(c.deliveryDate)}</span>
+                      </span>
+                    )}
+                    {c.collectionDate && (
+                      <span>
+                        <span className="text-slate-600">Collection</span>{" "}
+                        <span className="font-medium text-slate-300">{fmtDate(c.collectionDate)}</span>
+                      </span>
+                    )}
+                    {c.contactName && (
+                      <span>
+                        <span className="text-slate-600">Contact</span>{" "}
+                        <span className="font-medium text-slate-300">{c.contactName}</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: financials + countdowns */}
+                <div className="flex shrink-0 items-center gap-6 pr-10">
+                  {/* Financials */}
+                  {value > 0 && (
+                    <div className="text-right">
+                      <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
+                      <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
+                      <p className="text-xs text-slate-500">{itemCount} lines</p>
                     </div>
                   )}
-                  <div className="text-center">
-                    <CountdownPill days={daysToConvention} />
-                    <p className="mt-1 text-xs text-slate-600">conv</p>
+
+                  {/* Countdowns */}
+                  <div className="flex gap-3">
+                    {daysToCollection !== null && (
+                      <div className="text-center">
+                        <CountdownPill days={daysToCollection} />
+                        <p className="mt-1 text-xs text-slate-600">collect</p>
+                      </div>
+                    )}
+                    <div className="text-center">
+                      <CountdownPill days={daysToConvention} />
+                      <p className="mt-1 text-xs text-slate-600">conv</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
         );
       })}
     </div>
