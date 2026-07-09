@@ -57,6 +57,12 @@ const CODE_ALIASES: Record<string, string> = {
   "BODYFORM_HYGEINE_PADS_12PACK":      "BODYFORM_HYGIENE_PADS_12PACK",
   // Packaging boxes — invoice uses a space, DB uses underscore
   "PACKAGING BOXES":                   "PACKAGING_BOXES",
+  // KTY products — Dublin invoice uses long space-delimited names → clean DB codes
+  "KTY MOP FITTING PLASTIC - RED":                                    "KTY_MOP_FITTING_PLASTIC_RED",
+  "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED":     "KTY_MOP_HYGIEMIX_S450G_10PACK_RED",
+  "KTY BUFFALO BUCKET & WRINGER 25L - RED":                           "KTY_BUFFALO_BUCKET_WRINGER_25L_RED",
+  // Brush stiff — future compact form (Dublin invoice already uses the spaced version)
+  "BRUSH_STIFF_28CM+HANDLE_BLUE":      "BRUSH_STIFF_28CM + HANDLE_BLUE",
   // Invoice strips spaces around +
   "BRUSH_SOFT_28CM+HANDLE_RED":        "BRUSH_SOFT_28CM + HANDLE_RED",
   "BRUSH_SOFT_28CM+HANDLE_BLUE":       "BRUSH_SOFT_28CM + HANDLE_BLUE",
@@ -282,6 +288,52 @@ const INVOICES: Record<string, Invoice> = {
     ],
   },
 
+  "INV-0206": {
+    ref: "INV-0206",
+    conventionSearch: "Dublin",
+    dept: "CS",
+    invoiceDate: "2026-06-16",
+    paymentDueDate: "2026-06-24",
+    shippingCost: 197.83, // "PALLET DELIVERY + TAIL LIFT" line on invoice
+    items: [
+      { code: "GLOVES_VINYL_CLEAR_MED",                                           qty: 2                  },
+      { code: "GLOVES_VINYL_CLEAR_L",                                             qty: 1                  },
+      { code: "GLOVES_NITRILE_BLUE_MED",                                          qty: 14                 },
+      { code: "GLOVES_NITRILE_BLUE_L",                                            qty: 6                  },
+      { code: "GLOVES_NITRILE_BLUE_XL",                                           qty: 1                  },
+      { code: "GLOVES_NITRILE-POLY_FOAM_L_10PACK",                               qty: 1,  unitCost: 10.99 },
+      { code: "EYEWEAR_SAFETY_GLASSES_CLEAR",                                     qty: 8                  },
+      { code: "MASK_DISP_DUSTCLEAR_50PK",                                         qty: 1,  unitCost: 5.19  },
+      { code: "APRONS_FLTPACK_100PK",                                             qty: 7                  },
+      { code: "MOP_STAND_PY(12)_7OZ_RED",                                        qty: 4,  unitCost: 1.69  },
+      { code: "MOP_DISP_RED_10PK",                                                qty: 3                  },
+      { code: "HNDL_WOODEN_1",                                                    qty: 8                  },
+      { code: "SQUEEGEE_METAL_55CM",                                              qty: 1                  },
+      { code: "HNDL_WOODEN_2",                                                    qty: 1                  },
+      { code: "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_RED",                           qty: 3                  },
+      { code: "HANDLE HYGIENE 125CM - RED",                                       qty: 4                  },
+      { code: "KTY MOP FITTING PLASTIC - RED",                                    qty: 7,  unitCost: 2.05  },
+      { code: "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED",     qty: 2,  unitCost: 47.50 },
+      { code: "KTY BUFFALO BUCKET & WRINGER 25L - RED",                           qty: 2,  unitCost: 76.99 },
+      { code: "BRUSH_STIFF_28CM + HANDLE_BLUE",                                  qty: 10, unitCost: 5.59  },
+      { code: "DUSTPAN_BRUSH_SET_BLUE",                                           qty: 10                 },
+      { code: "LITTER_PICKER_34INCH",                                             qty: 3                  },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",                                        qty: 35                 },
+      { code: "TRG_COMPLETE_RED",                                                 qty: 14                 },
+      { code: "TRG_COMPLETE_BLUE",                                                qty: 30                 },
+      { code: "CLOTH_MFIBRE_YELLOW_10PK",                                         qty: 3                  },
+      { code: "CENTRE_FEED_ST_BLUE_6PK",                                          qty: 2                  },
+      { code: "SCRAPER",                                                           qty: 1,  unitCost: 2.29  },
+      { code: 'JUG_FUNNEL_6"',                                                    qty: 2,  unitCost: 2.39  },
+      { code: "SHARPS_CONTAINER_7L",                                              qty: 2,  unitCost: 7.99  },
+      { code: "CLOVER_AHS_300ML",                                                 qty: 6,  unitCost: 6.99  },
+      { code: "CLOVER_AHS_5L",                                                    qty: 1,  unitCost: 42.99 },
+      { code: "BIO_HAZARD_KITS",                                                  qty: 2                  },
+      { code: "PUMP_30CC_FOR_5L",                                                 qty: 1                  },
+      { code: "MAINTENANCE_REFILL_PADS_X20",                                      qty: 2                  },
+    ],
+  },
+
   "INV-0215": {
     ref: "INV-0215",
     conventionSearch: "Norfolk",
@@ -410,13 +462,15 @@ async function main() {
     } as never) as { id: string; type: string } | null;
 
     if (!product) {
-      if (inv.dept === "FA" && item.unitCost !== undefined) {
-        // Auto-create FA products from invoice price
+      if (item.unitCost !== undefined) {
+        // Auto-create product from invoice price (CS or FA)
+        const productType = inv.dept === "FA" ? "FA" : "CS";
+        const category = inv.dept === "FA" ? "firstaid" : "cleaning";
         const name = dbCode.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
         product = await prisma.ibsaProduct.create({
-          data: { code: dbCode, name, category: "firstaid", type: "FA", unitCost: item.unitCost },
+          data: { code: dbCode, name, category, type: productType, unitCost: item.unitCost },
         } as never) as { id: string; type: string };
-        console.log(`  + Created FA product: ${dbCode}`);
+        console.log(`  + Created ${productType} product: ${dbCode}`);
       } else {
         console.warn(`  ✗ Product not found: ${item.code}${dbCode !== item.code ? ` (alias: ${dbCode})` : ""} — run seed-cs-products.ts first`);
         skipped++;
