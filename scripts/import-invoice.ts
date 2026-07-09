@@ -20,6 +20,7 @@ const prisma = new PrismaClient({ adapter } as never) as unknown as {
   };
   ibsaProduct: {
     findUnique: (a: unknown) => Promise<{ id: string } | null>;
+    create: (a: unknown) => Promise<{ id: string }>;
   };
   ibsaOrderItem: {
     upsert: (a: unknown) => Promise<unknown>;
