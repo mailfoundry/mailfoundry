@@ -13,6 +13,7 @@ const CORRECTIONS = [
   { code: "CLOVER_ULTRAFRESH_1L",  unitCost: 8.89 },
   { code: "CLOVER_ULTRAFRESH_5L",  unitCost: 20.99 },
   { code: "CLOVER_HAND_SOAP_1L",   unitCost: 7.49 },
+  { code: "BIO_HAZARD_KITS",       unitCost: 6.59 },
 ];
 
 async function main() {
