@@ -61,88 +61,79 @@ export default function ConventionProductTable({ products, qtyMap, conventionId,
       {Object.keys(grouped).length === 0 ? (
         <p className="text-sm text-slate-500">No products ordered yet.</p>
       ) : (
-        <div className="space-y-6">
-          {Object.entries(grouped).map(([category, items]) => (
-            <div key={category}>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                {CATEGORY_LABELS[category] ?? category}
-              </p>
-              <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
-                <table className="min-w-full text-sm">
-                  <thead className="border-b border-slate-700 bg-slate-700/50 text-slate-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left font-semibold">Code</th>
-                      <th className="px-4 py-3 text-left font-semibold">Product</th>
-                      <th className="px-4 py-3 text-left font-semibold">Variant</th>
-                      <th className="px-4 py-3 text-right font-semibold">Sale</th>
-                      <th className="px-4 py-3 text-right font-semibold">Cost</th>
-                      <th className="px-4 py-3 text-center font-semibold">Qty</th>
-                      <th className="px-4 py-3 text-right font-semibold">Line Sale</th>
-                      <th className="px-4 py-3 text-right font-semibold">Margin £</th>
-                      <th className="px-4 py-3 text-right font-semibold">Margin %</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((p) => {
-                      const qty = qtyMap[p.id] ?? 0;
-                      const xyloCost = p.xyloCost ?? p.unitCost;
-                      const lineSale = qty * p.unitCost;
-                      const lineMarginGbp = qty * (p.unitCost - xyloCost);
-                      const marginPct =
-                        p.unitCost > 0 ? ((p.unitCost - xyloCost) / p.unitCost) * 100 : 0;
-                      const marginColour =
-                        marginPct >= 30
-                          ? "text-green-400"
-                          : marginPct >= 15
-                          ? "text-amber-400"
-                          : "text-red-400";
+        <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
+          <table className="min-w-full text-sm">
+            <thead className="border-b border-slate-700 bg-slate-700/50 text-slate-200">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold">Code</th>
+                <th className="px-4 py-3 text-left font-semibold">Product</th>
+                <th className="px-4 py-3 text-left font-semibold">Variant</th>
+                <th className="px-4 py-3 text-right font-semibold">Sale</th>
+                <th className="px-4 py-3 text-right font-semibold">Cost</th>
+                <th className="px-4 py-3 text-center font-semibold">Qty</th>
+                <th className="px-4 py-3 text-right font-semibold">Line Sale</th>
+                <th className="px-4 py-3 text-right font-semibold">Margin £</th>
+                <th className="px-4 py-3 text-right font-semibold">Margin %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(grouped).map(([category, items]) => (
+                <>
+                  {/* Category divider row */}
+                  <tr key={`cat-${category}`} className="border-t border-slate-700 bg-slate-700/30">
+                    <td colSpan={9} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      {CATEGORY_LABELS[category] ?? category}
+                    </td>
+                  </tr>
+                  {items.map((p) => {
+                    const qty = qtyMap[p.id] ?? 0;
+                    const xyloCost = p.xyloCost ?? p.unitCost;
+                    const lineSale = qty * p.unitCost;
+                    const lineMarginGbp = qty * (p.unitCost - xyloCost);
+                    const marginPct =
+                      p.unitCost > 0 ? ((p.unitCost - xyloCost) / p.unitCost) * 100 : 0;
+                    const marginColour =
+                      marginPct >= 30
+                        ? "text-green-400"
+                        : marginPct >= 15
+                        ? "text-amber-400"
+                        : "text-red-400";
 
-                      return (
-                        <tr
-                          key={p.id}
-                          className="border-t border-slate-700 transition-opacity hover:bg-slate-700/30"
-                        >
-                          <td className="px-4 py-3 font-mono text-xs text-slate-400">{p.code}</td>
-                          <td className="px-4 py-3 font-medium text-white">{p.name}</td>
-                          <td className="px-4 py-3 text-slate-300">{p.variant ?? "—"}</td>
-                          <td className="px-4 py-3 text-right text-slate-200">
-                            £{p.unitCost.toFixed(2)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-slate-400">
-                            £{xyloCost.toFixed(2)}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex justify-center">
-                              <ConventionQtyInput
-                                conventionId={conventionId}
-                                productId={p.id}
-                                qty={qty}
-                              />
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-right text-slate-200">
-                            {lineSale > 0 ? `£${fmtGbp(lineSale)}` : "—"}
-                          </td>
-                          <td className="px-4 py-3 text-right font-medium">
-                            {qty > 0 ? (
-                              <span className={lineMarginGbp >= 0 ? "text-green-400" : "text-red-400"}>
-                                £{fmtGbp(lineMarginGbp)}
-                              </span>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className={marginColour}>{marginPct.toFixed(1)}%</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
+                    return (
+                      <tr
+                        key={p.id}
+                        className="border-t border-slate-700/50 transition-opacity hover:bg-slate-700/30"
+                      >
+                        <td className="px-4 py-3 font-mono text-xs text-slate-400">{p.code}</td>
+                        <td className="px-4 py-3 font-medium text-white">{p.name}</td>
+                        <td className="px-4 py-3 text-slate-300">{p.variant ?? "—"}</td>
+                        <td className="px-4 py-3 text-right text-slate-200">£{p.unitCost.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-right text-slate-400">£{xyloCost.toFixed(2)}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-center">
+                            <ConventionQtyInput conventionId={conventionId} productId={p.id} qty={qty} />
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right text-slate-200">
+                          {lineSale > 0 ? `£${fmtGbp(lineSale)}` : "—"}
+                        </td>
+                        <td className="px-4 py-3 text-right font-medium">
+                          {qty > 0 ? (
+                            <span className={lineMarginGbp >= 0 ? "text-green-400" : "text-red-400"}>
+                              £{fmtGbp(lineMarginGbp)}
+                            </span>
+                          ) : "—"}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className={marginColour}>{marginPct.toFixed(1)}%</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </section>
