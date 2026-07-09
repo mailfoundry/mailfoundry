@@ -22,6 +22,7 @@ type Product = {
   unitCost: number;
   xyloCost: number | null;
   category: string;
+  type: string;
 };
 
 type Props = {

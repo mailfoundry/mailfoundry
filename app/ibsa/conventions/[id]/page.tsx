@@ -56,9 +56,12 @@ export default async function ConventionDetailPage({
     qtyMap[item.productId] = item.qty;
   }
 
-  const allProductRows = allProducts.map(({ id, code, name, variant, unitCost, xyloCost, category }) => ({
-    id, code, name, variant, unitCost, xyloCost, category,
+  const allProductRows = allProducts.map(({ id, code, name, variant, unitCost, xyloCost, category, type }) => ({
+    id, code, name, variant, unitCost, xyloCost, category, type,
   }));
+
+  const csProductRows = allProductRows.filter((p) => p.type === "CS");
+  const faProductRows = allProductRows.filter((p) => p.type === "FA");
 
   const csItems = convention.orderItems.filter((i) => i.product.type === "CS");
   const faItems = convention.orderItems.filter((i) => i.product.type === "FA");
@@ -467,13 +470,23 @@ export default async function ConventionDetailPage({
         </form>
       </div>}
 
-      {/* ── Product table (all depts combined) ─────────────────────── */}
+      {/* ── Cleaning Supplies pick sheet ───────────────────────────── */}
       <ConventionProductTable
-        products={allProductRows}
+        products={csProductRows}
         qtyMap={qtyMap}
         conventionId={convention.id}
-        title="Order"
+        title="Cleaning Supplies Order"
       />
+
+      {/* ── First Aid pick sheet (only when FA items exist) ────────── */}
+      {hasFaData && (
+        <ConventionProductTable
+          products={faProductRows}
+          qtyMap={qtyMap}
+          conventionId={convention.id}
+          title="First Aid Order"
+        />
+      )}
     </IbsaAppShell>
   );
 }
