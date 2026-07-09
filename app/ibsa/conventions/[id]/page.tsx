@@ -56,8 +56,8 @@ export default async function ConventionDetailPage({
     qtyMap[item.productId] = item.qty;
   }
 
-  const allProductRows = allProducts.map(({ id, name, variant, unitCost, xyloCost, category }) => ({
-    id, name, variant, unitCost, xyloCost, category,
+  const allProductRows = allProducts.map(({ id, code, name, variant, unitCost, xyloCost, category }) => ({
+    id, code, name, variant, unitCost, xyloCost, category,
   }));
 
   const orderSaleTotal = convention.orderItems.reduce(

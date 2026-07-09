@@ -16,6 +16,7 @@ const fmtGbp = (n: number) =>
 
 type Product = {
   id: string;
+  code: string;
   name: string;
   variant: string | null;
   unitCost: number;
@@ -70,6 +71,7 @@ export default function ConventionProductTable({ products, qtyMap, conventionId,
                 <table className="min-w-full text-sm">
                   <thead className="border-b border-slate-700 bg-slate-700/50 text-slate-200">
                     <tr>
+                      <th className="px-4 py-3 text-left font-semibold">Code</th>
                       <th className="px-4 py-3 text-left font-semibold">Product</th>
                       <th className="px-4 py-3 text-left font-semibold">Variant</th>
                       <th className="px-4 py-3 text-right font-semibold">Sale</th>
@@ -100,6 +102,7 @@ export default function ConventionProductTable({ products, qtyMap, conventionId,
                           key={p.id}
                           className="border-t border-slate-700 transition-opacity hover:bg-slate-700/30"
                         >
+                          <td className="px-4 py-3 font-mono text-xs text-slate-400">{p.code}</td>
                           <td className="px-4 py-3 font-medium text-white">{p.name}</td>
                           <td className="px-4 py-3 text-slate-300">{p.variant ?? "—"}</td>
                           <td className="px-4 py-3 text-right text-slate-200">
