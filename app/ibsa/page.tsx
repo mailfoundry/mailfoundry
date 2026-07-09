@@ -59,6 +59,7 @@ export default async function IbsaPage() {
       orderItems: {
         select: {
           qty: true,
+          dept: true,
           product: { select: { unitCost: true, xyloCost: true, type: true } },
         },
       },
@@ -84,10 +85,10 @@ export default async function IbsaPage() {
 
   for (const c of conventions) {
     const csItems = c.orderItems
-      .filter((i) => i.product.type === "CS")
+      .filter((i) => i.dept !== "FA")
       .map((i) => ({ qty: i.qty, unitCost: i.product.unitCost, xyloCost: i.product.xyloCost }));
     const faItems = c.orderItems
-      .filter((i) => i.product.type === "FA")
+      .filter((i) => i.dept === "FA")
       .map((i) => ({ qty: i.qty, unitCost: i.product.unitCost, xyloCost: i.product.xyloCost }));
 
     // CS card always shown
@@ -103,7 +104,7 @@ export default async function IbsaPage() {
       sortDate: c.collectionDate,
     });
 
-    // FA card shown only if there are FA items or FA logistics dates
+    // FA card shown only if there are FA dept items or FA logistics dates
     if (faItems.length > 0 || c.faCollectionDate || c.faPaymentDueDate) {
       allCards.push({
         convention: c,
@@ -144,12 +145,12 @@ export default async function IbsaPage() {
   // Stats
   const totalCsValue = conventions.reduce(
     (sum, c) =>
-      sum + c.orderItems.filter((i) => i.product.type === "CS").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
+      sum + c.orderItems.filter((i) => i.dept !== "FA").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
     0
   );
   const totalFaValue = conventions.reduce(
     (sum, c) =>
-      sum + c.orderItems.filter((i) => i.product.type === "FA").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
+      sum + c.orderItems.filter((i) => i.dept === "FA").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
     0
   );
   const totalProfit = conventions.reduce(

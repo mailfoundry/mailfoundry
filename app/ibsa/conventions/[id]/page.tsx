@@ -51,9 +51,15 @@ export default async function ConventionDetailPage({
     orderBy: [{ type: "asc" }, { category: "asc" }, { name: "asc" }],
   });
 
-  const qtyMap: Record<string, number> = {};
+  // Separate qty maps per dept — same product can appear in both CS and FA orders
+  const csQtyMap: Record<string, number> = {};
+  const faQtyMap: Record<string, number> = {};
   for (const item of convention.orderItems) {
-    qtyMap[item.productId] = item.qty;
+    if (item.dept === "FA") {
+      faQtyMap[item.productId] = (faQtyMap[item.productId] ?? 0) + item.qty;
+    } else {
+      csQtyMap[item.productId] = (csQtyMap[item.productId] ?? 0) + item.qty;
+    }
   }
 
   const allProductRows = allProducts.map(({ id, code, name, variant, unitCost, xyloCost, category, type }) => ({
@@ -61,10 +67,14 @@ export default async function ConventionDetailPage({
   }));
 
   const csProductRows = allProductRows.filter((p) => p.type === "CS");
-  const faProductRows = allProductRows.filter((p) => p.type === "FA");
+  // FA pick sheet: FA-type products + any CS-type products ordered under the FA invoice
+  const faProductRows = allProductRows.filter(
+    (p) => p.type === "FA" || (faQtyMap[p.id] ?? 0) > 0
+  );
 
-  const csItems = convention.orderItems.filter((i) => i.product.type === "CS");
-  const faItems = convention.orderItems.filter((i) => i.product.type === "FA");
+  // Stats based on dept, not product type
+  const csItems = convention.orderItems.filter((i) => i.dept !== "FA");
+  const faItems = convention.orderItems.filter((i) => i.dept === "FA");
 
   const orderSaleTotal = csItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
   const orderCostTotal = csItems.reduce(
@@ -473,18 +483,20 @@ export default async function ConventionDetailPage({
       {/* ── Cleaning Supplies pick sheet ───────────────────────────── */}
       <ConventionProductTable
         products={csProductRows}
-        qtyMap={qtyMap}
+        qtyMap={csQtyMap}
         conventionId={convention.id}
         title="Cleaning Supplies Order"
+        dept="CS"
       />
 
       {/* ── First Aid pick sheet (only when FA items exist) ────────── */}
       {hasFaData && (
         <ConventionProductTable
           products={faProductRows}
-          qtyMap={qtyMap}
+          qtyMap={faQtyMap}
           conventionId={convention.id}
           title="First Aid Order"
+          dept="FA"
         />
       )}
     </IbsaAppShell>

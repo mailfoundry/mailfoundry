@@ -24,6 +24,7 @@ const prisma = new PrismaClient({ adapter } as never) as unknown as {
   };
   ibsaOrderItem: {
     upsert: (a: unknown) => Promise<unknown>;
+    updateMany: (a: unknown) => Promise<{ count: number }>;
   };
   $disconnect: () => Promise<void>;
 };
@@ -382,13 +383,6 @@ async function main() {
       where: { code: dbCode },
     } as never) as { id: string; type: string } | null;
 
-    // FA invoices sometimes include CS-type products (e.g. extra gloves for the first-aid post).
-    // Importing them would overwrite CS invoice quantities, so we skip them here.
-    if (inv.dept === "FA" && product && product.type === "CS") {
-      console.log(`  ~ Skipping CS product on FA invoice: ${item.code}`);
-      continue;
-    }
-
     if (!product) {
       if (inv.dept === "FA" && item.unitCost !== undefined) {
         // Auto-create FA products from invoice price
@@ -406,12 +400,13 @@ async function main() {
 
     await prisma.ibsaOrderItem.upsert({
       where: {
-        conventionId_productId: {
+        conventionId_productId_dept: {
           conventionId: convention.id,
           productId: product.id,
+          dept: inv.dept,
         },
       },
-      create: { conventionId: convention.id, productId: product.id, qty: item.qty },
+      create: { conventionId: convention.id, productId: product.id, dept: inv.dept, qty: item.qty },
       update: { qty: item.qty },
     } as never);
 

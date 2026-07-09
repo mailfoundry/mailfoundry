@@ -30,9 +30,10 @@ type Props = {
   qtyMap: Record<string, number>;
   conventionId: string;
   title: string;
+  dept: string;
 };
 
-export default function ConventionProductTable({ products, qtyMap, conventionId, title }: Props) {
+export default function ConventionProductTable({ products, qtyMap, conventionId, title, dept }: Props) {
   const [showAll, setShowAll] = useState(false);
 
   const orderedCount = products.filter((p) => (qtyMap[p.id] ?? 0) > 0).length;
@@ -112,7 +113,7 @@ export default function ConventionProductTable({ products, qtyMap, conventionId,
                         <td className="px-4 py-3 text-right text-slate-400">£{xyloCost.toFixed(2)}</td>
                         <td className="px-4 py-3">
                           <div className="flex justify-center">
-                            <ConventionQtyInput conventionId={conventionId} productId={p.id} qty={qty} />
+                            <ConventionQtyInput conventionId={conventionId} productId={p.id} qty={qty} dept={dept} />
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right text-slate-200">

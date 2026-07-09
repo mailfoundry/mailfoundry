@@ -7,9 +7,10 @@ type Props = {
   conventionId: string;
   productId: string;
   qty: number;
+  dept: string;
 };
 
-export default function ConventionQtyInput({ conventionId, productId, qty }: Props) {
+export default function ConventionQtyInput({ conventionId, productId, qty, dept }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -18,6 +19,7 @@ export default function ConventionQtyInput({ conventionId, productId, qty }: Pro
     const formData = new FormData();
     formData.append("conventionId", conventionId);
     formData.append("productId", productId);
+    formData.append("dept", dept);
     formData.append("qty", String(newQty));
     startTransition(() => updateOrderQty(formData));
   };

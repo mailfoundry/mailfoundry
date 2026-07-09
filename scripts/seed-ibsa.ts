@@ -116,8 +116,8 @@ async function main() {
     }
 
     await prisma.ibsaOrderItem.upsert({
-      where: { conventionId_productId: { conventionId, productId } },
-      create: { conventionId, productId, qty: item.qty },
+      where: { conventionId_productId_dept: { conventionId, productId, dept: "CS" } },
+      create: { conventionId, productId, dept: "CS", qty: item.qty },
       update: { qty: item.qty },
     });
     upserted++;

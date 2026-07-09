@@ -184,6 +184,7 @@ model IbsaOrderItem {
   id           String   @id @default(cuid())
   conventionId String
   productId    String
+  dept         String   @default("CS") // CS | FA — which invoice this line came from
   qty          Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -191,5 +192,5 @@ model IbsaOrderItem {
   convention IbsaConvention @relation(fields: [conventionId], references: [id], onDelete: Cascade)
   product    IbsaProduct    @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([conventionId, productId])
+  @@unique([conventionId, productId, dept])
 }

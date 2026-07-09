@@ -6,16 +6,17 @@ import { revalidatePath } from "next/cache";
 export async function updateOrderQty(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const productId = formData.get("productId")?.toString() ?? "";
+  const dept = formData.get("dept")?.toString() ?? "CS";
   const qty = parseInt(formData.get("qty")?.toString() ?? "0") || 0;
 
   if (!conventionId || !productId) return;
 
   if (qty <= 0) {
-    await prisma.ibsaOrderItem.deleteMany({ where: { conventionId, productId } });
+    await prisma.ibsaOrderItem.deleteMany({ where: { conventionId, productId, dept } });
   } else {
     await prisma.ibsaOrderItem.upsert({
-      where: { conventionId_productId: { conventionId, productId } },
-      create: { conventionId, productId, qty },
+      where: { conventionId_productId_dept: { conventionId, productId, dept } },
+      create: { conventionId, productId, dept, qty },
       update: { qty },
     });
   }
