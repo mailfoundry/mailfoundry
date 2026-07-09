@@ -19,8 +19,8 @@ const prisma = new PrismaClient({ adapter } as never) as unknown as {
     update: (a: unknown) => Promise<{ id: string }>;
   };
   ibsaProduct: {
-    findUnique: (a: unknown) => Promise<{ id: string } | null>;
-    create: (a: unknown) => Promise<{ id: string }>;
+    findUnique: (a: unknown) => Promise<{ id: string; type: string } | null>;
+    create: (a: unknown) => Promise<{ id: string; type: string }>;
   };
   ibsaOrderItem: {
     upsert: (a: unknown) => Promise<unknown>;
@@ -380,7 +380,14 @@ async function main() {
     const dbCode = CODE_ALIASES[item.code] ?? item.code;
     let product = await prisma.ibsaProduct.findUnique({
       where: { code: dbCode },
-    } as never) as { id: string } | null;
+    } as never) as { id: string; type: string } | null;
+
+    // FA invoices sometimes include CS-type products (e.g. extra gloves for the first-aid post).
+    // Importing them would overwrite CS invoice quantities, so we skip them here.
+    if (inv.dept === "FA" && product && product.type === "CS") {
+      console.log(`  ~ Skipping CS product on FA invoice: ${item.code}`);
+      continue;
+    }
 
     if (!product) {
       if (inv.dept === "FA" && item.unitCost !== undefined) {
@@ -388,7 +395,7 @@ async function main() {
         const name = dbCode.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
         product = await prisma.ibsaProduct.create({
           data: { code: dbCode, name, category: "firstaid", type: "FA", unitCost: item.unitCost },
-        } as never) as { id: string };
+        } as never) as { id: string; type: string };
         console.log(`  + Created FA product: ${dbCode}`);
       } else {
         console.warn(`  ✗ Product not found: ${item.code}${dbCode !== item.code ? ` (alias: ${dbCode})` : ""} — run seed-cs-products.ts first`);
