@@ -52,6 +52,8 @@ const CODE_ALIASES: Record<string, string> = {
   "BARRIER_TAPE_NON_ADHESIVE":         "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
   // Maintenance pads — two invoice spellings, one DB code
   "MAINTENANCE_REFILL_PADS_X20":       "MAINTENCE REFILL PADS_X20",
+  // Bodyform — invoice typo (HYGEINE vs HYGIENE)
+  "BODYFORM_HYGEINE_PADS_12PACK":      "BODYFORM_HYGIENE_PADS_12PACK",
   // Invoice strips spaces around +
   "BRUSH_SOFT_28CM+HANDLE_RED":        "BRUSH_SOFT_28CM + HANDLE_RED",
   "BRUSH_SOFT_28CM+HANDLE_BLUE":       "BRUSH_SOFT_28CM + HANDLE_BLUE",
