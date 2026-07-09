@@ -119,13 +119,24 @@ export default async function IbsaPage() {
     }
   }
 
+  // Earliest meaningful date for a convention — used to group CS+FA pairs together
+  const convSortKey = (card: CardData): number => {
+    const dates = [
+      card.convention.collectionDate,
+      card.convention.faCollectionDate,
+      card.convention.conventionDate,
+    ].filter((d): d is Date => !!d).map((d) => new Date(d).getTime());
+    return dates.length ? Math.min(...dates) : Infinity;
+  };
+
   const upcomingCards = allCards
     .filter((card) => card.convention.conventionDate >= now)
     .sort((a, b) => {
-      if (!a.sortDate && !b.sortDate) return 0;
-      if (!a.sortDate) return 1;
-      if (!b.sortDate) return -1;
-      return new Date(a.sortDate).getTime() - new Date(b.sortDate).getTime();
+      const keyDiff = convSortKey(a) - convSortKey(b);
+      if (keyDiff !== 0) return keyDiff;
+      // Same convention: CS before FA
+      if (a.convention.id === b.convention.id) return a.dept === "CS" ? -1 : 1;
+      return 0;
     });
 
   const pastConventions = conventions.filter((c) => c.conventionDate < now);
