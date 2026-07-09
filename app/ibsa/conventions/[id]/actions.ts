@@ -113,3 +113,56 @@ export async function markUnpaid(formData: FormData) {
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
 }
+
+export async function updateFaStatus(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  const status = formData.get("status")?.toString() ?? "";
+  if (!conventionId || !status) return;
+  await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { faStatus: status } });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
+export async function markFaPaid(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { faPaidAt: new Date() },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
+export async function markFaUnpaid(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { faPaidAt: null },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
+export async function updateFaLogistics(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  const faCollectionDate  = formData.get("faCollectionDate")?.toString() ?? "";
+  const faDeliveryDate    = formData.get("faDeliveryDate")?.toString() ?? "";
+  const faPaymentDueDate  = formData.get("faPaymentDueDate")?.toString() ?? "";
+  const faDeliveryAddress = formData.get("faDeliveryAddress")?.toString() ?? "";
+  const faShippingCost    = parseFloat(formData.get("faShippingCost")?.toString() ?? "0") || 0;
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: {
+      faCollectionDate:  faCollectionDate  ? new Date(faCollectionDate)  : null,
+      faDeliveryDate:    faDeliveryDate    ? new Date(faDeliveryDate)    : null,
+      faPaymentDueDate:  faPaymentDueDate  ? new Date(faPaymentDueDate)  : null,
+      faDeliveryAddress: faDeliveryAddress || null,
+      faShippingCost,
+    },
+  });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}

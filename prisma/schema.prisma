@@ -150,13 +150,26 @@ model IbsaConvention {
   name            String
   venue           String?
   conventionDate  DateTime
-  deliveryDate    DateTime?
-  collectionDate  DateTime?
+
+  // CS (Cleaning Supplies) logistics
   status          String    @default("pending") // pending | ordered | complete
+  collectionDate  DateTime?
+  deliveryDate    DateTime?
+  deliveryAddress String?
   shippingCost    Float     @default(0)
   paymentDueDate  DateTime?
   paidAt          DateTime?
-  deliveryAddress String?
+
+  // FA (First Aid) logistics
+  faStatus          String    @default("pending") // pending | ordered | complete
+  faCollectionDate  DateTime?
+  faDeliveryDate    DateTime?
+  faDeliveryAddress String?
+  faShippingCost    Float     @default(0)
+  faPaymentDueDate  DateTime?
+  faPaidAt          DateTime?
+
+  // Shared contact
   contactName     String?
   contactEmail    String?
   contactMobile   String?

@@ -11,9 +11,8 @@ const fmtGbp = (n: number) =>
 
 function daysUntil(d: Date): number {
   const msPerDay = 1000 * 60 * 60 * 24;
-  const now = new Date();
   return Math.ceil(
-    (d.setHours(0, 0, 0, 0) - now.setHours(0, 0, 0, 0)) / msPerDay
+    (new Date(d).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / msPerDay
   );
 }
 
@@ -32,8 +31,8 @@ function CountdownPill({ days }: { days: number }) {
   );
 }
 
-function StatusBadge({ status, isPast }: { status: string; isPast: boolean }) {
-  if (isPast || status === "complete")
+function StatusBadge({ status }: { status: string }) {
+  if (status === "complete")
     return <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-500">Complete</span>;
   if (status === "ordered")
     return <span className="rounded-full bg-green-900/40 px-2 py-0.5 text-xs text-green-400 border border-green-800/50">Ordered</span>;
@@ -41,11 +40,10 @@ function StatusBadge({ status, isPast }: { status: string; isPast: boolean }) {
 }
 
 function PaymentBadge({ paidAt, paymentDueDate }: { paidAt: Date | null; paymentDueDate: Date | null }) {
-  if (paidAt) {
+  if (paidAt)
     return <span className="rounded-full bg-green-900/40 px-2 py-0.5 text-xs text-green-400 border border-green-800/50">✓ Paid</span>;
-  }
   if (paymentDueDate) {
-    const days = daysUntil(new Date(paymentDueDate));
+    const days = daysUntil(paymentDueDate);
     const colour = days <= 7 ? "text-red-400 border-red-800/40 bg-red-950/30" : "text-amber-400 border-amber-800/40 bg-amber-950/30";
     return <span className={`rounded-full px-2 py-0.5 text-xs border ${colour}`}>Due {fmtDate(paymentDueDate)}</span>;
   }
@@ -61,26 +59,86 @@ export default async function IbsaPage() {
       orderItems: {
         select: {
           qty: true,
-          product: { select: { unitCost: true, xyloCost: true } },
+          product: { select: { unitCost: true, xyloCost: true, type: true } },
         },
       },
     },
   });
 
   const now = new Date();
-  const upcoming = conventions
-    .filter((c) => c.conventionDate >= now)
-    .sort((a, b) => {
-      // Sort by collection date ascending; nulls (no collection date set) go last
-      if (!a.collectionDate && !b.collectionDate) return 0;
-      if (!a.collectionDate) return 1;
-      if (!b.collectionDate) return -1;
-      return a.collectionDate.getTime() - b.collectionDate.getTime();
-    });
-  const past = conventions.filter((c) => c.conventionDate < now);
 
-  const totalValue = conventions.reduce(
-    (sum, c) => sum + c.orderItems.reduce((s, i) => s + i.qty * i.product.unitCost, 0),
+  // Build flat card list — one CS card + one FA card per convention (where applicable)
+  type CardData = {
+    convention: (typeof conventions)[number];
+    dept: "CS" | "FA";
+    status: string;
+    paidAt: Date | null;
+    paymentDueDate: Date | null;
+    collectionDate: Date | null;
+    deliveryDate: Date | null;
+    items: { qty: number; unitCost: number; xyloCost: number | null }[];
+    sortDate: Date | null;
+  };
+
+  const allCards: CardData[] = [];
+
+  for (const c of conventions) {
+    const csItems = c.orderItems
+      .filter((i) => i.product.type === "CS")
+      .map((i) => ({ qty: i.qty, unitCost: i.product.unitCost, xyloCost: i.product.xyloCost }));
+    const faItems = c.orderItems
+      .filter((i) => i.product.type === "FA")
+      .map((i) => ({ qty: i.qty, unitCost: i.product.unitCost, xyloCost: i.product.xyloCost }));
+
+    // CS card always shown
+    allCards.push({
+      convention: c,
+      dept: "CS",
+      status: c.status,
+      paidAt: c.paidAt,
+      paymentDueDate: c.paymentDueDate,
+      collectionDate: c.collectionDate,
+      deliveryDate: c.deliveryDate,
+      items: csItems,
+      sortDate: c.collectionDate,
+    });
+
+    // FA card shown only if there are FA items or FA logistics dates
+    if (faItems.length > 0 || c.faCollectionDate || c.faPaymentDueDate) {
+      allCards.push({
+        convention: c,
+        dept: "FA",
+        status: c.faStatus,
+        paidAt: c.faPaidAt,
+        paymentDueDate: c.faPaymentDueDate,
+        collectionDate: c.faCollectionDate,
+        deliveryDate: c.faDeliveryDate,
+        items: faItems,
+        sortDate: c.faCollectionDate,
+      });
+    }
+  }
+
+  const upcomingCards = allCards
+    .filter((card) => card.convention.conventionDate >= now)
+    .sort((a, b) => {
+      if (!a.sortDate && !b.sortDate) return 0;
+      if (!a.sortDate) return 1;
+      if (!b.sortDate) return -1;
+      return new Date(a.sortDate).getTime() - new Date(b.sortDate).getTime();
+    });
+
+  const pastConventions = conventions.filter((c) => c.conventionDate < now);
+
+  // Stats
+  const totalCsValue = conventions.reduce(
+    (sum, c) =>
+      sum + c.orderItems.filter((i) => i.product.type === "CS").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
+    0
+  );
+  const totalFaValue = conventions.reduce(
+    (sum, c) =>
+      sum + c.orderItems.filter((i) => i.product.type === "FA").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
     0
   );
   const totalProfit = conventions.reduce(
@@ -92,8 +150,7 @@ export default async function IbsaPage() {
       ),
     0
   );
-  const unpaidCount = upcoming.filter((c) => !c.paidAt).length;
-  const orderedCount = conventions.filter((c) => c.status === "ordered").length;
+  const upcomingCount = conventions.filter((c) => c.conventionDate >= now).length;
 
   return (
     <IbsaAppShell active="ibsa">
@@ -114,39 +171,141 @@ export default async function IbsaPage() {
       <div className="mb-8 grid grid-cols-4 gap-4">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-xs text-slate-500">Upcoming</p>
-          <p className="mt-1 text-2xl font-bold">{upcoming.length}</p>
-          <p className="mt-0.5 text-xs text-slate-600">{orderedCount} ordered</p>
+          <p className="mt-1 text-2xl font-bold">{upcomingCount}</p>
+          <p className="mt-0.5 text-xs text-slate-600">conventions</p>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Total Revenue</p>
-          <p className="mt-1 text-2xl font-bold">£{fmtGbp(totalValue)}</p>
+          <p className="text-xs text-slate-500">CS Revenue</p>
+          <p className="mt-1 text-2xl font-bold">£{fmtGbp(totalCsValue)}</p>
+          <p className="mt-0.5 text-xs text-slate-600">Cleaning Supplies</p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">FA Revenue</p>
+          <p className="mt-1 text-2xl font-bold">£{fmtGbp(totalFaValue)}</p>
+          <p className="mt-0.5 text-xs text-slate-600">First Aid</p>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <p className="text-xs text-slate-500">Total Profit</p>
           <p className={`mt-1 text-2xl font-bold ${totalProfit >= 0 ? "text-green-400" : "text-red-400"}`}>
             £{fmtGbp(totalProfit)}
           </p>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Awaiting Payment</p>
-          <p className={`mt-1 text-2xl font-bold ${unpaidCount > 0 ? "text-amber-400" : "text-slate-400"}`}>
-            {unpaidCount}
-          </p>
+          <p className="mt-0.5 text-xs text-slate-600">across all orders</p>
         </div>
       </div>
 
-      {/* Upcoming conventions */}
-      {upcoming.length > 0 && (
+      {/* Upcoming — all depts mixed, sorted by collection date */}
+      {upcomingCards.length > 0 && (
         <section className="mb-10">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
-            Upcoming — sorted by date
+            Upcoming — sorted by collection date
           </h3>
-          <ConventionCards conventions={upcoming} />
+          <div className="grid grid-cols-1 gap-4">
+            {upcomingCards.map((card) => {
+              const value = card.items.reduce((s, i) => s + i.qty * i.unitCost, 0);
+              const profit = card.items.reduce(
+                (s, i) => s + i.qty * (i.unitCost - (i.xyloCost ?? i.unitCost)),
+                0
+              );
+              const itemCount = card.items.filter((i) => i.qty > 0).length;
+              const daysToCollection = card.collectionDate ? daysUntil(card.collectionDate) : null;
+              const daysToConvention = daysUntil(card.convention.conventionDate);
+              const leftBorder = card.dept === "FA" ? "border-l-blue-700/60" : "border-l-orange-700/60";
+
+              return (
+                <div
+                  key={`${card.convention.id}-${card.dept}`}
+                  className={`relative rounded-2xl border border-slate-800 border-l-4 ${leftBorder} bg-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-800/60`}
+                >
+                  {/* Hide — only on CS card to avoid double-archiving */}
+                  {card.dept === "CS" && (
+                    <form action={archiveConvention} className="absolute right-3 top-3 z-10">
+                      <input type="hidden" name="conventionId" value={card.convention.id} />
+                      <button
+                        type="submit"
+                        title="Hide this convention"
+                        className="rounded px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-800 hover:text-red-400 transition-colors"
+                      >
+                        Hide
+                      </button>
+                    </form>
+                  )}
+
+                  <Link href={`/ibsa/conventions/${card.convention.id}`} className="block p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-base font-bold text-white">{card.convention.name}</span>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                            card.dept === "FA"
+                              ? "bg-blue-900/40 text-blue-300 border border-blue-800/50"
+                              : "bg-orange-900/30 text-orange-300 border border-orange-800/40"
+                          }`}>
+                            {card.dept === "FA" ? "First Aid" : "Cleaning Supplies"}
+                          </span>
+                          <StatusBadge status={card.status} />
+                          <PaymentBadge paidAt={card.paidAt} paymentDueDate={card.paymentDueDate} />
+                        </div>
+                        {card.convention.venue && (
+                          <p className="mt-0.5 text-xs text-slate-500">{card.convention.venue}</p>
+                        )}
+
+                        <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
+                          <span>
+                            <span className="text-slate-600">Convention</span>{" "}
+                            <span className="font-medium text-slate-300">
+                              {fmtDate(card.convention.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
+                            </span>
+                          </span>
+                          {card.deliveryDate && (
+                            <span>
+                              <span className="text-slate-600">Delivery</span>{" "}
+                              <span className="font-medium text-slate-300">{fmtDate(card.deliveryDate)}</span>
+                            </span>
+                          )}
+                          {card.collectionDate && (
+                            <span>
+                              <span className="text-slate-600">Collection</span>{" "}
+                              <span className="font-medium text-slate-300">{fmtDate(card.collectionDate)}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-6 pr-10">
+                        {value > 0 ? (
+                          <div className="text-right">
+                            <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
+                            <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
+                            <p className="text-xs text-slate-500">{itemCount} lines</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-600">No order yet</p>
+                        )}
+
+                        <div className="flex gap-3">
+                          {daysToCollection !== null && (
+                            <div className="text-center">
+                              <CountdownPill days={daysToCollection} />
+                              <p className="mt-1 text-xs text-slate-600">collect</p>
+                            </div>
+                          )}
+                          <div className="text-center">
+                            <CountdownPill days={daysToConvention} />
+                            <p className="mt-1 text-xs text-slate-600">conv</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
         </section>
       )}
 
       {/* Past conventions */}
-      {past.length > 0 && (
+      {pastConventions.length > 0 && (
         <section>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">
             Past / Complete
@@ -157,14 +316,19 @@ export default async function IbsaPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">Convention</th>
                   <th className="px-5 py-3 font-medium">Date</th>
-                  <th className="px-5 py-3 font-medium">Revenue</th>
-                  <th className="px-5 py-3 font-medium">Payment</th>
+                  <th className="px-5 py-3 font-medium">CS</th>
+                  <th className="px-5 py-3 font-medium">FA</th>
                   <th className="px-5 py-3 font-medium"></th>
                 </tr>
               </thead>
               <tbody>
-                {past.map((c) => {
-                  const value = c.orderItems.reduce((s, i) => s + i.qty * i.product.unitCost, 0);
+                {pastConventions.map((c) => {
+                  const csVal = c.orderItems
+                    .filter((i) => i.product.type === "CS")
+                    .reduce((s, i) => s + i.qty * i.product.unitCost, 0);
+                  const faVal = c.orderItems
+                    .filter((i) => i.product.type === "FA")
+                    .reduce((s, i) => s + i.qty * i.product.unitCost, 0);
                   return (
                     <tr key={c.id} className="border-t border-slate-800">
                       <td className="px-5 py-3 font-medium">
@@ -175,19 +339,12 @@ export default async function IbsaPage() {
                       <td className="px-5 py-3 text-slate-500">
                         {fmtDate(c.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
                       </td>
-                      <td className="px-5 py-3 text-slate-400">
-                        {value > 0 ? `£${fmtGbp(value)}` : "—"}
-                      </td>
-                      <td className="px-5 py-3">
-                        <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
-                      </td>
+                      <td className="px-5 py-3 text-slate-400">{csVal > 0 ? `£${fmtGbp(csVal)}` : "—"}</td>
+                      <td className="px-5 py-3 text-slate-400">{faVal > 0 ? `£${fmtGbp(faVal)}` : "—"}</td>
                       <td className="px-5 py-3">
                         <form action={archiveConvention}>
                           <input type="hidden" name="conventionId" value={c.id} />
-                          <button
-                            type="submit"
-                            className="text-xs text-slate-600 hover:text-red-400 transition-colors"
-                          >
+                          <button type="submit" className="text-xs text-slate-600 hover:text-red-400 transition-colors">
                             Remove
                           </button>
                         </form>
@@ -201,113 +358,5 @@ export default async function IbsaPage() {
         </section>
       )}
     </IbsaAppShell>
-  );
-}
-
-type Convention = Awaited<ReturnType<typeof prisma.ibsaConvention.findMany>>[number] & {
-  _count: { orderItems: number };
-  orderItems: { qty: number; product: { unitCost: number; xyloCost: number | null } }[];
-};
-
-function ConventionCards({ conventions }: { conventions: Convention[] }) {
-  return (
-    <div className="grid grid-cols-1 gap-4">
-      {conventions.map((c) => {
-        const now = new Date();
-        const isPast = c.conventionDate < now;
-        const value = c.orderItems.reduce((s, i) => s + i.qty * i.product.unitCost, 0);
-        const profit = c.orderItems.reduce(
-          (s, i) => s + i.qty * (i.product.unitCost - (i.product.xyloCost ?? i.product.unitCost)),
-          0
-        );
-        const itemCount = c.orderItems.filter((i) => i.qty > 0).length;
-        const daysToCollection = c.collectionDate ? daysUntil(new Date(c.collectionDate)) : null;
-        const daysToConvention = daysUntil(new Date(c.conventionDate));
-
-        return (
-          <div key={c.id} className="relative rounded-2xl border border-slate-800 bg-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-800/60">
-            {/* Hide button */}
-            <form action={archiveConvention} className="absolute right-3 top-3 z-10">
-              <input type="hidden" name="conventionId" value={c.id} />
-              <button
-                type="submit"
-                title="Hide this convention"
-                className="rounded px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-800 hover:text-red-400 transition-colors"
-              >
-                Hide
-              </button>
-            </form>
-
-            <Link href={`/ibsa/conventions/${c.id}`} className="block p-5">
-              <div className="flex items-start justify-between gap-4">
-                {/* Left: name + venue + badges */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-base font-bold text-white">{c.name}</span>
-                    <StatusBadge status={c.status} isPast={isPast} />
-                    <PaymentBadge paidAt={c.paidAt} paymentDueDate={c.paymentDueDate} />
-                  </div>
-                  {c.venue && <p className="mt-0.5 text-xs text-slate-500">{c.venue}</p>}
-
-                  {/* Date row */}
-                  <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
-                    <span>
-                      <span className="text-slate-600">Convention</span>{" "}
-                      <span className="font-medium text-slate-300">
-                        {fmtDate(c.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
-                      </span>
-                    </span>
-                    {c.deliveryDate && (
-                      <span>
-                        <span className="text-slate-600">Delivery</span>{" "}
-                        <span className="font-medium text-slate-300">{fmtDate(c.deliveryDate)}</span>
-                      </span>
-                    )}
-                    {c.collectionDate && (
-                      <span>
-                        <span className="text-slate-600">Collection</span>{" "}
-                        <span className="font-medium text-slate-300">{fmtDate(c.collectionDate)}</span>
-                      </span>
-                    )}
-                    {c.contactName && (
-                      <span>
-                        <span className="text-slate-600">Contact</span>{" "}
-                        <span className="font-medium text-slate-300">{c.contactName}</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right: financials + countdowns */}
-                <div className="flex shrink-0 items-center gap-6 pr-10">
-                  {/* Financials */}
-                  {value > 0 && (
-                    <div className="text-right">
-                      <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
-                      <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
-                      <p className="text-xs text-slate-500">{itemCount} lines</p>
-                    </div>
-                  )}
-
-                  {/* Countdowns */}
-                  <div className="flex gap-3">
-                    {daysToCollection !== null && (
-                      <div className="text-center">
-                        <CountdownPill days={daysToCollection} />
-                        <p className="mt-1 text-xs text-slate-600">collect</p>
-                      </div>
-                    )}
-                    <div className="text-center">
-                      <CountdownPill days={daysToConvention} />
-                      <p className="mt-1 text-xs text-slate-600">conv</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </div>
-        );
-      })}
-    </div>
   );
 }

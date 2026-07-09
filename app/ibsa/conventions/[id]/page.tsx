@@ -8,8 +8,12 @@ import {
   updateDeliveryDate,
   updateShippingCost,
   updateLogistics,
+  updateFaLogistics,
   markPaid,
   markUnpaid,
+  markFaPaid,
+  markFaUnpaid,
+  updateFaStatus,
 } from "./actions";
 import { updateConventionDetails } from "../../actions";
 import ConventionProductTable from "./ConventionProductTable";
@@ -52,17 +56,9 @@ export default async function ConventionDetailPage({
     qtyMap[item.productId] = item.qty;
   }
 
-  const csProducts = allProducts
-    .filter((p) => p.type === "CS")
-    .map(({ id, name, variant, unitCost, xyloCost, category }) => ({
-      id, name, variant, unitCost, xyloCost, category,
-    }));
-
-  const faProducts = allProducts
-    .filter((p) => p.type === "FA")
-    .map(({ id, name, variant, unitCost, xyloCost, category }) => ({
-      id, name, variant, unitCost, xyloCost, category,
-    }));
+  const allProductRows = allProducts.map(({ id, name, variant, unitCost, xyloCost, category }) => ({
+    id, name, variant, unitCost, xyloCost, category,
+  }));
 
   const orderSaleTotal = convention.orderItems.reduce(
     (sum, item) => sum + item.qty * item.product.unitCost,
@@ -342,19 +338,101 @@ export default async function ConventionDetailPage({
         </form>
       </div>
 
-      {/* ── Product tables ─────────────────────────────────────────── */}
-      <ConventionProductTable
-        products={csProducts}
-        qtyMap={qtyMap}
-        conventionId={convention.id}
-        title="Cleaning Supplies"
-      />
+      {/* ── FA Logistics panel ─────────────────────────────────────── */}
+      <div className="mb-8 rounded-2xl border border-blue-900/40 bg-slate-900 p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-blue-400">
+            First Aid Logistics
+          </h3>
+          <div className="flex items-center gap-3">
+            {/* FA Payment */}
+            {convention.faPaidAt ? (
+              <>
+                <span className="text-xs text-green-400">✓ FA Paid {fmtDate(convention.faPaidAt)}</span>
+                <form action={markFaUnpaid}>
+                  <input type="hidden" name="conventionId" value={convention.id} />
+                  <button type="submit" className="text-xs text-slate-600 hover:text-red-400">Mark FA unpaid</button>
+                </form>
+              </>
+            ) : (
+              <form action={markFaPaid} className="flex items-center gap-2">
+                <input type="hidden" name="conventionId" value={convention.id} />
+                {convention.faPaymentDueDate && (
+                  <span className="text-xs text-amber-400">FA due {fmtDate(convention.faPaymentDueDate)}</span>
+                )}
+                <button type="submit" className="rounded-lg bg-blue-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+                  Mark FA paid
+                </button>
+              </form>
+            )}
+            {/* FA Status */}
+            <div className="flex gap-1">
+              {(["pending", "ordered", "complete"] as const).map((s) => (
+                <form key={s} action={updateFaStatus}>
+                  <input type="hidden" name="conventionId" value={convention.id} />
+                  <input type="hidden" name="status" value={s} />
+                  <button
+                    type="submit"
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold capitalize ${
+                      convention.faStatus === s
+                        ? "bg-blue-700 text-white"
+                        : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                </form>
+              ))}
+            </div>
+          </div>
+        </div>
+        <form action={updateFaLogistics} className="grid grid-cols-3 gap-x-6 gap-y-4">
+          <input type="hidden" name="conventionId" value={convention.id} />
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">FA Collection Date</label>
+            <input type="date" name="faCollectionDate" defaultValue={toInput(convention.faCollectionDate)}
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">FA Delivery Date</label>
+            <input type="date" name="faDeliveryDate" defaultValue={toInput(convention.faDeliveryDate)}
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">FA Payment Due</label>
+            <input type="date" name="faPaymentDueDate" defaultValue={toInput(convention.faPaymentDueDate)}
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">FA Delivery Address</label>
+            <input type="text" name="faDeliveryAddress" defaultValue={convention.faDeliveryAddress ?? ""}
+              placeholder="If different from CS delivery"
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">FA Shipping Cost</label>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2">
+              <span className="text-sm text-slate-400">£</span>
+              <input type="number" name="faShippingCost" min="0" step="0.01"
+                defaultValue={convention.faShippingCost > 0 ? convention.faShippingCost : ""}
+                placeholder="0.00"
+                className="w-full bg-transparent text-sm text-white outline-none" />
+            </div>
+          </div>
+          <div className="flex items-end">
+            <button type="submit" className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600">
+              Save FA logistics
+            </button>
+          </div>
+        </form>
+      </div>
 
+      {/* ── Product table (all depts combined) ─────────────────────── */}
       <ConventionProductTable
-        products={faProducts}
+        products={allProductRows}
         qtyMap={qtyMap}
         conventionId={convention.id}
-        title="First Aid"
+        title="Order"
       />
     </IbsaAppShell>
   );
