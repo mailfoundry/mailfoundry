@@ -59,6 +59,7 @@ const CODE_ALIASES: Record<string, string> = {
   "PACKAGING BOXES":                   "PACKAGING_BOXES",
   // KTY products — Dublin invoice uses long space-delimited names → clean DB codes
   "KTY MOP FITTING PLASTIC - RED":                                    "KTY_MOP_FITTING_PLASTIC_RED",
+  "KTY MOP FITTING PLASTIC - BLUE":                                   "KTY_MOP_FITTING_PLASTIC_BLUE",
   "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED":     "KTY_MOP_HYGIEMIX_S450G_10PACK_RED",
   "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE":    "KTY_MOP_HYGIEMIX_S450G_10PACK_BLUE",
   "KTY BUFFALO BUCKET & WRINGER 25L - RED":                           "KTY_BUFFALO_BUCKET_WRINGER_25L_RED",
@@ -367,6 +368,39 @@ const INVOICES: Record<string, Invoice> = {
       { code: "CLOVER_ULTRAFRESH_1L",                         qty: 5             },
       { code: "CLOVER_ULTRAFRESH_5L",                         qty: 5             }, // portal may show £20.99 — known 12.5% price increase
       { code: "BIO_HAZARD_KITS",                              qty: 6             }, // portal may show £6.59 — known invoice discrepancy
+    ],
+  },
+
+  "INV-0184": {
+    ref: "INV-0184",
+    conventionSearch: "Leeds - First Direct Arena",
+    dept: "CS",
+    invoiceDate: "2026-05-06",
+    paymentDueDate: "2026-06-25",
+    shippingCost: 68.73, // "DELIVERY 1 PALLET + TAIL LIFT"
+    items: [
+      { code: "GLOVES_VINYL_CLEAR_L",                                           qty: 27  },
+      { code: "GLOVES_VINYL_CLEAR_XL",                                          qty: 5   },
+      { code: "BUCKET_OVAL_MOP_14L_RED",                                        qty: 10  },
+      { code: "BROOM HEAD WASHABLE 30CM SOFT - BLUE",                           qty: 100 },
+      { code: "BROOM HEAD WASHABLE 30CM STIFF - BLUE",                          qty: 30  },
+      { code: "HANDLE HYGIENE 137CM - BLUE",                                    qty: 40  },
+      { code: "KTY MOP FITTING PLASTIC - BLUE",                                 qty: 10  },
+      { code: "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE",   qty: 1   },
+      { code: "SKT MOP HYGIEMIX T1D 250G - RED",                                qty: 115 },
+      { code: "DUSTPAN_BRUSH_SET_GREEN",                                        qty: 25  },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",                                      qty: 13  },
+      { code: "CLOTH_OCEAN_RED_50PK",                                           qty: 20  },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                                          qty: 10  },
+      { code: "CENTRE_FEED_BLUE_DL_6PK",                                        qty: 4   },
+      { code: "REFUSE_SACK_BLACK_100PK",                                        qty: 2   },
+      { code: "SCRAPER",                                                         qty: 3   },
+      { code: 'JUG_FUNNEL_6"',                                                  qty: 1   },
+      { code: "JUG_MEASURING_1LITRE",                                           qty: 1   },
+      { code: "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",                            qty: 2   },
+      { code: "IMPACT_LIQUIDS_MULTI_PURPOSE_5L",                                qty: 2   },
+      { code: "CLOVER_DETAK_750ML",                                             qty: 1   },
+      { code: "BIO_HAZARD_KITS",                                                qty: 3   },
     ],
   },
 
