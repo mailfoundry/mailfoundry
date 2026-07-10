@@ -76,6 +76,13 @@ const CODE_ALIASES: Record<string, string> = {
   "BROOMHEADWASHABLE45CMSOFT-RED":     "BROOM HEAD WASHABLE 45CM SOFT - RED",
   "HANDLEHYGIENE125CM-BLUE":           "HANDLE HYGIENE 125CM - BLUE",
   "HANDLEHYGIENE125CM-RED":            "HANDLE HYGIENE 125CM - RED",
+  // Manchester CS (INV-0199) — case/spacing differences
+  "MOP_STAND_PY(12)_7oz_RED":          "MOP_STAND_PY(12)_7OZ_RED",
+  "MOP_STAND_(PY12)_7oz_BLUE":         "MOP_STAND_PY(12)_7OZ_BLUE",
+  "SQUEEGEE_METAL_55cm":               "SQUEEGEE_METAL_55CM",
+  "LOBBY_BRUSH_LONGHNDL_COMPLETE SET_BLACK": "LOBBY_BRUSH_LONGHNDL_COMPLETE_SET_BLACK",
+  "BRUSH_SOFT_28cm + HANDLE_RED":      "BRUSH_SOFT_28CM + HANDLE_RED",
+  "BARRIER_TAPE_NON_ADHESIVE RED/WHITE": "BARRIER_TAPE_NON_ADHESIVE_RED/WHITE",
 };
 
 const INVOICES: Record<string, Invoice> = {
@@ -288,6 +295,74 @@ const INVOICES: Record<string, Invoice> = {
       { code: "GLOVES_NITRILE_BLUE_SML",              qty: 2  },
       { code: "GLOVES_NITRILE_BLUE_XL",               qty: 2  },
       { code: "BIO_HAZARD_KITS",                      qty: 1  },
+    ],
+  },
+
+  "INV-0198": {
+    ref: "INV-0198",
+    conventionSearch: "Manchester",
+    dept: "FA",
+    invoiceDate: "2026-06-04",
+    paymentDueDate: "2026-07-08",
+    shippingCost: 18.70, // "PACKING & SHIPPING" line on invoice
+    items: [
+      { code: "100PACK_ASSORTED_WATERPROOF_PLASTERS", qty: 4                 },
+      { code: "MEDIPAL_AW_150P",                      qty: 9                 },
+      { code: "EYEWASH_INCCAP_500ML",                 qty: 4                 },
+      { code: "BODYFORM_HYGIENE_PADS_12PACK",         qty: 4                 },
+      { code: "GLOVES_NITRILE_BLUE_MED",              qty: 12                },
+      { code: "GLOVES_NITRILE_BLUE_L",                qty: 6                 },
+      { code: "APRONS_FLTPACK_100PK",                 qty: 3                 },
+      { code: "FACEMASK_BLUE_50PK",                   qty: 2                 },
+      { code: "SHARPS_CONTAINER_1L",                  qty: 3,  unitCost: 5.99  },
+      { code: "VOMIT_BAGS_50PACK",                    qty: 1,  unitCost: 14.29 },
+      { code: "TISSUE_FACIAL_100SHEETS",              qty: 6,  unitCost: 0.79  },
+      { code: "CENTRE_FEED_ST_BLUE_6PK",              qty: 1                 },
+      { code: "COUCH_ROLL_50CMX50M",                  qty: 3,  unitCost: 12.59 },
+    ],
+  },
+
+  "INV-0199": {
+    ref: "INV-0199",
+    conventionSearch: "Manchester",
+    dept: "CS",
+    invoiceDate: "2026-06-04",
+    paymentDueDate: "2026-07-15",
+    shippingCost: 131.00, // "DELIVERY 2 PALLETS + TAIL LIFT" × 2 @ £65.50
+    items: [
+      { code: "GLOVES_VINYL_CLEAR_MED",                       qty: 2             },
+      { code: "GLOVES_VINYL_CLEAR_L",                         qty: 39            },
+      { code: "GLOVES_VINYL_CLEAR_XL",                        qty: 36            },
+      { code: "GLOVES_NITRILE_BLUE_XL",                       qty: 10            },
+      { code: "DUST_DISP_DUSTCLEAR_50PK",                     qty: 1,  unitCost: 5.19 },
+      { code: "APRONS_FLTPACK_100PK",                         qty: 23            },
+      { code: "BUCKET_OVAL_MOP_14L_RED",                      qty: 31            },
+      { code: "BUCKET_OVAL_MOP_14L_BLUE",                     qty: 31            },
+      { code: "BUCKET_PLASTIC_10L_BLUE",                      qty: 2             },
+      { code: "MOP_STAND_PY(12)_7oz_RED",                     qty: 40            }, // alias → MOP_STAND_PY(12)_7OZ_RED
+      { code: "MOP_STAND_(PY12)_7oz_BLUE",                    qty: 40            }, // alias → MOP_STAND_PY(12)_7OZ_BLUE
+      { code: "MOP_DISP_RED_10PK",                            qty: 1             },
+      { code: "MOP_DISP_BLUE_10PK",                           qty: 1             },
+      { code: "HNDL_WOODEN",                                  qty: 107           }, // 100 (mops) + 7 (squeegees), two lines on invoice
+      { code: "SQUEEGEE_METAL_55cm",                          qty: 7             }, // alias → SQUEEGEE_METAL_55CM
+      { code: "LOBBY_BRUSH_LONGHNDL_COMPLETE SET_BLACK",      qty: 2             }, // alias
+      { code: "BRUSH_SOFT_28cm + HANDLE_RED",                 qty: 139           }, // alias → BRUSH_SOFT_28CM + HANDLE_RED
+      { code: "BRUSH_STIFF_45CM + ALLOY_HANDLE_RED",          qty: 20            },
+      { code: "DUSTPAN_BRUSH_SET_RED",                        qty: 56            },
+      { code: "DUSTPAN_BRUSH_SET_BLUE",                       qty: 58            },
+      { code: "WET_FLOOR_AFRAME",                             qty: 32            },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",                    qty: 25            },
+      { code: "TRG_COMPLETE_RED",                             qty: 68            },
+      { code: "TRG_COMPLETE_BLUE",                            qty: 63            },
+      { code: "CLOTH_OCEAN_RED_50PK",                         qty: 29            },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                        qty: 31            },
+      { code: "SCRAPER",                                      qty: 5             },
+      { code: "JUG_MEASURING_1LITRE",                         qty: 2             },
+      { code: "BARRIER_TAPE_NON_ADHESIVE RED/WHITE",          qty: 2             }, // alias → BARRIER_TAPE_NON_ADHESIVE_RED/WHITE
+      { code: "SHARPS_CONTAINER_1L",                          qty: 2             },
+      { code: "CLOVER_ULTRAFRESH_1L",                         qty: 5             },
+      { code: "CLOVER_ULTRAFRESH_5L",                         qty: 5             }, // portal may show £20.99 — known 12.5% price increase
+      { code: "BIO_HAZARD_KITS",                              qty: 6             }, // portal may show £6.59 — known invoice discrepancy
     ],
   },
 

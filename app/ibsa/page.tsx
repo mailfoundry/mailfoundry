@@ -135,8 +135,12 @@ export default async function IbsaPage() {
     .sort((a, b) => {
       const keyDiff = convSortKey(a) - convSortKey(b);
       if (keyDiff !== 0) return keyDiff;
-      // Same convention: CS before FA
-      if (a.convention.id === b.convention.id) return a.dept === "CS" ? -1 : 1;
+      // Same convention: sort by whichever card's collection date is soonest
+      if (a.convention.id === b.convention.id) {
+        const aDate = a.sortDate ? new Date(a.sortDate).getTime() : Infinity;
+        const bDate = b.sortDate ? new Date(b.sortDate).getTime() : Infinity;
+        return aDate - bDate;
+      }
       return 0;
     });
 
