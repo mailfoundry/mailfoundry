@@ -76,6 +76,9 @@ const CODE_ALIASES: Record<string, string> = {
   "BROOMHEADWASHABLE45CMSOFT-RED":     "BROOM HEAD WASHABLE 45CM SOFT - RED",
   "HANDLEHYGIENE125CM-BLUE":           "HANDLE HYGIENE 125CM - BLUE",
   "HANDLEHYGIENE125CM-RED":            "HANDLE HYGIENE 125CM - RED",
+  // Milton Keynes (INV-0195) — handle hygiene uses underscores, DB uses spaces/dash
+  "HANDLE_HYGIENE_125CM_BLUE":         "HANDLE HYGIENE 125CM - BLUE",
+  "HANDLE_HYGIENE_125CM_RED":          "HANDLE HYGIENE 125CM - RED",
   // Manchester CS (INV-0199) — case/spacing differences
   "MOP_STAND_PY(12)_7oz_RED":          "MOP_STAND_PY(12)_7OZ_RED",
   "MOP_STAND_(PY12)_7oz_BLUE":         "MOP_STAND_PY(12)_7OZ_BLUE",
@@ -363,6 +366,78 @@ const INVOICES: Record<string, Invoice> = {
       { code: "CLOVER_ULTRAFRESH_1L",                         qty: 5             },
       { code: "CLOVER_ULTRAFRESH_5L",                         qty: 5             }, // portal may show £20.99 — known 12.5% price increase
       { code: "BIO_HAZARD_KITS",                              qty: 6             }, // portal may show £6.59 — known invoice discrepancy
+    ],
+  },
+
+  "INV-0195": {
+    ref: "INV-0195",
+    conventionSearch: "Milton Keynes A",
+    dept: "CS",
+    invoiceDate: "2026-06-03",
+    paymentDueDate: "2026-06-30",
+    shippingCost: 151.80, // "DELIVERY 2 PALLETS + TAIL LIFT" × 2 @ £75.90
+    items: [
+      { code: "GLOVES_VINYL_CLEAR_MED",                 qty: 25  },
+      { code: "GLOVES_VINYL_CLEAR_L",                   qty: 20  },
+      { code: "HANDLE_HYGIENE_125CM_BLUE",              qty: 15  }, // alias → HANDLE HYGIENE 125CM - BLUE
+      { code: "HANDLE_HYGIENE_125CM_RED",               qty: 10  }, // alias → HANDLE HYGIENE 125CM - RED
+      { code: "SKT MOP HYGIEMIX T1D 200G - BLUE",       qty: 120 },
+      { code: "SKT MOP HYGIEMIX T1D 200G - RED",        qty: 90  },
+      { code: "BRUSH_SOFT_28CM + HANDLE_BLUE",          qty: 40  },
+      { code: "DUSTPAN_BRUSH_SET_BLUE",                 qty: 20  },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",              qty: 20  },
+      { code: "TRG_COMPLETE_RED",                       qty: 15  },
+      { code: "TRG_COMPLETE_BLUE",                      qty: 15  },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                  qty: 10  },
+      { code: "TR_STANDARD_WHITE_36PK",                 qty: 2   },
+      { code: "CENTRE_FEED_ST_BLUE_6PK",                qty: 25  },
+      { code: "REFUSE_SACK_BLACK_100PK",                qty: 20  },
+      { code: 'JUG_FUNNEL_6"',                          qty: 1   },
+      { code: "JUG_MEASURING_1LITRE",                   qty: 1   },
+      { code: "SHARPS_CONTAINER_2L",                    qty: 1   },
+      { code: "CLOVER_ULTRAFRESH_5L",                   qty: 3   }, // portal shows £20.99 — known price increase
+      { code: "BIO_HAZARD_KITS",                        qty: 5   }, // portal shows £6.59 — known invoice discrepancy
+      { code: "WRAP_CELLOPHANE_CLEAR",                  qty: 1   },
+    ],
+  },
+
+  "INV-0202": {
+    ref: "INV-0202",
+    conventionSearch: "Liverpool",
+    dept: "CS",
+    invoiceDate: "2026-06-15",
+    paymentDueDate: "2026-08-06",
+    shippingCost: 151.00, // "DELIVERY 2 PALLETS + TAIL LIFT" × 2 @ £75.50
+    items: [
+      { code: "GLOVES_VINYL_CLEAR_MED",                 qty: 2             },
+      { code: "GLOVES_VINYL_CLEAR_L",                   qty: 39            },
+      { code: "GLOVES_VINYL_CLEAR_XL",                  qty: 36            },
+      { code: "GLOVES_NITRILE_BLUE_XL",                 qty: 10            },
+      { code: "EYEWEAR_SAFETY_GOGGLES_CLEAR",           qty: 1             },
+      { code: "MASK_DISP_DUSTCLEAR_50PK",               qty: 1             },
+      { code: "APRONS_FLTPACK_100PK",                   qty: 23            },
+      { code: "BUCKET_OVAL_MOP_14L_RED",                qty: 27            },
+      { code: "BUCKET_OVAL_MOP_14L_BLUE",               qty: 30            },
+      { code: "BUCKET_PLASTIC_10L_BLUE",                qty: 2             },
+      { code: "MOP_STAND_PY(12)_7OZ_RED",               qty: 39            },
+      { code: "MOP_STAND_PY(12)_7OZ_BLUE",              qty: 42            },
+      { code: "HNDL_WOODEN",                            qty: 81            },
+      { code: "SQUEEGEE_METAL_55CM",                    qty: 7             },
+      { code: "HNDL_WOODEN_2",                          qty: 7             },
+      { code: "BRUSH_SOFT_28CM + HANDLE_RED",           qty: 139           },
+      { code: "BRUSH_STIFF_45CM + ALLOY_HANDLE_RED",    qty: 16            },
+      { code: "DUSTPAN_BRUSH_SET_RED",                  qty: 56            },
+      { code: "DUSTPAN_BRUSH_SET_BLUE",                 qty: 58            },
+      { code: "WET_FLOOR_AFRAME",                       qty: 32            },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",              qty: 18            },
+      { code: "TRG_COMPLETE_RED",                       qty: 68            },
+      { code: "TRG_COMPLETE_BLUE",                      qty: 63            },
+      { code: "CLOTH_OCEAN_RED_50PK",                   qty: 29            },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                  qty: 31            },
+      { code: 'JUG_FUNNEL_6"',                          qty: 4             },
+      { code: "JUG_MEASURING_1LITRE",                   qty: 4             },
+      { code: "BARRIER_TAPE_NON_ADHESIVE RED/WHITE",    qty: 2             },
+      { code: "CLOVER_ULTRAFRESH_5L",                   qty: 5             }, // portal shows £20.99 — known price increase
     ],
   },
 
