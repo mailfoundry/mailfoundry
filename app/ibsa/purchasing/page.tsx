@@ -15,7 +15,7 @@ export default async function PurchasingPage() {
       { status: { not: "complete" } },
       { faStatus: { not: "complete" } },
     ],
-  } as const;
+  };
 
   const [conventions, orderItems] = await Promise.all([
     prisma.ibsaConvention.findMany({
