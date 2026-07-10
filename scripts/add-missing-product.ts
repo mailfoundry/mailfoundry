@@ -9,9 +9,8 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter } as never) as any;
 
 async function main() {
-  const result = await prisma.ibsaProduct.upsert({
-    where: { code: "WRAP_CELLOPHANE_CLEAR" },
-    create: {
+  const products = [
+    {
       code: "WRAP_CELLOPHANE_CLEAR",
       name: "Cellophane Wrap",
       variant: "Clear",
@@ -19,9 +18,24 @@ async function main() {
       type: "CS",
       unitCost: 12.99,
     },
-    update: {},
-  });
-  console.log(`✓ WRAP_CELLOPHANE_CLEAR upserted (${result.id})`);
+    {
+      code: "KTY_MOP_HYGIEMIX_S450G_10PACK_BLUE",
+      name: "Robert Scott - Kentucky Mop & Fittings (For Use with Hygiene Handle)",
+      variant: "Hygiemix Scratchback Stayflat Kentucky Mop 450g Blue",
+      category: "janitorial",
+      type: "CS",
+      unitCost: 47.50,
+    },
+  ];
+
+  for (const p of products) {
+    const result = await prisma.ibsaProduct.upsert({
+      where: { code: p.code },
+      create: p,
+      update: {},
+    });
+    console.log(`✓ ${p.code} upserted (${result.id})`);
+  }
   await prisma.$disconnect();
 }
 

@@ -373,7 +373,7 @@ const INVOICES: Record<string, Invoice> = {
 
   "INV-0184": {
     ref: "INV-0184",
-    conventionSearch: "Leeds - First Direct Arena",
+    conventionSearch: "Leeds",
     dept: "CS",
     invoiceDate: "2026-05-06",
     paymentDueDate: "2026-06-25",
