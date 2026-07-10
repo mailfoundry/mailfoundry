@@ -3,14 +3,24 @@ import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 import PurchasingClient, { type Convention, type OrderItemFlat } from "./purchasing-client";
 
 export default async function PurchasingPage() {
+  // Start of today so conventions happening today are still included
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingWhere = {
+    archivedAt: null,
+    status: { not: "complete" },
+    conventionDate: { gte: today },
+  } as const;
+
   const [conventions, orderItems] = await Promise.all([
     prisma.ibsaConvention.findMany({
-      where: { archivedAt: null },
+      where: upcomingWhere,
       orderBy: { conventionDate: "asc" },
       select: { id: true, name: true, conventionDate: true },
     }),
     prisma.ibsaOrderItem.findMany({
-      where: { convention: { archivedAt: null } },
+      where: { convention: upcomingWhere },
       select: {
         conventionId: true,
         dept: true,
