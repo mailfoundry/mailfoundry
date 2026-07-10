@@ -25,7 +25,10 @@ export type Convention = {
   id: string;
   name: string;
   conventionDate: string;
+  status: string;
   collectionDate: string | null;
+  faStatus: string;
+  faCollectionDate: string | null;
 };
 
 export type OrderItemFlat = {
@@ -43,31 +46,76 @@ export type OrderItemFlat = {
   };
 };
 
+// A selectable card = one (convention, dept) pair
+type Card = {
+  key: string;           // `${conventionId}:${dept}`
+  conventionId: string;
+  name: string;
+  dept: "CS" | "FA";
+  collectionDate: string | null;
+  conventionDate: string;
+};
+
 type Props = {
   conventions: Convention[];
   orderItems: OrderItemFlat[];
 };
 
 export default function PurchasingClient({ conventions, orderItems }: Props) {
-  const [selected, setSelected] = useState<Set<string>>(() => {
-    // Default: pre-select the next upcoming convention (by collection date if set)
-    const sorted = [...conventions].sort((a, b) => {
+  // Derive which (convention, dept) pairs actually have order items
+  const cards = useMemo<Card[]>(() => {
+    const deptsByConvention = new Map<string, Set<string>>();
+    for (const item of orderItems) {
+      if (!deptsByConvention.has(item.conventionId))
+        deptsByConvention.set(item.conventionId, new Set());
+      deptsByConvention.get(item.conventionId)!.add(item.dept);
+    }
+
+    const result: Card[] = [];
+    for (const c of conventions) {
+      const depts = deptsByConvention.get(c.id) ?? new Set();
+      if (depts.has("CS") && c.status !== "complete") {
+        result.push({
+          key: `${c.id}:CS`,
+          conventionId: c.id,
+          name: c.name,
+          dept: "CS",
+          collectionDate: c.collectionDate,
+          conventionDate: c.conventionDate,
+        });
+      }
+      if (depts.has("FA") && c.faStatus !== "complete") {
+        result.push({
+          key: `${c.id}:FA`,
+          conventionId: c.id,
+          name: c.name,
+          dept: "FA",
+          collectionDate: c.faCollectionDate,
+          conventionDate: c.conventionDate,
+        });
+      }
+    }
+
+    // Sort by collection date (nulls last), then convention date
+    return result.sort((a, b) => {
       const aDate = a.collectionDate ?? a.conventionDate;
       const bDate = b.collectionDate ?? b.conventionDate;
       return new Date(aDate).getTime() - new Date(bDate).getTime();
     });
-    if (sorted.length > 0) return new Set([sorted[0].id]);
-    return new Set();
-  });
+  }, [conventions, orderItems]);
 
-  const toggle = (id: string) =>
+  const [selected, setSelected] = useState<Set<string>>(() =>
+    cards.length > 0 ? new Set([cards[0].key]) : new Set()
+  );
+
+  const toggle = (key: string) =>
     setSelected(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
 
-  const selectAll = () => setSelected(new Set(conventions.map(c => c.id)));
+  const selectAll = () => setSelected(new Set(cards.map(c => c.key)));
   const clearAll  = () => setSelected(new Set());
 
   const rows = useMemo(() => {
@@ -88,7 +136,8 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
     const byProduct = new Map<string, Acc>();
 
     for (const item of orderItems) {
-      if (!selected.has(item.conventionId)) continue;
+      const key = `${item.conventionId}:${item.dept}`;
+      if (!selected.has(key)) continue;
       const p = item.product;
       if (!byProduct.has(p.id)) {
         byProduct.set(p.id, {
@@ -138,72 +187,82 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Purchasing</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Select the conventions you&apos;re buying for to see what you&apos;re short on.
+          Select the convention shipments you&apos;re buying for to see what you&apos;re short on.
         </p>
       </div>
 
       {/* Convention selector */}
       <div className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-5">
         <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm font-semibold text-white">Conventions</p>
+          <p className="text-sm font-semibold text-white">Shipments</p>
           <div className="flex gap-3 text-xs">
             <button onClick={selectAll} className="text-slate-400 hover:text-white transition-colors">Select all</button>
             <span className="text-slate-700">·</span>
             <button onClick={clearAll} className="text-slate-400 hover:text-white transition-colors">Clear</button>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {conventions.map(c => {
-            const displayDate = c.collectionDate ?? c.conventionDate;
-            const days = daysFromNow(displayDate);
-            const isSelected = selected.has(c.id);
-            const soon = days >= 0 && days <= 7;
-            return (
-              <button
-                key={c.id}
-                onClick={() => toggle(c.id)}
-                className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
-                  isSelected
-                    ? "border-blue-700 bg-blue-950/40"
-                    : "border-slate-800 hover:border-slate-600 hover:bg-slate-800/50"
-                }`}
-              >
-                {/* Checkbox */}
-                <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
-                  isSelected ? "border-blue-500 bg-blue-600" : "border-slate-600"
-                }`}>
-                  {isSelected && (
-                    <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 12 12">
-                      <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </span>
-                <span>
-                  <span className="block text-sm font-medium text-white">{c.name}</span>
-                  <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
-                    <span className="text-slate-600">{c.collectionDate ? "Collection:" : "Convention:"}</span>
-                    {fmtDate(displayDate)}
-                    {soon && (
-                      <span className="rounded-full bg-amber-900/50 border border-amber-700/40 px-1.5 py-0 text-amber-400">
-                        {days === 0 ? "today" : `${days}d`}
-                      </span>
+        {cards.length === 0 ? (
+          <p className="text-sm text-slate-500">No upcoming shipments found.</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {cards.map(c => {
+              const displayDate = c.collectionDate ?? c.conventionDate;
+              const days = daysFromNow(displayDate);
+              const isSelected = selected.has(c.key);
+              const soon = days >= 0 && days <= 7;
+              return (
+                <button
+                  key={c.key}
+                  onClick={() => toggle(c.key)}
+                  className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
+                    isSelected
+                      ? "border-blue-700 bg-blue-950/40"
+                      : "border-slate-800 hover:border-slate-600 hover:bg-slate-800/50"
+                  }`}
+                >
+                  <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                    isSelected ? "border-blue-500 bg-blue-600" : "border-slate-600"
+                  }`}>
+                    {isSelected && (
+                      <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 12 12">
+                        <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     )}
                   </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                  <span>
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-white">{c.name}</span>
+                      <span className={`rounded px-1.5 py-0 text-xs font-bold ${
+                        c.dept === "CS"
+                          ? "bg-blue-900/50 text-blue-300"
+                          : "bg-green-900/50 text-green-300"
+                      }`}>{c.dept}</span>
+                    </span>
+                    <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
+                      <span className="text-slate-600">{c.collectionDate ? "Collection:" : "Convention:"}</span>
+                      {fmtDate(displayDate)}
+                      {soon && (
+                        <span className="rounded-full bg-amber-900/50 border border-amber-700/40 px-1.5 py-0 text-amber-400">
+                          {days === 0 ? "today" : `${days}d`}
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Results */}
       {selected.size === 0 ? (
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center">
-          <p className="text-slate-400">Select one or more conventions above to see what you need to buy.</p>
+          <p className="text-slate-400">Select one or more shipments above to see what you need to buy.</p>
         </div>
       ) : rows.length === 0 ? (
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center">
-          <p className="text-slate-400">You&apos;re fully stocked for the selected conventions. Nothing to buy.</p>
+          <p className="text-slate-400">You&apos;re fully stocked for the selected shipments. Nothing to buy.</p>
         </div>
       ) : (
         <>

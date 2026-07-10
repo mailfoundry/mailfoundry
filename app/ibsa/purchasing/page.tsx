@@ -7,10 +7,14 @@ export default async function PurchasingPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Include a convention if either CS or FA is still outstanding
   const upcomingWhere = {
     archivedAt: null,
-    status: { not: "complete" },
     conventionDate: { gte: today },
+    OR: [
+      { status: { not: "complete" } },
+      { faStatus: { not: "complete" } },
+    ],
   } as const;
 
   const [conventions, orderItems] = await Promise.all([
@@ -20,7 +24,15 @@ export default async function PurchasingPage() {
         { collectionDate: { sort: "asc", nulls: "last" } },
         { conventionDate: "asc" },
       ],
-      select: { id: true, name: true, conventionDate: true, collectionDate: true },
+      select: {
+        id: true,
+        name: true,
+        conventionDate: true,
+        status: true,
+        collectionDate: true,
+        faStatus: true,
+        faCollectionDate: true,
+      },
     }),
     prisma.ibsaOrderItem.findMany({
       where: { convention: upcomingWhere },
@@ -48,7 +60,10 @@ export default async function PurchasingPage() {
     id: c.id,
     name: c.name,
     conventionDate: c.conventionDate.toISOString(),
+    status: c.status,
     collectionDate: c.collectionDate?.toISOString() ?? null,
+    faStatus: c.faStatus,
+    faCollectionDate: c.faCollectionDate?.toISOString() ?? null,
   }));
 
   const orderItemData: OrderItemFlat[] = orderItems.map(i => ({
