@@ -17,3 +17,20 @@ export async function updateProductStock(formData: FormData) {
 
   revalidatePath("/ibsa/products");
 }
+
+export async function bulkUpdateInStock(
+  updates: { id: string; inStock: number }[]
+) {
+  if (!updates.length) return;
+
+  await prisma.$transaction(
+    updates.map(({ id, inStock }) =>
+      prisma.ibsaProduct.update({
+        where: { id },
+        data: { inStock },
+      })
+    )
+  );
+
+  revalidatePath("/ibsa/products");
+}
