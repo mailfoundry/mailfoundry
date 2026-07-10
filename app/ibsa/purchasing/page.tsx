@@ -16,8 +16,11 @@ export default async function PurchasingPage() {
   const [conventions, orderItems] = await Promise.all([
     prisma.ibsaConvention.findMany({
       where: upcomingWhere,
-      orderBy: { conventionDate: "asc" },
-      select: { id: true, name: true, conventionDate: true },
+      orderBy: [
+        { collectionDate: { sort: "asc", nulls: "last" } },
+        { conventionDate: "asc" },
+      ],
+      select: { id: true, name: true, conventionDate: true, collectionDate: true },
     }),
     prisma.ibsaOrderItem.findMany({
       where: { convention: upcomingWhere },
@@ -45,6 +48,7 @@ export default async function PurchasingPage() {
     id: c.id,
     name: c.name,
     conventionDate: c.conventionDate.toISOString(),
+    collectionDate: c.collectionDate?.toISOString() ?? null,
   }));
 
   const orderItemData: OrderItemFlat[] = orderItems.map(i => ({

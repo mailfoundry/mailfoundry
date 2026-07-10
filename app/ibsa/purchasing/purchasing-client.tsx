@@ -25,6 +25,7 @@ export type Convention = {
   id: string;
   name: string;
   conventionDate: string;
+  collectionDate: string | null;
 };
 
 export type OrderItemFlat = {
@@ -49,9 +50,13 @@ type Props = {
 
 export default function PurchasingClient({ conventions, orderItems }: Props) {
   const [selected, setSelected] = useState<Set<string>>(() => {
-    // Default: pre-select the next upcoming convention
-    const upcoming = conventions.filter(c => daysFromNow(c.conventionDate) >= 0);
-    if (upcoming.length > 0) return new Set([upcoming[0].id]);
+    // Default: pre-select the next upcoming convention (by collection date if set)
+    const sorted = [...conventions].sort((a, b) => {
+      const aDate = a.collectionDate ?? a.conventionDate;
+      const bDate = b.collectionDate ?? b.conventionDate;
+      return new Date(aDate).getTime() - new Date(bDate).getTime();
+    });
+    if (sorted.length > 0) return new Set([sorted[0].id]);
     return new Set();
   });
 
@@ -149,9 +154,10 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
         </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {conventions.map(c => {
-            const days = daysFromNow(c.conventionDate);
+            const displayDate = c.collectionDate ?? c.conventionDate;
+            const days = daysFromNow(displayDate);
             const isSelected = selected.has(c.id);
-            const soon = days >= 0 && days <= 14;
+            const soon = days >= 0 && days <= 7;
             return (
               <button
                 key={c.id}
@@ -175,15 +181,11 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
                 <span>
                   <span className="block text-sm font-medium text-white">{c.name}</span>
                   <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
-                    {fmtDate(c.conventionDate)}
+                    <span className="text-slate-600">{c.collectionDate ? "Collection:" : "Convention:"}</span>
+                    {fmtDate(displayDate)}
                     {soon && (
                       <span className="rounded-full bg-amber-900/50 border border-amber-700/40 px-1.5 py-0 text-amber-400">
                         {days === 0 ? "today" : `${days}d`}
-                      </span>
-                    )}
-                    {days < 0 && (
-                      <span className="rounded-full bg-slate-800 px-1.5 py-0 text-slate-500">
-                        past
                       </span>
                     )}
                   </span>
