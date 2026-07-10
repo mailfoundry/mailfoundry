@@ -60,6 +60,7 @@ const CODE_ALIASES: Record<string, string> = {
   // KTY products — Dublin invoice uses long space-delimited names → clean DB codes
   "KTY MOP FITTING PLASTIC - RED":                                    "KTY_MOP_FITTING_PLASTIC_RED",
   "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED":     "KTY_MOP_HYGIEMIX_S450G_10PACK_RED",
+  "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE":    "KTY_MOP_HYGIEMIX_S450G_10PACK_BLUE",
   "KTY BUFFALO BUCKET & WRINGER 25L - RED":                           "KTY_BUFFALO_BUCKET_WRINGER_25L_RED",
   "KTY MOP MULTI FLAG 450G":           "KTY_MOP_MULTI_FLAG_450G",
   // Brush stiff — future compact form (Dublin invoice already uses the spaced version)
@@ -366,6 +367,44 @@ const INVOICES: Record<string, Invoice> = {
       { code: "CLOVER_ULTRAFRESH_1L",                         qty: 5             },
       { code: "CLOVER_ULTRAFRESH_5L",                         qty: 5             }, // portal may show £20.99 — known 12.5% price increase
       { code: "BIO_HAZARD_KITS",                              qty: 6             }, // portal may show £6.59 — known invoice discrepancy
+    ],
+  },
+
+  "INV-0186": {
+    ref: "INV-0186",
+    conventionSearch: "Newcastle-upon-Tyne",
+    dept: "CS",
+    invoiceDate: "2026-05-06",
+    paymentDueDate: "2026-06-17",
+    shippingCost: 152.12, // "DELIVERY 2 PALLETS + TAIL LIFT" × 2 @ £76.06
+    items: [
+      { code: "HI_VIS_BLUE_L",                                              qty: 5   },
+      { code: "HI_VIS_BLUE_XL",                                             qty: 5   },
+      { code: "GLOVES_VINYL_CLEAR_SML",                                     qty: 40  },
+      { code: "GLOVES_VINYL_CLEAR_MED",                                     qty: 25  },
+      { code: "GLOVES_VINYL_CLEAR_L",                                       qty: 30  },
+      { code: "GLOVES_VINYL_CLEAR_XL",                                      qty: 20  },
+      { code: "APRONS_FLTPACK_100PK",                                       qty: 10  },
+      { code: "HANDLE HYGIENE 125CM - BLUE",                                qty: 20  },
+      { code: "HANDLE HYGIENE 125CM - RED",                                 qty: 10  },
+      { code: "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - BLUE", qty: 1 },
+      { code: "KTY MOP HYGIEMIX S/BACK COL S/FLAT 450G PB (10 PACK) - RED",  qty: 1 },
+      { code: "SKT MOP HYGIEMIX T1D 200G - BLUE",                          qty: 200 },
+      { code: "SKT MOP HYGIEMIX T1D 200G - RED",                           qty: 100 },
+      { code: "BRUSH_SOFT_28CM + HANDLE_RED",                               qty: 30  },
+      { code: "BRUSH_SOFT_28CM + HANDLE_BLUE",                              qty: 120 },
+      { code: "DUSTPAN_BRUSH_SET_RED",                                      qty: 5   },
+      { code: "DUSTPAN_BRUSH_SET_BLUE",                                     qty: 15  },
+      { code: "WET_FLOOR_AFRAME",                                           qty: 5   },
+      { code: "TOILET_BRUSH_HOLDER_WHITE",                                  qty: 40  },
+      { code: "CLOTH_OCEAN_RED_50PK",                                       qty: 40  },
+      { code: "CLOTH_OCEAN_BLUE_50PK",                                      qty: 50  },
+      { code: "CLOTH_MFIBRE_BLUE_10PK",                                     qty: 10  },
+      { code: "CLOTH_MFIBRE_PINK_10PK",                                     qty: 6   },
+      { code: "REFUSE_SACK_CLEAR_100PK",                                    qty: 3   },
+      { code: "SHARPS_CONTAINER_7L",                                        qty: 2   },
+      { code: "CLOVER_ULTRAFRESH_5L",                                       qty: 1   },
+      { code: "PUMP_30CC_FOR_5L",                                           qty: 3   },
     ],
   },
 
