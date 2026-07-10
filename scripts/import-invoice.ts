@@ -369,6 +369,27 @@ const INVOICES: Record<string, Invoice> = {
     ],
   },
 
+  "INV-0188": {
+    ref: "INV-0188",
+    conventionSearch: "Milton Keynes",
+    dept: "FA",
+    invoiceDate: "2026-05-14",
+    paymentDueDate: "2026-06-22",
+    shippingCost: 15.06,
+    items: [
+      { code: "A4_ACCIDENT_REPORT_BOOK",   qty: 1, unitCost: 9.59  },
+      { code: "FIRSTAID_KIT_LARGE_188P",   qty: 2, unitCost: 42.89 },
+      { code: "FIRSTAID_KIT_MEDIUM_126P",  qty: 5, unitCost: 32.59 },
+      { code: "EYEWASH_INCCAP_500ML",      qty: 4                  },
+      { code: "GLOVES_NITRILE_BLUE_SML",   qty: 1                  },
+      { code: "GLOVES_NITRILE_BLUE_MED",   qty: 1                  },
+      { code: "GLOVES_NITRILE_BLUE_L",     qty: 1                  },
+      { code: "APRONS_FLTPACK_100PK",      qty: 1                  },
+      { code: "FACEMASK_BLUE_50PK",        qty: 1                  },
+      { code: "COUCH_ROLL_50CMX50M",       qty: 1, unitCost: 12.59 },
+    ],
+  },
+
   "INV-0195": {
     ref: "INV-0195",
     conventionSearch: "Milton Keynes",
