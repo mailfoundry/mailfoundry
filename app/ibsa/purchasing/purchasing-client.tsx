@@ -41,6 +41,7 @@ export type OrderItemFlat = {
     variant: string | null;
     category: string;
     unitCost: number;
+    xyloCost: number | null;
     inStock: number;
     git: number;
   };
@@ -127,6 +128,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
       variant: string | null;
       category: string;
       unitCost: number;
+      xyloCost: number | null;
       inStock: number;
       git: number;
       csOrdered: number;
@@ -146,6 +148,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
           variant: p.variant,
           category: p.category,
           unitCost: p.unitCost,
+          xyloCost: p.xyloCost,
           inStock: p.inStock,
           git: p.git,
           csOrdered: 0,
@@ -178,7 +181,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
     return map;
   }, [rows]);
 
-  const totalCost  = rows.reduce((s, r) => s + r.deficit * r.unitCost, 0);
+  const totalCost  = rows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0);
   const totalUnits = rows.reduce((s, r) => s + r.deficit, 0);
 
   return (
@@ -293,7 +296,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
                   <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
                   <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">GIT</th>
                   <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Short by</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Unit cost</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Xylo cost</th>
                   <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Est. cost</th>
                 </tr>
               </thead>
@@ -326,9 +329,9 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
                             {r.deficit}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.unitCost)}</td>
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.xyloCost ?? r.unitCost)}</td>
                         <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
-                          {fmtGbp(r.deficit * r.unitCost)}
+                          {fmtGbp(r.deficit * (r.xyloCost ?? r.unitCost))}
                         </td>
                       </tr>
                     ))}
@@ -337,7 +340,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
                         Subtotal
                       </td>
                       <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
-                        {fmtGbp(catRows.reduce((s, r) => s + r.deficit * r.unitCost, 0))}
+                        {fmtGbp(catRows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0))}
                       </td>
                     </tr>
                   </>
