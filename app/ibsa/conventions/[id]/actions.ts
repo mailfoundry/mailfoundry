@@ -30,6 +30,7 @@ export async function updateConventionStatus(formData: FormData) {
   await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { status } });
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
+  revalidatePath("/ibsa/purchasing");
 }
 
 export async function updateShippingCost(formData: FormData) {
@@ -122,6 +123,7 @@ export async function updateFaStatus(formData: FormData) {
   await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { faStatus: status } });
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
+  revalidatePath("/ibsa/purchasing");
 }
 
 export async function markFaPaid(formData: FormData) {
