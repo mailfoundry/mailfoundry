@@ -50,11 +50,11 @@ export type OrderItemFlat = {
 export type RsProductLine = {
   id: string;
   supplier: string;
-  rsCode: string;
+  rsCode: string | null;        // null = supplier link only, catalog data not yet entered
   rsVariant: string | null;
-  rsDescription: string;
-  cartonSize: number;
-  cartonPrice: number;
+  rsDescription: string | null; // null = use product name from deficit row
+  cartonSize: number | null;    // null = catalog data pending
+  cartonPrice: number | null;   // null = catalog data pending
   ibsaProductId: string | null;
 };
 
@@ -210,7 +210,12 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
   }, [rsProducts]);
 
   const rsOrderBySupplier = useMemo(() => {
-    type RsOrderLine = RsProductLine & { unitsNeeded: number; cartonsNeeded: number; totalCost: number };
+    type RsOrderLine = RsProductLine & {
+      displayLabel: string;   // rsDescription if present, else product name from deficit
+      unitsNeeded: number;
+      cartonsNeeded: number | null;   // null when cartonSize is unknown
+      totalCost: number | null;       // null when cartonPrice is unknown
+    };
     const lineMap = new Map<string, RsOrderLine>();
     const unlinkedProducts: string[] = [];
 
@@ -220,32 +225,57 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
         unlinkedProducts.push(row.name + (row.variant ? ` (${row.variant})` : ""));
         continue;
       }
+      const productLabel = row.name + (row.variant ? ` (${row.variant})` : "");
       for (const rp of linked) {
-        const key = `${rp.supplier}::${rp.rsCode}::${rp.rsVariant ?? ""}`;
+        // Lines with a catalog code aggregate by (supplier, rsCode, rsVariant);
+        // supplier-only links are unique per ibsaProduct (no merging across products)
+        const key = rp.rsCode
+          ? `${rp.supplier}::${rp.rsCode}::${rp.rsVariant ?? ""}`
+          : `${rp.supplier}::_link_::${rp.id}`;
         if (!lineMap.has(key)) {
-          lineMap.set(key, { ...rp, unitsNeeded: 0, cartonsNeeded: 0, totalCost: 0 });
+          lineMap.set(key, {
+            ...rp,
+            displayLabel: rp.rsDescription ?? productLabel,
+            unitsNeeded: 0,
+            cartonsNeeded: null,
+            totalCost: null,
+          });
         }
         lineMap.get(key)!.unitsNeeded += row.deficit;
       }
     }
 
-    // Calculate cartons from aggregated unit totals
+    // Calculate cartons & cost only for lines that have catalog data
     for (const line of lineMap.values()) {
-      line.cartonsNeeded = Math.ceil(line.unitsNeeded / line.cartonSize);
-      line.totalCost = line.cartonsNeeded * line.cartonPrice;
+      if (line.cartonSize != null && line.cartonPrice != null) {
+        line.cartonsNeeded = Math.ceil(line.unitsNeeded / line.cartonSize);
+        line.totalCost = line.cartonsNeeded * line.cartonPrice;
+      }
     }
 
-    // Group by supplier, sorted by rsCode within each supplier
+    // Group by supplier; within each supplier: catalog lines first (by rsCode), then supplier-only (by label)
     const bySupplier = new Map<string, RsOrderLine[]>();
     for (const line of lineMap.values()) {
       if (!bySupplier.has(line.supplier)) bySupplier.set(line.supplier, []);
       bySupplier.get(line.supplier)!.push(line);
     }
     for (const lines of bySupplier.values()) {
-      lines.sort((a, b) => a.rsCode.localeCompare(b.rsCode));
+      lines.sort((a, b) => {
+        if (!!a.rsCode !== !!b.rsCode) return a.rsCode ? -1 : 1; // catalog first
+        return (a.rsCode ?? a.displayLabel).localeCompare(b.rsCode ?? b.displayLabel);
+      });
     }
+    // Sort supplier groups: those with any catalog data first, then alpha
+    const sortedSuppliers = new Map(
+      [...bySupplier.entries()].sort(([aName, aLines], [bName, bLines]) => {
+        const aHas = aLines.some(l => l.rsCode);
+        const bHas = bLines.some(l => l.rsCode);
+        if (aHas !== bHas) return aHas ? -1 : 1;
+        return aName.localeCompare(bName);
+      })
+    );
 
-    return { bySupplier, unlinkedProducts };
+    return { bySupplier: sortedSuppliers, unlinkedProducts };
   }, [rows, rsProductsByIbsaId]);
 
   const rsOrderTotalCost = useMemo(() => {
@@ -473,12 +503,23 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
 
               {/* One table per supplier */}
               {Array.from(rsOrderBySupplier.bySupplier.entries()).map(([supplier, lines]) => {
-                const supplierTotal = lines.reduce((s, l) => s + l.totalCost, 0);
+                const supplierTotal = lines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
+                const pendingCount = lines.filter(l => l.cartonSize == null).length;
                 return (
                   <div key={supplier} className="overflow-hidden rounded-xl border border-slate-800">
                     <div className="flex items-center justify-between border-b border-slate-800 bg-slate-800/80 px-4 py-3">
-                      <p className="font-semibold text-white">{supplier}</p>
-                      <p className="text-sm font-semibold text-amber-400">{fmtGbp(supplierTotal)}</p>
+                      <div className="flex items-center gap-3">
+                        <p className="font-semibold text-white">{supplier}</p>
+                        {pendingCount > 0 && (
+                          <span className="rounded border border-amber-700/40 bg-amber-950/30 px-2 py-0.5 text-xs text-amber-400">
+                            {pendingCount} without catalog data
+                          </span>
+                        )}
+                      </div>
+                      {supplierTotal > 0
+                        ? <p className="text-sm font-semibold text-amber-400">{fmtGbp(supplierTotal)}</p>
+                        : <p className="text-xs text-slate-500">cost unknown</p>
+                      }
                     </div>
                     <table className="w-full text-sm">
                       <thead>
@@ -494,33 +535,47 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
                         </tr>
                       </thead>
                       <tbody className="bg-slate-900">
-                        {lines.map(line => (
-                          <tr key={line.id} className="border-t border-slate-800 hover:bg-slate-800/50">
-                            <td className="px-4 py-3 font-mono text-xs text-slate-400">{line.rsCode}</td>
-                            <td className="px-4 py-3 text-white">{line.rsDescription}</td>
-                            <td className="px-4 py-3">
-                              {line.rsVariant
-                                ? <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs font-medium text-slate-300">{line.rsVariant}</span>
-                                : <span className="text-slate-600">—</span>
-                              }
-                            </td>
-                            <td className="px-4 py-3 text-right tabular-nums text-slate-400">{line.cartonSize}</td>
-                            <td className="px-4 py-3 text-right tabular-nums text-slate-300">{line.unitsNeeded}</td>
-                            <td className="px-4 py-3 text-right">
-                              <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-300">
-                                {line.cartonsNeeded}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(line.cartonPrice)}</td>
-                            <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">{fmtGbp(line.totalCost)}</td>
-                          </tr>
-                        ))}
+                        {lines.map(line => {
+                          const hasCatalog = line.cartonSize != null;
+                          return (
+                            <tr key={line.id} className={`border-t border-slate-800 ${hasCatalog ? "hover:bg-slate-800/50" : "opacity-70 hover:opacity-100"}`}>
+                              <td className="px-4 py-3 font-mono text-xs text-slate-400">
+                                {line.rsCode ?? <span className="text-slate-700">—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-white">{line.displayLabel}</td>
+                              <td className="px-4 py-3">
+                                {line.rsVariant
+                                  ? <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs font-medium text-slate-300">{line.rsVariant}</span>
+                                  : <span className="text-slate-600">—</span>
+                                }
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums text-slate-400">
+                                {line.cartonSize ?? <span className="text-slate-600">—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums text-slate-300">{line.unitsNeeded}</td>
+                              <td className="px-4 py-3 text-right">
+                                {line.cartonsNeeded != null
+                                  ? <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-300">
+                                      {line.cartonsNeeded}
+                                    </span>
+                                  : <span className="text-slate-600">—</span>
+                                }
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums text-slate-400">
+                                {line.cartonPrice != null ? fmtGbp(line.cartonPrice) : <span className="text-slate-600">—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
+                                {line.totalCost != null ? fmtGbp(line.totalCost) : <span className="font-normal text-slate-600">—</span>}
+                              </td>
+                            </tr>
+                          );
+                        })}
                         <tr className="border-t border-slate-700 bg-slate-900/80">
                           <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            Subtotal
+                            {pendingCount > 0 ? `Subtotal (excl. ${pendingCount} pending)` : "Subtotal"}
                           </td>
                           <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
-                            {fmtGbp(supplierTotal)}
+                            {supplierTotal > 0 ? fmtGbp(supplierTotal) : <span className="text-slate-600">—</span>}
                           </td>
                         </tr>
                       </tbody>

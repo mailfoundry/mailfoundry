@@ -104,11 +104,11 @@ export default async function PurchasingPage() {
   const rsProductData: RsProductLine[] = rsProducts.map(r => ({
     id: r.id,
     supplier: r.supplier,
-    rsCode: r.rsCode,
-    rsVariant: r.rsVariant,
-    rsDescription: r.rsDescription,
-    cartonSize: r.cartonSize,
-    cartonPrice: r.cartonPrice,
+    rsCode: r.rsCode ?? null,
+    rsVariant: r.rsVariant ?? null,
+    rsDescription: r.rsDescription ?? null,
+    cartonSize: r.cartonSize ?? null,
+    cartonPrice: r.cartonPrice ?? null,
     ibsaProductId: r.ibsaProductId ?? null,
   }));
 
