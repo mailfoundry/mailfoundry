@@ -137,23 +137,26 @@ export default async function ConventionDetailPage({
             </button>
           </form>
         </div>
-        <div className="flex shrink-0 gap-2">
-          {(["pending", "ordered", "complete"] as const).map((s) => (
-            <form key={s} action={updateConventionStatus}>
-              <input type="hidden" name="conventionId" value={convention.id} />
-              <input type="hidden" name="status" value={s} />
-              <button
-                type="submit"
-                className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize ${
-                  convention.status === s
-                    ? "bg-white text-slate-900"
-                    : "border border-slate-700 text-slate-400 hover:bg-slate-800"
-                }`}
-              >
-                {s}
-              </button>
-            </form>
-          ))}
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">CS Status</p>
+          <div className="flex gap-2">
+            {(["pending", "ordered", "complete"] as const).map((s) => (
+              <form key={s} action={updateConventionStatus}>
+                <input type="hidden" name="conventionId" value={convention.id} />
+                <input type="hidden" name="status" value={s} />
+                <button
+                  type="submit"
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize ${
+                    convention.status === s
+                      ? "bg-blue-600 text-white"
+                      : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+                  }`}
+                >
+                  {s}
+                </button>
+              </form>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -399,23 +402,26 @@ export default async function ConventionDetailPage({
               </form>
             )}
             {/* FA Status */}
-            <div className="flex gap-1">
-              {(["pending", "ordered", "complete"] as const).map((s) => (
-                <form key={s} action={updateFaStatus}>
-                  <input type="hidden" name="conventionId" value={convention.id} />
-                  <input type="hidden" name="status" value={s} />
-                  <button
-                    type="submit"
-                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold capitalize ${
-                      convention.faStatus === s
-                        ? "bg-blue-700 text-white"
-                        : "border border-slate-700 text-slate-400 hover:bg-slate-800"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                </form>
-              ))}
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xs font-semibold uppercase tracking-wider text-green-400">FA Status</p>
+              <div className="flex gap-1">
+                {(["pending", "ordered", "complete"] as const).map((s) => (
+                  <form key={s} action={updateFaStatus}>
+                    <input type="hidden" name="conventionId" value={convention.id} />
+                    <input type="hidden" name="status" value={s} />
+                    <button
+                      type="submit"
+                      className={`rounded-lg px-2.5 py-1 text-xs font-semibold capitalize ${
+                        convention.faStatus === s
+                          ? "bg-green-700 text-white"
+                          : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  </form>
+                ))}
+              </div>
             </div>
           </div>
         </div>
