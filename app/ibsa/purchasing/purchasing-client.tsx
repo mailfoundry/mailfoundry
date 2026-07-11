@@ -47,6 +47,17 @@ export type OrderItemFlat = {
   };
 };
 
+export type RsProductLine = {
+  id: string;
+  supplier: string;
+  rsCode: string;
+  rsVariant: string | null;
+  rsDescription: string;
+  cartonSize: number;
+  cartonPrice: number;
+  ibsaProductId: string | null;
+};
+
 // A selectable card = one (convention, dept) pair
 type Card = {
   key: string;           // `${conventionId}:${dept}`
@@ -60,10 +71,13 @@ type Card = {
 type Props = {
   conventions: Convention[];
   orderItems: OrderItemFlat[];
+  rsProducts: RsProductLine[];
 };
 
-export default function PurchasingClient({ conventions, orderItems }: Props) {
-  // Derive which (convention, dept) pairs actually have order items
+export default function PurchasingClient({ conventions, orderItems, rsProducts }: Props) {
+  const [showRsOrder, setShowRsOrder] = useState(false);
+
+  // ── Convention cards ─────────────────────────────────────────────────────
   const cards = useMemo<Card[]>(() => {
     const deptsByConvention = new Map<string, Set<string>>();
     for (const item of orderItems) {
@@ -97,7 +111,6 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
       }
     }
 
-    // Sort by collection date (nulls last), then convention date
     return result.sort((a, b) => {
       const aDate = a.collectionDate ?? a.conventionDate;
       const bDate = b.collectionDate ?? b.conventionDate;
@@ -119,6 +132,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
   const selectAll = () => setSelected(new Set(cards.map(c => c.key)));
   const clearAll  = () => setSelected(new Set());
 
+  // ── Deficit rows ─────────────────────────────────────────────────────────
   const rows = useMemo(() => {
     if (selected.size === 0) return [];
 
@@ -183,6 +197,64 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
 
   const totalCost  = rows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0);
   const totalUnits = rows.reduce((s, r) => s + r.deficit, 0);
+
+  // ── RS Order calculation ─────────────────────────────────────────────────
+  const rsProductsByIbsaId = useMemo(() => {
+    const map = new Map<string, RsProductLine[]>();
+    for (const rp of rsProducts) {
+      if (!rp.ibsaProductId) continue;
+      if (!map.has(rp.ibsaProductId)) map.set(rp.ibsaProductId, []);
+      map.get(rp.ibsaProductId)!.push(rp);
+    }
+    return map;
+  }, [rsProducts]);
+
+  const rsOrderBySupplier = useMemo(() => {
+    type RsOrderLine = RsProductLine & { unitsNeeded: number; cartonsNeeded: number; totalCost: number };
+    const lineMap = new Map<string, RsOrderLine>();
+    const unlinkedProducts: string[] = [];
+
+    for (const row of rows) {
+      const linked = rsProductsByIbsaId.get(row.productId) ?? [];
+      if (linked.length === 0) {
+        unlinkedProducts.push(row.name + (row.variant ? ` (${row.variant})` : ""));
+        continue;
+      }
+      for (const rp of linked) {
+        const key = `${rp.supplier}::${rp.rsCode}::${rp.rsVariant ?? ""}`;
+        if (!lineMap.has(key)) {
+          lineMap.set(key, { ...rp, unitsNeeded: 0, cartonsNeeded: 0, totalCost: 0 });
+        }
+        lineMap.get(key)!.unitsNeeded += row.deficit;
+      }
+    }
+
+    // Calculate cartons from aggregated unit totals
+    for (const line of lineMap.values()) {
+      line.cartonsNeeded = Math.ceil(line.unitsNeeded / line.cartonSize);
+      line.totalCost = line.cartonsNeeded * line.cartonPrice;
+    }
+
+    // Group by supplier, sorted by rsCode within each supplier
+    const bySupplier = new Map<string, RsOrderLine[]>();
+    for (const line of lineMap.values()) {
+      if (!bySupplier.has(line.supplier)) bySupplier.set(line.supplier, []);
+      bySupplier.get(line.supplier)!.push(line);
+    }
+    for (const lines of bySupplier.values()) {
+      lines.sort((a, b) => a.rsCode.localeCompare(b.rsCode));
+    }
+
+    return { bySupplier, unlinkedProducts };
+  }, [rows, rsProductsByIbsaId]);
+
+  const rsOrderTotalCost = useMemo(() => {
+    let total = 0;
+    for (const lines of rsOrderBySupplier.bySupplier.values()) {
+      total += lines.reduce((s, l) => s + l.totalCost, 0);
+    }
+    return total;
+  }, [rsOrderBySupplier]);
 
   return (
     <div className="max-w-6xl">
@@ -270,7 +342,7 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
       ) : (
         <>
           {/* Summary cards */}
-          <div className="mb-8 grid grid-cols-3 gap-4">
+          <div className="mb-6 grid grid-cols-3 gap-4">
             <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Products to buy</p>
               <p className="mt-2 text-3xl font-bold text-white">{rows.length}</p>
@@ -285,69 +357,179 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
             </div>
           </div>
 
-          {/* Single table — column widths stay consistent across all categories */}
-          <div className="overflow-hidden rounded-xl border border-slate-800">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-800 bg-slate-900/80 text-xs text-slate-500">
-                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Product</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">CS</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">FA</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">GIT</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Short by</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Xylo cost</th>
-                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Est. cost</th>
-                </tr>
-              </thead>
-              <tbody className="bg-slate-900">
-                {Array.from(byCategory.entries()).map(([cat, catRows]) => (
-                  <>
-                    <tr key={`cat-${cat}`} className="border-t border-slate-800 bg-slate-800/60">
-                      <td colSpan={8} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        {categoryLabel[cat] ?? cat}
-                      </td>
-                    </tr>
-                    {catRows.map(r => (
-                      <tr key={r.productId} className="border-t border-slate-800 hover:bg-slate-800/50">
-                        <td className="px-4 py-3">
-                          <p className="font-medium text-white">{r.name}</p>
-                          {r.variant && <p className="text-xs text-slate-500">{r.variant}</p>}
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                          {r.csOrdered > 0 ? r.csOrdered : <span className="text-slate-600">—</span>}
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                          {r.faOrdered > 0 ? r.faOrdered : <span className="text-slate-600">—</span>}
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">{r.inStock}</td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                          {r.git > 0 ? r.git : <span className="text-slate-600">—</span>}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <span className="inline-block rounded-full border border-red-800/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-400">
-                            {r.deficit}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.xyloCost ?? r.unitCost)}</td>
-                        <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
-                          {fmtGbp(r.deficit * (r.xyloCost ?? r.unitCost))}
+          {/* Deficit / RS Order toggle */}
+          <div className="mb-6 flex items-center gap-2">
+            <button
+              onClick={() => setShowRsOrder(false)}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                !showRsOrder ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Deficit
+            </button>
+            <button
+              onClick={() => setShowRsOrder(true)}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                showRsOrder ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              RS Order
+            </button>
+          </div>
+
+          {/* ── DEFICIT VIEW ─────────────────────────────────────────────── */}
+          {!showRsOrder && (
+            <div className="overflow-hidden rounded-xl border border-slate-800">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800 bg-slate-900/80 text-xs text-slate-500">
+                    <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Product</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">CS</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">FA</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">GIT</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Short by</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Xylo cost</th>
+                    <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Est. cost</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-slate-900">
+                  {Array.from(byCategory.entries()).map(([cat, catRows]) => (
+                    <>
+                      <tr key={`cat-${cat}`} className="border-t border-slate-800 bg-slate-800/60">
+                        <td colSpan={8} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          {categoryLabel[cat] ?? cat}
                         </td>
                       </tr>
-                    ))}
-                    <tr key={`sub-${cat}`} className="border-t border-slate-700 bg-slate-900/80">
-                      <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        Subtotal
-                      </td>
-                      <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
-                        {fmtGbp(catRows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0))}
-                      </td>
-                    </tr>
-                  </>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      {catRows.map(r => (
+                        <tr key={r.productId} className="border-t border-slate-800 hover:bg-slate-800/50">
+                          <td className="px-4 py-3">
+                            <p className="font-medium text-white">{r.name}</p>
+                            {r.variant && <p className="text-xs text-slate-500">{r.variant}</p>}
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                            {r.csOrdered > 0 ? r.csOrdered : <span className="text-slate-600">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                            {r.faOrdered > 0 ? r.faOrdered : <span className="text-slate-600">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">{r.inStock}</td>
+                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                            {r.git > 0 ? r.git : <span className="text-slate-600">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <span className="inline-block rounded-full border border-red-800/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-400">
+                              {r.deficit}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.xyloCost ?? r.unitCost)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
+                            {fmtGbp(r.deficit * (r.xyloCost ?? r.unitCost))}
+                          </td>
+                        </tr>
+                      ))}
+                      <tr key={`sub-${cat}`} className="border-t border-slate-700 bg-slate-900/80">
+                        <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          Subtotal
+                        </td>
+                        <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
+                          {fmtGbp(catRows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0))}
+                        </td>
+                      </tr>
+                    </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* ── RS ORDER VIEW ────────────────────────────────────────────── */}
+          {showRsOrder && (
+            <div className="space-y-6">
+              {/* Summary bar */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-5 py-4">
+                <p className="text-sm text-slate-400">
+                  <span className="font-semibold text-white">
+                    {Array.from(rsOrderBySupplier.bySupplier.values()).reduce((s, l) => s + l.length, 0)}
+                  </span>{" "}
+                  supplier lines across{" "}
+                  <span className="font-semibold text-white">{rsOrderBySupplier.bySupplier.size}</span>{" "}
+                  {rsOrderBySupplier.bySupplier.size === 1 ? "supplier" : "suppliers"}
+                </p>
+                <p className="text-sm font-semibold text-amber-400">{fmtGbp(rsOrderTotalCost)} total (ex VAT)</p>
+              </div>
+
+              {/* Warning: deficit products with no supplier link */}
+              {rsOrderBySupplier.unlinkedProducts.length > 0 && (
+                <div className="rounded-xl border border-amber-700/40 bg-amber-950/20 px-5 py-4">
+                  <p className="text-sm font-semibold text-amber-300">
+                    {rsOrderBySupplier.unlinkedProducts.length} product{rsOrderBySupplier.unlinkedProducts.length !== 1 ? "s" : ""} not linked to a supplier — not included in order:
+                  </p>
+                  <p className="mt-1 text-xs text-amber-500">
+                    {rsOrderBySupplier.unlinkedProducts.join(", ")}
+                  </p>
+                </div>
+              )}
+
+              {/* One table per supplier */}
+              {Array.from(rsOrderBySupplier.bySupplier.entries()).map(([supplier, lines]) => {
+                const supplierTotal = lines.reduce((s, l) => s + l.totalCost, 0);
+                return (
+                  <div key={supplier} className="overflow-hidden rounded-xl border border-slate-800">
+                    <div className="flex items-center justify-between border-b border-slate-800 bg-slate-800/80 px-4 py-3">
+                      <p className="font-semibold text-white">{supplier}</p>
+                      <p className="text-sm font-semibold text-amber-400">{fmtGbp(supplierTotal)}</p>
+                    </div>
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-800 bg-slate-900/60 text-xs text-slate-500">
+                          <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Code</th>
+                          <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
+                          <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Carton</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Units needed</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Cartons</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Price/carton</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-slate-900">
+                        {lines.map(line => (
+                          <tr key={line.id} className="border-t border-slate-800 hover:bg-slate-800/50">
+                            <td className="px-4 py-3 font-mono text-xs text-slate-400">{line.rsCode}</td>
+                            <td className="px-4 py-3 text-white">{line.rsDescription}</td>
+                            <td className="px-4 py-3">
+                              {line.rsVariant
+                                ? <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs font-medium text-slate-300">{line.rsVariant}</span>
+                                : <span className="text-slate-600">—</span>
+                              }
+                            </td>
+                            <td className="px-4 py-3 text-right tabular-nums text-slate-400">{line.cartonSize}</td>
+                            <td className="px-4 py-3 text-right tabular-nums text-slate-300">{line.unitsNeeded}</td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-300">
+                                {line.cartonsNeeded}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(line.cartonPrice)}</td>
+                            <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">{fmtGbp(line.totalCost)}</td>
+                          </tr>
+                        ))}
+                        <tr className="border-t border-slate-700 bg-slate-900/80">
+                          <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Subtotal
+                          </td>
+                          <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
+                            {fmtGbp(supplierTotal)}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
     </div>

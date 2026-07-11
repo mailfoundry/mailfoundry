@@ -150,11 +150,12 @@ model IbsaProduct {
 /// A single Xylo product may require multiple RS lines (e.g. brush head + handle sold separately).
 model RsProduct {
   id            String       @id @default(cuid())
-  rsCode        String       // RS catalog code, e.g. "104947" or "101982CLEBLU"
-  rsVariant     String?      // Colour / variant as shown on RS, e.g. "BLUE", "RED"
-  rsDescription String       // RS product description
-  cartonSize    Int          // Units per carton
-  cartonPrice   Float        // Price per carton (ex VAT) in GBP
+  supplier      String       @default("Robert Scott") // Supplier name, e.g. "Robert Scott"
+  rsCode        String?      // Supplier catalog code — null until catalog data is entered
+  rsVariant     String?      // Colour / variant as shown by supplier, e.g. "BLUE", "RED"
+  rsDescription String?      // Supplier product description — null until catalog data is entered
+  cartonSize    Int?         // Units per carton — null until catalog data is entered
+  cartonPrice   Float?       // Price per carton (ex VAT) in GBP — null until catalog data is entered
   ibsaProductId String?      // FK to IbsaProduct.id — null if not yet linked
   ibsaProduct   IbsaProduct? @relation(fields: [ibsaProductId], references: [id], onDelete: SetNull)
   notes         String?      // Free-text notes (e.g. discontinued, substitution)

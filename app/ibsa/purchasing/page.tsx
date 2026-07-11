@@ -1,6 +1,6 @@
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
-import PurchasingClient, { type Convention, type OrderItemFlat } from "./purchasing-client";
+import PurchasingClient, { type Convention, type OrderItemFlat, type RsProductLine } from "./purchasing-client";
 
 export default async function PurchasingPage() {
   // Start of today so conventions happening today are still included
@@ -56,6 +56,24 @@ export default async function PurchasingPage() {
     }),
   ]);
 
+  // Fetch RS supplier products for all Xylo products that appear in order items
+  const productIds = [...new Set(orderItems.map(i => i.product.id))];
+  const rsProducts = productIds.length > 0
+    ? await prisma.rsProduct.findMany({
+        where: { ibsaProductId: { in: productIds } },
+        select: {
+          id: true,
+          supplier: true,
+          rsCode: true,
+          rsVariant: true,
+          rsDescription: true,
+          cartonSize: true,
+          cartonPrice: true,
+          ibsaProductId: true,
+        },
+      })
+    : [];
+
   // Serialise dates to strings for the client component
   const conventionData: Convention[] = conventions.map(c => ({
     id: c.id,
@@ -83,9 +101,24 @@ export default async function PurchasingPage() {
     },
   }));
 
+  const rsProductData: RsProductLine[] = rsProducts.map(r => ({
+    id: r.id,
+    supplier: r.supplier,
+    rsCode: r.rsCode,
+    rsVariant: r.rsVariant,
+    rsDescription: r.rsDescription,
+    cartonSize: r.cartonSize,
+    cartonPrice: r.cartonPrice,
+    ibsaProductId: r.ibsaProductId ?? null,
+  }));
+
   return (
     <IbsaAppShell active="ibsa-purchasing">
-      <PurchasingClient conventions={conventionData} orderItems={orderItemData} />
+      <PurchasingClient
+        conventions={conventionData}
+        orderItems={orderItemData}
+        rsProducts={rsProductData}
+      />
     </IbsaAppShell>
   );
 }
