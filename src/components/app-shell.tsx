@@ -12,7 +12,8 @@ type AppShellProps = {
     | "settings"
     | "ibsa"
     | "ibsa-products"
-    | "ibsa-purchasing";
+    | "ibsa-purchasing"
+    | "ibsa-suppliers";
   children: ReactNode;
   ibsaOnly?: boolean;
 };
