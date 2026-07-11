@@ -281,7 +281,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
   const rsOrderTotalCost = useMemo(() => {
     let total = 0;
     for (const lines of rsOrderBySupplier.bySupplier.values()) {
-      total += lines.reduce((s, l) => s + l.totalCost, 0);
+      total += lines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
     }
     return total;
   }, [rsOrderBySupplier]);
