@@ -151,28 +151,30 @@ export default function ProductsClient({ products }: Props) {
         </div>
       )}
 
-      {/* Products by category */}
-      {Object.entries(grouped).map(([category, items]) => (
-        <section key={category} className="mb-8">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
-            {CATEGORY_LABELS[category] ?? category}
-          </h3>
-          <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
-            <table className="min-w-full text-sm">
-              <thead className="border-b border-slate-700 bg-slate-700/50 text-left text-slate-200">
-                <tr>
-                  <th className="px-5 py-3 font-semibold">Product</th>
-                  <th className="px-5 py-3 font-semibold">Variant / Size</th>
-                  <th className="px-5 py-3 font-semibold">Code</th>
-                  <th className="px-5 py-3 font-semibold text-right">Sale Price</th>
-                  <th className="px-5 py-3 font-semibold text-right">Xylo Cost</th>
-                  <th className="px-5 py-3 font-semibold text-right">Margin %</th>
-                  <th className="px-5 py-3 font-semibold text-center">In Stock</th>
-                  <th className="px-5 py-3 font-semibold text-center">GIT</th>
-                  <th className="px-5 py-3 font-semibold text-right">Total Stock</th>
+      {/* Products — single table so column widths are consistent across all categories */}
+      <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
+        <table className="min-w-full text-sm">
+          <thead className="border-b border-slate-700 bg-slate-700/50 text-left text-slate-200">
+            <tr>
+              <th className="px-5 py-3 font-semibold">Product</th>
+              <th className="px-5 py-3 font-semibold">Variant / Size</th>
+              <th className="px-5 py-3 font-semibold">Code</th>
+              <th className="px-5 py-3 font-semibold text-right">Sale Price</th>
+              <th className="px-5 py-3 font-semibold text-right">Xylo Cost</th>
+              <th className="px-5 py-3 font-semibold text-right">Margin %</th>
+              <th className="px-5 py-3 font-semibold text-center">In Stock</th>
+              <th className="px-5 py-3 font-semibold text-center">GIT</th>
+              <th className="px-5 py-3 font-semibold text-right">Total Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(grouped).map(([category, items]) => (
+              <>
+                <tr key={`cat-${category}`} className="border-t border-slate-700 bg-slate-700/30">
+                  <td colSpan={9} className="px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    {CATEGORY_LABELS[category] ?? category}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
                 {items.map((p) => {
                   const currentInStock = getInStock(p);
                   const total = currentInStock + p.git;
@@ -290,11 +292,11 @@ export default function ProductsClient({ products }: Props) {
                     </tr>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      ))}
+              </>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

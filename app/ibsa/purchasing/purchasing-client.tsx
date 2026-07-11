@@ -282,70 +282,68 @@ export default function PurchasingClient({ conventions, orderItems }: Props) {
             </div>
           </div>
 
-          {/* Tables by category */}
-          <div className="space-y-8">
-            {Array.from(byCategory.entries()).map(([cat, catRows]) => (
-              <div key={cat}>
-                <h2 className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  {categoryLabel[cat] ?? cat}
-                </h2>
-                <div className="overflow-hidden rounded-xl border border-slate-800">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-800 bg-slate-900/80 text-xs text-slate-500">
-                        <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Product</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">CS</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">FA</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">GIT</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Short by</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Unit cost</th>
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Est. cost</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800 bg-slate-900">
-                      {catRows.map(r => (
-                        <tr key={r.productId} className="hover:bg-slate-800/50">
-                          <td className="px-4 py-3">
-                            <p className="font-medium text-white">{r.name}</p>
-                            {r.variant && <p className="text-xs text-slate-500">{r.variant}</p>}
-                          </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                            {r.csOrdered > 0 ? r.csOrdered : <span className="text-slate-600">—</span>}
-                          </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                            {r.faOrdered > 0 ? r.faOrdered : <span className="text-slate-600">—</span>}
-                          </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">{r.inStock}</td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                            {r.git > 0 ? r.git : <span className="text-slate-600">—</span>}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="inline-block rounded-full border border-red-800/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-400">
-                              {r.deficit}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.unitCost)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
-                            {fmtGbp(r.deficit * r.unitCost)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr className="border-t border-slate-700 bg-slate-900/80">
-                        <td colSpan={7} className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
-                          Subtotal
+          {/* Single table — column widths stay consistent across all categories */}
+          <div className="overflow-hidden rounded-xl border border-slate-800">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-800 bg-slate-900/80 text-xs text-slate-500">
+                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Product</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">CS</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">FA</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">GIT</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Short by</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Unit cost</th>
+                  <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Est. cost</th>
+                </tr>
+              </thead>
+              <tbody className="bg-slate-900">
+                {Array.from(byCategory.entries()).map(([cat, catRows]) => (
+                  <>
+                    <tr key={`cat-${cat}`} className="border-t border-slate-800 bg-slate-800/60">
+                      <td colSpan={8} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        {categoryLabel[cat] ?? cat}
+                      </td>
+                    </tr>
+                    {catRows.map(r => (
+                      <tr key={r.productId} className="border-t border-slate-800 hover:bg-slate-800/50">
+                        <td className="px-4 py-3">
+                          <p className="font-medium text-white">{r.name}</p>
+                          {r.variant && <p className="text-xs text-slate-500">{r.variant}</p>}
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums font-bold text-amber-400">
-                          {fmtGbp(catRows.reduce((s, r) => s + r.deficit * r.unitCost, 0))}
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                          {r.csOrdered > 0 ? r.csOrdered : <span className="text-slate-600">—</span>}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                          {r.faOrdered > 0 ? r.faOrdered : <span className="text-slate-600">—</span>}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">{r.inStock}</td>
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                          {r.git > 0 ? r.git : <span className="text-slate-600">—</span>}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className="inline-block rounded-full border border-red-800/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-400">
+                            {r.deficit}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.unitCost)}</td>
+                        <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
+                          {fmtGbp(r.deficit * r.unitCost)}
                         </td>
                       </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
-            ))}
+                    ))}
+                    <tr key={`sub-${cat}`} className="border-t border-slate-700 bg-slate-900/80">
+                      <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        Subtotal
+                      </td>
+                      <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
+                        {fmtGbp(catRows.reduce((s, r) => s + r.deficit * r.unitCost, 0))}
+                      </td>
+                    </tr>
+                  </>
+                ))}
+              </tbody>
+            </table>
           </div>
         </>
       )}
