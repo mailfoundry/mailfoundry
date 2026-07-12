@@ -142,9 +142,11 @@ export function downloadPO({
     .pending-note { color: #d97706; font-weight: 500; }
 
     @media print {
-      @page { margin: 0; size: A4 portrait; }
-      .page { padding: 15mm 15mm 13mm; }
+      @page { margin: 0; size: A4 landscape; }
+      .page { padding: 12mm 14mm 12mm; }
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      /* Prevent tfoot from repeating on every page */
+      tfoot { display: table-row-group; }
     }
   </style>
 </head>
