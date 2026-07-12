@@ -14,13 +14,61 @@ export async function updateProduct(formData: FormData) {
   const xyloCostRaw = (formData.get("xyloCost") as string).trim();
   const xyloCost = xyloCostRaw !== "" ? parseFloat(xyloCostRaw) : null;
 
+  // Supplier changes: [{id: rsProductId, supplier: newName}]
+  const supplierChangesRaw = (formData.get("supplierChanges") as string | null) ?? "[]";
+  const supplierChanges: Array<{ id: string; supplier: string }> = JSON.parse(supplierChangesRaw);
+
   if (!id || !name || !code || !category || !type) return;
 
-  await prisma.ibsaProduct.update({
-    where: { id },
-    data: { name, variant, code, category, type, unitCost, xyloCost },
+  await prisma.$transaction([
+    prisma.ibsaProduct.update({
+      where: { id },
+      data: { name, variant, code, category, type, unitCost, xyloCost },
+    }),
+    ...supplierChanges
+      .filter((sc) => sc.supplier.trim())
+      .map((sc) =>
+        prisma.rsProduct.update({
+          where: { id: sc.id },
+          data: { supplier: sc.supplier.trim() },
+        })
+      ),
+  ]);
+
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+  revalidatePath("/ibsa/suppliers");
+}
+
+/** Create a new RS product link for a product */
+export async function createRsProductLink(formData: FormData) {
+  const ibsaProductId = (formData.get("ibsaProductId") as string).trim();
+  const supplier      = (formData.get("supplier") as string).trim();
+
+  if (!ibsaProductId || !supplier) return;
+
+  await prisma.rsProduct.create({
+    data: {
+      ibsaProductId,
+      supplier,
+      rsCode:        (formData.get("rsCode") as string)?.trim() || null,
+      rsVariant:     (formData.get("rsVariant") as string)?.trim() || null,
+      rsDescription: (formData.get("rsDescription") as string)?.trim() || null,
+      cartonSize:    parseInt(formData.get("cartonSize") as string) || null,
+      cartonPrice:   parseFloat(formData.get("cartonPrice") as string) || null,
+    },
   });
 
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+  revalidatePath("/ibsa/suppliers");
+}
+
+/** Delete an RS product link */
+export async function deleteRsProductLink(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  if (!id) return;
+  await prisma.rsProduct.delete({ where: { id } });
   revalidatePath("/ibsa/products");
   revalidatePath("/ibsa/purchasing");
   revalidatePath("/ibsa/suppliers");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink } from "./actions";
 
 export type RsProductLink = {
   id: string;
@@ -65,6 +65,13 @@ export default function ProductsClient({ products }: Props) {
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
+
+  // Add supplier link form state
+  const [showAddLink, setShowAddLink] = useState(false);
+  const [linkDraft, setLinkDraft] = useState({
+    supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "",
+  });
+  const [isSavingLink, startSavingLink] = useTransition();
 
   // ── Derived ────────────────────────────────────────────────────────────
   const grouped = products.reduce<Record<string, ProductRow[]>>((acc, p) => {
@@ -134,6 +141,30 @@ export default function ProductsClient({ products }: Props) {
     const m = new Map<string, string>();
     for (const rp of p.rsProducts) m.set(rp.id, rp.supplier);
     setSupplierDrafts(m);
+    setShowAddLink(false);
+    setLinkDraft({ supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "" });
+  }
+
+  function submitAddLink() {
+    if (!editingProduct || !linkDraft.supplier.trim()) return;
+    const fd = new FormData();
+    fd.set("ibsaProductId", editingProduct.id);
+    Object.entries(linkDraft).forEach(([k, v]) => fd.set(k, v));
+    startSavingLink(async () => {
+      await createRsProductLink(fd);
+      setShowAddLink(false);
+      setLinkDraft({ supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "" });
+      setEditingProduct(null); // close modal — page revalidates with new link
+    });
+  }
+
+  function submitDeleteLink(rsProductId: string) {
+    const fd = new FormData();
+    fd.set("id", rsProductId);
+    startSavingLink(async () => {
+      await deleteRsProductLink(fd);
+      setEditingProduct(null); // close modal — page revalidates
+    });
   }
 
   function saveEdit() {
@@ -626,17 +657,24 @@ export default function ProductsClient({ products }: Props) {
 
               {/* Supplier Links */}
               <div>
-                <label className="mb-2 block text-xs font-semibold text-slate-400">
-                  Supplier Links
-                  <span className="ml-1 font-normal text-slate-600">— edit to re-assign PO grouping</span>
-                </label>
-                {editingProduct.rsProducts.length === 0 ? (
-                  <p className="text-xs text-slate-600">
-                    No supplier links yet. Add them on the{" "}
-                    <a href="/ibsa/suppliers" className="text-blue-400 hover:underline">Suppliers page</a>.
-                  </p>
-                ) : (
-                  <div className="space-y-2">
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-400">
+                    Supplier Links
+                  </label>
+                  {!showAddLink && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddLink(true)}
+                      className="text-xs font-semibold text-blue-400 hover:text-blue-300"
+                    >
+                      + Add link
+                    </button>
+                  )}
+                </div>
+
+                {/* Existing links */}
+                {editingProduct.rsProducts.length > 0 && (
+                  <div className="mb-2 space-y-2">
                     {editingProduct.rsProducts.map((rp) => (
                       <div key={rp.id} className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 p-2.5">
                         <input
@@ -663,10 +701,96 @@ export default function ProductsClient({ products }: Props) {
                         {supplierDrafts.get(rp.id) !== rp.supplier && (
                           <span className="text-xs text-amber-400">✎</span>
                         )}
+                        <button
+                          type="button"
+                          onClick={() => submitDeleteLink(rp.id)}
+                          disabled={isSavingLink}
+                          title="Remove link"
+                          className="shrink-0 text-slate-600 hover:text-red-400 disabled:opacity-40"
+                        >
+                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
                       </div>
                     ))}
                   </div>
                 )}
+
+                {/* No links yet */}
+                {editingProduct.rsProducts.length === 0 && !showAddLink && (
+                  <p className="text-xs text-slate-600">No supplier links yet — click "+ Add link" above.</p>
+                )}
+
+                {/* Add new link form */}
+                {showAddLink && (
+                  <div className="space-y-2 rounded-lg border border-blue-500/30 bg-blue-950/10 p-3">
+                    <p className="text-xs font-semibold text-blue-300">New supplier link</p>
+
+                    <input
+                      type="text"
+                      list="supplier-names"
+                      placeholder="Supplier name *"
+                      value={linkDraft.supplier}
+                      onChange={(e) => setLinkDraft((p) => ({ ...p, supplier: e.target.value }))}
+                      className="w-full rounded border border-slate-600 bg-slate-800 px-2 py-1.5 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+                    />
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        placeholder="Supplier code"
+                        value={linkDraft.rsCode}
+                        onChange={(e) => setLinkDraft((p) => ({ ...p, rsCode: e.target.value }))}
+                        className="rounded border border-slate-600 bg-slate-800 px-2 py-1.5 font-mono text-xs text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Variant (e.g. BLUE)"
+                        value={linkDraft.rsVariant}
+                        onChange={(e) => setLinkDraft((p) => ({ ...p, rsVariant: e.target.value }))}
+                        className="rounded border border-slate-600 bg-slate-800 px-2 py-1.5 text-xs text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="number"
+                        placeholder="Carton size"
+                        value={linkDraft.cartonSize}
+                        onChange={(e) => setLinkDraft((p) => ({ ...p, cartonSize: e.target.value }))}
+                        className="rounded border border-slate-600 bg-slate-800 px-2 py-1.5 text-xs text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+                      />
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="Price/carton (£)"
+                        value={linkDraft.cartonPrice}
+                        onChange={(e) => setLinkDraft((p) => ({ ...p, cartonPrice: e.target.value }))}
+                        className="rounded border border-slate-600 bg-slate-800 px-2 py-1.5 text-xs text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddLink(false)}
+                        className="rounded px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={submitAddLink}
+                        disabled={isSavingLink || !linkDraft.supplier.trim()}
+                        className="rounded bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
+                      >
+                        {isSavingLink ? "Saving…" : "Save link"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <datalist id="supplier-names">
                   {allSupplierNames.map((name) => (
                     <option key={name} value={name} />
