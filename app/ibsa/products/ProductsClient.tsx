@@ -63,7 +63,6 @@ export default function ProductsClient({ products }: Props) {
   const [editDraft, setEditDraft] = useState<EditDraft>({
     name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "",
   });
-  // supplierDrafts: rsProductId → supplier name
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
 
@@ -117,6 +116,9 @@ export default function ProductsClient({ products }: Props) {
     updateProductStock(fd);
   };
 
+  const adjustDraft = (id: string, delta: number, current: number) =>
+    setDraft((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] ?? current) + delta) }));
+
   // ── Edit modal ─────────────────────────────────────────────────────────
   function openEdit(p: ProductRow) {
     setEditingProduct(p);
@@ -136,12 +138,9 @@ export default function ProductsClient({ products }: Props) {
 
   function saveEdit() {
     if (!editingProduct) return;
-
-    // Only send supplier changes that actually differ from the original
     const supplierChanges = editingProduct.rsProducts
       .filter((rp) => supplierDrafts.get(rp.id) !== rp.supplier)
       .map((rp) => ({ id: rp.id, supplier: supplierDrafts.get(rp.id) ?? rp.supplier }));
-
     const fd = new FormData();
     fd.set("id",              editingProduct.id);
     fd.set("name",            editDraft.name);
@@ -152,7 +151,6 @@ export default function ProductsClient({ products }: Props) {
     fd.set("unitCost",        editDraft.unitCost);
     fd.set("xyloCost",        editDraft.xyloCost);
     fd.set("supplierChanges", JSON.stringify(supplierChanges));
-
     startSavingEdit(async () => {
       await updateProduct(fd);
       setEditingProduct(null);
@@ -162,28 +160,65 @@ export default function ProductsClient({ products }: Props) {
   const set = (field: keyof EditDraft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setEditDraft((prev) => ({ ...prev, [field]: e.target.value }));
 
-  // Unique supplier names for datalist autocomplete
   const allSupplierNames = Array.from(
     new Set(products.flatMap((p) => p.rsProducts.map((rp) => rp.supplier)))
   ).sort();
 
+  // ── Shared toolbar ─────────────────────────────────────────────────────
+  const toolbar = stockTakeMode ? (
+    <div className="mb-6 flex items-center justify-between rounded-xl border border-amber-700/50 bg-amber-950/20 px-5 py-3">
+      <p className="text-sm text-amber-300">
+        <span className="font-semibold">Stock Take</span>
+        {changedCount > 0
+          ? ` — ${changedCount} changed`
+          : " — tap to count"}
+      </p>
+      {/* Desktop save/cancel — hidden on mobile (sticky bar handles it) */}
+      <div className="hidden gap-3 md:flex">
+        <button
+          onClick={cancelStockTake}
+          disabled={isSaving}
+          className="rounded-lg border border-slate-600 px-4 py-1.5 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={saveAll}
+          disabled={isSaving || changedCount === 0}
+          className="rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-amber-500 disabled:opacity-40"
+        >
+          {isSaving ? "Saving…" : `Save All${changedCount > 0 ? ` (${changedCount})` : ""}`}
+        </button>
+      </div>
+    </div>
+  ) : (
+    <div className="mb-6 flex justify-end">
+      <button
+        onClick={enterStockTake}
+        className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+      >
+        Stock Take
+      </button>
+    </div>
+  );
+
   return (
     <>
-      {/* Stats */}
-      <div className="mb-8 grid grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      {/* ── Stats ── 2-col on mobile, 4-col on desktop ─────────────────── */}
+      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 md:p-6">
           <p className="text-sm text-slate-400">SKUs</p>
           <p className="mt-1 text-3xl font-bold">{products.length}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 md:p-6">
           <p className="text-sm text-slate-400">In Stock</p>
           <p className="mt-1 text-3xl font-bold text-green-400">{totalInStock}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 md:p-6">
           <p className="text-sm text-slate-400">GIT</p>
           <p className="mt-1 text-3xl font-bold text-amber-400">{totalGIT}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 md:p-6">
           <p className="text-sm text-slate-400">Total Stock</p>
           <p className="mt-1 text-3xl font-bold">{totalStock}</p>
           <p className="mt-1 text-xs text-slate-500">
@@ -192,45 +227,139 @@ export default function ProductsClient({ products }: Props) {
         </div>
       </div>
 
-      {/* Toolbar */}
-      {stockTakeMode ? (
-        <div className="mb-6 flex items-center justify-between rounded-xl border border-amber-700/50 bg-amber-950/20 px-5 py-3">
-          <p className="text-sm text-amber-300">
-            <span className="font-semibold">Stock Take Mode</span>
-            {changedCount > 0
-              ? ` — ${changedCount} product${changedCount !== 1 ? "s" : ""} changed`
-              : " — edit quantities below"}
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={cancelStockTake}
-              disabled={isSaving}
-              className="rounded-lg border border-slate-600 px-4 py-1.5 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={saveAll}
-              disabled={isSaving || changedCount === 0}
-              className="rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-amber-500 disabled:opacity-40"
-            >
-              {isSaving ? "Saving…" : `Save All${changedCount > 0 ? ` (${changedCount})` : ""}`}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="mb-6 flex justify-end">
-          <button
-            onClick={enterStockTake}
-            className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
-          >
-            Stock Take
-          </button>
-        </div>
-      )}
+      {toolbar}
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
+      {/* ── Mobile card list ─────────────────────────────────────────────── */}
+      <div className="block space-y-1 md:hidden">
+        {Object.entries(grouped).map(([category, items]) => (
+          <div key={category}>
+            <p className="px-1 pb-2 pt-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {CATEGORY_LABELS[category] ?? category}
+            </p>
+            <div className="space-y-2">
+              {items.map((p) => {
+                const currentInStock = getInStock(p);
+                const changed = stockTakeMode && (draft[p.id] ?? p.inStock) !== p.inStock;
+                const total = currentInStock + p.git;
+
+                return (
+                  <div
+                    key={p.id}
+                    className={`rounded-2xl border p-4 transition-colors ${
+                      changed
+                        ? "border-amber-500/50 bg-amber-950/25"
+                        : "border-slate-700 bg-slate-800"
+                    }`}
+                  >
+                    {/* Product info row */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white leading-tight">{p.name}</p>
+                        {p.variant && (
+                          <p className="text-sm text-slate-400 mt-0.5">{p.variant}</p>
+                        )}
+                        <p className="mt-1 font-mono text-xs text-slate-500">{p.code}</p>
+                      </div>
+
+                      {/* Right side: changed badge or edit button */}
+                      {stockTakeMode ? (
+                        changed && (
+                          <span className="shrink-0 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-400">
+                            was {p.inStock}
+                          </span>
+                        )
+                      ) : (
+                        <button
+                          onClick={() => openEdit(p)}
+                          title="Edit product"
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-700 hover:text-white"
+                        >
+                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Stock controls */}
+                    {stockTakeMode ? (
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        {/* GIT note */}
+                        <div className="text-xs text-slate-500">
+                          {p.git > 0 && <span>GIT: <span className="text-amber-400 font-medium">{p.git}</span></span>}
+                        </div>
+
+                        {/* +/- stepper */}
+                        <div className="flex items-center overflow-hidden rounded-2xl border border-slate-600">
+                          <button
+                            onClick={() => adjustDraft(p.id, -1, p.inStock)}
+                            className="flex h-12 w-12 items-center justify-center text-2xl font-light text-slate-300 transition-colors hover:bg-slate-700 active:bg-slate-600"
+                            aria-label="Decrease"
+                          >
+                            −
+                          </button>
+                          <div className={`flex h-12 min-w-[3.5rem] items-center justify-center border-x border-slate-600 px-2 ${
+                            changed ? "bg-amber-950/40" : ""
+                          }`}>
+                            <span className={`text-xl font-bold tabular-nums ${changed ? "text-amber-300" : "text-white"}`}>
+                              {draft[p.id] ?? p.inStock}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => adjustDraft(p.id, 1, p.inStock)}
+                            className="flex h-12 w-12 items-center justify-center text-2xl font-light text-slate-300 transition-colors hover:bg-slate-700 active:bg-slate-600"
+                            aria-label="Increase"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Total with GIT */}
+                        <div className="text-right text-xs text-slate-500">
+                          {p.git > 0 && (
+                            <span>Total: <span className="font-medium text-slate-300">{(draft[p.id] ?? p.inStock) + p.git}</span></span>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      /* Read mode stock pills */
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-slate-500">Stock</span>
+                          <span className={`text-sm font-bold ${p.inStock > 0 ? "text-green-400" : "text-slate-500"}`}>
+                            {p.inStock}
+                          </span>
+                        </div>
+                        {p.git > 0 && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-slate-500">GIT</span>
+                            <span className="text-sm font-bold text-amber-400">{p.git}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-slate-500">Total</span>
+                          <span className={`text-sm font-bold ${total > 0 ? "text-white" : "text-slate-500"}`}>
+                            {total}
+                          </span>
+                        </div>
+                        <div className="ml-auto text-xs text-slate-500">
+                          £{p.unitCost.toFixed(2)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {/* Bottom padding so sticky bar doesn't overlap last card */}
+        {stockTakeMode && <div className="h-28" />}
+      </div>
+
+      {/* ── Desktop table ────────────────────────────────────────────────── */}
+      <div className="hidden overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 md:block">
         <table className="min-w-full text-sm">
           <thead className="border-b border-slate-700 bg-slate-700/50 text-left text-slate-200">
             <tr>
@@ -243,7 +372,7 @@ export default function ProductsClient({ products }: Props) {
               <th className="px-5 py-3 font-semibold text-center">In Stock</th>
               <th className="px-5 py-3 font-semibold text-center">GIT</th>
               <th className="px-5 py-3 font-semibold text-right">Total Stock</th>
-              <th className="px-5 py-3 w-10"></th>
+              <th className="w-10 px-5 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -284,7 +413,6 @@ export default function ProductsClient({ products }: Props) {
                         })() : <span className="text-slate-500">—</span>}
                       </td>
 
-                      {/* In Stock */}
                       <td className="px-5 py-3">
                         <div className="flex justify-center">
                           {stockTakeMode ? (
@@ -312,7 +440,6 @@ export default function ProductsClient({ products }: Props) {
                         </div>
                       </td>
 
-                      {/* GIT */}
                       <td className="px-5 py-3">
                         <div className="flex justify-center">
                           {stockTakeMode ? (
@@ -334,7 +461,6 @@ export default function ProductsClient({ products }: Props) {
                         <span className={total > 0 ? "text-white" : "text-slate-400"}>{total}</span>
                       </td>
 
-                      {/* Edit button — hidden in stock take mode */}
                       <td className="px-3 py-3">
                         {!stockTakeMode && (
                           <button
@@ -357,15 +483,41 @@ export default function ProductsClient({ products }: Props) {
         </table>
       </div>
 
+      {/* ── Mobile sticky action bar (stock take only) ───────────────────── */}
+      {stockTakeMode && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-amber-700/40 bg-slate-950/95 px-4 py-4 backdrop-blur-sm md:hidden">
+          <div className="flex gap-3">
+            <button
+              onClick={cancelStockTake}
+              disabled={isSaving}
+              className="flex-1 rounded-xl border border-slate-600 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveAll}
+              disabled={isSaving || changedCount === 0}
+              className="flex-1 rounded-xl bg-amber-600 py-3 text-sm font-semibold text-white hover:bg-amber-500 disabled:opacity-40"
+            >
+              {isSaving
+                ? "Saving…"
+                : changedCount > 0
+                ? `Save ${changedCount} change${changedCount !== 1 ? "s" : ""}`
+                : "No changes yet"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Edit modal ───────────────────────────────────────────────────── */}
       {editingProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4">
+          <div className="w-full max-w-md overflow-y-auto rounded-t-3xl border border-slate-700 bg-slate-900 shadow-2xl sm:max-h-[90vh] sm:rounded-2xl">
             {/* Modal header */}
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div>
                 <h2 className="text-base font-bold text-white">Edit product</h2>
-                <p className="mt-0.5 text-xs text-slate-500 font-mono">{editingProduct.code}</p>
+                <p className="mt-0.5 font-mono text-xs text-slate-500">{editingProduct.code}</p>
               </div>
               <button
                 onClick={() => setEditingProduct(null)}
@@ -379,7 +531,6 @@ export default function ProductsClient({ products }: Props) {
 
             {/* Fields */}
             <div className="space-y-4 px-6 py-5">
-              {/* Name */}
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-400">Name</label>
                 <input
@@ -390,9 +541,10 @@ export default function ProductsClient({ products }: Props) {
                 />
               </div>
 
-              {/* Variant */}
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-400">Variant / Size <span className="font-normal text-slate-600">(optional)</span></label>
+                <label className="mb-1 block text-xs font-semibold text-slate-400">
+                  Variant / Size <span className="font-normal text-slate-600">(optional)</span>
+                </label>
                 <input
                   type="text"
                   value={editDraft.variant}
@@ -402,7 +554,6 @@ export default function ProductsClient({ products }: Props) {
                 />
               </div>
 
-              {/* Code */}
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-400">Product Code</label>
                 <input
@@ -413,7 +564,6 @@ export default function ProductsClient({ products }: Props) {
                 />
               </div>
 
-              {/* Category + Type */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-400">Category</label>
@@ -440,7 +590,6 @@ export default function ProductsClient({ products }: Props) {
                 </div>
               </div>
 
-              {/* Prices */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-400">Sale Price (ex VAT)</label>
@@ -457,7 +606,9 @@ export default function ProductsClient({ products }: Props) {
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-400">Xylo Cost <span className="font-normal text-slate-600">(optional)</span></label>
+                  <label className="mb-1 block text-xs font-semibold text-slate-400">
+                    Xylo Cost <span className="font-normal text-slate-600">(optional)</span>
+                  </label>
                   <div className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 focus-within:border-blue-500">
                     <span className="text-sm text-slate-400">£</span>
                     <input
@@ -477,18 +628,17 @@ export default function ProductsClient({ products }: Props) {
               <div>
                 <label className="mb-2 block text-xs font-semibold text-slate-400">
                   Supplier Links
-                  <span className="ml-1 font-normal text-slate-600">— edit supplier name to re-assign PO grouping</span>
+                  <span className="ml-1 font-normal text-slate-600">— edit to re-assign PO grouping</span>
                 </label>
-                {editingProduct && editingProduct.rsProducts.length === 0 ? (
+                {editingProduct.rsProducts.length === 0 ? (
                   <p className="text-xs text-slate-600">
                     No supplier links yet. Add them on the{" "}
                     <a href="/ibsa/suppliers" className="text-blue-400 hover:underline">Suppliers page</a>.
                   </p>
                 ) : (
                   <div className="space-y-2">
-                    {editingProduct?.rsProducts.map((rp) => (
+                    {editingProduct.rsProducts.map((rp) => (
                       <div key={rp.id} className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 p-2.5">
-                        {/* Editable supplier name */}
                         <input
                           type="text"
                           list="supplier-names"
@@ -498,7 +648,6 @@ export default function ProductsClient({ products }: Props) {
                           }
                           className="min-w-0 flex-1 rounded border border-slate-600 bg-slate-800 px-2 py-1 text-sm text-white outline-none focus:border-blue-500"
                         />
-                        {/* RS Code + Variant (read-only) */}
                         <div className="flex shrink-0 items-center gap-1.5">
                           {rp.rsCode ? (
                             <span className="font-mono text-xs text-slate-400">{rp.rsCode}</span>
@@ -511,7 +660,6 @@ export default function ProductsClient({ products }: Props) {
                             </span>
                           )}
                         </div>
-                        {/* Changed indicator */}
                         {supplierDrafts.get(rp.id) !== rp.supplier && (
                           <span className="text-xs text-amber-400">✎</span>
                         )}
@@ -519,7 +667,6 @@ export default function ProductsClient({ products }: Props) {
                     ))}
                   </div>
                 )}
-                {/* Datalist for supplier name autocomplete */}
                 <datalist id="supplier-names">
                   {allSupplierNames.map((name) => (
                     <option key={name} value={name} />
