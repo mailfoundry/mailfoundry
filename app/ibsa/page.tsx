@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
 import IbsaAppShell from "../../src/components/ibsa-app-shell";
 import { archiveConvention } from "./actions";
+import NewConventionButton from "./NewConventionButton";
 
 const fmtDate = (d: Date, opts?: Intl.DateTimeFormatOptions) =>
   d.toLocaleDateString("en-GB", opts ?? { day: "numeric", month: "short" });
@@ -175,12 +176,15 @@ export default async function IbsaPage() {
           <p className="text-sm text-slate-400">IBSA · Xylo Supplies</p>
           <h2 className="text-3xl font-bold">Conventions 2026</h2>
         </div>
-        <Link
-          href="/ibsa/products"
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
-        >
-          Products →
-        </Link>
+        <div className="flex items-center gap-3">
+          <NewConventionButton />
+          <Link
+            href="/ibsa/products"
+            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          >
+            Products →
+          </Link>
+        </div>
       </header>
 
       {/* Summary stats */}

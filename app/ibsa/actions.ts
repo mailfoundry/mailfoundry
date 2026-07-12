@@ -13,6 +13,36 @@ export async function archiveConvention(formData: FormData) {
   revalidatePath("/ibsa");
 }
 
+export async function createConvention(formData: FormData) {
+  const name           = formData.get("name")?.toString().trim() ?? "";
+  const venue          = formData.get("venue")?.toString().trim() || null;
+  const conventionDate = formData.get("conventionDate")?.toString() ?? "";
+  const deliveryDate   = formData.get("deliveryDate")?.toString() || null;
+  const deliveryAddress = formData.get("deliveryAddress")?.toString().trim() || null;
+  const contactName    = formData.get("contactName")?.toString().trim() || null;
+  const contactEmail   = formData.get("contactEmail")?.toString().trim() || null;
+  const contactMobile  = formData.get("contactMobile")?.toString().trim() || null;
+
+  if (!name || !conventionDate) return;
+
+  await prisma.ibsaConvention.create({
+    data: {
+      name,
+      venue,
+      conventionDate: new Date(conventionDate),
+      deliveryDate:   deliveryDate ? new Date(deliveryDate) : null,
+      deliveryAddress,
+      contactName,
+      contactEmail,
+      contactMobile,
+      status:   "pending",
+      faStatus: "pending",
+    },
+  });
+
+  revalidatePath("/ibsa");
+}
+
 export async function updateConventionDetails(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const name = formData.get("name")?.toString() ?? "";
