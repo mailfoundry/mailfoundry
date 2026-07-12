@@ -216,3 +216,41 @@ model IbsaOrderItem {
 
   @@unique([conventionId, productId, dept])
 }
+
+/// A saved snapshot of a supplier purchase order.
+model IbsaPurchaseOrder {
+  id         String    @id @default(cuid())
+  poNumber   String
+  supplier   String
+  /// ordered | partial | received | cancelled
+  status     String    @default("ordered")
+  orderedAt  DateTime  @default(now())
+  receivedAt DateTime?
+  totalExVat Float     @default(0)
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  lines IbsaPurchaseOrderLine[]
+}
+
+/// One line within a purchase order.
+model IbsaPurchaseOrderLine {
+  id              String            @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   IbsaPurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  rsCode          String?
+  description     String
+  variant         String?
+  cartonSize      Int?
+  cartonsOrdered  Int
+  cartonsReceived Int               @default(0)
+  pricePerCarton  Float?
+  totalCost       Float?
+  /// JSON: [{ibsaProductId, name, units}]
+  productBreakdown String           @default("[]")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([purchaseOrderId])
+}

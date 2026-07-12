@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import AppShell from "./app-shell";
 
 type Props = {
-  active: "ibsa" | "ibsa-products" | "ibsa-purchasing" | "ibsa-suppliers";
+  active: "ibsa" | "ibsa-products" | "ibsa-purchasing" | "ibsa-suppliers" | "ibsa-orders";
   children: ReactNode;
 };
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useTransition } from "react";
 import { downloadPO } from "./generatePO";
 import type { POLine } from "./generatePO";
+import { markAsOrdered } from "./order-actions";
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { style: "currency", currency: "GBP" });
@@ -60,11 +61,18 @@ export type RsProductLine = {
   ibsaProductId: string | null;
 };
 
+type ProductContribution = {
+  ibsaProductId: string;
+  name: string;
+  units: number;
+};
+
 type RsOrderLine = RsProductLine & {
   displayLabel: string;
   unitsNeeded: number;
   cartonsNeeded: number | null;
   totalCost: number | null;
+  productBreakdown: ProductContribution[];
 };
 
 // A selectable card = one (convention, dept) pair
@@ -83,8 +91,20 @@ type Props = {
   rsProducts: RsProductLine[];
 };
 
+type OrderState = "idle" | "confirming" | "submitting" | "done";
+
+function makePONumber(supplier: string) {
+  const now = new Date();
+  const supplierCode = supplier.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 4);
+  const dateCode = now.toISOString().slice(0, 10).replace(/-/g, "");
+  return `PO-${dateCode}-${supplierCode}`;
+}
+
 export default function PurchasingClient({ conventions, orderItems, rsProducts }: Props) {
   const [showRsOrder, setShowRsOrder] = useState(false);
+  const [orderStates, setOrderStates] = useState<Map<string, OrderState>>(() => new Map());
+  const [confirmSupplier, setConfirmSupplier] = useState<{ supplier: string; poNumber: string; lines: RsOrderLine[] } | null>(null);
+  const [, startTransition] = useTransition();
 
   // ── Convention cards ─────────────────────────────────────────────────────
   const cards = useMemo<Card[]>(() => {
@@ -242,9 +262,15 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
             unitsNeeded: 0,
             cartonsNeeded: null,
             totalCost: null,
+            productBreakdown: [],
           });
         }
         lineMap.get(key)!.unitsNeeded += row.deficit;
+        lineMap.get(key)!.productBreakdown.push({
+          ibsaProductId: row.productId,
+          name: productLabel,
+          units: row.deficit,
+        });
       }
     }
 
@@ -304,6 +330,55 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
       totalCost: l.totalCost,
     }));
     downloadPO({ supplier, lines: poLines, conventionNames });
+  }
+
+  function openConfirmOrder(supplier: string, lines: RsOrderLine[]) {
+    const poNumber = makePONumber(supplier);
+    setConfirmSupplier({ supplier, poNumber, lines });
+  }
+
+  function submitOrder() {
+    if (!confirmSupplier) return;
+    const { supplier, poNumber, lines } = confirmSupplier;
+    // Only include lines that have catalog data (cartons can be calculated)
+    const orderableLines = lines.filter((l) => l.cartonsNeeded != null);
+    const totalExVat = orderableLines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
+
+    setOrderStates((prev) => new Map(prev).set(supplier, "submitting"));
+    setConfirmSupplier(null);
+
+    const fd = new FormData();
+    fd.set("supplier", supplier);
+    fd.set("poNumber", poNumber);
+    fd.set("totalExVat", String(totalExVat));
+    fd.set(
+      "lines",
+      JSON.stringify(
+        orderableLines.map((l) => ({
+          rsCode: l.rsCode,
+          description: l.displayLabel,
+          variant: l.rsVariant,
+          cartonSize: l.cartonSize,
+          cartonsOrdered: l.cartonsNeeded!,
+          pricePerCarton: l.cartonPrice,
+          totalCost: l.totalCost,
+          productBreakdown: l.productBreakdown,
+        }))
+      )
+    );
+
+    startTransition(async () => {
+      await markAsOrdered(fd);
+      setOrderStates((prev) => new Map(prev).set(supplier, "done"));
+      // Reset to idle after 3 s
+      setTimeout(() => {
+        setOrderStates((prev) => {
+          const next = new Map(prev);
+          next.set(supplier, "idle");
+          return next;
+        });
+      }, 3000);
+    });
   }
 
   return (
@@ -547,6 +622,25 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
                         >
                           ↓ Download PO
                         </button>
+                        {(() => {
+                          const state = orderStates.get(supplier) ?? "idle";
+                          if (state === "done") {
+                            return (
+                              <span className="rounded border border-green-700/60 bg-green-950/40 px-3 py-1 text-xs font-semibold text-green-400">
+                                ✓ Ordered
+                              </span>
+                            );
+                          }
+                          return (
+                            <button
+                              onClick={() => openConfirmOrder(supplier, lines)}
+                              disabled={state === "submitting" || lines.filter(l => l.cartonsNeeded != null).length === 0}
+                              className="rounded border border-blue-700/60 bg-blue-950/40 px-3 py-1 text-xs font-semibold text-blue-300 transition-colors hover:bg-blue-900/50 hover:text-blue-200 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {state === "submitting" ? "Saving…" : "✓ Mark as Ordered"}
+                            </button>
+                          );
+                        })()}
                       </div>
                     </div>
                     <table className="w-full text-sm">
@@ -614,6 +708,40 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
             </div>
           )}
         </>
+      )}
+      {/* Mark-as-Ordered confirm dialog */}
+      {confirmSupplier && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
+            <h2 className="text-base font-bold text-white">Confirm order</h2>
+            <p className="mt-2 text-sm text-slate-300">
+              Save{" "}
+              <span className="font-mono font-semibold text-blue-400">
+                {confirmSupplier.poNumber}
+              </span>{" "}
+              for <span className="font-semibold text-white">{confirmSupplier.supplier}</span>?
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              {confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length} orderable{" "}
+              line{confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length !== 1 ? "s" : ""} will be recorded.
+              This won&apos;t change stock levels — book in the delivery when it arrives.
+            </p>
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmSupplier(null)}
+                className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitOrder}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+              >
+                Save order
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
