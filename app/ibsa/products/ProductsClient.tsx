@@ -3,6 +3,14 @@
 import { useState, useTransition } from "react";
 import { updateProductStock, bulkUpdateInStock, updateProduct } from "./actions";
 
+export type RsProductLink = {
+  id: string;
+  supplier: string;
+  rsCode: string | null;
+  rsVariant: string | null;
+  rsDescription: string | null;
+};
+
 export type ProductRow = {
   id: string;
   name: string;
@@ -14,6 +22,7 @@ export type ProductRow = {
   xyloCost: number | null;
   inStock: number;
   git: number;
+  rsProducts: RsProductLink[];
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -54,6 +63,8 @@ export default function ProductsClient({ products }: Props) {
   const [editDraft, setEditDraft] = useState<EditDraft>({
     name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "",
   });
+  // supplierDrafts: rsProductId → supplier name
+  const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
 
   // ── Derived ────────────────────────────────────────────────────────────
@@ -118,19 +129,30 @@ export default function ProductsClient({ products }: Props) {
       unitCost: String(p.unitCost),
       xyloCost: p.xyloCost != null ? String(p.xyloCost) : "",
     });
+    const m = new Map<string, string>();
+    for (const rp of p.rsProducts) m.set(rp.id, rp.supplier);
+    setSupplierDrafts(m);
   }
 
   function saveEdit() {
     if (!editingProduct) return;
+
+    // Only send supplier changes that actually differ from the original
+    const supplierChanges = editingProduct.rsProducts
+      .filter((rp) => supplierDrafts.get(rp.id) !== rp.supplier)
+      .map((rp) => ({ id: rp.id, supplier: supplierDrafts.get(rp.id) ?? rp.supplier }));
+
     const fd = new FormData();
-    fd.set("id",       editingProduct.id);
-    fd.set("name",     editDraft.name);
-    fd.set("variant",  editDraft.variant);
-    fd.set("code",     editDraft.code);
-    fd.set("category", editDraft.category);
-    fd.set("type",     editDraft.type);
-    fd.set("unitCost", editDraft.unitCost);
-    fd.set("xyloCost", editDraft.xyloCost);
+    fd.set("id",              editingProduct.id);
+    fd.set("name",            editDraft.name);
+    fd.set("variant",         editDraft.variant);
+    fd.set("code",            editDraft.code);
+    fd.set("category",        editDraft.category);
+    fd.set("type",            editDraft.type);
+    fd.set("unitCost",        editDraft.unitCost);
+    fd.set("xyloCost",        editDraft.xyloCost);
+    fd.set("supplierChanges", JSON.stringify(supplierChanges));
+
     startSavingEdit(async () => {
       await updateProduct(fd);
       setEditingProduct(null);
@@ -139,6 +161,11 @@ export default function ProductsClient({ products }: Props) {
 
   const set = (field: keyof EditDraft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setEditDraft((prev) => ({ ...prev, [field]: e.target.value }));
+
+  // Unique supplier names for datalist autocomplete
+  const allSupplierNames = Array.from(
+    new Set(products.flatMap((p) => p.rsProducts.map((rp) => rp.supplier)))
+  ).sort();
 
   return (
     <>
@@ -444,6 +471,60 @@ export default function ProductsClient({ products }: Props) {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Supplier Links */}
+              <div>
+                <label className="mb-2 block text-xs font-semibold text-slate-400">
+                  Supplier Links
+                  <span className="ml-1 font-normal text-slate-600">— edit supplier name to re-assign PO grouping</span>
+                </label>
+                {editingProduct && editingProduct.rsProducts.length === 0 ? (
+                  <p className="text-xs text-slate-600">
+                    No supplier links yet. Add them on the{" "}
+                    <a href="/ibsa/suppliers" className="text-blue-400 hover:underline">Suppliers page</a>.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {editingProduct?.rsProducts.map((rp) => (
+                      <div key={rp.id} className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 p-2.5">
+                        {/* Editable supplier name */}
+                        <input
+                          type="text"
+                          list="supplier-names"
+                          value={supplierDrafts.get(rp.id) ?? rp.supplier}
+                          onChange={(e) =>
+                            setSupplierDrafts((prev) => new Map(prev).set(rp.id, e.target.value))
+                          }
+                          className="min-w-0 flex-1 rounded border border-slate-600 bg-slate-800 px-2 py-1 text-sm text-white outline-none focus:border-blue-500"
+                        />
+                        {/* RS Code + Variant (read-only) */}
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          {rp.rsCode ? (
+                            <span className="font-mono text-xs text-slate-400">{rp.rsCode}</span>
+                          ) : (
+                            <span className="text-xs text-slate-600">no code</span>
+                          )}
+                          {rp.rsVariant && (
+                            <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs text-slate-300">
+                              {rp.rsVariant}
+                            </span>
+                          )}
+                        </div>
+                        {/* Changed indicator */}
+                        {supplierDrafts.get(rp.id) !== rp.supplier && (
+                          <span className="text-xs text-amber-400">✎</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/* Datalist for supplier name autocomplete */}
+                <datalist id="supplier-names">
+                  {allSupplierNames.map((name) => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
               </div>
 
               {/* Live margin preview */}
