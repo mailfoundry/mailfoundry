@@ -147,6 +147,8 @@ export function downloadPO({
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       /* Prevent tfoot from repeating on every page */
       tfoot { display: table-row-group; }
+      /* Keep footer on same page as table — never push it to a new page */
+      .footer { page-break-before: avoid; break-before: avoid; margin-top: 8px; }
     }
   </style>
 </head>
