@@ -117,7 +117,7 @@ export async function saveOrderItem(formData: FormData) {
     });
   } else {
     await prisma.ibsaOrderItem.upsert({
-      where: { conventionId_productId: { conventionId, productId } },
+      where: { conventionId_productId_dept: { conventionId, productId, dept } },
       create: { conventionId, productId, qty, dept },
       update: { qty, dept },
     });
