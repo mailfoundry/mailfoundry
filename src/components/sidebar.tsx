@@ -18,7 +18,8 @@ type SidebarProps = {
     | "ibsa-products"
     | "ibsa-purchasing"
     | "ibsa-suppliers"
-    | "ibsa-orders";
+    | "ibsa-orders"
+    | "ibsa-contacts";
   ibsaOnly?: boolean;
 };
 
@@ -63,6 +64,7 @@ export default function Sidebar({ active, ibsaOnly = false }: SidebarProps) {
           <Link href="/ibsa/purchasing" className={`mt-1 ${active === "ibsa-purchasing" ? activeClass : base}`}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={`mt-1 ${active === "ibsa-suppliers" ? activeClass : base}`}>Suppliers</Link>
           <Link href="/ibsa/orders" className={`mt-1 ${active === "ibsa-orders" ? activeClass : base}`}>Orders</Link>
+          <Link href="/ibsa/contacts" className={`mt-1 ${active === "ibsa-contacts" ? activeClass : base}`}>Contacts</Link>
         </div>
       </nav>
 

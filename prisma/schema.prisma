@@ -254,3 +254,15 @@ model IbsaPurchaseOrderLine {
 
   @@index([purchaseOrderId])
 }
+
+/// Supplier contact book. name matches RsProduct.supplier for cascade renames.
+model IbsaSupplier {
+  id          String   @id @default(cuid())
+  name        String   @unique // Must match RsProduct.supplier — rename cascades via server action
+  contactName String?
+  email       String?
+  mobile      String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
