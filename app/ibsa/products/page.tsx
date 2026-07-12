@@ -25,6 +25,10 @@ export default async function IbsaProductsPage({
       xyloCost: true,
       inStock: true,
       git: true,
+      rsProducts: {
+        select: { id: true, supplier: true, rsCode: true, rsVariant: true, rsDescription: true },
+        orderBy: { supplier: "asc" as const },
+      },
     },
   });
 
