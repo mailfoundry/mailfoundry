@@ -33,6 +33,41 @@ export async function updateConventionStatus(formData: FormData) {
   revalidatePath("/ibsa/purchasing");
 }
 
+/**
+ * Marks a convention shipment (CS or FA) as complete AND decrements inStock
+ * for every product in that shipment by its ordered qty.
+ */
+export async function markCompleteAndDeductStock(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  const dept = formData.get("dept")?.toString() ?? "CS"; // "CS" | "FA"
+  if (!conventionId) return;
+
+  const items = await prisma.ibsaOrderItem.findMany({
+    where: { conventionId, dept },
+    select: { productId: true, qty: true },
+  });
+
+  await prisma.$transaction([
+    prisma.ibsaConvention.update({
+      where: { id: conventionId },
+      data: dept === "FA" ? { faStatus: "complete" } : { status: "complete" },
+    }),
+    ...items
+      .filter((i) => i.qty > 0)
+      .map((i) =>
+        prisma.ibsaProduct.update({
+          where: { id: i.productId },
+          data: { inStock: { decrement: i.qty } },
+        })
+      ),
+  ]);
+
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+  revalidatePath("/ibsa/purchasing");
+  revalidatePath("/ibsa/products");
+}
+
 export async function updateShippingCost(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const cost = parseFloat(formData.get("shippingCost")?.toString() ?? "0") || 0;

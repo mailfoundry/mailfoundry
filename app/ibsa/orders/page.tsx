@@ -31,6 +31,11 @@ export default async function OrdersPage() {
       cartonsReceived: l.cartonsReceived,
       pricePerCarton: l.pricePerCarton,
       totalCost: l.totalCost,
+      productBreakdown: JSON.parse(l.productBreakdown as string) as Array<{
+        ibsaProductId: string;
+        name: string;
+        units: number;
+      }>,
     })),
   }));
 

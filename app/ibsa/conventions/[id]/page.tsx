@@ -19,6 +19,8 @@ import {
 import { updateConventionDetails } from "../../actions";
 import ConventionProductTable from "./ConventionProductTable";
 import CountdownBadge from "./CountdownBadge";
+import CompleteButton from "./CompleteButton";
+import type { StockItem } from "./CompleteButton";
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -97,6 +99,15 @@ export default async function ConventionDetailPage({
   const faProfit = faSaleTotal - faCostTotal;
   const faItemsWithQty = faItems.filter((i) => i.qty > 0).length;
 
+  // Items for CompleteButton stock deduction modals
+  const csStockItems: StockItem[] = csItems
+    .filter((i) => i.qty > 0)
+    .map((i) => ({ name: i.product.name, variant: i.product.variant ?? null, qty: i.qty }));
+
+  const faStockItems: StockItem[] = faItems
+    .filter((i) => i.qty > 0)
+    .map((i) => ({ name: i.product.name, variant: i.product.variant ?? null, qty: i.qty }));
+
   const hasFaData =
     convention.orderItems.some((i) => i.product.type === "FA") ||
     !!convention.faCollectionDate ||
@@ -140,7 +151,7 @@ export default async function ConventionDetailPage({
         <div className="flex shrink-0 flex-col items-end gap-1">
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">CS Status</p>
           <div className="flex gap-2">
-            {(["pending", "ordered", "complete"] as const).map((s) => (
+            {(["pending", "ordered"] as const).map((s) => (
               <form key={s} action={updateConventionStatus}>
                 <input type="hidden" name="conventionId" value={convention.id} />
                 <input type="hidden" name="status" value={s} />
@@ -156,6 +167,13 @@ export default async function ConventionDetailPage({
                 </button>
               </form>
             ))}
+            <CompleteButton
+              conventionId={convention.id}
+              conventionName={convention.name}
+              dept="CS"
+              items={csStockItems}
+              isActive={convention.status === "complete"}
+            />
           </div>
         </div>
       </header>
@@ -405,7 +423,7 @@ export default async function ConventionDetailPage({
             <div className="flex flex-col items-end gap-1">
               <p className="text-xs font-semibold uppercase tracking-wider text-green-400">FA Status</p>
               <div className="flex gap-1">
-                {(["pending", "ordered", "complete"] as const).map((s) => (
+                {(["pending", "ordered"] as const).map((s) => (
                   <form key={s} action={updateFaStatus}>
                     <input type="hidden" name="conventionId" value={convention.id} />
                     <input type="hidden" name="status" value={s} />
@@ -421,6 +439,13 @@ export default async function ConventionDetailPage({
                     </button>
                   </form>
                 ))}
+                <CompleteButton
+                  conventionId={convention.id}
+                  conventionName={convention.name}
+                  dept="FA"
+                  items={faStockItems}
+                  isActive={convention.faStatus === "complete"}
+                />
               </div>
             </div>
           </div>

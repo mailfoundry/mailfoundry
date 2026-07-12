@@ -3,10 +3,11 @@
 import { prisma } from "../../../src/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+type BreakdownItem = { ibsaProductId: string; name: string; units: number };
+
 /**
- * Records cartons received for a single PO line.
- * Updates the line's cartonsReceived and recalculates the parent order's status.
- * Stock/GIT is NOT auto-adjusted here — update via the Products page after delivery.
+ * Records cartons received for a single PO line and increments inStock proportionally.
+ * Only the DELTA (new - old cartonsReceived) triggers stock changes, so re-confirming is safe.
  */
 export async function bookInLine(formData: FormData) {
   const lineId = formData.get("lineId") as string;
@@ -14,44 +15,79 @@ export async function bookInLine(formData: FormData) {
 
   const line = await prisma.ibsaPurchaseOrderLine.findUnique({
     where: { id: lineId },
-    select: { id: true, purchaseOrderId: true, cartonsOrdered: true, cartonsReceived: true },
+    select: {
+      id: true,
+      purchaseOrderId: true,
+      cartonsOrdered: true,
+      cartonsReceived: true,
+      cartonSize: true,
+      productBreakdown: true,
+    },
   });
   if (!line) throw new Error("Line not found");
 
-  await prisma.ibsaPurchaseOrderLine.update({
-    where: { id: lineId },
-    data: { cartonsReceived },
-  });
+  // ── Stock increment (delta only) ────────────────────────────────────────
+  const deltaCartons = cartonsReceived - line.cartonsReceived;
 
-  // Re-fetch all lines for this order to determine status
+  const stockUpdates: Array<{ id: string; delta: number }> = [];
+
+  if (deltaCartons > 0 && line.cartonSize) {
+    const deltaUnits = deltaCartons * line.cartonSize;
+    const breakdown: BreakdownItem[] = JSON.parse(line.productBreakdown as string);
+
+    if (breakdown.length > 0) {
+      const totalNeeded = breakdown.reduce((s, p) => s + p.units, 0);
+      let remaining = deltaUnits;
+
+      for (let i = 0; i < breakdown.length; i++) {
+        const p = breakdown[i];
+        const share =
+          i === breakdown.length - 1
+            ? remaining
+            : Math.floor((p.units / totalNeeded) * deltaUnits);
+        remaining -= share;
+        if (share > 0) stockUpdates.push({ id: p.ibsaProductId, delta: share });
+      }
+    }
+  }
+
+  // ── Persist: line + stock changes in one transaction ──────────────────
+  await prisma.$transaction([
+    prisma.ibsaPurchaseOrderLine.update({
+      where: { id: lineId },
+      data: { cartonsReceived },
+    }),
+    ...stockUpdates.map((u) =>
+      prisma.ibsaProduct.update({
+        where: { id: u.id },
+        data: { inStock: { increment: u.delta } },
+      })
+    ),
+  ]);
+
+  // ── Recalculate PO status ───────────────────────────────────────────────
   const allLines = await prisma.ibsaPurchaseOrderLine.findMany({
     where: { purchaseOrderId: line.purchaseOrderId },
     select: { id: true, cartonsOrdered: true, cartonsReceived: true },
   });
 
-  // Apply the update we just made in-memory (in case the DB hasn't flushed yet)
   const linesWithUpdate = allLines.map((l) =>
     l.id === lineId ? { ...l, cartonsReceived } : l
   );
 
-  const anyReceived = linesWithUpdate.some((l) => l.cartonsReceived > 0);
-  const allFullyReceived = linesWithUpdate.every(
-    (l) => l.cartonsReceived >= l.cartonsOrdered
-  );
-
-  const newStatus = allFullyReceived
-    ? "received"
-    : anyReceived
-    ? "partial"
-    : "ordered";
+  const anyReceived  = linesWithUpdate.some((l) => l.cartonsReceived > 0);
+  const allReceived  = linesWithUpdate.every((l) => l.cartonsReceived >= l.cartonsOrdered);
+  const newStatus    = allReceived ? "received" : anyReceived ? "partial" : "ordered";
 
   await prisma.ibsaPurchaseOrder.update({
     where: { id: line.purchaseOrderId },
     data: {
       status: newStatus,
-      receivedAt: allFullyReceived ? new Date() : null,
+      receivedAt: allReceived ? new Date() : null,
     },
   });
 
   revalidatePath("/ibsa/orders");
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
 }
