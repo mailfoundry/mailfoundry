@@ -118,10 +118,16 @@ export function downloadPO({
     tbody td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
     tfoot tr { background: #eff6ff; }
     tfoot td {
-      padding: 9px 10px;
+      padding: 7px 10px;
+      font-weight: 600;
+      font-size: 9pt;
+    }
+    tfoot tr:first-child td { border-top: 2px solid #bfdbfe; }
+    tfoot tr.grand-total td {
+      border-top: 2px solid #1e40af;
+      font-size: 11pt;
       font-weight: 700;
-      border-top: 2px solid #bfdbfe;
-      font-size: 10pt;
+      padding: 9px 10px;
     }
 
     .mono { font-family: 'Courier New', monospace; color: #64748b; font-size: 8.5pt; }
@@ -178,8 +184,16 @@ export function downloadPO({
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="7" class="total-label">Total (ex VAT)</td>
+          <td colspan="7" class="total-label">Subtotal (ex VAT)</td>
           <td class="total-value">${fmtGbp(total)}</td>
+        </tr>
+        <tr>
+          <td colspan="7" class="total-label">VAT @ 20%</td>
+          <td class="total-value">${fmtGbp(total * 0.2)}</td>
+        </tr>
+        <tr class="grand-total">
+          <td colspan="7" class="total-label" style="font-size:9pt;font-weight:700;">Total (inc VAT)</td>
+          <td class="total-value" style="font-size:11pt;">${fmtGbp(total * 1.2)}</td>
         </tr>
       </tfoot>
     </table>
