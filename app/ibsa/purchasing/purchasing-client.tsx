@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { downloadPO } from "./generatePO";
+import type { POLine } from "./generatePO";
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { style: "currency", currency: "GBP" });
@@ -56,6 +58,13 @@ export type RsProductLine = {
   cartonSize: number | null;    // null = catalog data pending
   cartonPrice: number | null;   // null = catalog data pending
   ibsaProductId: string | null;
+};
+
+type RsOrderLine = RsProductLine & {
+  displayLabel: string;
+  unitsNeeded: number;
+  cartonsNeeded: number | null;
+  totalCost: number | null;
 };
 
 // A selectable card = one (convention, dept) pair
@@ -210,12 +219,6 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
   }, [rsProducts]);
 
   const rsOrderBySupplier = useMemo(() => {
-    type RsOrderLine = RsProductLine & {
-      displayLabel: string;   // rsDescription if present, else product name from deficit
-      unitsNeeded: number;
-      cartonsNeeded: number | null;   // null when cartonSize is unknown
-      totalCost: number | null;       // null when cartonPrice is unknown
-    };
     const lineMap = new Map<string, RsOrderLine>();
     const unlinkedProducts: string[] = [];
 
@@ -285,6 +288,23 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
     }
     return total;
   }, [rsOrderBySupplier]);
+
+  function handleDownloadPO(supplier: string, lines: RsOrderLine[]) {
+    const conventionNames = cards
+      .filter((c) => selected.has(c.key))
+      .map((c) => `${c.name} ${c.dept} — ${fmtDate(c.conventionDate)}`);
+    const poLines: POLine[] = lines.map((l) => ({
+      rsCode: l.rsCode,
+      displayLabel: l.displayLabel,
+      rsVariant: l.rsVariant,
+      cartonSize: l.cartonSize,
+      unitsNeeded: l.unitsNeeded,
+      cartonsNeeded: l.cartonsNeeded,
+      cartonPrice: l.cartonPrice,
+      totalCost: l.totalCost,
+    }));
+    downloadPO({ supplier, lines: poLines, conventionNames });
+  }
 
   return (
     <div className="max-w-6xl">
@@ -403,7 +423,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
                 showRsOrder ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
-              RS Order
+              Supplier Order
             </button>
           </div>
 
@@ -516,10 +536,18 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
                           </span>
                         )}
                       </div>
-                      {supplierTotal > 0
-                        ? <p className="text-sm font-semibold text-amber-400">{fmtGbp(supplierTotal)}</p>
-                        : <p className="text-xs text-slate-500">cost unknown</p>
-                      }
+                      <div className="flex items-center gap-3">
+                        {supplierTotal > 0
+                          ? <p className="text-sm font-semibold text-amber-400">{fmtGbp(supplierTotal)}</p>
+                          : <p className="text-xs text-slate-500">cost unknown</p>
+                        }
+                        <button
+                          onClick={() => handleDownloadPO(supplier, lines)}
+                          className="rounded border border-slate-600 bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 hover:text-white"
+                        >
+                          ↓ Download PO
+                        </button>
+                      </div>
                     </div>
                     <table className="w-full text-sm">
                       <thead>
