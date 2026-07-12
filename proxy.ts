@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login"];
+const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
@@ -22,6 +22,16 @@ export function proxy(request: NextRequest) {
   }
 
   if (isPublicPath(pathname) || pathname.startsWith("/_next")) {
+    return NextResponse.next();
+  }
+
+  // Convention order form: protected by convention_auth cookie (contains the conventionId)
+  if (pathname.startsWith("/convention/") && !pathname.startsWith("/convention/check-email") && !pathname.startsWith("/convention/verify")) {
+    const conventionAuth = request.cookies.get("convention_auth")?.value;
+    const conventionId = pathname.split("/")[2];
+    if (!conventionAuth || conventionAuth !== conventionId) {
+      return NextResponse.redirect(new URL("/convention?error=invalid-token", request.url));
+    }
     return NextResponse.next();
   }
 

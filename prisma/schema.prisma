@@ -255,6 +255,19 @@ model IbsaPurchaseOrderLine {
   @@index([purchaseOrderId])
 }
 
+/// Single-use token emailed to convention overseers so they can fill in their product order.
+model ConventionOrderToken {
+  id           String    @id @default(cuid())
+  token        String    @unique
+  email        String
+  conventionId String
+  expiresAt    DateTime
+  usedAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([conventionId])
+}
+
 /// Supplier contact book. name matches RsProduct.supplier for cascade renames.
 model IbsaSupplier {
   id          String   @id @default(cuid())
