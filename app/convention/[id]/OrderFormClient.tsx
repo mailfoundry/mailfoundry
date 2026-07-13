@@ -190,26 +190,31 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
       {grandLines > 0 && (
         <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 backdrop-blur-sm">
           <div className="mx-auto max-w-2xl px-4 py-3">
-            {/* Top row: grand total */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-white">
-                {grandLines} product{grandLines !== 1 ? "s" : ""} selected
+            {/* Convention name + product count */}
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="truncate text-xs font-semibold text-slate-400">
+                {convention.name}
+                <span className="ml-2 font-normal text-slate-600">
+                  · {grandLines} product{grandLines !== 1 ? "s" : ""}
+                  {csLines > 0 && faLines > 0 && (
+                    <> (CS&nbsp;{csLines} · FA&nbsp;{faLines})</>
+                  )}
+                </span>
               </span>
-              <span className="text-sm font-bold text-green-400">{fmtGbp(grandValue)}</span>
             </div>
-            {/* Per-tab breakdown */}
-            {csLines > 0 && faLines > 0 && (
-              <div className="mt-1 flex gap-4">
-                <span className="text-xs text-slate-500">
-                  CS: <span className="font-semibold text-slate-300">{csLines}</span>
-                  <span className="ml-1 text-slate-600">{fmtGbp(csValue)}</span>
-                </span>
-                <span className="text-xs text-slate-500">
-                  FA: <span className="font-semibold text-slate-300">{faLines}</span>
-                  <span className="ml-1 text-slate-600">{fmtGbp(faValue)}</span>
-                </span>
-              </div>
-            )}
+            {/* Ex-VAT / VAT / Total row */}
+            <div className="mt-1.5 flex items-center gap-3 text-sm">
+              <span className="text-slate-500">
+                Ex&nbsp;VAT <span className="font-semibold text-slate-300">{fmtGbp(grandValue)}</span>
+              </span>
+              <span className="text-slate-700">+</span>
+              <span className="text-slate-500">
+                VAT <span className="font-semibold text-slate-300">{fmtGbp(grandValue * 0.2)}</span>
+              </span>
+              <span className="ml-auto text-base font-bold text-green-400">
+                {fmtGbp(grandValue * 1.2)}
+              </span>
+            </div>
           </div>
         </div>
       )}
