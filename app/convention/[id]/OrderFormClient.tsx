@@ -48,29 +48,30 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
-  function handleChange(productId: string, value: string) {
-    const n = parseInt(value) || 0;
-    setQty((prev) => ({ ...prev, [productId]: n }));
-  }
-
-  function handleBlur(productId: string, dept: "CS" | "FA") {
+  function save(productId: string, dept: "CS" | "FA", n: number) {
     if (convention.isLocked) return;
-    const n = qty[productId] ?? 0;
     setSaving((prev) => ({ ...prev, [productId]: true }));
     setSaved((prev) => ({ ...prev, [productId]: false }));
-
     const fd = new FormData();
     fd.set("conventionId", convention.id);
     fd.set("productId", productId);
     fd.set("dept", dept);
     fd.set("qty", String(n));
-
     startTransition(async () => {
       await saveOrderItem(fd);
       setSaving((prev) => ({ ...prev, [productId]: false }));
       setSaved((prev) => ({ ...prev, [productId]: true }));
       setTimeout(() => setSaved((prev) => ({ ...prev, [productId]: false })), 2000);
     });
+  }
+
+  function adjust(productId: string, dept: "CS" | "FA", delta: number) {
+    if (convention.isLocked) return;
+    const current = qty[productId] ?? 0;
+    const next = Math.max(0, current + delta);
+    if (next === current) return;
+    setQty((prev) => ({ ...prev, [productId]: next }));
+    save(productId, dept, next);
   }
 
   const totalValue = (products: Product[]) =>
@@ -134,31 +135,35 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                       <p className="text-xs text-slate-600">{p.code} · £{p.unitCost.toFixed(2)} each</p>
                     </div>
 
-                    {/* Save indicator */}
-                    <div className="w-5 shrink-0 text-center">
-                      {isSaving && (
-                        <span className="text-xs text-slate-600">…</span>
-                      )}
-                      {isSaved && (
-                        <span className="text-xs text-green-500">✓</span>
-                      )}
-                    </div>
-
-                    {/* Qty input / display */}
+                    {/* Qty stepper / locked display */}
                     {convention.isLocked ? (
-                      <div className="w-16 text-right">
+                      <div className="w-12 text-right">
                         <span className={`text-sm font-bold ${q > 0 ? "text-white" : "text-slate-700"}`}>{q}</span>
                       </div>
                     ) : (
-                      <input
-                        type="number"
-                        min="0"
-                        value={q === 0 ? "" : q}
-                        placeholder="0"
-                        onChange={(e) => handleChange(p.id, e.target.value)}
-                        onBlur={() => handleBlur(p.id, dept)}
-                        className="w-16 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1.5 text-right text-sm text-white outline-none focus:border-orange-400 placeholder:text-slate-700"
-                      />
+                      <div className="flex shrink-0 items-center overflow-hidden rounded-xl border border-slate-700">
+                        <button
+                          onClick={() => adjust(p.id, dept, -1)}
+                          disabled={q === 0 || isSaving}
+                          className="flex h-9 w-9 items-center justify-center text-lg font-light text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
+                          aria-label="Decrease"
+                        >
+                          −
+                        </button>
+                        <div className={`flex h-9 min-w-[2.25rem] items-center justify-center border-x border-slate-700 px-1 text-sm font-bold tabular-nums transition-colors ${
+                          q > 0 ? "text-white" : "text-slate-600"
+                        } ${isSaved ? "text-green-400" : ""}`}>
+                          {isSaving ? <span className="text-xs text-slate-500">…</span> : q}
+                        </div>
+                        <button
+                          onClick={() => adjust(p.id, dept, 1)}
+                          disabled={isSaving}
+                          className="flex h-9 w-9 items-center justify-center text-lg font-light text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
+                          aria-label="Increase"
+                        >
+                          +
+                        </button>
+                      </div>
                     )}
                   </div>
                 );
