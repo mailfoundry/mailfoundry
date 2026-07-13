@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { saveOrderItem } from "../actions";
+import { PRODUCT_IMAGE_MAP } from "../../../src/lib/product-images";
 
 type Product = {
   id: string;
@@ -97,13 +99,30 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 const isSaving = saving[p.id];
                 const isSaved  = saved[p.id];
 
+                const imgSrc = PRODUCT_IMAGE_MAP[p.code] ?? null;
+
                 return (
                   <div
                     key={p.id}
-                    className={`flex items-center gap-4 px-4 py-3 ${i > 0 ? "border-t border-slate-800" : ""} ${
+                    className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-slate-800" : ""} ${
                       q > 0 ? "bg-green-950/10" : ""
                     }`}
                   >
+                    {/* Product image */}
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                      {imgSrc ? (
+                        <Image
+                          src={imgSrc}
+                          alt={p.name}
+                          width={48}
+                          height={48}
+                          className="h-full w-full object-contain"
+                        />
+                      ) : (
+                        <div className="h-full w-full" />
+                      )}
+                    </div>
+
                     {/* Product info */}
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-white leading-tight">
