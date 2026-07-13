@@ -39,6 +39,25 @@ const CATEGORY_LABELS: Record<string, string> = {
   firstaid:    "First Aid",
 };
 
+// Strip the last size/pack suffix from a product code to get its family key.
+// Stripping only ONE level keeps colour in the key (HI_VIS_PINK, not HI_VIS).
+const _SIZE_RE   = /_(S|M|L|XL|XXL|SML|MED|SMALL|MEDIUM|LARGE|XLARGE)$/i;
+const _COLOUR_RE = /_(RED|BLUE|GREEN|YELLOW|WHITE|PINK|CLEAR|BLACK|ORANGE)$/i;
+const _PACK_RE   = /_(\d+PK|X\d+|\d+PACK)$/i;
+
+function getCodeFamily(code: string): string {
+  // 1. Strip pack suffix first, then size → covers e.g. GLOVES_NITRILE-POLY_FOAM_S_10PACK
+  const afterPack = code.replace(_PACK_RE, "");
+  const afterSize = afterPack.replace(_SIZE_RE, "");
+  if (afterSize !== afterPack) return afterSize; // had a size → done (keeps colour)
+
+  // 2. No size suffix → strip colour for colour-variant products (dustpan, bucket, cloth…)
+  const afterColour = code.replace(_COLOUR_RE, "");
+  if (afterColour !== code) return afterColour;
+
+  return code;
+}
+
 // Colour swatch map — used to render a dot next to colour-variant rows
 const COLOUR_SWATCHES: Record<string, string> = {
   yellow:  "#EAB308",
@@ -155,10 +174,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     return (
       <div className="space-y-8">
         {Object.entries(byCat).map(([cat, catItems]) => {
-          // Group variants by shared name
+          // Group variants by code family (strip only the final size/pack suffix,
+          // keeping colour in the key so e.g. HI_VIS_PINK and HI_VIS_YELLOW stay separate)
           const byName: Record<string, Product[]> = {};
           for (const p of catItems) {
-            (byName[p.name] ??= []).push(p);
+            (byName[getCodeFamily(p.code)] ??= []).push(p);
           }
 
           return (
@@ -167,18 +187,19 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 {CATEGORY_LABELS[cat] ?? cat}
               </p>
               <div className="space-y-3">
-                {Object.entries(byName).map(([name, variants]) => {
+                {Object.entries(byName).map(([groupKey, variants]) => {
                   // Pick the code that has an image as the representative
                   const repCode = variants.find((v) => PRODUCT_IMAGE_MAP[v.code])?.code ?? variants[0].code;
                   const imgSrc = PRODUCT_IMAGE_MAP[repCode] ?? null;
-                  const description = PRODUCT_DESCRIPTION_MAP[repCode] ?? name;
+                  // Prefer the full Excel description; fall back to the DB name field
+                  const description = PRODUCT_DESCRIPTION_MAP[repCode] ?? variants[0].name;
                   const hasVariants = variants.length > 1;
                   const allSamePrice = variants.every((v) => v.unitCost === variants[0].unitCost);
                   const groupOrdered = variants.some((v) => (qty[v.id] ?? 0) > 0);
 
                   return (
                     <div
-                      key={name}
+                      key={groupKey}
                       className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
                         groupOrdered ? "border-green-800/40" : "border-slate-800"
                       }`}
