@@ -104,14 +104,14 @@ export default function ProductsClient({ products }: Props) {
 
   const cancelStockTake = () => { setDraft({}); setStockTakeMode(false); };
 
-  const saveAll = () => {
+  const saveAll = (exit = false) => {
     const updates = products
       .filter((p) => (draft[p.id] ?? p.inStock) !== p.inStock)
       .map((p) => ({ id: p.id, inStock: draft[p.id] ?? p.inStock }));
     startSaving(async () => {
       await bulkUpdateInStock(updates);
       setDraft({});
-      setStockTakeMode(false);
+      if (exit) setStockTakeMode(false);
     });
   };
 
@@ -214,11 +214,18 @@ export default function ProductsClient({ products }: Props) {
           Cancel
         </button>
         <button
-          onClick={saveAll}
+          onClick={() => saveAll(false)}
           disabled={isSaving || changedCount === 0}
           className="rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-amber-500 disabled:opacity-40"
         >
-          {isSaving ? "Saving…" : `Save All${changedCount > 0 ? ` (${changedCount})` : ""}`}
+          {isSaving ? "Saving…" : `Save${changedCount > 0 ? ` (${changedCount})` : ""}`}
+        </button>
+        <button
+          onClick={() => saveAll(true)}
+          disabled={isSaving}
+          className="rounded-lg bg-green-700 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-40"
+        >
+          Done
         </button>
       </div>
     </div>
@@ -519,22 +526,22 @@ export default function ProductsClient({ products }: Props) {
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-amber-700/40 bg-slate-950/95 px-4 py-4 backdrop-blur-sm md:hidden">
           <div className="flex gap-3">
             <button
-              onClick={cancelStockTake}
-              disabled={isSaving}
-              className="flex-1 rounded-xl border border-slate-600 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={saveAll}
+              onClick={() => saveAll(false)}
               disabled={isSaving || changedCount === 0}
               className="flex-1 rounded-xl bg-amber-600 py-3 text-sm font-semibold text-white hover:bg-amber-500 disabled:opacity-40"
             >
               {isSaving
                 ? "Saving…"
                 : changedCount > 0
-                ? `Save ${changedCount} change${changedCount !== 1 ? "s" : ""}`
-                : "No changes yet"}
+                ? `Save ${changedCount}`
+                : "No changes"}
+            </button>
+            <button
+              onClick={() => saveAll(true)}
+              disabled={isSaving}
+              className="flex-1 rounded-xl bg-green-700 py-3 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-40"
+            >
+              {isSaving ? "…" : "Done"}
             </button>
           </div>
         </div>
