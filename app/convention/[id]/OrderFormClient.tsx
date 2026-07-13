@@ -45,6 +45,19 @@ const _SIZE_RE   = /_(S|M|L|XL|XXL|SML|MED|SMALL|MEDIUM|LARGE|XLARGE)$/i;
 const _COLOUR_RE = /_(RED|BLUE|GREEN|YELLOW|WHITE|PINK|CLEAR|BLACK|ORANGE)$/i;
 const _PACK_RE   = /_(\d+PK|X\d+|\d+PACK)$/i;
 
+const SIZE_RANK: Record<string, number> = {
+  S: 0, SML: 0, SMALL: 0,
+  M: 1, MED: 1, MEDIUM: 1,
+  L: 2, LARGE: 2,
+  XL: 3, XLARGE: 3,
+  XXL: 4, XXLARGE: 4,
+};
+
+function getSizeRank(code: string): number {
+  const m = code.match(/_(S|M|L|XL|XXL|SML|MED|SMALL|MEDIUM|LARGE|XLARGE|XXLARGE)(?:_\d+PACK)?$/i);
+  return m ? (SIZE_RANK[m[1].toUpperCase()] ?? 99) : 99;
+}
+
 function getCodeFamily(code: string): string {
   // 1. Strip pack suffix first, then size → covers e.g. GLOVES_NITRILE-POLY_FOAM_S_10PACK
   const afterPack = code.replace(_PACK_RE, "");
@@ -179,6 +192,10 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           const byName: Record<string, Product[]> = {};
           for (const p of catItems) {
             (byName[getCodeFamily(p.code)] ??= []).push(p);
+          }
+          // Sort variants within each group: S → M → L → XL → XXL
+          for (const variants of Object.values(byName)) {
+            variants.sort((a, b) => getSizeRank(a.code) - getSizeRank(b.code));
           }
 
           return (
