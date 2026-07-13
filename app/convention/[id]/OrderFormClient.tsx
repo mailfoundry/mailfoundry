@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { saveOrderItem } from "../actions";
 import { PRODUCT_IMAGE_MAP } from "../../../src/lib/product-images";
+import { PRODUCT_DESCRIPTION_MAP, PRODUCT_SIZE_MAP } from "../../../src/lib/product-descriptions";
 
 type Product = {
   id: string;
@@ -51,7 +52,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   function save(productId: string, dept: "CS" | "FA", n: number) {
     if (convention.isLocked) return;
     setSaving((prev) => ({ ...prev, [productId]: true }));
-    setSaved((prev) => ({ ...prev, [productId]: false }));
+    setSaved((prev)   => ({ ...prev, [productId]: false }));
     const fd = new FormData();
     fd.set("conventionId", convention.id);
     fd.set("productId", productId);
@@ -60,7 +61,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     startTransition(async () => {
       await saveOrderItem(fd);
       setSaving((prev) => ({ ...prev, [productId]: false }));
-      setSaved((prev) => ({ ...prev, [productId]: true }));
+      setSaved((prev)  => ({ ...prev, [productId]: true }));
       setTimeout(() => setSaved((prev) => ({ ...prev, [productId]: false })), 2000);
     });
   }
@@ -74,110 +75,168 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     save(productId, dept, next);
   }
 
+  function renderStepper(p: Product, dept: "CS" | "FA") {
+    const q = qty[p.id] ?? 0;
+    const isSaving = saving[p.id];
+    const isSaved  = saved[p.id];
+
+    if (convention.isLocked) {
+      return (
+        <span className={`text-sm font-bold ${q > 0 ? "text-white" : "text-slate-700"}`}>{q}</span>
+      );
+    }
+    return (
+      <div className="flex items-center overflow-hidden rounded-xl border border-slate-700">
+        <button
+          onClick={() => adjust(p.id, dept, -1)}
+          disabled={q === 0 || isSaving}
+          className="flex h-10 w-10 items-center justify-center text-lg text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
+          aria-label="Decrease"
+        >
+          −
+        </button>
+        <div className={`flex h-10 min-w-[2.75rem] items-center justify-center border-x border-slate-700 px-1 text-sm font-bold tabular-nums ${
+          isSaved ? "text-green-400" : q > 0 ? "text-white" : "text-slate-600"
+        }`}>
+          {isSaving ? <span className="text-xs text-slate-500">…</span> : q}
+        </div>
+        <button
+          onClick={() => adjust(p.id, dept, 1)}
+          disabled={isSaving}
+          className="flex h-10 w-10 items-center justify-center text-lg text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
+          aria-label="Increase"
+        >
+          +
+        </button>
+      </div>
+    );
+  }
+
+  function renderProducts(products: Product[], dept: "CS" | "FA") {
+    // Group by category, then by product name within each category
+    const byCat = products.reduce<Record<string, Product[]>>((acc, p) => {
+      (acc[p.category] ??= []).push(p);
+      return acc;
+    }, {});
+
+    return (
+      <div className="space-y-8">
+        {Object.entries(byCat).map(([cat, catItems]) => {
+          // Group variants by shared name
+          const byName: Record<string, Product[]> = {};
+          for (const p of catItems) {
+            (byName[p.name] ??= []).push(p);
+          }
+
+          return (
+            <div key={cat}>
+              <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                {CATEGORY_LABELS[cat] ?? cat}
+              </p>
+              <div className="space-y-3">
+                {Object.entries(byName).map(([name, variants]) => {
+                  // Pick the code that has an image as the representative
+                  const repCode = variants.find((v) => PRODUCT_IMAGE_MAP[v.code])?.code ?? variants[0].code;
+                  const imgSrc = PRODUCT_IMAGE_MAP[repCode] ?? null;
+                  const description = PRODUCT_DESCRIPTION_MAP[repCode] ?? name;
+                  const hasVariants = variants.length > 1;
+                  const allSamePrice = variants.every((v) => v.unitCost === variants[0].unitCost);
+                  const groupOrdered = variants.some((v) => (qty[v.id] ?? 0) > 0);
+
+                  return (
+                    <div
+                      key={name}
+                      className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
+                        groupOrdered ? "border-green-800/40" : "border-slate-800"
+                      }`}
+                    >
+                      {/* ── Product header ──────────────────────────── */}
+                      <div className="flex gap-4 p-4">
+                        {/* Image — larger, shared across variants */}
+                        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                          {imgSrc ? (
+                            <Image
+                              src={imgSrc}
+                              alt={description}
+                              width={80}
+                              height={80}
+                              className="h-full w-full object-contain p-1"
+                            />
+                          ) : (
+                            <div className="h-full w-full" />
+                          )}
+                        </div>
+
+                        {/* Description + price */}
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold leading-snug text-white">{description}</p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {allSamePrice
+                              ? `£${variants[0].unitCost.toFixed(2)} each`
+                              : "Prices vary by size"}
+                          </p>
+
+                          {/* Single-item stepper inline in header */}
+                          {!hasVariants && (
+                            <div className="mt-3 flex items-center gap-2">
+                              {renderStepper(variants[0], dept)}
+                              {(qty[variants[0].id] ?? 0) > 0 && (
+                                <span className="text-xs text-green-500">
+                                  = £{((qty[variants[0].id] ?? 0) * variants[0].unitCost).toFixed(2)}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* ── Variant rows ─────────────────────────────── */}
+                      {hasVariants && (
+                        <div className="border-t border-slate-800">
+                          {variants.map((p, i) => {
+                            const q = qty[p.id] ?? 0;
+                            const sizeLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
+                            return (
+                              <div
+                                key={p.id}
+                                className={`flex items-center gap-3 py-2.5 pl-[5.5rem] pr-4 ${
+                                  i > 0 ? "border-t border-slate-800/60" : ""
+                                } ${q > 0 ? "bg-green-950/10" : ""}`}
+                              >
+                                <span className="min-w-[4.5rem] text-sm text-slate-400">{sizeLabel}</span>
+                                {!allSamePrice && (
+                                  <span className="text-xs text-slate-600">£{p.unitCost.toFixed(2)}</span>
+                                )}
+                                {q > 0 && (
+                                  <span className="text-xs text-green-600">
+                                    £{(q * p.unitCost).toFixed(2)}
+                                  </span>
+                                )}
+                                <div className="ml-auto">{renderStepper(p, dept)}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   const totalValue = (products: Product[]) =>
     products.reduce((s, p) => s + (qty[p.id] ?? 0) * p.unitCost, 0);
 
   const totalLines = (products: Product[]) =>
     products.filter((p) => (qty[p.id] ?? 0) > 0).length;
 
-  function renderProducts(products: Product[], dept: "CS" | "FA") {
-    const grouped = products.reduce<Record<string, Product[]>>((acc, p) => {
-      if (!acc[p.category]) acc[p.category] = [];
-      acc[p.category].push(p);
-      return acc;
-    }, {});
-
-    return (
-      <div className="space-y-6">
-        {Object.entries(grouped).map(([cat, items]) => (
-          <div key={cat}>
-            <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              {CATEGORY_LABELS[cat] ?? cat}
-            </p>
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-              {items.map((p, i) => {
-                const q = qty[p.id] ?? 0;
-                const isSaving = saving[p.id];
-                const isSaved  = saved[p.id];
-
-                const imgSrc = PRODUCT_IMAGE_MAP[p.code] ?? null;
-
-                return (
-                  <div
-                    key={p.id}
-                    className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-slate-800" : ""} ${
-                      q > 0 ? "bg-green-950/10" : ""
-                    }`}
-                  >
-                    {/* Product image */}
-                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-slate-800">
-                      {imgSrc ? (
-                        <Image
-                          src={imgSrc}
-                          alt={p.name}
-                          width={48}
-                          height={48}
-                          className="h-full w-full object-contain"
-                        />
-                      ) : (
-                        <div className="h-full w-full" />
-                      )}
-                    </div>
-
-                    {/* Product info */}
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium text-white leading-tight">
-                        {p.name}
-                        {p.variant && (
-                          <span className="ml-2 text-xs text-slate-400">{p.variant}</span>
-                        )}
-                      </p>
-                      <p className="text-xs text-slate-600">{p.code} · £{p.unitCost.toFixed(2)} each</p>
-                    </div>
-
-                    {/* Qty stepper / locked display */}
-                    {convention.isLocked ? (
-                      <div className="w-12 text-right">
-                        <span className={`text-sm font-bold ${q > 0 ? "text-white" : "text-slate-700"}`}>{q}</span>
-                      </div>
-                    ) : (
-                      <div className="flex shrink-0 items-center overflow-hidden rounded-xl border border-slate-700">
-                        <button
-                          onClick={() => adjust(p.id, dept, -1)}
-                          disabled={q === 0 || isSaving}
-                          className="flex h-9 w-9 items-center justify-center text-lg font-light text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
-                          aria-label="Decrease"
-                        >
-                          −
-                        </button>
-                        <div className={`flex h-9 min-w-[2.25rem] items-center justify-center border-x border-slate-700 px-1 text-sm font-bold tabular-nums transition-colors ${
-                          q > 0 ? "text-white" : "text-slate-600"
-                        } ${isSaved ? "text-green-400" : ""}`}>
-                          {isSaving ? <span className="text-xs text-slate-500">…</span> : q}
-                        </div>
-                        <button
-                          onClick={() => adjust(p.id, dept, 1)}
-                          disabled={isSaving}
-                          className="flex h-9 w-9 items-center justify-center text-lg font-light text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
-                          aria-label="Increase"
-                        >
-                          +
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   const activeProducts = activeTab === "CS" ? csProducts : faProducts;
 
-  // Grand totals across both tabs
   const csLines = totalLines(csProducts);
   const faLines = totalLines(faProducts);
   const csValue = totalValue(csProducts);
@@ -194,20 +253,16 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
       {/* ── Sticky summary bar ──────────────────────────────────────────── */}
       {grandLines > 0 && (
         <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 backdrop-blur-sm">
-          <div className="mx-auto max-w-2xl px-4 py-3">
-            {/* Convention name + product count */}
+          <div className="mx-auto max-w-3xl px-4 py-3">
             <div className="flex items-baseline justify-between gap-2">
               <span className="truncate text-xs font-semibold text-slate-400">
                 {convention.name}
                 <span className="ml-2 font-normal text-slate-600">
-                  · {grandLines} product{grandLines !== 1 ? "s" : ""}
-                  {csLines > 0 && faLines > 0 && (
-                    <> (CS&nbsp;{csLines} · FA&nbsp;{faLines})</>
-                  )}
+                  · {grandLines} line{grandLines !== 1 ? "s" : ""}
+                  {csLines > 0 && faLines > 0 && <> (CS&nbsp;{csLines} · FA&nbsp;{faLines})</>}
                 </span>
               </span>
             </div>
-            {/* Ex-VAT / VAT / Total row */}
             <div className="mt-1.5 flex items-center gap-3 text-sm">
               <span className="text-slate-500">
                 Ex&nbsp;VAT <span className="font-semibold text-slate-300">{fmtGbp(grandValue)}</span>
@@ -224,7 +279,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         </div>
       )}
 
-      <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="mx-auto max-w-3xl px-4 py-8">
 
         {/* Header */}
         <div className="mb-6">
@@ -275,8 +330,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
         {/* Footer note */}
         {!convention.isLocked && (
-          <p className="mt-6 text-center text-xs text-slate-600">
-            Quantities save automatically as you type. You can come back and adjust until your order is confirmed.
+          <p className="mt-8 text-center text-xs text-slate-600">
+            Quantities save automatically. You can return and adjust until your order is confirmed.
           </p>
         )}
       </div>
