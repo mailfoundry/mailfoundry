@@ -21,6 +21,7 @@ import ConventionProductTable from "./ConventionProductTable";
 import CountdownBadge from "./CountdownBadge";
 import CompleteButton from "./CompleteButton";
 import type { StockItem } from "./CompleteButton";
+import SendOrderLinkButton from "./SendOrderLinkButton";
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -357,7 +358,7 @@ export default async function ConventionDetailPage({
             />
           </div>
 
-          {/* Contact email */}
+          {/* Contact email + send order form link */}
           <div>
             <label className="mb-1 block text-xs text-slate-500">Contact Email</label>
             <input
@@ -367,6 +368,12 @@ export default async function ConventionDetailPage({
               placeholder="email@example.com"
               className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
             />
+            <div className="mt-2">
+              <SendOrderLinkButton
+                conventionId={convention.id}
+                contactEmail={convention.contactEmail ?? null}
+              />
+            </div>
           </div>
 
           {/* Contact mobile */}

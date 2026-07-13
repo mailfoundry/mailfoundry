@@ -2,6 +2,58 @@
 
 import { prisma } from "../../../../src/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { sendEmail } from "../../../../src/lib/sendEmail";
+
+/** Send the convention order form magic link to the contact email on file */
+export async function sendOrderFormLink(formData: FormData) {
+  const conventionId = (formData.get("conventionId") as string).trim();
+  if (!conventionId) return { error: "Missing convention ID" };
+
+  const convention = await prisma.ibsaConvention.findUnique({
+    where: { id: conventionId },
+    select: { name: true, conventionDate: true, contactEmail: true },
+  });
+
+  if (!convention?.contactEmail) return { error: "No contact email on file" };
+
+  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const token      = crypto.randomUUID();
+  const expiresAt  = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+  await prisma.conventionOrderToken.create({
+    data: { token, email: convention.contactEmail, conventionId, expiresAt },
+  });
+
+  const verifyUrl = `${appBaseUrl}/convention/verify?token=${token}`;
+  const date = convention.conventionDate.toLocaleDateString("en-GB", {
+    day: "numeric", month: "long", year: "numeric",
+  });
+
+  await sendEmail({
+    to: convention.contactEmail,
+    subject: `Your order form — ${convention.name}`,
+    text: `Hi,\n\nClick the link below to fill in your product requirements for ${convention.name} (${date}).\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+        <div style="background:#0f172a;padding:32px;border-radius:12px;">
+          <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo Supplies</p>
+          <h1 style="color:#fff;font-size:22px;margin:0 0 8px;">Your order form</h1>
+          <div style="background:#1e293b;border-radius:8px;padding:14px;margin-bottom:20px;">
+            <p style="color:#94a3b8;font-size:12px;margin:0 0 2px;">${date}</p>
+            <p style="color:#f1f5f9;font-size:16px;font-weight:bold;margin:0;">${convention.name}</p>
+          </div>
+          <p style="color:#94a3b8;margin:0 0 20px;">Click the button below to select the products you need for this convention. The link expires in 1 hour.</p>
+          <a href="${verifyUrl}" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:bold;font-size:15px;">
+            Open order form →
+          </a>
+          <p style="color:#475569;font-size:12px;margin:20px 0 0;">If you didn't expect this email, you can safely ignore it.</p>
+        </div>
+      </div>
+    `,
+  });
+
+  return { ok: true, email: convention.contactEmail };
+}
 
 export async function updateOrderQty(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
