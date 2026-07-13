@@ -64,9 +64,13 @@ function getCodeFamily(code: string): string {
   const afterSize = afterPack.replace(_SIZE_RE, "");
   if (afterSize !== afterPack) return afterSize; // had a size → done (keeps colour)
 
-  // 2. No size suffix → strip colour for colour-variant products (dustpan, bucket, cloth…)
-  const afterColour = code.replace(_COLOUR_RE, "");
-  if (afterColour !== code) return afterColour;
+  // 2. No size suffix → strip colour from the pack-stripped version
+  // (handles CLOTH_MFIBRE_BLUE_10PK → CLOTH_MFIBRE_BLUE → CLOTH_MFIBRE)
+  const afterColour = afterPack.replace(_COLOUR_RE, "");
+  if (afterColour !== afterPack) return afterColour;
+
+  // 3. Only a pack suffix (no size/colour) — still group them together
+  if (afterPack !== code) return afterPack;
 
   return code;
 }
