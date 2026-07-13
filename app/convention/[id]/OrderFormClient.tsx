@@ -88,12 +88,29 @@ const COLOUR_SWATCHES: Record<string, string> = {
   purple:  "#A855F7",
 };
 
-function getSwatchColor(label: string): string | null {
+// Return ALL colours found in a label/description (order of first appearance)
+function getSwatchColors(label: string): string[] {
   const lower = label.toLowerCase();
+  const found: string[] = [];
   for (const [name, hex] of Object.entries(COLOUR_SWATCHES)) {
-    if (lower.includes(name)) return hex;
+    if (lower.includes(name) && !found.includes(hex)) found.push(hex);
   }
-  return null;
+  return found;
+}
+
+// Render a colour dot: single solid colour, or left/right halves for two colours
+function ColourDot({ colors }: { colors: string[] }) {
+  if (colors.length === 0) return <span className="inline-block h-4 w-4 shrink-0" />;
+  const style =
+    colors.length === 1
+      ? { backgroundColor: colors[0] }
+      : { background: `linear-gradient(90deg, ${colors[0]} 50%, ${colors[1]} 50%)` };
+  return (
+    <span
+      className="inline-block h-4 w-4 shrink-0 rounded-full border border-white/15 shadow-sm"
+      style={style}
+    />
+  );
 }
 
 // If a size label is the full product description ("Product Name - Yellow"),
@@ -210,6 +227,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                   const imgSrc = PRODUCT_IMAGE_MAP[repCode] ?? null;
                   // Prefer the full Excel description; fall back to the DB name field
                   const description = PRODUCT_DESCRIPTION_MAP[repCode] ?? variants[0].name;
+                  // Colours derived from the product description (used as fallback on size rows)
+                  const groupColors = getSwatchColors(description);
                   const hasVariants = variants.length > 1;
                   const allSamePrice = variants.every((v) => v.unitCost === variants[0].unitCost);
                   const groupOrdered = variants.some((v) => (qty[v.id] ?? 0) > 0);
@@ -268,7 +287,10 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                             const q = qty[p.id] ?? 0;
                             const rawLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
                             const sizeLabel = shortenLabel(rawLabel);
-                            const swatchColor = getSwatchColor(sizeLabel);
+                            // Use colours from the size label (e.g. "Red"), or fall back to
+                            // the group description colours (e.g. "Orange & Blue" vest sizes)
+                            const rowColors = getSwatchColors(sizeLabel);
+                            const dotColors = rowColors.length > 0 ? rowColors : groupColors;
                             return (
                               <div
                                 key={p.id}
@@ -278,14 +300,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                               >
                                 {/* Colour swatch dot */}
                                 <div className="flex shrink-0 items-center gap-2">
-                                  {swatchColor ? (
-                                    <span
-                                      className="inline-block h-4 w-4 shrink-0 rounded-full border border-white/15 shadow-sm"
-                                      style={{ backgroundColor: swatchColor }}
-                                    />
-                                  ) : (
-                                    <span className="inline-block h-4 w-4 shrink-0" />
-                                  )}
+                                  <ColourDot colors={dotColors} />
                                   <span className="w-20 text-sm text-slate-300">{sizeLabel}</span>
                                 </div>
                                 {!allSamePrice && (
