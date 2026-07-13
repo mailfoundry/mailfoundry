@@ -39,6 +39,39 @@ const CATEGORY_LABELS: Record<string, string> = {
   firstaid:    "First Aid",
 };
 
+// Colour swatch map — used to render a dot next to colour-variant rows
+const COLOUR_SWATCHES: Record<string, string> = {
+  yellow:  "#EAB308",
+  orange:  "#F97316",
+  red:     "#EF4444",
+  pink:    "#EC4899",
+  blue:    "#3B82F6",
+  green:   "#22C55E",
+  white:   "#F1F5F9",
+  black:   "#334155",
+  clear:   "#94A3B8",
+  grey:    "#6B7280",
+  gray:    "#6B7280",
+  navy:    "#1E3A5F",
+  purple:  "#A855F7",
+};
+
+function getSwatchColor(label: string): string | null {
+  const lower = label.toLowerCase();
+  for (const [name, hex] of Object.entries(COLOUR_SWATCHES)) {
+    if (lower.includes(name)) return hex;
+  }
+  return null;
+}
+
+// If a size label is the full product description ("Product Name - Yellow"),
+// collapse it to just the trailing colour/size token ("Yellow").
+function shortenLabel(label: string): string {
+  const dashIdx = label.lastIndexOf(" - ");
+  if (dashIdx > 10) return label.slice(dashIdx + 3).trim();
+  return label;
+}
+
 export default function OrderFormClient({ convention, csProducts, faProducts, existingQty }: Props) {
   const [activeTab, setActiveTab] = useState<"CS" | "FA">("CS");
   const [qty, setQty] = useState<Record<string, number>>(existingQty);
@@ -195,7 +228,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                         <div className="border-t border-slate-800">
                           {variants.map((p, i) => {
                             const q = qty[p.id] ?? 0;
-                            const sizeLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
+                            const rawLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
+                            const sizeLabel = shortenLabel(rawLabel);
+                            const swatchColor = getSwatchColor(sizeLabel);
                             return (
                               <div
                                 key={p.id}
@@ -203,7 +238,18 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                                   i > 0 ? "border-t border-slate-800/60" : ""
                                 } ${q > 0 ? "bg-green-950/10" : ""}`}
                               >
-                                <span className="min-w-[4.5rem] text-sm text-slate-400">{sizeLabel}</span>
+                                {/* Colour swatch dot */}
+                                <div className="flex shrink-0 items-center gap-2">
+                                  {swatchColor ? (
+                                    <span
+                                      className="inline-block h-4 w-4 shrink-0 rounded-full border border-white/15 shadow-sm"
+                                      style={{ backgroundColor: swatchColor }}
+                                    />
+                                  ) : (
+                                    <span className="inline-block h-4 w-4 shrink-0" />
+                                  )}
+                                  <span className="w-20 text-sm text-slate-300">{sizeLabel}</span>
+                                </div>
                                 {!allSamePrice && (
                                   <span className="text-xs text-slate-600">£{p.unitCost.toFixed(2)}</span>
                                 )}
