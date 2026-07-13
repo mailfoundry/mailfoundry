@@ -152,11 +152,49 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   }
 
   const activeProducts = activeTab === "CS" ? csProducts : faProducts;
-  const value = totalValue(activeProducts);
-  const lines = totalLines(activeProducts);
+
+  // Grand totals across both tabs
+  const csLines = totalLines(csProducts);
+  const faLines = totalLines(faProducts);
+  const csValue = totalValue(csProducts);
+  const faValue = totalValue(faProducts);
+  const grandLines = csLines + faLines;
+  const grandValue = csValue + faValue;
+
+  const fmtGbp = (n: number) =>
+    "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+
+      {/* ── Sticky summary bar ──────────────────────────────────────────── */}
+      {grandLines > 0 && (
+        <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 backdrop-blur-sm">
+          <div className="mx-auto max-w-2xl px-4 py-3">
+            {/* Top row: grand total */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-white">
+                {grandLines} product{grandLines !== 1 ? "s" : ""} selected
+              </span>
+              <span className="text-sm font-bold text-green-400">{fmtGbp(grandValue)}</span>
+            </div>
+            {/* Per-tab breakdown */}
+            {csLines > 0 && faLines > 0 && (
+              <div className="mt-1 flex gap-4">
+                <span className="text-xs text-slate-500">
+                  CS: <span className="font-semibold text-slate-300">{csLines}</span>
+                  <span className="ml-1 text-slate-600">{fmtGbp(csValue)}</span>
+                </span>
+                <span className="text-xs text-slate-500">
+                  FA: <span className="font-semibold text-slate-300">{faLines}</span>
+                  <span className="ml-1 text-slate-600">{fmtGbp(faValue)}</span>
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-2xl px-4 py-8">
 
         {/* Header */}
@@ -179,8 +217,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         {/* Tabs */}
         <div className="mb-6 flex gap-2">
           {(["CS", "FA"] as const).map((tab) => {
-            const products = tab === "CS" ? csProducts : faProducts;
-            const count = products.filter((p) => (qty[p.id] ?? 0) > 0).length;
+            const count = tab === "CS" ? csLines : faLines;
             return (
               <button
                 key={tab}
@@ -203,18 +240,6 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             );
           })}
         </div>
-
-        {/* Summary bar */}
-        {lines > 0 && (
-          <div className="mb-4 flex items-center justify-between rounded-xl bg-slate-900 px-4 py-2.5">
-            <p className="text-sm text-slate-400">
-              <span className="font-semibold text-white">{lines}</span> product{lines !== 1 ? "s" : ""} selected
-            </p>
-            <p className="text-sm font-semibold text-green-400">
-              £{value.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </p>
-          </div>
-        )}
 
         {/* Product list */}
         {renderProducts(activeProducts, activeTab)}
