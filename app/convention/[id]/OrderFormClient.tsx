@@ -251,22 +251,22 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     >
                       {/* ── Product header ──────────────────────────── */}
                       <div className="flex gap-4 p-4">
-                        {/* Image — larger, shared across variants */}
-                        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                        {/* Portrait image — 64×96 (4:6 ratio), fills edge-to-edge */}
+                        <div className="w-16 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800">
                           {imgSrc ? (
                             <Image
                               src={imgSrc}
                               alt={description}
-                              width={80}
-                              height={80}
-                              className="h-full w-full object-contain p-1"
+                              width={64}
+                              height={96}
+                              className="h-full w-full object-cover"
                             />
                           ) : (
                             <div className="h-full w-full" />
                           )}
                         </div>
 
-                        {/* Description + price */}
+                        {/* Description + price + variant summary */}
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold leading-snug text-white">{description}</p>
                           <p className="mt-1 text-xs text-slate-500">
@@ -274,6 +274,28 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                               ? `£${variants[0].unitCost.toFixed(2)} each`
                               : "Prices vary by size"}
                           </p>
+
+                          {/* Variant summary: colour dots or size chips */}
+                          {hasVariants && (
+                            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                              {variants.map((v) => {
+                                const rawLabel = PRODUCT_SIZE_MAP[v.code] ?? v.variant ?? "";
+                                const label = shortenLabel(rawLabel);
+                                const colours = getSwatchColors(label);
+                                if (colours.length > 0) {
+                                  return <ColourDot key={v.id} colors={colours} />;
+                                }
+                                return (
+                                  <span
+                                    key={v.id}
+                                    className="rounded-md border border-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-400"
+                                  >
+                                    {label}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          )}
 
                           {/* Single-item stepper inline in header */}
                           {!hasVariants && (
