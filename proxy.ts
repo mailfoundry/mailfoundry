@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify"];
+const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {

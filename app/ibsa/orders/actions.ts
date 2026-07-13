@@ -91,3 +91,22 @@ export async function bookInLine(formData: FormData) {
   revalidatePath("/ibsa/products");
   revalidatePath("/ibsa/purchasing");
 }
+
+// ── Group order (congregation / circuit / regional) ───────────────────────
+
+export async function updateGroupOrderStatus(formData: FormData) {
+  const id     = (formData.get("id") as string).trim();
+  const status = (formData.get("status") as string).trim();
+  if (!id || !status) return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (prisma as any).ibsaGroupOrder.update({ where: { id }, data: { status } });
+  revalidatePath("/ibsa/orders");
+}
+
+export async function deleteGroupOrder(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  if (!id) return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (prisma as any).ibsaGroupOrder.delete({ where: { id } });
+  revalidatePath("/ibsa/orders");
+}

@@ -142,8 +142,9 @@ model IbsaProduct {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orderItems IbsaOrderItem[]
-  rsProducts RsProduct[]
+  orderItems      IbsaOrderItem[]
+  rsProducts      RsProduct[]
+  groupOrderLines IbsaGroupOrderLine[]
 }
 
 /// One row per (RS product code + Xylo product) mapping.
@@ -266,6 +267,42 @@ model ConventionOrderToken {
   createdAt    DateTime  @default(now())
 
   @@index([conventionId])
+}
+
+/// An order placed by a congregation, circuit assembly, or regional group.
+model IbsaGroupOrder {
+  id            String    @id @default(cuid())
+  /// congregation | circuit | regional
+  groupType     String
+  groupName     String
+  contactName   String
+  contactEmail  String
+  contactMobile String?
+  /// submitted | processing | complete | cancelled
+  status        String    @default("submitted")
+  notes         String?
+  submittedAt   DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  lines IbsaGroupOrderLine[]
+
+  @@index([status])
+}
+
+/// One line within a group order.
+model IbsaGroupOrderLine {
+  id         String         @id @default(cuid())
+  orderId    String
+  order      IbsaGroupOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String
+  product    IbsaProduct    @relation(fields: [productId], references: [id])
+  /// CS | FA
+  dept       String
+  qty        Int
+
+  @@unique([orderId, productId, dept])
+  @@index([orderId])
 }
 
 /// Supplier contact book. name matches RsProduct.supplier for cascade renames.

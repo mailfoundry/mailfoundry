@@ -40,7 +40,7 @@ export type PurchaseOrder = {
   lines: OrderLine[];
 };
 
-export default function OrdersClient({ orders }: { orders: PurchaseOrder[] }) {
+export default function OrdersClient({ orders, hideHeader }: { orders: PurchaseOrder[]; hideHeader?: boolean }) {
   const outstanding = orders.filter((o) => o.status !== "received" && o.status !== "cancelled");
   const received    = orders.filter((o) => o.status === "received");
 
@@ -52,12 +52,14 @@ export default function OrdersClient({ orders }: { orders: PurchaseOrder[] }) {
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Orders</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Track purchase orders and book in deliveries line by line.
-        </p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-white">Orders</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            Track purchase orders and book in deliveries line by line.
+          </p>
+        </div>
+      )}
 
       {orders.length === 0 && (
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center">
