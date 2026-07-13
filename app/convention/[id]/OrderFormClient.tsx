@@ -59,6 +59,11 @@ function getSizeRank(code: string): number {
 }
 
 function getCodeFamily(code: string): string {
+  // Space-delimited codes use " - COLOUR" as variant suffix
+  // e.g. "BROOM HEAD WASHABLE 45CM SOFT - BLUE" → "BROOM HEAD WASHABLE 45CM SOFT"
+  const dashIdx = code.lastIndexOf(" - ");
+  if (dashIdx > -1) return code.slice(0, dashIdx);
+
   // 1. Strip pack suffix first, then size → covers e.g. GLOVES_NITRILE-POLY_FOAM_S_10PACK
   const afterPack = code.replace(_PACK_RE, "");
   const afterSize = afterPack.replace(_SIZE_RE, "");
