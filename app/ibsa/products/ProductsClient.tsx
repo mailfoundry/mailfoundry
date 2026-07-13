@@ -94,6 +94,23 @@ export default function ProductsClient({ products }: Props) {
     ? products.filter((p) => (draft[p.id] ?? p.inStock) !== p.inStock).length
     : 0;
 
+  // Stock take summary stats
+  const countedProducts = stockTakeMode
+    ? products.filter((p) => (draft[p.id] ?? 0) > 0).length
+    : 0;
+  const totalCounted = stockTakeMode
+    ? products.reduce((s, p) => s + (draft[p.id] ?? 0), 0)
+    : 0;
+  const countedValue = stockTakeMode
+    ? products.reduce((s, p) => s + (draft[p.id] ?? 0) * p.unitCost, 0)
+    : 0;
+  const categoryTotals = stockTakeMode
+    ? Object.entries(grouped).map(([cat, items]) => ({
+        label: CATEGORY_LABELS[cat] ?? cat,
+        total: items.reduce((s, p) => s + (draft[p.id] ?? 0), 0),
+      })).filter((c) => c.total > 0)
+    : [];
+
   // ── Stock take ─────────────────────────────────────────────────────────
   const enterStockTake = () => {
     const init: Record<string, number> = {};
@@ -266,6 +283,34 @@ export default function ProductsClient({ products }: Props) {
       </div>
 
       {toolbar}
+
+      {/* ── Stock take sticky summary (mobile only) ──────────────────────── */}
+      {stockTakeMode && (
+        <div className="sticky top-0 z-30 -mx-4 mb-4 border-b border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur-sm md:hidden">
+          {/* Top row: counted / total · value */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-500">Counted</span>
+              <span className="text-sm font-bold text-white">{countedProducts}<span className="font-normal text-slate-500">/{products.length}</span></span>
+              <span className="text-slate-700">·</span>
+              <span className="text-sm font-bold text-green-400">{totalCounted} units</span>
+            </div>
+            <span className="text-sm font-semibold text-amber-400">
+              £{countedValue.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
+          {/* Category breakdown */}
+          {categoryTotals.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+              {categoryTotals.map((c) => (
+                <span key={c.label} className="text-xs text-slate-500">
+                  {c.label}: <span className="font-semibold text-slate-300">{c.total}</span>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Mobile card list ─────────────────────────────────────────────── */}
       <div className="block space-y-1 md:hidden">
