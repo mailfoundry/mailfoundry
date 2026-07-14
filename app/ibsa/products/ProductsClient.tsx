@@ -54,6 +54,7 @@ type EditDraft = {
 type Props = { products: ProductRow[] };
 
 export default function ProductsClient({ products }: Props) {
+  const [search, setSearch] = useState("");
   const [stockTakeMode, setStockTakeMode] = useState(false);
   const [draft, setDraft] = useState<Record<string, number>>({});
   const [isSaving, startSaving] = useTransition();
@@ -74,7 +75,17 @@ export default function ProductsClient({ products }: Props) {
   const [isSavingLink, startSavingLink] = useTransition();
 
   // ── Derived ────────────────────────────────────────────────────────────
-  const grouped = products.reduce<Record<string, ProductRow[]>>((acc, p) => {
+  const q = search.trim().toLowerCase();
+  const filteredProducts = q
+    ? products.filter(
+        (p) =>
+          p.code.toLowerCase().includes(q) ||
+          p.name.toLowerCase().includes(q) ||
+          (p.variant ?? "").toLowerCase().includes(q)
+      )
+    : products;
+
+  const grouped = filteredProducts.reduce<Record<string, ProductRow[]>>((acc, p) => {
     if (!acc[p.category]) acc[p.category] = [];
     acc[p.category].push(p);
     return acc;
@@ -83,10 +94,10 @@ export default function ProductsClient({ products }: Props) {
   const getInStock = (p: ProductRow) =>
     stockTakeMode ? (draft[p.id] ?? p.inStock) : p.inStock;
 
-  const totalInStock = products.reduce((s, p) => s + getInStock(p), 0);
-  const totalGIT     = products.reduce((s, p) => s + p.git, 0);
+  const totalInStock = filteredProducts.reduce((s, p) => s + getInStock(p), 0);
+  const totalGIT     = filteredProducts.reduce((s, p) => s + p.git, 0);
   const totalStock   = totalInStock + totalGIT;
-  const stockValue   = products.reduce(
+  const stockValue   = filteredProducts.reduce(
     (s, p) => s + p.unitCost * (getInStock(p) + p.git), 0
   );
 
@@ -280,6 +291,30 @@ export default function ProductsClient({ products }: Props) {
             £{stockValue.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} value
           </p>
         </div>
+      </div>
+
+      {/* ── Search ─────────────────────────────────────────────────────── */}
+      <div className="mb-4 flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5">
+        <svg className="h-4 w-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+        </svg>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name, code or variant…"
+          className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 outline-none"
+        />
+        {search && (
+          <button onClick={() => setSearch("")} className="text-xs text-slate-500 hover:text-slate-300">
+            Clear
+          </button>
+        )}
+        {q && (
+          <span className="text-xs text-slate-500">
+            {filteredProducts.length} result{filteredProducts.length !== 1 ? "s" : ""}
+          </span>
+        )}
       </div>
 
       {toolbar}
