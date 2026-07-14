@@ -145,6 +145,8 @@ model IbsaProduct {
   orderItems      IbsaOrderItem[]
   rsProducts      RsProduct[]
   groupOrderLines IbsaGroupOrderLine[]
+  bomAsComposite  IbsaProductBom[]     @relation("BomComposite")
+  bomAsComponent  IbsaProductBom[]     @relation("BomComponent")
 }
 
 /// One row per (RS product code + Xylo product) mapping.
@@ -303,6 +305,22 @@ model IbsaGroupOrderLine {
 
   @@unique([orderId, productId, dept])
   @@index([orderId])
+}
+
+/// Bill-of-Materials link: one composite product → one component product × qty.
+model IbsaProductBom {
+  id          String      @id @default(cuid())
+  compositeId String
+  componentId String
+  qty         Int         @default(1)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  composite IbsaProduct @relation("BomComposite", fields: [compositeId], references: [id], onDelete: Cascade)
+  component IbsaProduct @relation("BomComponent", fields: [componentId], references: [id], onDelete: Restrict)
+
+  @@unique([compositeId, componentId])
+  @@index([componentId])
 }
 
 /// Supplier contact book. name matches RsProduct.supplier for cascade renames.

@@ -74,6 +74,33 @@ export async function deleteRsProductLink(formData: FormData) {
   revalidatePath("/ibsa/suppliers");
 }
 
+/** Add a BOM component line to a composite product */
+export async function addBomLine(formData: FormData) {
+  const compositeId = (formData.get("compositeId") as string).trim();
+  const componentId = (formData.get("componentId") as string).trim();
+  const qty = Math.max(1, parseInt(formData.get("qty") as string) || 1);
+
+  if (!compositeId || !componentId || compositeId === componentId) return;
+
+  await prisma.ibsaProductBom.upsert({
+    where: { compositeId_componentId: { compositeId, componentId } },
+    create: { compositeId, componentId, qty },
+    update: { qty },
+  });
+
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+}
+
+/** Remove a BOM line by its id */
+export async function removeBomLine(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  if (!id) return;
+  await prisma.ibsaProductBom.delete({ where: { id } });
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+}
+
 export async function updateProductStock(formData: FormData) {
   const productId = formData.get("productId")?.toString() ?? "";
   const inStock = parseInt(formData.get("inStock")?.toString() ?? "0") || 0;

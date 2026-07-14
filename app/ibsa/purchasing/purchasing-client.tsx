@@ -61,6 +61,21 @@ export type RsProductLine = {
   ibsaProductId: string | null;
 };
 
+export type BomComponentLine = {
+  componentId: string;
+  qty: number;
+  componentProduct: {
+    id: string;
+    name: string;
+    variant: string | null;
+    category: string;
+    unitCost: number;
+    xyloCost: number | null;
+    inStock: number;
+    git: number;
+  };
+};
+
 type ProductContribution = {
   ibsaProductId: string;
   name: string;
@@ -89,6 +104,8 @@ type Props = {
   conventions: Convention[];
   orderItems: OrderItemFlat[];
   rsProducts: RsProductLine[];
+  /** BOM lines keyed by composite product ID. When present, demand is split into components. */
+  bomByComposite: Record<string, BomComponentLine[]>;
 };
 
 type OrderState = "idle" | "confirming" | "submitting" | "done";
@@ -100,7 +117,7 @@ function makePONumber(supplier: string) {
   return `PO-${dateCode}-${supplierCode}`;
 }
 
-export default function PurchasingClient({ conventions, orderItems, rsProducts }: Props) {
+export default function PurchasingClient({ conventions, orderItems, rsProducts, bomByComposite }: Props) {
   const [showRsOrder, setShowRsOrder] = useState(false);
   const [orderStates, setOrderStates] = useState<Map<string, OrderState>>(() => new Map());
   const [confirmSupplier, setConfirmSupplier] = useState<{ supplier: string; poNumber: string; lines: RsOrderLine[] } | null>(null);
@@ -180,10 +197,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
 
     const byProduct = new Map<string, Acc>();
 
-    for (const item of orderItems) {
-      const key = `${item.conventionId}:${item.dept}`;
-      if (!selected.has(key)) continue;
-      const p = item.product;
+    const ensureProduct = (p: { id: string; name: string; variant: string | null; category: string; unitCost: number; xyloCost: number | null; inStock: number; git: number }) => {
       if (!byProduct.has(p.id)) {
         byProduct.set(p.id, {
           productId: p.id,
@@ -198,9 +212,31 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
           faOrdered: 0,
         });
       }
-      const row = byProduct.get(p.id)!;
-      if (item.dept === "CS") row.csOrdered += item.qty;
-      else row.faOrdered += item.qty;
+      return byProduct.get(p.id)!;
+    };
+
+    for (const item of orderItems) {
+      const cardKey = `${item.conventionId}:${item.dept}`;
+      if (!selected.has(cardKey)) continue;
+
+      const bomLines = bomByComposite[item.product.id];
+
+      if (bomLines && bomLines.length > 0) {
+        // Composite product — expand demand into components
+        for (const bomLine of bomLines) {
+          const cp = bomLine.componentProduct;
+          const demand = item.qty * bomLine.qty;
+          const row = ensureProduct(cp);
+          if (item.dept === "CS") row.csOrdered += demand;
+          else row.faOrdered += demand;
+        }
+      } else {
+        // Standalone product — count normally
+        const p = item.product;
+        const row = ensureProduct(p);
+        if (item.dept === "CS") row.csOrdered += item.qty;
+        else row.faOrdered += item.qty;
+      }
     }
 
     return Array.from(byProduct.values())
@@ -213,7 +249,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
         if (a.category !== b.category) return a.category.localeCompare(b.category);
         return b.deficit - a.deficit;
       });
-  }, [orderItems, selected]);
+  }, [orderItems, selected, bomByComposite]);
 
   const byCategory = useMemo(() => {
     const map = new Map<string, typeof rows>();

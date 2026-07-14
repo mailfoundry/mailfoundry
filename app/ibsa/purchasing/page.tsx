@@ -1,6 +1,8 @@
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
-import PurchasingClient, { type Convention, type OrderItemFlat, type RsProductLine } from "./purchasing-client";
+import PurchasingClient, { type BomComponentLine, type Convention, type OrderItemFlat, type RsProductLine } from "./purchasing-client";
+
+export const dynamic = "force-dynamic";
 
 export default async function PurchasingPage() {
   // Start of today so conventions happening today are still included
@@ -56,11 +58,38 @@ export default async function PurchasingPage() {
     }),
   ]);
 
-  // Fetch RS supplier products for all Xylo products that appear in order items
   const productIds = [...new Set(orderItems.map(i => i.product.id))];
-  const rsProducts = productIds.length > 0
+
+  // Fetch BOM lines first so we know the component IDs
+  const bomLinesRaw = productIds.length > 0
+    ? await prisma.ibsaProductBom.findMany({
+        where: { compositeId: { in: productIds } },
+        select: {
+          compositeId: true,
+          componentId: true,
+          qty: true,
+          component: {
+            select: {
+              id: true,
+              name: true,
+              variant: true,
+              category: true,
+              unitCost: true,
+              xyloCost: true,
+              inStock: true,
+              git: true,
+            },
+          },
+        },
+      })
+    : [];
+
+  // Fetch RS supplier links for direct order items AND BOM components
+  const componentIds = bomLinesRaw.map(l => l.componentId);
+  const allProductIdsForRs = [...new Set([...productIds, ...componentIds])];
+  const rsProducts = allProductIdsForRs.length > 0
     ? await prisma.rsProduct.findMany({
-        where: { ibsaProductId: { in: productIds } },
+        where: { ibsaProductId: { in: allProductIdsForRs } },
         select: {
           id: true,
           supplier: true,
@@ -73,6 +102,26 @@ export default async function PurchasingPage() {
         },
       })
     : [];
+
+  // Group BOM lines by composite product ID
+  const bomByComposite: Record<string, BomComponentLine[]> = {};
+  for (const line of bomLinesRaw) {
+    if (!bomByComposite[line.compositeId]) bomByComposite[line.compositeId] = [];
+    bomByComposite[line.compositeId].push({
+      componentId: line.componentId,
+      qty: line.qty,
+      componentProduct: {
+        id: line.component.id,
+        name: line.component.name,
+        variant: line.component.variant,
+        category: line.component.category,
+        unitCost: line.component.unitCost,
+        xyloCost: line.component.xyloCost,
+        inStock: line.component.inStock,
+        git: line.component.git,
+      },
+    });
+  }
 
   // Serialise dates to strings for the client component
   const conventionData: Convention[] = conventions.map(c => ({
@@ -118,6 +167,7 @@ export default async function PurchasingPage() {
         conventions={conventionData}
         orderItems={orderItemData}
         rsProducts={rsProductData}
+        bomByComposite={bomByComposite}
       />
     </IbsaAppShell>
   );

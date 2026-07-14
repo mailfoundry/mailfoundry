@@ -29,6 +29,17 @@ export default async function IbsaProductsPage({
         select: { id: true, supplier: true, rsCode: true, rsVariant: true, rsDescription: true },
         orderBy: { supplier: "asc" as const },
       },
+      bomAsComposite: {
+        select: {
+          id: true,
+          componentId: true,
+          qty: true,
+          component: {
+            select: { id: true, code: true, name: true, variant: true },
+          },
+        },
+        orderBy: { createdAt: "asc" as const },
+      },
     },
   });
 

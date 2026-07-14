@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine } from "./actions";
 
 export type RsProductLink = {
   id: string;
@@ -9,6 +9,18 @@ export type RsProductLink = {
   rsCode: string | null;
   rsVariant: string | null;
   rsDescription: string | null;
+};
+
+export type BomLine = {
+  id: string;
+  componentId: string;
+  qty: number;
+  component: {
+    id: string;
+    code: string;
+    name: string;
+    variant: string | null;
+  };
 };
 
 export type ProductRow = {
@@ -23,6 +35,7 @@ export type ProductRow = {
   inStock: number;
   git: number;
   rsProducts: RsProductLink[];
+  bomAsComposite: BomLine[];
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -73,6 +86,11 @@ export default function ProductsClient({ products }: Props) {
     supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "",
   });
   const [isSavingLink, startSavingLink] = useTransition();
+
+  // BOM form state
+  const [showAddBom, setShowAddBom] = useState(false);
+  const [bomDraft, setBomDraft] = useState<{ componentId: string; qty: string }>({ componentId: "", qty: "1" });
+  const [isSavingBom, startSavingBom] = useTransition();
 
   // ── Derived ────────────────────────────────────────────────────────────
   const q = search.trim().toLowerCase();
@@ -171,6 +189,8 @@ export default function ProductsClient({ products }: Props) {
     setSupplierDrafts(m);
     setShowAddLink(false);
     setLinkDraft({ supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "" });
+    setShowAddBom(false);
+    setBomDraft({ componentId: "", qty: "1" });
   }
 
   function submitAddLink() {
@@ -192,6 +212,29 @@ export default function ProductsClient({ products }: Props) {
     startSavingLink(async () => {
       await deleteRsProductLink(fd);
       setEditingProduct(null); // close modal — page revalidates
+    });
+  }
+
+  function submitAddBomLine() {
+    if (!editingProduct || !bomDraft.componentId) return;
+    const fd = new FormData();
+    fd.set("compositeId", editingProduct.id);
+    fd.set("componentId", bomDraft.componentId);
+    fd.set("qty", bomDraft.qty || "1");
+    startSavingBom(async () => {
+      await addBomLine(fd);
+      setShowAddBom(false);
+      setBomDraft({ componentId: "", qty: "1" });
+      setEditingProduct(null);
+    });
+  }
+
+  function submitRemoveBomLine(bomLineId: string) {
+    const fd = new FormData();
+    fd.set("id", bomLineId);
+    startSavingBom(async () => {
+      await removeBomLine(fd);
+      setEditingProduct(null);
     });
   }
 
@@ -883,6 +926,105 @@ export default function ProductsClient({ products }: Props) {
                     <option key={name} value={name} />
                   ))}
                 </datalist>
+              </div>
+
+              {/* Bill of Materials */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-400">Bill of Materials</label>
+                  {!showAddBom && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddBom(true)}
+                      className="text-xs font-semibold text-emerald-400 hover:text-emerald-300"
+                    >
+                      + Add component
+                    </button>
+                  )}
+                </div>
+
+                {/* Existing BOM lines */}
+                {editingProduct.bomAsComposite.length > 0 && (
+                  <div className="mb-2 space-y-1.5">
+                    {editingProduct.bomAsComposite.map((line) => (
+                      <div key={line.id} className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 p-2.5">
+                        <span className="shrink-0 rounded bg-slate-700 px-1.5 py-0.5 text-xs font-bold text-slate-300">
+                          ×{line.qty}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-white leading-tight">
+                            {line.component.name}
+                            {line.component.variant ? <span className="ml-1 text-slate-400">({line.component.variant})</span> : null}
+                          </p>
+                          <p className="font-mono text-xs text-slate-500">{line.component.code}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => submitRemoveBomLine(line.id)}
+                          disabled={isSavingBom}
+                          title="Remove component"
+                          className="shrink-0 text-slate-600 hover:text-red-400 disabled:opacity-40"
+                        >
+                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {editingProduct.bomAsComposite.length === 0 && !showAddBom && (
+                  <p className="text-xs text-slate-600">No components — standalone product. Click "+ Add component" to build a BOM.</p>
+                )}
+
+                {/* Add component form */}
+                {showAddBom && (
+                  <div className="space-y-2 rounded-lg border border-emerald-500/30 bg-emerald-950/10 p-3">
+                    <p className="text-xs font-semibold text-emerald-300">Add component</p>
+                    <select
+                      value={bomDraft.componentId}
+                      onChange={(e) => setBomDraft((d) => ({ ...d, componentId: e.target.value }))}
+                      className="w-full rounded border border-slate-600 bg-slate-800 px-2 py-1.5 text-sm text-white outline-none focus:border-emerald-500"
+                    >
+                      <option value="">— select component product —</option>
+                      {products
+                        .filter((p) => p.id !== editingProduct.id)
+                        .map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}{p.variant ? ` (${p.variant})` : ""} — {p.code}
+                          </option>
+                        ))}
+                    </select>
+                    <div className="flex items-center gap-3">
+                      <label className="shrink-0 text-xs text-slate-400">Qty per unit</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={bomDraft.qty}
+                        onChange={(e) => setBomDraft((d) => ({ ...d, qty: e.target.value }))}
+                        className="w-20 rounded border border-slate-600 bg-slate-800 px-2 py-1.5 text-sm text-white outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddBom(false)}
+                        className="rounded px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={submitAddBomLine}
+                        disabled={isSavingBom || !bomDraft.componentId}
+                        className="rounded bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-40"
+                      >
+                        {isSavingBom ? "Saving…" : "Add"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Live margin preview */}
