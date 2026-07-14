@@ -650,7 +650,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts }
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Carton</th>
-                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Units needed</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Shortfall</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Cartons</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Price/carton</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Total</th>
