@@ -868,7 +868,7 @@ export default function ProductsClient({ products }: Props) {
                           const result = await uploadProductImage(fd);
                           setIsUploadingImage(false);
                           if ("url" in result) {
-                            setEditDraft((prev) => ({ ...prev, imageUrl: result.url }));
+                            setEditDraft((prev) => ({ ...prev, imageUrl: result.url ?? "" }));
                           }
                         }}
                       />
