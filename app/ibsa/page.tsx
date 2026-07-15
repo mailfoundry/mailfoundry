@@ -239,10 +239,77 @@ export default async function IbsaPage() {
               return (
                 <div
                   key={`${card.convention.id}-${card.dept}`}
-                  className={`relative rounded-2xl border border-slate-800 border-l-4 ${leftBorder} bg-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-800/60`}
+                  className={`flex rounded-2xl border border-slate-800 border-l-4 ${leftBorder} bg-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-800/60`}
                 >
-                  {/* Card actions — top right */}
-                  <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+                  {/* Main clickable area */}
+                  <Link href={`/ibsa/conventions/${card.convention.id}`} className="flex flex-1 items-center gap-4 p-5">
+                    {/* Left: name, badges, dates */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-base font-bold text-white">{card.convention.name}</span>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          card.dept === "FA"
+                            ? "bg-blue-900/40 text-blue-300 border border-blue-800/50"
+                            : "bg-orange-900/30 text-orange-300 border border-orange-800/40"
+                        }`}>
+                          {card.dept === "FA" ? "First Aid" : "Cleaning Supplies"}
+                        </span>
+                        <StatusBadge status={card.status} />
+                        <PaymentBadge paidAt={card.paidAt} paymentDueDate={card.paymentDueDate} />
+                      </div>
+                      {card.convention.venue && (
+                        <p className="mt-0.5 text-xs text-slate-500">{card.convention.venue}</p>
+                      )}
+                      <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
+                        <span>
+                          <span className="text-slate-600">Convention</span>{" "}
+                          <span className="font-medium text-slate-300">
+                            {fmtDate(card.convention.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
+                          </span>
+                        </span>
+                        {card.deliveryDate && (
+                          <span>
+                            <span className="text-slate-600">Delivery</span>{" "}
+                            <span className="font-medium text-slate-300">{fmtDate(card.deliveryDate)}</span>
+                          </span>
+                        )}
+                        {card.collectionDate && (
+                          <span>
+                            <span className="text-slate-600">Collection</span>{" "}
+                            <span className="font-medium text-slate-300">{fmtDate(card.collectionDate)}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right: value + countdowns */}
+                    <div className="flex shrink-0 items-center gap-6">
+                      {value > 0 ? (
+                        <div className="text-right">
+                          <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
+                          <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
+                          <p className="text-xs text-slate-500">{itemCount} lines</p>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-600">No order yet</p>
+                      )}
+                      <div className="flex gap-3">
+                        {daysToCollection !== null && (
+                          <div className="text-center">
+                            <CountdownPill days={daysToCollection} />
+                            <p className="mt-1 text-xs text-slate-600">collect</p>
+                          </div>
+                        )}
+                        <div className="text-center">
+                          <CountdownPill days={daysToConvention} />
+                          <p className="mt-1 text-xs text-slate-600">conv</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Actions column — outside the link so clicks don't navigate */}
+                  <div className="flex shrink-0 flex-col items-end justify-center gap-2 border-l border-slate-800 px-4">
                     <OverviewCompleteButton
                       conventionId={card.convention.id}
                       conventionName={card.convention.name}
@@ -254,82 +321,13 @@ export default async function IbsaPage() {
                         <input type="hidden" name="conventionId" value={card.convention.id} />
                         <button
                           type="submit"
-                          title="Hide this convention"
-                          className="rounded px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-800 hover:text-red-400 transition-colors"
+                          className="text-xs text-slate-700 hover:text-red-400 transition-colors"
                         >
                           Hide
                         </button>
                       </form>
                     )}
                   </div>
-
-                  <Link href={`/ibsa/conventions/${card.convention.id}`} className="block p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-base font-bold text-white">{card.convention.name}</span>
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                            card.dept === "FA"
-                              ? "bg-blue-900/40 text-blue-300 border border-blue-800/50"
-                              : "bg-orange-900/30 text-orange-300 border border-orange-800/40"
-                          }`}>
-                            {card.dept === "FA" ? "First Aid" : "Cleaning Supplies"}
-                          </span>
-                          <StatusBadge status={card.status} />
-                          <PaymentBadge paidAt={card.paidAt} paymentDueDate={card.paymentDueDate} />
-                        </div>
-                        {card.convention.venue && (
-                          <p className="mt-0.5 text-xs text-slate-500">{card.convention.venue}</p>
-                        )}
-
-                        <div className="mt-3 flex flex-wrap gap-5 text-xs text-slate-400">
-                          <span>
-                            <span className="text-slate-600">Convention</span>{" "}
-                            <span className="font-medium text-slate-300">
-                              {fmtDate(card.convention.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
-                            </span>
-                          </span>
-                          {card.deliveryDate && (
-                            <span>
-                              <span className="text-slate-600">Delivery</span>{" "}
-                              <span className="font-medium text-slate-300">{fmtDate(card.deliveryDate)}</span>
-                            </span>
-                          )}
-                          {card.collectionDate && (
-                            <span>
-                              <span className="text-slate-600">Collection</span>{" "}
-                              <span className="font-medium text-slate-300">{fmtDate(card.collectionDate)}</span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 items-center gap-6 pr-36">
-                        {value > 0 ? (
-                          <div className="text-right">
-                            <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>
-                            <p className="text-xs text-green-400">£{fmtGbp(profit)} profit</p>
-                            <p className="text-xs text-slate-500">{itemCount} lines</p>
-                          </div>
-                        ) : (
-                          <p className="text-xs text-slate-600">No order yet</p>
-                        )}
-
-                        <div className="flex gap-3">
-                          {daysToCollection !== null && (
-                            <div className="text-center">
-                              <CountdownPill days={daysToCollection} />
-                              <p className="mt-1 text-xs text-slate-600">collect</p>
-                            </div>
-                          )}
-                          <div className="text-center">
-                            <CountdownPill days={daysToConvention} />
-                            <p className="mt-1 text-xs text-slate-600">conv</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
                 </div>
               );
             })}
