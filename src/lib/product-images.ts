@@ -81,5 +81,5 @@ export const PRODUCT_IMAGE_MAP: Record<string, string> = {
   "WET_FLOOR_AFRAME": "/product-images/fa_WET_FLOOR_AFRAME.png",
   "WHEEL_CHAIR_MKII": "/product-images/fa_WHEEL_CHAIR_MKII.png",
   "WRAP_CELLOPHANE_CLEAR": "/product-images/cs_WRAP_CELLOPHANE_CLEAR.png",
-  "KTY_BUFFALO_BUCKET_WRINGER_25L_RED": "/product-images/KTY_BUFFALO_BUCKET_WRINDER_25L_RED.jpg",
+  "KTY_BUFFALO_BUCKET_WRINGER_25L_RED": "/product-images/KTY_BUFFALO_BUCKET_WRINGER_25L_RED.jpg",
 };
