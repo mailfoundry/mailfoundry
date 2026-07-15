@@ -23,6 +23,7 @@ import CompleteButton from "./CompleteButton";
 import type { StockItem } from "./CompleteButton";
 import SendOrderLinkButton from "./SendOrderLinkButton";
 import DateCard from "./DateCard";
+import ConventionImportButton from "./ConventionImportButton";
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -150,7 +151,8 @@ export default async function ConventionDetailPage({
             </button>
           </form>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1">
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <ConventionImportButton conventionId={convention.id} />
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">CS Status</p>
           <div className="flex gap-2">
             {(["pending", "ordered"] as const).map((s) => (

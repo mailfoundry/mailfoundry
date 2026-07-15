@@ -246,6 +246,27 @@ export async function updateNotes(formData: FormData) {
   revalidatePath(`/ibsa/conventions/${conventionId}`);
 }
 
+export async function importConventionOrder(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  const dept = formData.get("dept")?.toString() || "CS";
+  const lines: { productId: string; qty: number }[] = JSON.parse(
+    formData.get("lines")?.toString() ?? "[]"
+  );
+  if (!conventionId || lines.length === 0) return;
+
+  await prisma.$transaction(
+    lines.map((l) =>
+      prisma.ibsaOrderItem.upsert({
+        where: { conventionId_productId_dept: { conventionId, productId: l.productId, dept } },
+        create: { conventionId, productId: l.productId, dept, qty: l.qty },
+        update: { qty: l.qty },
+      })
+    )
+  );
+
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+}
+
 export async function updateFaLogistics(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
