@@ -18,10 +18,6 @@ type MatchedLine = {
 
 type ParseResult = {
   groupName: string;
-  groupType: string;
-  contactName: string;
-  contactEmail: string;
-  contactMobile: string;
   matched: MatchedLine[];
   unmatched: string[];
 };
@@ -48,16 +44,66 @@ export default function ConventionImportModal({
     setIsParsing(true);
     setParseError(null);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/ibsa/parse-order-xlsx", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? `Server error ${res.status}`);
-      if ((data as ParseResult).matched.length === 0 && (data as ParseResult).unmatched.length === 0) {
+      // Parse the xlsx file entirely in the browser — avoids Vercel body size limits
+      const buffer = await file.arrayBuffer();
+      const XLSX = await import("xlsx");
+      const wb = XLSX.read(buffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const aoa = XLSX.utils.sheet_to_json<(string | number | null)[]>(ws, {
+        header: 1,
+        defval: null,
+      });
+
+      // Extract meta (convention name from header area)
+      let groupName = "";
+      for (const row of aoa) {
+        if (String(row[1] ?? "").trim() === "Convention Name:") {
+          groupName = String(row[4] ?? "").trim();
+          break;
+        }
+      }
+
+      // Extract product codes + quantities (col H = index 7, col J = index 9)
+      const rawLines: { code: string; qty: number }[] = [];
+      for (const row of aoa) {
+        const code = String(row[7] ?? "").trim();
+        if (!code || code === "Internal Code (Office Use Only)") continue;
+        const qtyRaw = row[9];
+        const qty =
+          typeof qtyRaw === "number"
+            ? qtyRaw
+            : parseFloat(String(qtyRaw ?? "0"));
+        if (isNaN(qty) || qty <= 0) continue;
+        rawLines.push({ code, qty: Math.round(qty) });
+      }
+
+      if (rawLines.length === 0) {
         setParseError("No order lines found in this file.");
         return;
       }
-      setResult(data as ParseResult);
+
+      // Send only the product codes to the server for lookup (tiny JSON payload)
+      const codes = rawLines.map((l) => l.code);
+      const res = await fetch("/api/ibsa/lookup-products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ codes }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error ?? `Server error ${res.status}`);
+      }
+      const productMap = await res.json() as Record<string, MatchedLine["product"]>;
+
+      const matched = rawLines
+        .filter((l) => productMap[l.code])
+        .map((l) => ({ code: l.code, qty: l.qty, product: productMap[l.code] }));
+
+      const unmatched = rawLines
+        .filter((l) => !productMap[l.code])
+        .map((l) => l.code);
+
+      setResult({ groupName, matched, unmatched });
       setStep("preview");
     } catch (e) {
       setParseError(e instanceof Error ? e.message : "Couldn't read the file.");
@@ -108,8 +154,8 @@ export default function ConventionImportModal({
           {step === "upload" && (
             <div>
               <p className="mb-4 text-sm text-slate-400">
-                Upload the IBSA cleaning supplies order spreadsheet (.xlsx). Product codes and quantities
-                are read automatically and set on this convention card.
+                Upload the IBSA cleaning supplies order spreadsheet (.xlsx). The file is read
+                locally in your browser — only the product codes and quantities are sent to the server.
               </p>
               <div
                 onDrop={handleDrop}
