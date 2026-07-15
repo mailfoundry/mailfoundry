@@ -23,6 +23,7 @@ export default async function IbsaProductsPage({
       type: true,
       unitCost: true,
       xyloCost: true,
+      imageUrl: true,
       inStock: true,
       git: true,
       rsProducts: {

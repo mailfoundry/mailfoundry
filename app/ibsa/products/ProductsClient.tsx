@@ -32,6 +32,7 @@ export type ProductRow = {
   type: string;
   unitCost: number;
   xyloCost: number | null;
+  imageUrl: string | null;
   inStock: number;
   git: number;
   rsProducts: RsProductLink[];
@@ -62,6 +63,7 @@ type EditDraft = {
   type: string;
   unitCost: string;
   xyloCost: string;
+  imageUrl: string;
 };
 
 type Props = { products: ProductRow[] };
@@ -75,7 +77,7 @@ export default function ProductsClient({ products }: Props) {
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({
-    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "",
+    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", imageUrl: "",
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
@@ -183,6 +185,7 @@ export default function ProductsClient({ products }: Props) {
       type:     p.type,
       unitCost: String(p.unitCost),
       xyloCost: p.xyloCost != null ? String(p.xyloCost) : "",
+      imageUrl: p.imageUrl ?? "",
     });
     const m = new Map<string, string>();
     for (const rp of p.rsProducts) m.set(rp.id, rp.supplier);
@@ -252,6 +255,7 @@ export default function ProductsClient({ products }: Props) {
     fd.set("type",            editDraft.type);
     fd.set("unitCost",        editDraft.unitCost);
     fd.set("xyloCost",        editDraft.xyloCost);
+    fd.set("imageUrl",        editDraft.imageUrl);
     fd.set("supplierChanges", JSON.stringify(supplierChanges));
     startSavingEdit(async () => {
       await updateProduct(fd);
@@ -420,12 +424,23 @@ export default function ProductsClient({ products }: Props) {
                   >
                     {/* Product info row */}
                     <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-semibold text-white leading-tight">{p.name}</p>
-                        {p.variant && (
-                          <p className="text-sm text-slate-400 mt-0.5">{p.variant}</p>
+                      <div className="flex items-start gap-3 min-w-0">
+                        {p.imageUrl ? (
+                          <img
+                            src={`/product-images/${p.imageUrl}`}
+                            alt={p.name}
+                            className="h-10 w-10 shrink-0 rounded-lg border border-slate-700 object-contain bg-white/5"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 shrink-0 rounded-lg border border-slate-800 bg-slate-800/40" />
                         )}
-                        <p className="mt-1 font-mono text-xs text-slate-500">{p.code}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-white leading-tight">{p.name}</p>
+                          {p.variant && (
+                            <p className="text-sm text-slate-400 mt-0.5">{p.variant}</p>
+                          )}
+                          <p className="mt-1 font-mono text-xs text-slate-500">{p.code}</p>
+                        </div>
                       </div>
 
                       {/* Right side: changed badge or edit button */}
@@ -788,6 +803,29 @@ export default function ProductsClient({ products }: Props) {
                       className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Image */}
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-slate-400">
+                  Product Image <span className="font-normal text-slate-600">(filename from product-images/)</span>
+                </label>
+                <div className="flex items-center gap-3">
+                  {editDraft.imageUrl && (
+                    <img
+                      src={`/product-images/${editDraft.imageUrl}`}
+                      alt="preview"
+                      className="h-12 w-12 rounded-lg border border-slate-700 object-contain bg-white/5"
+                    />
+                  )}
+                  <input
+                    type="text"
+                    value={editDraft.imageUrl}
+                    onChange={set("imageUrl")}
+                    placeholder="e.g. mop-bucket-red.jpg"
+                    className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none focus:border-blue-500"
+                  />
                 </div>
               </div>
 

@@ -13,6 +13,7 @@ export async function updateProduct(formData: FormData) {
   const unitCost = parseFloat(formData.get("unitCost") as string) || 0;
   const xyloCostRaw = (formData.get("xyloCost") as string).trim();
   const xyloCost = xyloCostRaw !== "" ? parseFloat(xyloCostRaw) : null;
+  const imageUrl = (formData.get("imageUrl") as string | null)?.trim() || null;
 
   // Supplier changes: [{id: rsProductId, supplier: newName}]
   const supplierChangesRaw = (formData.get("supplierChanges") as string | null) ?? "[]";
@@ -23,7 +24,7 @@ export async function updateProduct(formData: FormData) {
   await prisma.$transaction([
     prisma.ibsaProduct.update({
       where: { id },
-      data: { name, variant, code, category, type, unitCost, xyloCost },
+      data: { name, variant, code, category, type, unitCost, xyloCost, imageUrl },
     }),
     ...supplierChanges
       .filter((sc) => sc.supplier.trim())
