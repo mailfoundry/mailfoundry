@@ -92,12 +92,15 @@ export async function updateConventionStatus(formData: FormData) {
 export async function markCompleteAndDeductStock(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const dept = formData.get("dept")?.toString() ?? "CS"; // "CS" | "FA"
+  const deductStock = formData.get("deductStock") !== "false"; // default: true
   if (!conventionId) return;
 
-  const items = await prisma.ibsaOrderItem.findMany({
-    where: { conventionId, dept },
-    select: { productId: true, qty: true },
-  });
+  const items = deductStock
+    ? await prisma.ibsaOrderItem.findMany({
+        where: { conventionId, dept },
+        select: { productId: true, qty: true },
+      })
+    : [];
 
   await prisma.$transaction([
     prisma.ibsaConvention.update({

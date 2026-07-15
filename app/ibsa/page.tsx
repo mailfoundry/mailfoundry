@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../src/components/ibsa-app-shell";
 import { archiveConvention } from "./actions";
 import NewConventionButton from "./NewConventionButton";
+import OverviewCompleteButton from "./OverviewCompleteButton";
 
 const fmtDate = (d: Date, opts?: Intl.DateTimeFormatOptions) =>
   d.toLocaleDateString("en-GB", opts ?? { day: "numeric", month: "short" });
@@ -134,7 +135,7 @@ export default async function IbsaPage() {
   };
 
   const upcomingCards = allCards
-    .filter((card) => card.convention.conventionDate >= now)
+    .filter((card) => card.convention.conventionDate >= now && card.status !== "complete")
     .sort((a, b) => {
       const keyDiff = convSortKey(a) - convSortKey(b);
       if (keyDiff !== 0) return keyDiff;
@@ -147,7 +148,9 @@ export default async function IbsaPage() {
       return 0;
     });
 
-  const pastConventions = conventions.filter((c) => c.conventionDate < now);
+  const pastConventions = conventions.filter(
+    (c) => c.conventionDate < now || c.status === "complete" || c.faStatus === "complete"
+  );
 
   // Stats
   const totalCsValue = conventions.reduce(
@@ -238,19 +241,27 @@ export default async function IbsaPage() {
                   key={`${card.convention.id}-${card.dept}`}
                   className={`relative rounded-2xl border border-slate-800 border-l-4 ${leftBorder} bg-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-800/60`}
                 >
-                  {/* Hide — only on CS card to avoid double-archiving */}
-                  {card.dept === "CS" && (
-                    <form action={archiveConvention} className="absolute right-3 top-3 z-10">
-                      <input type="hidden" name="conventionId" value={card.convention.id} />
-                      <button
-                        type="submit"
-                        title="Hide this convention"
-                        className="rounded px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-800 hover:text-red-400 transition-colors"
-                      >
-                        Hide
-                      </button>
-                    </form>
-                  )}
+                  {/* Card actions — top right */}
+                  <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+                    <OverviewCompleteButton
+                      conventionId={card.convention.id}
+                      conventionName={card.convention.name}
+                      dept={card.dept}
+                      itemCount={card.items.filter((i) => i.qty > 0).length}
+                    />
+                    {card.dept === "CS" && (
+                      <form action={archiveConvention}>
+                        <input type="hidden" name="conventionId" value={card.convention.id} />
+                        <button
+                          type="submit"
+                          title="Hide this convention"
+                          className="rounded px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-800 hover:text-red-400 transition-colors"
+                        >
+                          Hide
+                        </button>
+                      </form>
+                    )}
+                  </div>
 
                   <Link href={`/ibsa/conventions/${card.convention.id}`} className="block p-5">
                     <div className="flex items-start justify-between gap-4">
@@ -293,7 +304,7 @@ export default async function IbsaPage() {
                         </div>
                       </div>
 
-                      <div className="flex shrink-0 items-center gap-6 pr-10">
+                      <div className="flex shrink-0 items-center gap-6 pr-36">
                         {value > 0 ? (
                           <div className="text-right">
                             <p className="text-base font-bold text-white">£{fmtGbp(value)}</p>

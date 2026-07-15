@@ -1,49 +1,24 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { markCompleteAndDeductStock } from "./actions";
-
-export type StockItem = {
-  name: string;
-  variant: string | null;
-  qty: number;
-};
+import { markCompleteAndDeductStock } from "./conventions/[id]/actions";
 
 type Props = {
   conventionId: string;
   conventionName: string;
   dept: "CS" | "FA";
-  /** Items that will be deducted from stock — already filtered to this dept, qty > 0 */
-  items: StockItem[];
-  isActive: boolean;
+  itemCount: number;
 };
 
-export default function CompleteButton({
+export default function OverviewCompleteButton({
   conventionId,
   conventionName,
   dept,
-  items,
-  isActive,
+  itemCount,
 }: Props) {
   const [showModal, setShowModal] = useState(false);
   const [deductStock, setDeductStock] = useState(true);
   const [isPending, startTransition] = useTransition();
-
-  const activeClass =
-    dept === "FA"
-      ? "bg-green-700 text-white"
-      : "bg-blue-600 text-white";
-
-  const baseClass =
-    "rounded-lg border border-slate-700 text-slate-400 hover:bg-slate-800 px-3 py-2 text-sm font-semibold capitalize";
-
-  if (isActive) {
-    return (
-      <button className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize ${activeClass}`} disabled>
-        complete
-      </button>
-    );
-  }
 
   function handleConfirm() {
     const fd = new FormData();
@@ -56,18 +31,19 @@ export default function CompleteButton({
     });
   }
 
-  const totalUnits = items.reduce((s, i) => s + i.qty, 0);
-
   return (
     <>
-      <button onClick={() => { setDeductStock(true); setShowModal(true); }} className={baseClass}>
-        complete
+      <button
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeductStock(true); setShowModal(true); }}
+        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:border-green-700/60 hover:text-green-400 transition-colors"
+      >
+        Mark complete
       </button>
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-sm rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-            <h2 className="text-base font-bold text-white">Mark {dept} as complete</h2>
+            <h2 className="text-base font-bold text-white">Mark as complete?</h2>
 
             <div className="mt-3 rounded-lg border border-slate-800 bg-slate-800/60 px-4 py-3">
               <p className="text-sm font-medium text-white">{conventionName}</p>
@@ -76,31 +52,7 @@ export default function CompleteButton({
               </p>
             </div>
 
-            {items.length > 0 && (
-              <div className="mt-4">
-                <ul className="max-h-48 space-y-1 overflow-y-auto pr-1">
-                  {items.map((item, i) => (
-                    <li key={i} className="flex items-center justify-between text-sm">
-                      <span className="text-slate-300">
-                        {item.name}
-                        {item.variant && (
-                          <span className="ml-1 text-xs text-slate-500">({item.variant})</span>
-                        )}
-                      </span>
-                      <span className={`ml-4 shrink-0 font-semibold ${deductStock ? "text-red-400" : "text-slate-600 line-through"}`}>
-                        −{item.qty}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 border-t border-slate-800 pt-2 text-right text-xs text-slate-500">
-                  {totalUnits} units total
-                </p>
-              </div>
-            )}
-
-            {/* Deduct stock toggle */}
-            {items.length > 0 && (
+            {itemCount > 0 && (
               <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/40 px-4 py-3">
                 <input
                   type="checkbox"
@@ -109,7 +61,9 @@ export default function CompleteButton({
                   className="h-4 w-4 accent-red-500"
                 />
                 <div>
-                  <p className="text-sm font-medium text-slate-200">Deduct from stock</p>
+                  <p className="text-sm font-medium text-slate-200">
+                    Deduct {itemCount} product{itemCount !== 1 ? "s" : ""} from stock
+                  </p>
                   <p className="text-xs text-slate-500">
                     Uncheck if stock was already counted after picking
                   </p>
@@ -132,7 +86,7 @@ export default function CompleteButton({
               >
                 {isPending
                   ? "Saving…"
-                  : deductStock && items.length > 0
+                  : deductStock && itemCount > 0
                   ? "Mark complete & deduct stock"
                   : "Mark complete"}
               </button>
