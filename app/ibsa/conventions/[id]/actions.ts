@@ -123,10 +123,11 @@ export async function markCompleteAndDeductStock(formData: FormData) {
 export async function updateShippingCost(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const cost = parseFloat(formData.get("shippingCost")?.toString() ?? "0") || 0;
+  const field = formData.get("field")?.toString() ?? "cs";
   if (!conventionId) return;
   await prisma.ibsaConvention.update({
     where: { id: conventionId },
-    data: { shippingCost: cost },
+    data: field === "fa" ? { faShippingCost: cost } : { shippingCost: cost },
   });
   revalidatePath(`/ibsa/conventions/${conventionId}`);
 }

@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import {
   updateConventionStatus,
-  updateShippingCost,
   updateLogistics,
   updateFaLogistics,
   updateNotes,
@@ -23,6 +22,7 @@ import CompleteButton from "./CompleteButton";
 import type { StockItem } from "./CompleteButton";
 import SendOrderLinkButton from "./SendOrderLinkButton";
 import DateCard from "./DateCard";
+import ShippingCostCard from "./ShippingCostCard";
 import ConventionImportButton from "./ConventionImportButton";
 
 const fmtGbp = (n: number) =>
@@ -274,23 +274,11 @@ export default async function ConventionDetailPage({
         />
 
         {/* Shipping cost */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="mb-1 text-xs text-slate-500">Shipping Cost</p>
-          <form action={updateShippingCost} className="flex items-center gap-1">
-            <input type="hidden" name="conventionId" value={convention.id} />
-            <span className="text-sm text-slate-400">£</span>
-            <input
-              type="number"
-              name="shippingCost"
-              min="0"
-              step="0.01"
-              defaultValue={convention.shippingCost > 0 ? convention.shippingCost : ""}
-              placeholder="0.00"
-              className="w-full bg-transparent text-sm text-white outline-none"
-            />
-            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">✓</button>
-          </form>
-        </div>
+        <ShippingCostCard
+          conventionId={convention.id}
+          initialValue={convention.shippingCost}
+          field="cs"
+        />
       </div>
 
       {/* ── Logistics panel ────────────────────────────────────────── */}
