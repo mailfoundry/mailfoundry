@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { updateGroupOrderStatus, deleteGroupOrder } from "./actions";
+import ImportOrderModal from "./ImportOrderModal";
 
 export type GroupOrderLine = {
   id: string;
@@ -46,18 +47,29 @@ const fmtGbp = (n: number) =>
 
 export default function GroupOrdersSection({ orders }: { orders: GroupOrder[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
 
   const active    = orders.filter((o) => o.status !== "complete" && o.status !== "cancelled");
   const completed = orders.filter((o) => o.status === "complete" || o.status === "cancelled");
 
   return (
     <div>
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
-        Group Orders — Congregation / Circuit / Regional
-        {active.length > 0 && (
-          <span className="ml-2 rounded-full bg-blue-900/50 px-2 py-0.5 text-blue-300">{active.length}</span>
-        )}
-      </p>
+      {showImport && <ImportOrderModal onClose={() => setShowImport(false)} />}
+
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Group Orders — Congregation / Circuit / Regional
+          {active.length > 0 && (
+            <span className="ml-2 rounded-full bg-blue-900/50 px-2 py-0.5 text-blue-300">{active.length}</span>
+          )}
+        </p>
+        <button
+          onClick={() => setShowImport(true)}
+          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700"
+        >
+          Import from Spreadsheet
+        </button>
+      </div>
 
       {orders.length === 0 && (
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center">
