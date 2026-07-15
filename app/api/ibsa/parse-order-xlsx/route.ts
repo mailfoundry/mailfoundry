@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { prisma } from "../../../../src/lib/prisma";
 
 export async function POST(req: NextRequest) {
+  try {
   const form = await req.formData();
   const file = form.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
@@ -84,4 +85,9 @@ export async function POST(req: NextRequest) {
     matched,
     unmatched,
   });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[parse-order-xlsx]", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

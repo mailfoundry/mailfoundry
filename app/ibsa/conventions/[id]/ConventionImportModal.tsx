@@ -51,16 +51,16 @@ export default function ConventionImportModal({
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/ibsa/parse-order-xlsx", { method: "POST", body: fd });
-      if (!res.ok) throw new Error("Parse failed");
-      const data: ParseResult = await res.json();
-      if (data.matched.length === 0 && data.unmatched.length === 0) {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? `Server error ${res.status}`);
+      if ((data as ParseResult).matched.length === 0 && (data as ParseResult).unmatched.length === 0) {
         setParseError("No order lines found in this file.");
         return;
       }
-      setResult(data);
+      setResult(data as ParseResult);
       setStep("preview");
-    } catch {
-      setParseError("Couldn't read the file. Make sure it's a valid IBSA order spreadsheet.");
+    } catch (e) {
+      setParseError(e instanceof Error ? e.message : "Couldn't read the file.");
     } finally {
       setIsParsing(false);
     }
