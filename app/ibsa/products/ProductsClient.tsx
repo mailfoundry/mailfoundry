@@ -577,7 +577,20 @@ export default function ProductsClient({ products }: Props) {
                         changed ? "bg-amber-950/20" : "hover:bg-slate-700/40"
                       }`}
                     >
-                      <td className="px-5 py-3 font-medium text-white">{p.name}</td>
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          {p.imageUrl ? (
+                            <img
+                              src={`/product-images/${p.imageUrl}`}
+                              alt=""
+                              className="h-9 w-9 shrink-0 rounded-lg border border-slate-700 object-contain bg-white/5"
+                            />
+                          ) : (
+                            <div className="h-9 w-9 shrink-0 rounded-lg border border-slate-800 bg-slate-800/40" />
+                          )}
+                          <span className="font-medium text-white">{p.name}</span>
+                        </div>
+                      </td>
                       <td className="px-5 py-3 text-slate-300">{p.variant ?? "—"}</td>
                       <td className="px-5 py-3 font-mono text-xs text-slate-400">{p.code}</td>
                       <td className="px-5 py-3 text-right text-slate-200">£{p.unitCost.toFixed(2)}</td>

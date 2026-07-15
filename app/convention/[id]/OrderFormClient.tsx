@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import { saveOrderItem } from "../actions";
-import { PRODUCT_IMAGE_MAP } from "../../../src/lib/product-images";
 import { PRODUCT_DESCRIPTION_MAP, PRODUCT_SIZE_MAP } from "../../../src/lib/product-descriptions";
 
 type Product = {
@@ -13,6 +12,7 @@ type Product = {
   code: string;
   category: string;
   unitCost: number;
+  imageUrl: string | null;
 };
 
 type Convention = {
@@ -231,11 +231,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               </p>
               <div className="space-y-3">
                 {Object.entries(byName).map(([groupKey, variants]) => {
-                  // Pick the code that has an image as the representative
-                  const repCode = variants.find((v) => PRODUCT_IMAGE_MAP[v.code])?.code ?? variants[0].code;
-                  const imgSrc = PRODUCT_IMAGE_MAP[repCode] ?? null;
+                  // Pick the variant that has an image as the representative
+                  const repVariant = variants.find((v) => v.imageUrl) ?? variants[0];
+                  const imgSrc = repVariant.imageUrl ? `/product-images/${repVariant.imageUrl}` : null;
                   // Prefer the full Excel description; fall back to the DB name field
-                  const description = PRODUCT_DESCRIPTION_MAP[repCode] ?? variants[0].name;
+                  const description = PRODUCT_DESCRIPTION_MAP[repVariant.code] ?? variants[0].name;
                   // Colours derived from the product description (used as fallback on size rows)
                   const groupColors = getSwatchColors(description);
                   const hasVariants = variants.length > 1;
