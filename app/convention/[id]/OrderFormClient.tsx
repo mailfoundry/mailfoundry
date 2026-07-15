@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { saveOrderItem } from "../actions";
 import { PRODUCT_DESCRIPTION_MAP, PRODUCT_SIZE_MAP } from "../../../src/lib/product-descriptions";
+import { getImageSrc } from "../../../src/lib/image-utils";
 
 type Product = {
   id: string;
@@ -233,7 +234,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 {Object.entries(byName).map(([groupKey, variants]) => {
                   // Pick the variant that has an image as the representative
                   const repVariant = variants.find((v) => v.imageUrl) ?? variants[0];
-                  const imgSrc = repVariant.imageUrl ? `/product-images/${repVariant.imageUrl}` : null;
+                  const imgSrc = getImageSrc(repVariant.imageUrl);
                   // Prefer the full Excel description; fall back to the DB name field
                   const description = PRODUCT_DESCRIPTION_MAP[repVariant.code] ?? variants[0].name;
                   // Colours derived from the product description (used as fallback on size rows)

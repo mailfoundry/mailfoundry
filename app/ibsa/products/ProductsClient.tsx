@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage } from "./actions";
+import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
   id: string;
@@ -81,6 +82,7 @@ export default function ProductsClient({ products }: Props) {
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Add supplier link form state
   const [showAddLink, setShowAddLink] = useState(false);
@@ -425,9 +427,9 @@ export default function ProductsClient({ products }: Props) {
                     {/* Product info row */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-3 min-w-0">
-                        {p.imageUrl ? (
+                        {getImageSrc(p.imageUrl) ? (
                           <img
-                            src={`/product-images/${p.imageUrl}`}
+                            src={getImageSrc(p.imageUrl)!}
                             alt={p.name}
                             className="h-10 w-10 shrink-0 rounded-lg border border-slate-700 object-contain bg-white/5"
                           />
@@ -579,9 +581,9 @@ export default function ProductsClient({ products }: Props) {
                     >
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
-                          {p.imageUrl ? (
+                          {getImageSrc(p.imageUrl) ? (
                             <img
-                              src={`/product-images/${p.imageUrl}`}
+                              src={getImageSrc(p.imageUrl)!}
                               alt=""
                               className="h-9 w-9 shrink-0 rounded-lg border border-slate-700 object-contain bg-white/5"
                             />
@@ -822,23 +824,65 @@ export default function ProductsClient({ products }: Props) {
               {/* Image */}
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-400">
-                  Product Image <span className="font-normal text-slate-600">(filename from product-images/)</span>
+                  Product Image
                 </label>
                 <div className="flex items-center gap-3">
-                  {editDraft.imageUrl && (
-                    <img
-                      src={`/product-images/${editDraft.imageUrl}`}
-                      alt="preview"
-                      className="h-12 w-12 rounded-lg border border-slate-700 object-contain bg-white/5"
-                    />
-                  )}
-                  <input
-                    type="text"
-                    value={editDraft.imageUrl}
-                    onChange={set("imageUrl")}
-                    placeholder="e.g. mop-bucket-red.jpg"
-                    className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none focus:border-blue-500"
-                  />
+                  {/* Preview */}
+                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-700 bg-white/5">
+                    {getImageSrc(editDraft.imageUrl) ? (
+                      <img
+                        src={getImageSrc(editDraft.imageUrl)!}
+                        alt="preview"
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-slate-600">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6">
+                          <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5"/>
+                          <circle cx="8.5" cy="8.5" r="1.5" strokeWidth="1.5"/>
+                          <path d="m21 15-5-5L5 21" strokeWidth="1.5"/>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Upload button */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                      isUploadingImage
+                        ? "border-slate-700 text-slate-500 cursor-not-allowed"
+                        : "border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white"
+                    }`}>
+                      {isUploadingImage ? "Uploading…" : editDraft.imageUrl ? "Replace image" : "Upload image"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploadingImage}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setIsUploadingImage(true);
+                          const fd = new FormData();
+                          fd.set("file", file);
+                          const result = await uploadProductImage(fd);
+                          setIsUploadingImage(false);
+                          if ("url" in result) {
+                            setEditDraft((prev) => ({ ...prev, imageUrl: result.url }));
+                          }
+                        }}
+                      />
+                    </label>
+                    {editDraft.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setEditDraft((prev) => ({ ...prev, imageUrl: "" }))}
+                        className="text-xs text-slate-500 hover:text-red-400"
+                      >
+                        Remove image
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 

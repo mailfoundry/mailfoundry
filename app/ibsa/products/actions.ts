@@ -2,6 +2,16 @@
 
 import { prisma } from "../../../src/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { put } from "@vercel/blob";
+
+export async function uploadProductImage(formData: FormData) {
+  const file = formData.get("file") as File;
+  if (!file || file.size === 0) return { error: "No file provided" };
+  const ext = file.name.split(".").pop() ?? "bin";
+  const filename = `product-images/${Date.now()}.${ext}`;
+  const blob = await put(filename, file, { access: "public" });
+  return { url: blob.url };
+}
 
 export async function updateProduct(formData: FormData) {
   const id       = (formData.get("id") as string).trim();

@@ -13,6 +13,7 @@
     "@aws-sdk/client-sesv2": "^3.1038.0",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
+    "@vercel/blob": "^2.6.1",
     "next": "^16.2.7",
     "pg": "^8.20.0",
     "prisma": "^7.7.0",
