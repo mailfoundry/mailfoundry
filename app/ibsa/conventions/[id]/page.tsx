@@ -6,8 +6,6 @@ export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import {
   updateConventionStatus,
-  updateConventionDate,
-  updateDeliveryDate,
   updateShippingCost,
   updateLogistics,
   updateFaLogistics,
@@ -24,6 +22,7 @@ import CountdownBadge from "./CountdownBadge";
 import CompleteButton from "./CompleteButton";
 import type { StockItem } from "./CompleteButton";
 import SendOrderLinkButton from "./SendOrderLinkButton";
+import DateCard from "./DateCard";
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -257,34 +256,20 @@ export default async function ConventionDetailPage({
         )}
 
         {/* Convention date */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="mb-1 text-xs text-slate-500">Convention Date</p>
-          <form action={updateConventionDate} className="flex items-center gap-2">
-            <input type="hidden" name="conventionId" value={convention.id} />
-            <input
-              type="date"
-              name="date"
-              defaultValue={toInput(convention.conventionDate)}
-              className="w-full bg-transparent text-sm text-white outline-none"
-            />
-            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">✓</button>
-          </form>
-        </div>
+        <DateCard
+          label="Convention Date"
+          field="convention"
+          conventionId={convention.id}
+          initialValue={toInput(convention.conventionDate)}
+        />
 
         {/* Delivery date */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="mb-1 text-xs text-slate-500">Delivery Date</p>
-          <form action={updateDeliveryDate} className="flex items-center gap-2">
-            <input type="hidden" name="conventionId" value={convention.id} />
-            <input
-              type="date"
-              name="date"
-              defaultValue={toInput(convention.deliveryDate)}
-              className="w-full bg-transparent text-sm text-white outline-none"
-            />
-            <button type="submit" className="text-xs text-slate-600 hover:text-slate-300">✓</button>
-          </form>
-        </div>
+        <DateCard
+          label="Delivery Date"
+          field="delivery"
+          conventionId={convention.id}
+          initialValue={toInput(convention.deliveryDate)}
+        />
 
         {/* Shipping cost */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
