@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import {
   updateConventionStatus,

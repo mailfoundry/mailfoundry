@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../src/components/ibsa-app-shell";
 import { archiveConvention } from "./actions";
 import NewConventionButton from "./NewConventionButton";
