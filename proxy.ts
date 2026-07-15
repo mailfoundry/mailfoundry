@@ -36,7 +36,7 @@ export function proxy(request: NextRequest) {
   }
 
   // IBSA routes: accessible with either main auth or ibsa_auth cookie
-  if (pathname.startsWith("/ibsa")) {
+  if (pathname.startsWith("/ibsa") || pathname.startsWith("/api/ibsa")) {
     if (isMainLoggedIn || isIbsaLoggedIn) {
       return NextResponse.next();
     }
