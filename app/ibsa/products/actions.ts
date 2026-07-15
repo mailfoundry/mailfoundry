@@ -5,12 +5,18 @@ import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
 
 export async function uploadProductImage(formData: FormData) {
-  const file = formData.get("file") as File;
-  if (!file || file.size === 0) return { error: "No file provided" };
-  const ext = file.name.split(".").pop() ?? "bin";
-  const filename = `product-images/${Date.now()}.${ext}`;
-  const blob = await put(filename, file, { access: "public" });
-  return { url: blob.url };
+  try {
+    const file = formData.get("file") as File;
+    if (!file || file.size === 0) return { error: "No file provided" };
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) return { error: "BLOB_READ_WRITE_TOKEN is not set" };
+    const ext = file.name.split(".").pop() ?? "bin";
+    const filename = `product-images/${Date.now()}.${ext}`;
+    const blob = await put(filename, file, { access: "public", token });
+    return { url: blob.url };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) };
+  }
 }
 
 export async function updateProduct(formData: FormData) {
