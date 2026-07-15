@@ -51,19 +51,27 @@ export async function bookInLine(formData: FormData) {
     }
   }
 
-  // ── Persist: line + stock changes in one transaction ──────────────────
-  await prisma.$transaction([
-    prisma.ibsaPurchaseOrderLine.update({
+  // ── Persist: line + stock/GIT changes in one transaction ─────────────
+  // inStock increases by delta units; GIT decreases by the same amount
+  // (goods moving from in-transit to in-stock). GREATEST(0, ...) prevents
+  // GIT going negative if it was manually set lower than expected.
+  await prisma.$transaction(async (tx) => {
+    await tx.ibsaPurchaseOrderLine.update({
       where: { id: lineId },
       data: { cartonsReceived },
-    }),
-    ...stockUpdates.map((u) =>
-      prisma.ibsaProduct.update({
+    });
+    for (const u of stockUpdates) {
+      await tx.ibsaProduct.update({
         where: { id: u.id },
         data: { inStock: { increment: u.delta } },
-      })
-    ),
-  ]);
+      });
+      await tx.$executeRaw`
+        UPDATE "IbsaProduct"
+        SET "git" = GREATEST(0, "git" - ${u.delta})
+        WHERE "id" = ${u.id}
+      `;
+    }
+  });
 
   // ── Recalculate PO status ───────────────────────────────────────────────
   const allLines = await prisma.ibsaPurchaseOrderLine.findMany({

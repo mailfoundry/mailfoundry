@@ -1,4 +1,6 @@
 import { prisma } from "../../../src/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 import OrdersClient, { type PurchaseOrder } from "./OrdersClient";
 import GroupOrdersSection, { type GroupOrder } from "./GroupOrdersSection";
