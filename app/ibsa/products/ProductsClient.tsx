@@ -874,7 +874,7 @@ export default function ProductsClient({ products }: Props) {
                             }
                           } catch (err) {
                             console.error("Image upload error:", err);
-                            alert("Upload failed — check console for details.");
+                            alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
                           } finally {
                             setIsUploadingImage(false);
                           }
