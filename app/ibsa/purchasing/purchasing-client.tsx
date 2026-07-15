@@ -758,9 +758,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
               for <span className="font-semibold text-white">{confirmSupplier.supplier}</span>?
             </p>
             <p className="mt-1 text-xs text-slate-500">
-              {confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length} orderable{" "}
-              line{confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length !== 1 ? "s" : ""} will be recorded.
-              This won&apos;t change stock levels — book in the delivery when it arrives.
+              {confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length} orderable line{confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length !== 1 ? "s" : ""}{" "}will be recorded.
+              GIT will be updated immediately — book in the delivery when it arrives.
             </p>
             <div className="mt-5 flex justify-end gap-3">
               <button
