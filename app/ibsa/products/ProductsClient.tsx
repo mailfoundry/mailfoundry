@@ -863,12 +863,20 @@ export default function ProductsClient({ products }: Props) {
                           const file = e.target.files?.[0];
                           if (!file) return;
                           setIsUploadingImage(true);
-                          const fd = new FormData();
-                          fd.set("file", file);
-                          const result = await uploadProductImage(fd);
-                          setIsUploadingImage(false);
-                          if ("url" in result) {
-                            setEditDraft((prev) => ({ ...prev, imageUrl: result.url ?? "" }));
+                          try {
+                            const fd = new FormData();
+                            fd.set("file", file);
+                            const result = await uploadProductImage(fd);
+                            if ("url" in result && result.url) {
+                              setEditDraft((prev) => ({ ...prev, imageUrl: result.url ?? "" }));
+                            } else {
+                              alert("Upload failed: " + ("error" in result ? result.error : "Unknown error"));
+                            }
+                          } catch (err) {
+                            console.error("Image upload error:", err);
+                            alert("Upload failed — check console for details.");
+                          } finally {
+                            setIsUploadingImage(false);
                           }
                         }}
                       />
