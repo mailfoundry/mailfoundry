@@ -274,7 +274,7 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
                 className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800">
                 Cancel
               </button>
-              {step === "preview" && (
+              {step === "preview" && result && (
                 <button
                   onClick={submit}
                   disabled={isSubmitting || result.matched.length === 0}
