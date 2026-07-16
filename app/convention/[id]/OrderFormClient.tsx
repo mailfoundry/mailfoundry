@@ -205,7 +205,6 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   }
 
   function renderProducts(products: Product[], dept: "CS" | "FA") {
-    // Group by category, then by product name within each category
     const byCat = products.reduce<Record<string, Product[]>>((acc, p) => {
       (acc[p.category] ??= []).push(p);
       return acc;
@@ -213,149 +212,64 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
     return (
       <div className="space-y-8">
-        {Object.entries(byCat).map(([cat, catItems]) => {
-          // Group variants by code family (strip only the final size/pack suffix,
-          // keeping colour in the key so e.g. HI_VIS_PINK and HI_VIS_YELLOW stay separate)
-          const byName: Record<string, Product[]> = {};
-          for (const p of catItems) {
-            (byName[getCodeFamily(p.code)] ??= []).push(p);
-          }
-          // Sort variants within each group: S → M → L → XL → XXL
-          for (const variants of Object.values(byName)) {
-            variants.sort((a, b) => getSizeRank(a.code) - getSizeRank(b.code));
-          }
+        {Object.entries(byCat).map(([cat, items]) => (
+          <div key={cat}>
+            <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              {CATEGORY_LABELS[cat] ?? cat}
+            </p>
+            <div className="space-y-3">
+              {items.map((p) => {
+                const imgSrc = getImageSrc(p.imageUrl);
+                const description = PRODUCT_DESCRIPTION_MAP[p.code] ?? p.name;
+                const variantLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
+                const ordered = (qty[p.id] ?? 0) > 0;
 
-          return (
-            <div key={cat}>
-              <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                {CATEGORY_LABELS[cat] ?? cat}
-              </p>
-              <div className="space-y-3">
-                {Object.entries(byName).map(([groupKey, variants]) => {
-                  // Pick the variant that has an image as the representative
-                  const repVariant = variants.find((v) => v.imageUrl) ?? variants[0];
-                  const imgSrc = getImageSrc(repVariant.imageUrl);
-                  // Prefer the full Excel description; fall back to the DB name field
-                  const description = PRODUCT_DESCRIPTION_MAP[repVariant.code] ?? variants[0].name;
-                  // Colours derived from the product description (used as fallback on size rows)
-                  const groupColors = getSwatchColors(description);
-                  const hasVariants = variants.length > 1;
-                  const allSamePrice = variants.every((v) => v.unitCost === variants[0].unitCost);
-                  const groupOrdered = variants.some((v) => (qty[v.id] ?? 0) > 0);
+                return (
+                  <div
+                    key={p.id}
+                    className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
+                      ordered ? "border-green-800/40" : "border-slate-800"
+                    }`}
+                  >
+                    <div className="flex gap-4 p-4">
+                      {/* Square image */}
+                      <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                        {imgSrc ? (
+                          <Image
+                            src={imgSrc}
+                            alt={description}
+                            width={80}
+                            height={80}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <div className="h-full w-full" />
+                        )}
+                      </div>
 
-                  return (
-                    <div
-                      key={groupKey}
-                      className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
-                        groupOrdered ? "border-green-800/40" : "border-slate-800"
-                      }`}
-                    >
-                      {/* ── Product header ──────────────────────────── */}
-                      <div className="flex gap-4 p-4">
-                        {/* Square image — 80×80 */}
-                        <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
-                          {imgSrc ? (
-                            <Image
-                              src={imgSrc}
-                              alt={description}
-                              width={80}
-                              height={80}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <div className="h-full w-full" />
-                          )}
-                        </div>
-
-                        {/* Description + price + variant summary */}
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold leading-snug text-white">{description}</p>
-                          <p className="mt-1 text-xs text-slate-500">
-                            {allSamePrice
-                              ? `£${variants[0].unitCost.toFixed(2)} each`
-                              : "Prices vary by size"}
-                          </p>
-
-                          {/* Variant summary: colour dots or size chips */}
-                          {hasVariants && (
-                            <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                              {variants.map((v) => {
-                                const rawLabel = PRODUCT_SIZE_MAP[v.code] ?? v.variant ?? "";
-                                const label = shortenLabel(rawLabel);
-                                const colours = getSwatchColors(label);
-                                if (colours.length > 0) {
-                                  return <ColourDot key={v.id} colors={colours} />;
-                                }
-                                return (
-                                  <span
-                                    key={v.id}
-                                    className="rounded-md border border-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-400"
-                                  >
-                                    {label}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          )}
-
-                          {/* Single-item stepper inline in header */}
-                          {!hasVariants && (
-                            <div className="mt-3 flex items-center gap-2">
-                              {renderStepper(variants[0], dept)}
-                              {(qty[variants[0].id] ?? 0) > 0 && (
-                                <span className="text-xs text-green-500">
-                                  = £{((qty[variants[0].id] ?? 0) * variants[0].unitCost).toFixed(2)}
-                                </span>
-                              )}
-                            </div>
+                      {/* Info + stepper */}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold leading-snug text-white">{description}</p>
+                        {variantLabel && (
+                          <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>
+                        )}
+                        <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
+                        <div className="mt-3 flex items-center gap-2">
+                          {renderStepper(p, dept)}
+                          {ordered && (
+                            <span className="text-xs text-green-500">
+                              = £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}
+                            </span>
                           )}
                         </div>
                       </div>
-
-                      {/* ── Variant rows ─────────────────────────────── */}
-                      {hasVariants && (
-                        <div className="border-t border-slate-800">
-                          {variants.map((p, i) => {
-                            const q = qty[p.id] ?? 0;
-                            const rawLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
-                            const sizeLabel = shortenLabel(rawLabel);
-                            // Use colours from the size label (e.g. "Red"), or fall back to
-                            // the group description colours (e.g. "Orange & Blue" vest sizes)
-                            const rowColors = getSwatchColors(sizeLabel);
-                            const dotColors = rowColors.length > 0 ? rowColors : groupColors;
-                            return (
-                              <div
-                                key={p.id}
-                                className={`flex items-center gap-3 py-2.5 pl-[5.5rem] pr-4 ${
-                                  i > 0 ? "border-t border-slate-800/60" : ""
-                                } ${q > 0 ? "bg-green-950/10" : ""}`}
-                              >
-                                {/* Colour swatch dot */}
-                                <div className="flex shrink-0 items-center gap-2">
-                                  <ColourDot colors={dotColors} />
-                                  <span className="w-20 text-sm text-slate-300">{sizeLabel}</span>
-                                </div>
-                                {!allSamePrice && (
-                                  <span className="text-xs text-slate-600">£{p.unitCost.toFixed(2)}</span>
-                                )}
-                                {q > 0 && (
-                                  <span className="text-xs text-green-600">
-                                    £{(q * p.unitCost).toFixed(2)}
-                                  </span>
-                                )}
-                                <div className="ml-auto">{renderStepper(p, dept)}</div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     );
   }
