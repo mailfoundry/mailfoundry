@@ -252,15 +252,15 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     >
                       {/* ── Product header ──────────────────────────── */}
                       <div className="flex gap-4 p-4">
-                        {/* Portrait image — 64×96 (4:6 ratio), fills edge-to-edge */}
-                        <div className="w-16 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                        {/* Square image — 80×80 */}
+                        <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
                           {imgSrc ? (
                             <Image
                               src={imgSrc}
                               alt={description}
-                              width={64}
-                              height={96}
-                              className="h-full w-full object-cover"
+                              width={80}
+                              height={80}
+                              className="h-full w-full object-contain"
                             />
                           ) : (
                             <div className="h-full w-full" />
