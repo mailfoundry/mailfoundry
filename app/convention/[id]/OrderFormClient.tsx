@@ -133,6 +133,7 @@ function shortenLabel(label: string): string {
 
 export default function OrderFormClient({ convention, csProducts, faProducts, existingQty }: Props) {
   const [activeTab, setActiveTab] = useState<"CS" | "FA">("CS");
+  const [search, setSearch] = useState("");
   const [qty, setQty] = useState<Record<string, number>>(existingQty);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [saved, setSaved]   = useState<Record<string, boolean>>({});
@@ -284,7 +285,13 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   const totalLines = (products: Product[]) =>
     products.filter((p) => (qty[p.id] ?? 0) > 0).length;
 
-  const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+  const allActiveProducts = activeTab === "CS" ? csProducts : faProducts;
+  const activeProducts = search.trim()
+    ? allActiveProducts.filter((p) => {
+        const q = search.toLowerCase();
+        return p.name.toLowerCase().includes(q) || (p.variant ?? "").toLowerCase().includes(q);
+      })
+    : allActiveProducts;
 
   const csLines = totalLines(csProducts);
   const faLines = totalLines(faProducts);
@@ -374,8 +381,26 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           })}
         </div>
 
+        {/* Search */}
+        <div className="mb-5 relative">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+          </svg>
+          <input
+            type="search"
+            placeholder="Search products…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-slate-700 bg-slate-900 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 focus:border-slate-500 focus:outline-none"
+          />
+        </div>
+
         {/* Product list */}
-        {renderProducts(activeProducts, activeTab)}
+        {activeProducts.length === 0 && search.trim() ? (
+          <p className="py-12 text-center text-sm text-slate-500">No products match &ldquo;{search}&rdquo;</p>
+        ) : (
+          renderProducts(activeProducts, activeTab)
+        )}
 
         {/* Footer note */}
         {!convention.isLocked && (
