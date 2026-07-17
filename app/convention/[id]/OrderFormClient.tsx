@@ -254,9 +254,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                         }`}
                       >
                         <div className="flex items-center gap-4 p-4">
-                          <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                          <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800">
                             {imgSrc ? (
-                              <Image src={imgSrc} alt={p.name} width={80} height={80} className="h-full w-full object-contain" />
+                              <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
                             ) : (
                               <div className="h-full w-full" />
                             )}
@@ -291,9 +291,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     >
                       {/* Group header — shared image + product name */}
                       <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
-                        <div className="w-14 h-14 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                        <div className="w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-slate-800">
                           {imgSrc ? (
-                            <Image src={imgSrc} alt={first.name} width={56} height={56} className="h-full w-full object-contain" />
+                            <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain" />
                           ) : (
                             <div className="h-full w-full" />
                           )}
@@ -311,9 +311,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           return (
                             <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                               {/* Per-variant image */}
-                              <div className="w-12 h-12 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                              <div className="w-14 h-14 shrink-0 overflow-hidden rounded-lg bg-slate-800">
                                 {variantImgSrc ? (
-                                  <Image src={variantImgSrc} alt={variantLabel || p.name} width={48} height={48} className="h-full w-full object-contain" />
+                                  <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain" />
                                 ) : (
                                   <div className="h-full w-full" />
                                 )}
