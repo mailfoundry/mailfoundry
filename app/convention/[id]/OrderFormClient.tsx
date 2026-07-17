@@ -144,6 +144,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   const [qty, setQty] = useState<Record<string, number>>(existingQty);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [saved, setSaved]   = useState<Record<string, boolean>>({});
+  const [bumped, setBumped] = useState<Record<string, boolean>>({});
   const [, startTransition] = useTransition();
 
   const fmtDate = (iso: string) =>
@@ -173,6 +174,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     if (next === current) return;
     setQty((prev) => ({ ...prev, [productId]: next }));
     save(productId, dept, next);
+    // Trigger lift animation
+    setBumped((prev) => ({ ...prev, [productId]: true }));
+    setTimeout(() => setBumped((prev) => ({ ...prev, [productId]: false })), 400);
   }
 
   function renderStepper(p: Product, dept: "CS" | "FA") {
@@ -231,7 +235,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
           return (
             <div key={cat}>
-              <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-slate-400">
                 {CATEGORY_LABELS[cat] ?? cat}
               </p>
               <div className="space-y-3">
@@ -241,7 +245,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                   const isSingle = group.length === 1;
 
                   if (isSingle) {
-                    // ── Single-variant card (unchanged) ──────────────────────
+                    // ── Single-variant card ───────────────────────────────────
                     const p = first;
                     const variantLabel = p.variant ?? "";
                     const swatchColors = getSwatchColors(variantLabel);
@@ -249,9 +253,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     return (
                       <div
                         key={p.id}
-                        className={`overflow-hidden rounded-2xl border bg-slate-800 transition-colors ${
-                          ordered ? "border-green-500/50" : "border-slate-700"
-                        }`}
+                        className={`overflow-hidden rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${
+                          ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"
+                        } ${bumped[p.id] ? "card-lift" : ""}`}
                       >
                         <div className="flex items-center gap-4 p-4">
                           <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800">
@@ -265,7 +269,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-                              <p className="font-semibold leading-snug text-white">{p.name}</p>
+                              <p className="text-base font-bold leading-snug text-white">{p.name}</p>
                             </div>
                             {variantLabel && <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>}
                             <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
@@ -282,12 +286,13 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
                   // ── Grouped card (multiple variants) ─────────────────────
                   const anyOrdered = group.some((p) => (qty[p.id] ?? 0) > 0);
+                  const anyBumped  = group.some((p) => bumped[p.id]);
                   return (
                     <div
                       key={getCodeFamily(first.code)}
-                      className={`overflow-hidden rounded-2xl border bg-slate-800 transition-colors ${
-                        anyOrdered ? "border-green-500/50" : "border-slate-700"
-                      }`}
+                      className={`overflow-hidden rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${
+                        anyOrdered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"
+                      } ${anyBumped ? "card-lift" : ""}`}
                     >
                       {/* Group header — shared image + product name */}
                       <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
@@ -298,7 +303,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                             <div className="h-full w-full" />
                           )}
                         </div>
-                        <p className="font-semibold leading-snug text-white">{first.name}</p>
+                        <p className="text-base font-bold leading-snug text-white">{first.name}</p>
                       </div>
 
                       {/* Variant rows — each with its own image */}
@@ -371,6 +376,14 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
   return (
     <main className="min-h-screen bg-slate-900 text-white">
+      <style>{`
+        @keyframes lift {
+          0%   { transform: translateY(0)   scale(1);    box-shadow: none; }
+          35%  { transform: translateY(-6px) scale(1.01); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+          100% { transform: translateY(0)   scale(1);    box-shadow: none; }
+        }
+        .card-lift { animation: lift 0.38s cubic-bezier(0.22,0.61,0.36,1) both; }
+      `}</style>
 
       {/* ── Sticky summary bar ──────────────────────────────────────────── */}
       {grandLines > 0 && (
