@@ -222,6 +222,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 const imgSrc = getImageSrc(p.imageUrl);
                 const description = p.name;
                 const variantLabel = p.variant ?? "";
+                const swatchColors = getSwatchColors(description + " " + variantLabel);
                 const ordered = (qty[p.id] ?? 0) > 0;
 
                 return (
@@ -249,7 +250,10 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
                       {/* Info + stepper */}
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold leading-snug text-white">{description}</p>
+                        <div className="flex items-center gap-2">
+                          {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
+                          <p className="font-semibold leading-snug text-white">{description}</p>
+                        </div>
                         {variantLabel && (
                           <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>
                         )}
