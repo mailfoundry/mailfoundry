@@ -14,6 +14,7 @@ type Product = {
   category: string;
   unitCost: number;
   imageUrl: string | null;
+  groupImageUrl: string | null;
   groupWithVariants: boolean;
 };
 
@@ -231,7 +232,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               <div className="space-y-3">
                 {Array.from(familyMap.values()).map((group) => {
                   const first = group[0];
-                  const imgSrc = getImageSrc(first.imageUrl);
+                  const imgSrc = getImageSrc(first.groupImageUrl ?? first.imageUrl);
                   const isSingle = group.length === 1;
 
                   if (isSingle) {

@@ -34,6 +34,7 @@ export type ProductRow = {
   unitCost: number;
   xyloCost: number | null;
   imageUrl: string | null;
+  groupImageUrl: string | null;
   groupWithVariants: boolean;
   inStock: number;
   git: number;
@@ -66,6 +67,7 @@ type EditDraft = {
   unitCost: string;
   xyloCost: string;
   imageUrl: string;
+  groupImageUrl: string;
   groupWithVariants: boolean;
 };
 
@@ -80,7 +82,7 @@ export default function ProductsClient({ products }: Props) {
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({
-    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", imageUrl: "", groupWithVariants: false,
+    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false,
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
@@ -190,6 +192,7 @@ export default function ProductsClient({ products }: Props) {
       unitCost: String(p.unitCost),
       xyloCost: p.xyloCost != null ? String(p.xyloCost) : "",
       imageUrl: p.imageUrl ?? "",
+      groupImageUrl: p.groupImageUrl ?? "",
       groupWithVariants: p.groupWithVariants,
     });
     const m = new Map<string, string>();
@@ -261,6 +264,7 @@ export default function ProductsClient({ products }: Props) {
     fd.set("unitCost",        editDraft.unitCost);
     fd.set("xyloCost",        editDraft.xyloCost);
     fd.set("imageUrl",           editDraft.imageUrl);
+    fd.set("groupImageUrl",      editDraft.groupImageUrl);
     fd.set("groupWithVariants",  String(editDraft.groupWithVariants));
     fd.set("supplierChanges",    JSON.stringify(supplierChanges));
     startSavingEdit(async () => {
@@ -912,6 +916,59 @@ export default function ProductsClient({ products }: Props) {
                 <p className="mt-1 ml-7 text-xs text-slate-500">
                   Tick for products like gloves that have multiple sizes/colours — they'll share one card in the order form.
                 </p>
+
+                {/* Group image — only shown when grouping is on */}
+                {editDraft.groupWithVariants && (
+                  <div className="mt-4 ml-7">
+                    <p className="mb-2 text-xs font-semibold text-slate-400">Group header image</p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-700 bg-white/5">
+                        {getImageSrc(editDraft.groupImageUrl) ? (
+                          <img src={getImageSrc(editDraft.groupImageUrl)!} alt="group preview" className="h-full w-full object-contain" />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-slate-600 text-xs">None</div>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className={`cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                          isUploadingImage ? "border-slate-700 text-slate-500 cursor-not-allowed" : "border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white"
+                        }`}>
+                          {isUploadingImage ? "Uploading…" : editDraft.groupImageUrl ? "Replace group image" : "Upload group image"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={isUploadingImage}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setIsUploadingImage(true);
+                              try {
+                                const fd = new FormData();
+                                fd.set("file", file);
+                                const result = await uploadProductImage(fd);
+                                if ("url" in result && result.url) {
+                                  setEditDraft((prev) => ({ ...prev, groupImageUrl: result.url ?? "" }));
+                                } else {
+                                  alert("Upload failed: " + ("error" in result ? result.error : "Unknown error"));
+                                }
+                              } catch (err) {
+                                alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
+                              } finally {
+                                setIsUploadingImage(false);
+                              }
+                            }}
+                          />
+                        </label>
+                        {editDraft.groupImageUrl && (
+                          <button type="button" onClick={() => setEditDraft((prev) => ({ ...prev, groupImageUrl: "" }))} className="text-xs text-slate-500 hover:text-red-400">
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Supplier Links */}
