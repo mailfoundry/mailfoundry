@@ -186,24 +186,24 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
       );
     }
     return (
-      <div className="flex items-center overflow-hidden rounded-xl border border-slate-700">
+      <div className="flex items-center overflow-hidden rounded-xl border border-slate-600">
         <button
           onClick={() => adjust(p.id, dept, -1)}
           disabled={q === 0 || isSaving}
-          className="flex h-10 w-10 items-center justify-center text-lg text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
+          className="flex h-10 w-10 items-center justify-center text-xl font-light text-slate-300 bg-slate-800 transition-colors hover:bg-slate-700 active:bg-slate-600 disabled:opacity-25"
           aria-label="Decrease"
         >
           −
         </button>
-        <div className={`flex h-10 min-w-[2.75rem] items-center justify-center border-x border-slate-700 px-1 text-sm font-bold tabular-nums ${
-          isSaved ? "text-green-400" : q > 0 ? "text-white" : "text-slate-600"
+        <div className={`flex h-10 min-w-[2.75rem] items-center justify-center border-x border-slate-600 px-1 text-base font-bold tabular-nums ${
+          isSaved ? "text-green-400" : q > 0 ? "text-white" : "text-slate-500"
         }`}>
           {isSaving ? <span className="text-xs text-slate-500">…</span> : q}
         </div>
         <button
           onClick={() => adjust(p.id, dept, 1)}
           disabled={isSaving}
-          className="flex h-10 w-10 items-center justify-center text-lg text-slate-400 transition-colors hover:bg-slate-800 active:bg-slate-700 disabled:opacity-30"
+          className="flex h-10 w-10 items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600 disabled:opacity-40"
           aria-label="Increase"
         >
           +
@@ -221,11 +221,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     return (
       <div className="space-y-8">
         {Object.entries(byCat).map(([cat, items]) => {
-          // Group items: products with groupWithVariants=true share a card by code family;
+          // Group items: products with groupWithVariants=true share a card by name;
           // others each get their own card.
           const familyMap = new Map<string, Product[]>();
           for (const p of items) {
-            const key = p.groupWithVariants ? getCodeFamily(p.code) : p.id;
+            const key = p.groupWithVariants ? p.name : p.id;
             (familyMap.get(key) ?? familyMap.set(key, []).get(key)!).push(p);
           }
 
@@ -249,8 +249,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     return (
                       <div
                         key={p.id}
-                        className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
-                          ordered ? "border-green-800/40" : "border-slate-800"
+                        className={`overflow-hidden rounded-2xl border bg-slate-800 transition-colors ${
+                          ordered ? "border-green-500/50" : "border-slate-700"
                         }`}
                       >
                         <div className="flex gap-4 p-4">
@@ -283,7 +283,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                   return (
                     <div
                       key={getCodeFamily(first.code)}
-                      className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
+                      className={`overflow-hidden rounded-2xl border bg-slate-800 transition-colors ${
                         anyOrdered ? "border-green-800/40" : "border-slate-800"
                       }`}
                     >
@@ -300,7 +300,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                       </div>
 
                       {/* Variant rows — each with its own image */}
-                      <div className="border-t border-slate-800 divide-y divide-slate-800/60">
+                      <div className="border-t border-slate-700 divide-y divide-slate-700/60">
                         {group.map((p) => {
                           const variantImgSrc = getImageSrc(p.imageUrl);
                           const variantLabel = p.variant ?? "";
@@ -368,11 +368,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen bg-slate-900 text-white">
 
       {/* ── Sticky summary bar ──────────────────────────────────────────── */}
       {grandLines > 0 && (
-        <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 backdrop-blur-sm">
+        <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-900/95 backdrop-blur-sm">
           <div className="mx-auto max-w-3xl px-4 py-3">
             <div className="flex items-baseline justify-between gap-2">
               <span className="truncate text-xs font-semibold text-slate-400">
