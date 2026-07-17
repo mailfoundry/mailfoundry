@@ -253,7 +253,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           ordered ? "border-green-500/50" : "border-slate-700"
                         }`}
                       >
-                        <div className="flex gap-4 p-4">
+                        <div className="flex items-center gap-4 p-4">
                           <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
                             {imgSrc ? (
                               <Image src={imgSrc} alt={p.name} width={80} height={80} className="h-full w-full object-contain" />
@@ -261,6 +261,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                               <div className="h-full w-full" />
                             )}
                           </div>
+                          {/* Centre: name, variant, price */}
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
@@ -268,10 +269,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                             </div>
                             {variantLabel && <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>}
                             <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
-                            <div className="mt-3 flex items-center gap-2">
-                              {renderStepper(p, dept)}
-                              {ordered && <span className="text-xs text-green-500">= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>}
-                            </div>
+                          </div>
+                          {/* Right: stepper + running total */}
+                          <div className="shrink-0 flex flex-col items-end gap-1">
+                            {renderStepper(p, dept)}
+                            {ordered && <span className="text-xs text-green-500">= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>}
                           </div>
                         </div>
                       </div>
@@ -284,7 +286,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     <div
                       key={getCodeFamily(first.code)}
                       className={`overflow-hidden rounded-2xl border bg-slate-800 transition-colors ${
-                        anyOrdered ? "border-green-800/40" : "border-slate-800"
+                        anyOrdered ? "border-green-500/50" : "border-slate-700"
                       }`}
                     >
                       {/* Group header — shared image + product name */}
