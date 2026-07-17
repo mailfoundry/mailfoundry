@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import { saveOrderItem } from "../actions";
-import { PRODUCT_DESCRIPTION_MAP, PRODUCT_SIZE_MAP } from "../../../src/lib/product-descriptions";
+
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 type Product = {
@@ -220,8 +220,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             <div className="space-y-3">
               {items.map((p) => {
                 const imgSrc = getImageSrc(p.imageUrl);
-                const description = PRODUCT_DESCRIPTION_MAP[p.code] ?? p.name;
-                const variantLabel = PRODUCT_SIZE_MAP[p.code] ?? p.variant ?? "";
+                const description = p.name;
+                const variantLabel = p.variant ?? "";
                 const ordered = (qty[p.id] ?? 0) > 0;
 
                 return (
