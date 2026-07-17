@@ -281,8 +281,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                         anyOrdered ? "border-green-800/40" : "border-slate-800"
                       }`}
                     >
-                      {/* Group header with image + name */}
-                      <div className="flex gap-4 px-4 pt-4 pb-3">
+                      {/* Group header — shared image + product name */}
+                      <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
                         <div className="w-14 h-14 shrink-0 overflow-hidden rounded-xl bg-slate-800">
                           {imgSrc ? (
                             <Image src={imgSrc} alt={first.name} width={56} height={56} className="h-full w-full object-contain" />
@@ -290,19 +290,26 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                             <div className="h-full w-full" />
                           )}
                         </div>
-                        <div className="min-w-0 flex-1 flex items-center">
-                          <p className="font-semibold leading-snug text-white">{first.name}</p>
-                        </div>
+                        <p className="font-semibold leading-snug text-white">{first.name}</p>
                       </div>
 
-                      {/* Variant rows */}
+                      {/* Variant rows — each with its own image */}
                       <div className="border-t border-slate-800 divide-y divide-slate-800/60">
                         {group.map((p) => {
+                          const variantImgSrc = getImageSrc(p.imageUrl);
                           const variantLabel = p.variant ?? "";
                           const swatchColors = getSwatchColors(variantLabel);
                           const ordered = (qty[p.id] ?? 0) > 0;
                           return (
                             <div key={p.id} className="flex items-center gap-3 px-4 py-3">
+                              {/* Per-variant image */}
+                              <div className="w-12 h-12 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                                {variantImgSrc ? (
+                                  <Image src={variantImgSrc} alt={variantLabel || p.name} width={48} height={48} className="h-full w-full object-contain" />
+                                ) : (
+                                  <div className="h-full w-full" />
+                                )}
+                              </div>
                               {swatchColors.length > 0
                                 ? <ColourDot colors={swatchColors} />
                                 : <span className="w-4 shrink-0" />
