@@ -34,6 +34,7 @@ export type ProductRow = {
   unitCost: number;
   xyloCost: number | null;
   imageUrl: string | null;
+  groupWithVariants: boolean;
   inStock: number;
   git: number;
   rsProducts: RsProductLink[];
@@ -65,6 +66,7 @@ type EditDraft = {
   unitCost: string;
   xyloCost: string;
   imageUrl: string;
+  groupWithVariants: boolean;
 };
 
 type Props = { products: ProductRow[] };
@@ -78,7 +80,7 @@ export default function ProductsClient({ products }: Props) {
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({
-    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", imageUrl: "",
+    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", imageUrl: "", groupWithVariants: false,
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
@@ -188,6 +190,7 @@ export default function ProductsClient({ products }: Props) {
       unitCost: String(p.unitCost),
       xyloCost: p.xyloCost != null ? String(p.xyloCost) : "",
       imageUrl: p.imageUrl ?? "",
+      groupWithVariants: p.groupWithVariants,
     });
     const m = new Map<string, string>();
     for (const rp of p.rsProducts) m.set(rp.id, rp.supplier);
@@ -257,8 +260,9 @@ export default function ProductsClient({ products }: Props) {
     fd.set("type",            editDraft.type);
     fd.set("unitCost",        editDraft.unitCost);
     fd.set("xyloCost",        editDraft.xyloCost);
-    fd.set("imageUrl",        editDraft.imageUrl);
-    fd.set("supplierChanges", JSON.stringify(supplierChanges));
+    fd.set("imageUrl",           editDraft.imageUrl);
+    fd.set("groupWithVariants",  String(editDraft.groupWithVariants));
+    fd.set("supplierChanges",    JSON.stringify(supplierChanges));
     startSavingEdit(async () => {
       await updateProduct(fd);
       setEditingProduct(null);
@@ -892,6 +896,22 @@ export default function ProductsClient({ products }: Props) {
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Group with variants */}
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={editDraft.groupWithVariants}
+                    onChange={(e) => setEditDraft((prev) => ({ ...prev, groupWithVariants: e.target.checked }))}
+                    className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-blue-500 accent-blue-500"
+                  />
+                  <span className="text-sm text-slate-300">Group with variants in order form</span>
+                </label>
+                <p className="mt-1 ml-7 text-xs text-slate-500">
+                  Tick for products like gloves that have multiple sizes/colours — they'll share one card in the order form.
+                </p>
               </div>
 
               {/* Supplier Links */}

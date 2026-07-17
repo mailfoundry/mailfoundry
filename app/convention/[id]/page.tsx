@@ -36,13 +36,13 @@ export default async function ConventionOrderPage({ params }: Props) {
   const csProducts = await prisma.ibsaProduct.findMany({
     where: { type: "CS" },
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, imageUrl: true },
+    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, imageUrl: true, groupWithVariants: true },
   });
 
   const faProducts = await prisma.ibsaProduct.findMany({
     where: { type: "FA" },
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, imageUrl: true },
+    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, imageUrl: true, groupWithVariants: true },
   });
 
   // Build existing qty map: productId → qty

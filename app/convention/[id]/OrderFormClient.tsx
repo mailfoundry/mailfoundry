@@ -14,6 +14,7 @@ type Product = {
   category: string;
   unitCost: number;
   imageUrl: string | null;
+  groupWithVariants: boolean;
 };
 
 type Convention = {
@@ -213,68 +214,118 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
     return (
       <div className="space-y-8">
-        {Object.entries(byCat).map(([cat, items]) => (
-          <div key={cat}>
-            <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              {CATEGORY_LABELS[cat] ?? cat}
-            </p>
-            <div className="space-y-3">
-              {items.map((p) => {
-                const imgSrc = getImageSrc(p.imageUrl);
-                const description = p.name;
-                const variantLabel = p.variant ?? "";
-                const swatchColors = getSwatchColors(variantLabel);
-                const ordered = (qty[p.id] ?? 0) > 0;
+        {Object.entries(byCat).map(([cat, items]) => {
+          // Group items: products with groupWithVariants=true share a card by code family;
+          // others each get their own card.
+          const familyMap = new Map<string, Product[]>();
+          for (const p of items) {
+            const key = p.groupWithVariants ? getCodeFamily(p.code) : p.id;
+            (familyMap.get(key) ?? familyMap.set(key, []).get(key)!).push(p);
+          }
 
-                return (
-                  <div
-                    key={p.id}
-                    className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
-                      ordered ? "border-green-800/40" : "border-slate-800"
-                    }`}
-                  >
-                    <div className="flex gap-4 p-4">
-                      {/* Square image */}
-                      <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
-                        {imgSrc ? (
-                          <Image
-                            src={imgSrc}
-                            alt={description}
-                            width={80}
-                            height={80}
-                            className="h-full w-full object-contain"
-                          />
-                        ) : (
-                          <div className="h-full w-full" />
-                        )}
-                      </div>
+          return (
+            <div key={cat}>
+              <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                {CATEGORY_LABELS[cat] ?? cat}
+              </p>
+              <div className="space-y-3">
+                {Array.from(familyMap.values()).map((group) => {
+                  const first = group[0];
+                  const imgSrc = getImageSrc(first.imageUrl);
+                  const isSingle = group.length === 1;
 
-                      {/* Info + stepper */}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-                          <p className="font-semibold leading-snug text-white">{description}</p>
+                  if (isSingle) {
+                    // ── Single-variant card (unchanged) ──────────────────────
+                    const p = first;
+                    const variantLabel = p.variant ?? "";
+                    const swatchColors = getSwatchColors(variantLabel);
+                    const ordered = (qty[p.id] ?? 0) > 0;
+                    return (
+                      <div
+                        key={p.id}
+                        className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
+                          ordered ? "border-green-800/40" : "border-slate-800"
+                        }`}
+                      >
+                        <div className="flex gap-4 p-4">
+                          <div className="w-20 h-20 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                            {imgSrc ? (
+                              <Image src={imgSrc} alt={p.name} width={80} height={80} className="h-full w-full object-contain" />
+                            ) : (
+                              <div className="h-full w-full" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
+                              <p className="font-semibold leading-snug text-white">{p.name}</p>
+                            </div>
+                            {variantLabel && <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>}
+                            <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
+                            <div className="mt-3 flex items-center gap-2">
+                              {renderStepper(p, dept)}
+                              {ordered && <span className="text-xs text-green-500">= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>}
+                            </div>
+                          </div>
                         </div>
-                        {variantLabel && (
-                          <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>
-                        )}
-                        <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
-                        <div className="mt-3 flex items-center gap-2">
-                          {renderStepper(p, dept)}
-                          {ordered && (
-                            <span className="text-xs text-green-500">
-                              = £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}
-                            </span>
+                      </div>
+                    );
+                  }
+
+                  // ── Grouped card (multiple variants) ─────────────────────
+                  const anyOrdered = group.some((p) => (qty[p.id] ?? 0) > 0);
+                  return (
+                    <div
+                      key={getCodeFamily(first.code)}
+                      className={`overflow-hidden rounded-2xl border bg-slate-900 transition-colors ${
+                        anyOrdered ? "border-green-800/40" : "border-slate-800"
+                      }`}
+                    >
+                      {/* Group header with image + name */}
+                      <div className="flex gap-4 px-4 pt-4 pb-3">
+                        <div className="w-14 h-14 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                          {imgSrc ? (
+                            <Image src={imgSrc} alt={first.name} width={56} height={56} className="h-full w-full object-contain" />
+                          ) : (
+                            <div className="h-full w-full" />
                           )}
                         </div>
+                        <div className="min-w-0 flex-1 flex items-center">
+                          <p className="font-semibold leading-snug text-white">{first.name}</p>
+                        </div>
+                      </div>
+
+                      {/* Variant rows */}
+                      <div className="border-t border-slate-800 divide-y divide-slate-800/60">
+                        {group.map((p) => {
+                          const variantLabel = p.variant ?? "";
+                          const swatchColors = getSwatchColors(variantLabel);
+                          const ordered = (qty[p.id] ?? 0) > 0;
+                          return (
+                            <div key={p.id} className="flex items-center gap-3 px-4 py-3">
+                              {swatchColors.length > 0
+                                ? <ColourDot colors={swatchColors} />
+                                : <span className="w-4 shrink-0" />
+                              }
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm text-slate-300">{variantLabel || p.name}</p>
+                                <p className="text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                {renderStepper(p, dept)}
+                                {ordered && <span className="text-xs text-green-500 w-16 text-right">= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   }

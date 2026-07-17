@@ -24,6 +24,7 @@ export default async function IbsaProductsPage({
       unitCost: true,
       xyloCost: true,
       imageUrl: true,
+      groupWithVariants: true,
       inStock: true,
       git: true,
       rsProducts: {

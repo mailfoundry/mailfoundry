@@ -137,7 +137,8 @@ model IbsaProduct {
   type      String   // CS | FA
   unitCost  Float
   xyloCost  Float?
-  imageUrl  String?
+  imageUrl         String?
+  groupWithVariants Boolean  @default(false)
   inStock   Int      @default(0)
   git       Int      @default(0)
   createdAt DateTime @default(now())
