@@ -47,6 +47,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 const _SIZE_RE   = /_(S|M|L|XL|XXL|SML|MED|SMALL|MEDIUM|LARGE|XLARGE)$/i;
 const _COLOUR_RE = /_(RED|BLUE|GREEN|YELLOW|WHITE|PINK|CLEAR|BLACK|ORANGE)$/i;
 const _PACK_RE   = /_(\d+PK|X\d+|\d+PACK)$/i;
+const _VOLUME_RE = /_\d+L$/i;  // e.g. _10L, _20L, _50L
 
 const SIZE_RANK: Record<string, number> = {
   S: 0, SML: 0, SMALL: 0,
@@ -72,12 +73,16 @@ function getCodeFamily(code: string): string {
   const afterSize = afterPack.replace(_SIZE_RE, "");
   if (afterSize !== afterPack) return afterSize; // had a size → done (keeps colour)
 
-  // 2. No size suffix → strip colour from the pack-stripped version
+  // 2. Volume suffix (e.g. SPILL_KITS_MAINTENANCE_10L → SPILL_KITS_MAINTENANCE)
+  const afterVolume = afterPack.replace(_VOLUME_RE, "");
+  if (afterVolume !== afterPack) return afterVolume;
+
+  // 3. No size/volume suffix → strip colour from the pack-stripped version
   // (handles CLOTH_MFIBRE_BLUE_10PK → CLOTH_MFIBRE_BLUE → CLOTH_MFIBRE)
   const afterColour = afterPack.replace(_COLOUR_RE, "");
   if (afterColour !== afterPack) return afterColour;
 
-  // 3. Only a pack suffix (no size/colour) — still group them together
+  // 4. Only a pack suffix (no size/colour/volume) — still group them together
   if (afterPack !== code) return afterPack;
 
   return code;
