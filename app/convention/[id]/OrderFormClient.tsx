@@ -223,7 +223,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 const imgSrc = getImageSrc(p.imageUrl);
                 const description = p.name;
                 const variantLabel = p.variant ?? "";
-                const swatchColors = getSwatchColors(description + " " + variantLabel);
+                const swatchColors = getSwatchColors(variantLabel);
                 const ordered = (qty[p.id] ?? 0) > 0;
 
                 return (
