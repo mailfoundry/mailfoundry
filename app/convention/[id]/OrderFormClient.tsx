@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { saveOrderItem } from "../actions";
+import { saveOrderItem, saveConventionDetails } from "../actions";
 
 import { getImageSrc } from "../../../src/lib/image-utils";
 
@@ -23,7 +23,17 @@ type Convention = {
   name: string;
   venue: string | null;
   conventionDate: string;
+  deliveryDate: string | null;
   contactName: string | null;
+  contactEmail: string | null;
+  contactMobile: string | null;
+  cleaningOverseerName: string | null;
+  cleaningOverseerEmail: string | null;
+  cleaningOverseerMobile: string | null;
+  deliveryAddress: string | null;
+  deliveryContactName: string | null;
+  deliveryContactEmail: string | null;
+  deliveryContactMobile: string | null;
   isLocked: boolean;
 };
 
@@ -138,9 +148,44 @@ function shortenLabel(label: string): string {
   return label;
 }
 
+function Field({ label, value, onChange, placeholder, type = "text" }: {
+  label: string; value: string; onChange: (v: string) => void;
+  placeholder?: string; type?: string;
+}) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-slate-400">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-slate-600 bg-slate-700 px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+      />
+    </div>
+  );
+}
+
 export default function OrderFormClient({ convention, csProducts, faProducts, existingQty }: Props) {
-  const [activeTab, setActiveTab] = useState<"CS" | "FA">("CS");
+  const [activeTab, setActiveTab] = useState<"CS" | "FA" | "details">("CS");
   const [search, setSearch] = useState("");
+  const [detailsDraft, setDetailsDraft] = useState({
+    name:                  convention.name,
+    conventionDate:        convention.conventionDate.slice(0, 10),
+    deliveryDate:          convention.deliveryDate?.slice(0, 10) ?? "",
+    contactName:           convention.contactName ?? "",
+    contactEmail:          convention.contactEmail ?? "",
+    contactMobile:         convention.contactMobile ?? "",
+    cleaningOverseerName:  convention.cleaningOverseerName ?? "",
+    cleaningOverseerEmail: convention.cleaningOverseerEmail ?? "",
+    cleaningOverseerMobile:convention.cleaningOverseerMobile ?? "",
+    deliveryAddress:       convention.deliveryAddress ?? "",
+    deliveryContactName:   convention.deliveryContactName ?? "",
+    deliveryContactEmail:  convention.deliveryContactEmail ?? "",
+    deliveryContactMobile: convention.deliveryContactMobile ?? "",
+  });
+  const [isSavingDetails, startSavingDetails] = useTransition();
+  const [detailsSaved, setDetailsSaved] = useState(false);
   const [qty, setQty] = useState<Record<string, number>>(existingQty);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [saved, setSaved]   = useState<Record<string, boolean>>({});
@@ -434,7 +479,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         )}
 
         {/* Tabs */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex gap-2 flex-wrap">
           {(["CS", "FA"] as const).map((tab) => {
             const count = tab === "CS" ? csLines : faLines;
             return (
@@ -458,34 +503,124 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               </button>
             );
           })}
+          <button
+            onClick={() => setActiveTab("details")}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+              activeTab === "details"
+                ? "bg-white text-slate-900"
+                : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+            }`}
+          >
+            Details
+          </button>
         </div>
 
-        {/* Search */}
-        <div className="mb-5 relative">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-          </svg>
-          <input
-            type="search"
-            placeholder="Search products…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-slate-700 bg-slate-900 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+        {activeTab === "details" ? (
+          /* ── Details tab ──────────────────────────────────────────────── */
+          <div className="space-y-6">
 
-        {/* Product list */}
-        {activeProducts.length === 0 && search.trim() ? (
-          <p className="py-12 text-center text-sm text-slate-500">No products match &ldquo;{search}&rdquo;</p>
+            {/* Convention */}
+            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Convention</p>
+              <div className="space-y-3">
+                <Field label="Convention name" value={detailsDraft.name} onChange={(v) => setDetailsDraft((d) => ({ ...d, name: v }))} placeholder="e.g. Wembley Convention 2026" />
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Convention date" type="date" value={detailsDraft.conventionDate} onChange={(v) => setDetailsDraft((d) => ({ ...d, conventionDate: v }))} />
+                  <Field label="Delivery date" type="date" value={detailsDraft.deliveryDate} onChange={(v) => setDetailsDraft((d) => ({ ...d, deliveryDate: v }))} />
+                </div>
+              </div>
+            </div>
+
+            {/* Convention overseer */}
+            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Convention Overseer</p>
+              <div className="space-y-3">
+                <Field label="Name" value={detailsDraft.contactName} onChange={(v) => setDetailsDraft((d) => ({ ...d, contactName: v }))} placeholder="Full name" />
+                <Field label="Email" type="email" value={detailsDraft.contactEmail} onChange={(v) => setDetailsDraft((d) => ({ ...d, contactEmail: v }))} placeholder="email@example.com" />
+                <Field label="Mobile" type="tel" value={detailsDraft.contactMobile} onChange={(v) => setDetailsDraft((d) => ({ ...d, contactMobile: v }))} placeholder="+44 7700 000000" />
+              </div>
+            </div>
+
+            {/* Cleaning overseer */}
+            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Cleaning Overseer</p>
+              <div className="space-y-3">
+                <Field label="Name" value={detailsDraft.cleaningOverseerName} onChange={(v) => setDetailsDraft((d) => ({ ...d, cleaningOverseerName: v }))} placeholder="Full name" />
+                <Field label="Email" type="email" value={detailsDraft.cleaningOverseerEmail} onChange={(v) => setDetailsDraft((d) => ({ ...d, cleaningOverseerEmail: v }))} placeholder="email@example.com" />
+                <Field label="Mobile" type="tel" value={detailsDraft.cleaningOverseerMobile} onChange={(v) => setDetailsDraft((d) => ({ ...d, cleaningOverseerMobile: v }))} placeholder="+44 7700 000000" />
+              </div>
+            </div>
+
+            {/* Delivery */}
+            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Delivery</p>
+              <div className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-400">Delivery address</label>
+                  <textarea
+                    rows={3}
+                    value={detailsDraft.deliveryAddress}
+                    onChange={(e) => setDetailsDraft((d) => ({ ...d, deliveryAddress: e.target.value }))}
+                    placeholder={"Venue name\nStreet address\nCity, Postcode"}
+                    className="w-full rounded-xl border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none resize-none"
+                  />
+                </div>
+                <Field label="Contact name" value={detailsDraft.deliveryContactName} onChange={(v) => setDetailsDraft((d) => ({ ...d, deliveryContactName: v }))} placeholder="Person receiving the order" />
+                <Field label="Contact email" type="email" value={detailsDraft.deliveryContactEmail} onChange={(v) => setDetailsDraft((d) => ({ ...d, deliveryContactEmail: v }))} placeholder="email@example.com" />
+                <Field label="Contact mobile" type="tel" value={detailsDraft.deliveryContactMobile} onChange={(v) => setDetailsDraft((d) => ({ ...d, deliveryContactMobile: v }))} placeholder="+44 7700 000000" />
+              </div>
+            </div>
+
+            {/* Save button */}
+            {!convention.isLocked && (
+              <button
+                onClick={() => {
+                  const fd = new FormData();
+                  fd.set("conventionId", convention.id);
+                  Object.entries(detailsDraft).forEach(([k, v]) => fd.set(k, v));
+                  startSavingDetails(async () => {
+                    await saveConventionDetails(fd);
+                    setDetailsSaved(true);
+                    setTimeout(() => setDetailsSaved(false), 2500);
+                  });
+                }}
+                disabled={isSavingDetails}
+                className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400 disabled:opacity-50"
+              >
+                {isSavingDetails ? "Saving…" : detailsSaved ? "✓ Saved" : "Save details"}
+              </button>
+            )}
+          </div>
         ) : (
-          renderProducts(activeProducts, activeTab)
-        )}
+          <>
+            {/* Search */}
+            <div className="mb-5 relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+              <input
+                type="search"
+                placeholder="Search products…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-xl border border-slate-700 bg-slate-900 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 focus:border-slate-500 focus:outline-none"
+              />
+            </div>
 
-        {/* Footer note */}
-        {!convention.isLocked && (
-          <p className="mt-8 text-center text-xs text-slate-600">
-            Quantities save automatically. You can return and adjust until your order is confirmed.
-          </p>
+            {/* Product list */}
+            {activeProducts.length === 0 && search.trim() ? (
+              <p className="py-12 text-center text-sm text-slate-500">No products match &ldquo;{search}&rdquo;</p>
+            ) : (
+              renderProducts(activeProducts, activeTab as "CS" | "FA")
+            )}
+
+            {/* Footer note */}
+            {!convention.isLocked && (
+              <p className="mt-8 text-center text-xs text-slate-600">
+                Quantities save automatically. You can return and adjust until your order is confirmed.
+              </p>
+            )}
+          </>
         )}
       </div>
     </main>

@@ -102,6 +102,33 @@ export async function verifyConventionToken(formData: FormData) {
   redirect(`/convention/${record.conventionId}`);
 }
 
+/** Save convention details (contact info, delivery address, dates) */
+export async function saveConventionDetails(formData: FormData) {
+  const conventionId = (formData.get("conventionId") as string).trim();
+  if (!conventionId) return;
+
+  const str = (key: string) => (formData.get(key) as string | null)?.trim() || null;
+
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: {
+      name:                  (formData.get("name") as string).trim() || undefined,
+      conventionDate:        formData.get("conventionDate") ? new Date(formData.get("conventionDate") as string) : undefined,
+      deliveryDate:          formData.get("deliveryDate") ? new Date(formData.get("deliveryDate") as string) : null,
+      contactName:           str("contactName"),
+      contactEmail:          str("contactEmail"),
+      contactMobile:         str("contactMobile"),
+      cleaningOverseerName:  str("cleaningOverseerName"),
+      cleaningOverseerEmail: str("cleaningOverseerEmail"),
+      cleaningOverseerMobile:str("cleaningOverseerMobile"),
+      deliveryAddress:       str("deliveryAddress"),
+      deliveryContactName:   str("deliveryContactName"),
+      deliveryContactEmail:  str("deliveryContactEmail"),
+      deliveryContactMobile: str("deliveryContactMobile"),
+    },
+  });
+}
+
 /** Save order items — upserts qty per product, deletes zeroed items */
 export async function saveOrderItem(formData: FormData) {
   const conventionId = (formData.get("conventionId") as string).trim();

@@ -196,10 +196,20 @@ model IbsaConvention {
   faPaymentDueDate  DateTime?
   faPaidAt          DateTime?
 
-  // Shared contact
+  // Convention overseer contact
   contactName     String?
   contactEmail    String?
   contactMobile   String?
+
+  // Cleaning overseer contact
+  cleaningOverseerName   String?
+  cleaningOverseerEmail  String?
+  cleaningOverseerMobile String?
+
+  // Delivery contact (person receiving the order on-site)
+  deliveryContactName   String?
+  deliveryContactEmail  String?
+  deliveryContactMobile String?
   notes           String?   // free-text notes, e.g. invoice discrepancy explanations
   archivedAt      DateTime?
   createdAt       DateTime  @default(now())
