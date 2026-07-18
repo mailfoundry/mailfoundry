@@ -323,7 +323,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                             <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
                           </div>
                           {/* Right: stepper + running total */}
-                          <div className="shrink-0 flex flex-col items-end gap-1">
+                          <div className="shrink-0 flex items-center gap-2">
                             {renderStepper(p, dept)}
                             <span className={`text-xs text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
                           </div>
