@@ -121,6 +121,14 @@ export async function removeBomLine(formData: FormData) {
   revalidatePath("/ibsa/purchasing");
 }
 
+export async function deleteProduct(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  if (!id) return;
+  await prisma.ibsaProduct.delete({ where: { id } });
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+}
+
 export async function updateProductStock(formData: FormData) {
   const productId = formData.get("productId")?.toString() ?? "";
   const inStock = parseInt(formData.get("inStock")?.toString() ?? "0") || 0;

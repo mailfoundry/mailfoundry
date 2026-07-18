@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -89,6 +89,8 @@ export default function ProductsClient({ products }: Props) {
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeletingProduct, startDeletingProduct] = useTransition();
 
   // Add supplier link form state
   const [showAddLink, setShowAddLink] = useState(false);
@@ -184,6 +186,7 @@ export default function ProductsClient({ products }: Props) {
 
   // ── Edit modal ─────────────────────────────────────────────────────────
   function openEdit(p: ProductRow) {
+    setConfirmDelete(false);
     setEditingProduct(p);
     setEditDraft({
       name:     p.name,
@@ -1244,21 +1247,60 @@ export default function ProductsClient({ products }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 border-t border-slate-800 px-6 py-4">
-              <button
-                onClick={() => setEditingProduct(null)}
-                disabled={isSavingEdit}
-                className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveEdit}
-                disabled={isSavingEdit || !editDraft.name.trim() || !editDraft.code.trim()}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
-              >
-                {isSavingEdit ? "Saving…" : "Save changes"}
-              </button>
+            <div className="flex items-center justify-between gap-3 border-t border-slate-800 px-6 py-4">
+              {/* Delete — left side */}
+              {!confirmDelete ? (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={isSavingEdit || isDeletingProduct}
+                  className="rounded-lg border border-red-800 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-red-950 disabled:opacity-40"
+                >
+                  Delete product
+                </button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-red-400">Are you sure?</span>
+                  <button
+                    onClick={() => {
+                      if (!editingProduct) return;
+                      startDeletingProduct(async () => {
+                        const fd = new FormData();
+                        fd.set("id", editingProduct.id);
+                        await deleteProduct(fd);
+                        setEditingProduct(null);
+                        setConfirmDelete(false);
+                      });
+                    }}
+                    disabled={isDeletingProduct}
+                    className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-40"
+                  >
+                    {isDeletingProduct ? "Deleting…" : "Yes, delete"}
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-400 hover:bg-slate-800"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+              {/* Save — right side */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setEditingProduct(null)}
+                  disabled={isSavingEdit}
+                  className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveEdit}
+                  disabled={isSavingEdit || !editDraft.name.trim() || !editDraft.code.trim()}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
+                >
+                  {isSavingEdit ? "Saving…" : "Save changes"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
