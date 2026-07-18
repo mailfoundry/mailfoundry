@@ -360,7 +360,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                       {/* Variant rows — each with its own image */}
                       <div className="border-t border-slate-700 divide-y divide-slate-700/60">
                         {[...group].sort((a, b) => {
+                          const SIZE_ORDER: Record<string, number> = { small: 0, s: 0, medium: 1, m: 1, large: 2, l: 2, "x-large": 3, xlarge: 3, xl: 3, "xx-large": 4, xxlarge: 4, xxl: 4, "xxx-large": 5, xxxlarge: 5, xxxl: 5 };
+                          const getSize = (v: string | null) => { const k = (v ?? "").toLowerCase().trim(); return SIZE_ORDER[k] ?? 99; };
                           const getWeight = (v: string | null) => { const m = (v ?? "").match(/(\d+)\s*g/i); return m ? parseInt(m[1]) : 0; };
+                          const sA = getSize(a.variant), sB = getSize(b.variant);
+                          if (sA !== 99 || sB !== 99) return sA - sB;
                           const wA = getWeight(a.variant), wB = getWeight(b.variant);
                           if (wA !== wB) return wA - wB;
                           return (a.variant ?? "").localeCompare(b.variant ?? "");
