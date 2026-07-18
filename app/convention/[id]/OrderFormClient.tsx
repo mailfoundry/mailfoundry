@@ -359,7 +359,12 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
                       {/* Variant rows — each with its own image */}
                       <div className="border-t border-slate-700 divide-y divide-slate-700/60">
-                        {group.map((p) => {
+                        {[...group].sort((a, b) => {
+                          const getWeight = (v: string | null) => { const m = (v ?? "").match(/(\d+)\s*g/i); return m ? parseInt(m[1]) : 0; };
+                          const wA = getWeight(a.variant), wB = getWeight(b.variant);
+                          if (wA !== wB) return wA - wB;
+                          return (a.variant ?? "").localeCompare(b.variant ?? "");
+                        }).map((p) => {
                           const variantImgSrc = getImageSrc(p.imageUrl);
                           const variantLabel = p.variant ?? "";
                           const swatchColors = getSwatchColors(variantLabel);
