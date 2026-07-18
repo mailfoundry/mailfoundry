@@ -325,7 +325,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           {/* Right: stepper + running total */}
                           <div className="shrink-0 flex flex-col items-end gap-1">
                             {renderStepper(p, dept)}
-                            {ordered && <span className="text-xs text-green-500">= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>}
+                            <span className={`text-xs text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -393,7 +393,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 {renderStepper(p, dept)}
-                                {ordered && <span className="text-xs text-green-500 w-16 text-right">= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>}
+                                <span className={`text-xs text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
                               </div>
                             </div>
                           );
