@@ -1,0 +1,1 @@
+ALTER TABLE "IbsaProduct" ADD COLUMN "visibleInOrderForm" BOOLEAN NOT NULL DEFAULT true;

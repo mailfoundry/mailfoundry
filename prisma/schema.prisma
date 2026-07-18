@@ -140,7 +140,8 @@ model IbsaProduct {
   description       String?  // Short marketing blurb shown in the convention order form
   imageUrl          String?
   groupImageUrl     String?
-  groupWithVariants Boolean  @default(false)
+  groupWithVariants   Boolean  @default(false)
+  visibleInOrderForm  Boolean  @default(true)
   inStock   Int      @default(0)
   git       Int      @default(0)
   createdAt DateTime @default(now())

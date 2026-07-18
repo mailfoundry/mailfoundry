@@ -129,6 +129,14 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath("/ibsa/purchasing");
 }
 
+export async function toggleProductVisibility(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  const visible = formData.get("visible") === "true";
+  if (!id) return;
+  await prisma.ibsaProduct.update({ where: { id }, data: { visibleInOrderForm: !visible } });
+  revalidatePath("/ibsa/products");
+}
+
 export async function updateProductStock(formData: FormData) {
   const productId = formData.get("productId")?.toString() ?? "";
   const inStock = parseInt(formData.get("inStock")?.toString() ?? "0") || 0;

@@ -44,13 +44,13 @@ export default async function ConventionOrderPage({ params }: Props) {
   if (!convention) redirect("/convention?error=not-found");
 
   const csProducts = await prisma.ibsaProduct.findMany({
-    where: { type: "CS" },
+    where: { type: "CS", visibleInOrderForm: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
     select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
   });
 
   const faProducts = await prisma.ibsaProduct.findMany({
-    where: { type: "FA" },
+    where: { type: "FA", visibleInOrderForm: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
     select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
   });

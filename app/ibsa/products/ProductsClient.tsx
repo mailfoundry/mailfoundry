@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -37,6 +37,7 @@ export type ProductRow = {
   imageUrl: string | null;
   groupImageUrl: string | null;
   groupWithVariants: boolean;
+  visibleInOrderForm: boolean;
   inStock: number;
   git: number;
   rsProducts: RsProductLink[];
@@ -685,15 +686,42 @@ export default function ProductsClient({ products }: Props) {
 
                       <td className="px-3 py-3">
                         {!stockTakeMode && (
-                          <button
-                            onClick={() => openEdit(p)}
-                            title="Edit product"
-                            className="flex h-7 w-7 items-center justify-center rounded text-slate-600 opacity-0 transition-opacity hover:bg-slate-600 hover:text-white group-hover:opacity-100"
-                          >
-                            <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                            </svg>
-                          </button>
+                          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                            <form action={toggleProductVisibility}>
+                              <input type="hidden" name="id" value={p.id} />
+                              <input type="hidden" name="visible" value={String(p.visibleInOrderForm)} />
+                              <button
+                                type="submit"
+                                title={p.visibleInOrderForm ? "Hide from order form" : "Show in order form"}
+                                className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
+                                  p.visibleInOrderForm
+                                    ? "text-green-400 hover:bg-slate-700"
+                                    : "text-slate-600 hover:bg-slate-700 hover:text-green-400"
+                                }`}
+                              >
+                                {p.visibleInOrderForm ? (
+                                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (
+                                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                                    <path fillRule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clipRule="evenodd" />
+                                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                                  </svg>
+                                )}
+                              </button>
+                            </form>
+                            <button
+                              onClick={() => openEdit(p)}
+                              title="Edit product"
+                              className="flex h-7 w-7 items-center justify-center rounded text-slate-600 hover:bg-slate-600 hover:text-white"
+                            >
+                              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                              </svg>
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
