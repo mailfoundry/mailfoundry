@@ -33,6 +33,7 @@ export type ProductRow = {
   type: string;
   unitCost: number;
   xyloCost: number | null;
+  description: string | null;
   imageUrl: string | null;
   groupImageUrl: string | null;
   groupWithVariants: boolean;
@@ -66,6 +67,7 @@ type EditDraft = {
   type: string;
   unitCost: string;
   xyloCost: string;
+  description: string;
   imageUrl: string;
   groupImageUrl: string;
   groupWithVariants: boolean;
@@ -82,7 +84,7 @@ export default function ProductsClient({ products }: Props) {
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({
-    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false,
+    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", description: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false,
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
@@ -191,6 +193,7 @@ export default function ProductsClient({ products }: Props) {
       type:     p.type,
       unitCost: String(p.unitCost),
       xyloCost: p.xyloCost != null ? String(p.xyloCost) : "",
+      description: p.description ?? "",
       imageUrl: p.imageUrl ?? "",
       groupImageUrl: p.groupImageUrl ?? "",
       groupWithVariants: p.groupWithVariants,
@@ -263,6 +266,7 @@ export default function ProductsClient({ products }: Props) {
     fd.set("type",            editDraft.type);
     fd.set("unitCost",        editDraft.unitCost);
     fd.set("xyloCost",        editDraft.xyloCost);
+    fd.set("description",        editDraft.description);
     fd.set("imageUrl",           editDraft.imageUrl);
     fd.set("groupImageUrl",      editDraft.groupImageUrl);
     fd.set("groupWithVariants",  String(editDraft.groupWithVariants));
@@ -756,6 +760,19 @@ export default function ProductsClient({ products }: Props) {
                   onChange={set("variant")}
                   placeholder="e.g. Blue, 5L, Medium"
                   className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-slate-400">
+                  Description <span className="font-normal text-slate-600">(shown in order form)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={editDraft.description}
+                  onChange={(e) => setEditDraft((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="e.g. Professional grade, colour-coded for hygiene compliance"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600 resize-none"
                 />
               </div>
 

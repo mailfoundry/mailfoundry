@@ -13,6 +13,7 @@ type Product = {
   code: string;
   category: string;
   unitCost: number;
+  description: string | null;
   imageUrl: string | null;
   groupImageUrl: string | null;
   groupWithVariants: boolean;
@@ -317,6 +318,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                               <p className="text-base font-bold leading-snug text-white">{p.name}</p>
                             </div>
                             {variantLabel && <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>}
+                            {p.description && <p className="mt-0.5 text-xs italic text-slate-400">{p.description}</p>}
                             <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
                           </div>
                           {/* Right: stepper + running total */}
@@ -348,7 +350,10 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                             <div className="h-full w-full" />
                           )}
                         </div>
-                        <p className="text-base font-bold leading-snug text-white">{first.name}</p>
+                        <div className="min-w-0">
+                          <p className="text-base font-bold leading-snug text-white">{first.name}</p>
+                          {first.description && <p className="mt-0.5 text-xs italic text-slate-400">{first.description}</p>}
+                        </div>
                       </div>
 
                       {/* Variant rows — each with its own image */}
