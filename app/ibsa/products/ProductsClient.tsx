@@ -610,7 +610,12 @@ export default function ProductsClient({ products }: Props) {
                           ) : (
                             <div className="h-9 w-9 shrink-0 rounded-lg border border-slate-800 bg-slate-800/40" />
                           )}
-                          <span className="font-medium text-white">{p.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-white">{p.name}</span>
+                            {p.groupWithVariants && (
+                              <span className="shrink-0 rounded-full bg-violet-500/20 px-2 py-0.5 text-xs font-semibold text-violet-400">grouped</span>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="px-5 py-3 text-slate-300">{p.variant ?? "—"}</td>
