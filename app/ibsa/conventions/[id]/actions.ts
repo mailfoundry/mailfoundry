@@ -163,22 +163,25 @@ export async function updateLogistics(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
 
+  const str = (key: string) => formData.get(key)?.toString()?.trim() || null;
   const collectionDate = formData.get("collectionDate")?.toString() ?? "";
   const paymentDueDate = formData.get("paymentDueDate")?.toString() ?? "";
-  const deliveryAddress = formData.get("deliveryAddress")?.toString() ?? "";
-  const contactName = formData.get("contactName")?.toString() ?? "";
-  const contactEmail = formData.get("contactEmail")?.toString() ?? "";
-  const contactMobile = formData.get("contactMobile")?.toString() ?? "";
 
   await prisma.ibsaConvention.update({
     where: { id: conventionId },
     data: {
-      collectionDate: collectionDate ? new Date(collectionDate) : null,
-      paymentDueDate: paymentDueDate ? new Date(paymentDueDate) : null,
-      deliveryAddress: deliveryAddress || null,
-      contactName: contactName || null,
-      contactEmail: contactEmail || null,
-      contactMobile: contactMobile || null,
+      collectionDate:         collectionDate ? new Date(collectionDate) : null,
+      paymentDueDate:         paymentDueDate ? new Date(paymentDueDate) : null,
+      deliveryAddress:        str("deliveryAddress"),
+      contactName:            str("contactName"),
+      contactEmail:           str("contactEmail"),
+      contactMobile:          str("contactMobile"),
+      cleaningOverseerName:   str("cleaningOverseerName"),
+      cleaningOverseerEmail:  str("cleaningOverseerEmail"),
+      cleaningOverseerMobile: str("cleaningOverseerMobile"),
+      deliveryContactName:    str("deliveryContactName"),
+      deliveryContactEmail:   str("deliveryContactEmail"),
+      deliveryContactMobile:  str("deliveryContactMobile"),
     },
   });
   revalidatePath(`/ibsa/conventions/${conventionId}`);

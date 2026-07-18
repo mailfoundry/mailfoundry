@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
 
@@ -127,6 +128,9 @@ export async function saveConventionDetails(formData: FormData) {
       deliveryContactMobile: str("deliveryContactMobile"),
     },
   });
+
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
 }
 
 /** Save order items — upserts qty per product, deletes zeroed items */

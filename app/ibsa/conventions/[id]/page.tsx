@@ -365,6 +365,44 @@ export default async function ConventionDetailPage({
             />
           </div>
 
+          {/* Cleaning overseer */}
+          <div className="col-span-3 border-t border-slate-700 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Cleaning Overseer</p>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Name</label>
+                <input type="text" name="cleaningOverseerName" defaultValue={convention.cleaningOverseerName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Email</label>
+                <input type="email" name="cleaningOverseerEmail" defaultValue={convention.cleaningOverseerEmail ?? ""} placeholder="email@example.com" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Mobile</label>
+                <input type="tel" name="cleaningOverseerMobile" defaultValue={convention.cleaningOverseerMobile ?? ""} placeholder="+44 7700 000000" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+              </div>
+            </div>
+          </div>
+
+          {/* Delivery contact */}
+          <div className="col-span-3 border-t border-slate-700 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Delivery Contact</p>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Name</label>
+                <input type="text" name="deliveryContactName" defaultValue={convention.deliveryContactName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Email</label>
+                <input type="email" name="deliveryContactEmail" defaultValue={convention.deliveryContactEmail ?? ""} placeholder="email@example.com" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Mobile</label>
+                <input type="tel" name="deliveryContactMobile" defaultValue={convention.deliveryContactMobile ?? ""} placeholder="+44 7700 000000" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+              </div>
+            </div>
+          </div>
+
           <div className="col-span-3 flex justify-end">
             <button
               type="submit"
