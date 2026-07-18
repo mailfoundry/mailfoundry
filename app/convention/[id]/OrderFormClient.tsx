@@ -287,7 +287,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               <div className="space-y-3">
                 {Array.from(familyMap.values()).map((group) => {
                   const first = group[0];
-                  const imgSrc = getImageSrc(first.groupImageUrl ?? first.imageUrl);
+                  const groupImgUrl = group.find((p) => p.groupImageUrl)?.groupImageUrl ?? null;
+                  const imgSrc = getImageSrc(groupImgUrl ?? first.imageUrl);
                   const isSingle = group.length === 1;
 
                   if (isSingle) {
