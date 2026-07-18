@@ -447,28 +447,27 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
       {/* ── Sticky summary bar ──────────────────────────────────────────── */}
       {grandLines > 0 && (
-        <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-900/95 backdrop-blur-sm">
-          <div className="mx-auto max-w-3xl px-4 py-3">
-            <div className="flex items-baseline justify-between gap-2">
-              <span className="truncate text-xs font-semibold text-slate-400">
+        <div className="sticky top-0 z-30 bg-slate-800/95 backdrop-blur-md shadow-lg shadow-black/40 border-b border-slate-700">
+          <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between gap-4">
+            {/* Left: convention + breakdown */}
+            <div className="min-w-0">
+              <p className="truncate text-xs font-bold text-white">
                 {convention.name}
-                <span className="ml-2 font-normal text-slate-600">
+                <span className="ml-2 font-normal text-slate-400">
                   · {grandLines} line{grandLines !== 1 ? "s" : ""}
                   {csLines > 0 && faLines > 0 && <> (CS&nbsp;{csLines} · FA&nbsp;{faLines})</>}
                 </span>
-              </span>
+              </p>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Ex VAT <span className="font-semibold text-slate-200">{fmtGbp(grandValue)}</span>
+                <span className="mx-2 text-slate-600">+</span>
+                VAT <span className="font-semibold text-slate-200">{fmtGbp(grandValue * 0.2)}</span>
+              </p>
             </div>
-            <div className="mt-1.5 flex items-center gap-3 text-sm">
-              <span className="text-slate-500">
-                Ex&nbsp;VAT <span className="font-semibold text-slate-300">{fmtGbp(grandValue)}</span>
-              </span>
-              <span className="text-slate-700">+</span>
-              <span className="text-slate-500">
-                VAT <span className="font-semibold text-slate-300">{fmtGbp(grandValue * 0.2)}</span>
-              </span>
-              <span className="ml-auto text-base font-bold text-green-400">
-                {fmtGbp(grandValue * 1.2)}
-              </span>
+            {/* Right: total */}
+            <div className="shrink-0 text-right">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Total inc. VAT</p>
+              <p className="text-xl font-bold text-green-400">{fmtGbp(grandValue * 1.2)}</p>
             </div>
           </div>
         </div>
