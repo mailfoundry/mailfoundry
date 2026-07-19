@@ -27,6 +27,7 @@ export default async function IbsaProductsPage({
       imageUrl: true,
       groupImageUrl: true,
       groupWithVariants: true,
+      groupDescription: true,
       visibleInOrderForm: true,
       inStock: true,
       git: true,

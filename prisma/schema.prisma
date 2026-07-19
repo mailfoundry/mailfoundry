@@ -141,6 +141,7 @@ model IbsaProduct {
   imageUrl          String?
   groupImageUrl     String?
   groupWithVariants   Boolean  @default(false)
+  groupDescription    String?  // Shared description shown in the group card header
   visibleInOrderForm  Boolean  @default(true)
   inStock   Int      @default(0)
   git       Int      @default(0)

@@ -14,6 +14,7 @@ type Product = {
   category: string;
   unitCost: number;
   description: string | null;
+  groupDescription: string | null;
   imageUrl: string | null;
   groupImageUrl: string | null;
   groupWithVariants: boolean;
@@ -353,7 +354,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                         </div>
                         <div className="min-w-0">
                           <p className="text-base font-bold leading-snug text-white">{first.name}</p>
-                          {first.description && <p className="mt-0.5 text-xs italic text-slate-400">{first.description}</p>}
+                          {group.find(p => p.groupDescription)?.groupDescription && <p className="mt-0.5 text-xs italic text-slate-400">{group.find(p => p.groupDescription)?.groupDescription}</p>}
                         </div>
                       </div>
 
