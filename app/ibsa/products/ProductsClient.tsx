@@ -229,7 +229,9 @@ export default function ProductsClient({ products }: Props) {
     fd.set("id", rsProductId);
     startSavingLink(async () => {
       await deleteRsProductLink(fd);
-      setEditingProduct(null); // close modal — page revalidates
+      setEditingProduct((prev) =>
+        prev ? { ...prev, rsProducts: prev.rsProducts.filter((rp) => rp.id !== rsProductId) } : null
+      );
     });
   }
 
