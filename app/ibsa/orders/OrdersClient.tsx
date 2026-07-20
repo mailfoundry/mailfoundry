@@ -325,8 +325,17 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
                 {!isReadOnly && (
                   <td className="px-5 py-3 text-right">
                     {isDone ? (
-                      <span className={isShort ? "text-amber-400" : "text-green-400"}>
-                        {isShort ? "⚠ Short" : "✓"}
+                      <span className="flex items-center justify-end gap-2">
+                        <span className={isShort ? "text-amber-400" : "text-green-400"}>
+                          {isShort ? "⚠ Short" : "✓"}
+                        </span>
+                        <button
+                          onClick={() => setConfirmed((prev) => { const s = new Set(prev); s.delete(line.id); return s; })}
+                          className="text-xs text-slate-500 hover:text-slate-300 underline"
+                          title="Correct this entry"
+                        >
+                          edit
+                        </button>
                       </span>
                     ) : (
                       <button
