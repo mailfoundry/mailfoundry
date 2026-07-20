@@ -10,6 +10,15 @@ function isPublicPath(pathname: string) {
 }
 
 export function proxy(request: NextRequest) {
+  const hostname = request.headers.get("host") ?? "";
+  const isXylo = hostname === "www.xylouk.co.uk" || hostname === "xylouk.co.uk";
+
+  if (isXylo) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/xylo";
+    return NextResponse.rewrite(url);
+  }
+
   const { pathname } = request.nextUrl;
 
   const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
