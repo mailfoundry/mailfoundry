@@ -19,6 +19,31 @@ export async function uploadProductImage(formData: FormData) {
   }
 }
 
+export async function createProduct(formData: FormData) {
+  const name     = (formData.get("name") as string).trim();
+  const variant  = (formData.get("variant") as string).trim() || null;
+  const code     = (formData.get("code") as string).trim();
+  const category = (formData.get("category") as string).trim();
+  const type     = (formData.get("type") as string).trim();
+  const unitCost = parseFloat(formData.get("unitCost") as string) || 0;
+  const xyloCostRaw = (formData.get("xyloCost") as string).trim();
+  const xyloCost = xyloCostRaw !== "" ? parseFloat(xyloCostRaw) : null;
+  const description   = (formData.get("description") as string | null)?.trim() || null;
+  const groupDescription = (formData.get("groupDescription") as string | null)?.trim() || null;
+  const imageUrl      = (formData.get("imageUrl") as string | null)?.trim() || null;
+  const groupImageUrl = (formData.get("groupImageUrl") as string | null)?.trim() || null;
+  const groupWithVariants = formData.get("groupWithVariants") === "true";
+
+  if (!name || !code || !category || !type) return;
+
+  await prisma.ibsaProduct.create({
+    data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants },
+  });
+
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+}
+
 export async function updateProduct(formData: FormData) {
   const id       = (formData.get("id") as string).trim();
   const name     = (formData.get("name") as string).trim();

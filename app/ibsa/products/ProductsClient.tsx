@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -99,6 +99,7 @@ export default function ProductsClient({ products, activeType }: Props) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isDeletingProduct, startDeletingProduct] = useTransition();
+  const [isCreating, setIsCreating] = useState(false);
 
   // Add supplier link form state
   const [showAddLink, setShowAddLink] = useState(false);
@@ -193,8 +194,18 @@ export default function ProductsClient({ products, activeType }: Props) {
     setDraft((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] ?? current) + delta) }));
 
   // ── Edit modal ─────────────────────────────────────────────────────────
+  function openNew() {
+    setConfirmDelete(false);
+    setIsCreating(true);
+    setEditingProduct(null);
+    setEditDraft({ name: "", variant: "", code: "", category: CATEGORIES[0].value, type: activeType, unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false });
+    setShowAddLink(false);
+    setShowAddBom(false);
+  }
+
   function openEdit(p: ProductRow) {
     setConfirmDelete(false);
+    setIsCreating(false);
     setEditingProduct(p);
     setEditDraft({
       name:     p.name,
@@ -267,12 +278,7 @@ export default function ProductsClient({ products, activeType }: Props) {
   }
 
   function saveEdit() {
-    if (!editingProduct) return;
-    const supplierChanges = editingProduct.rsProducts
-      .filter((rp) => supplierDrafts.get(rp.id) !== rp.supplier)
-      .map((rp) => ({ id: rp.id, supplier: supplierDrafts.get(rp.id) ?? rp.supplier }));
     const fd = new FormData();
-    fd.set("id",              editingProduct.id);
     fd.set("name",            editDraft.name);
     fd.set("variant",         editDraft.variant);
     fd.set("code",            editDraft.code);
@@ -285,11 +291,24 @@ export default function ProductsClient({ products, activeType }: Props) {
     fd.set("imageUrl",           editDraft.imageUrl);
     fd.set("groupImageUrl",      editDraft.groupImageUrl);
     fd.set("groupWithVariants",  String(editDraft.groupWithVariants));
-    fd.set("supplierChanges",    JSON.stringify(supplierChanges));
-    startSavingEdit(async () => {
-      await updateProduct(fd);
-      setEditingProduct(null);
-    });
+
+    if (isCreating) {
+      startSavingEdit(async () => {
+        await createProduct(fd);
+        setIsCreating(false);
+      });
+    } else {
+      if (!editingProduct) return;
+      const supplierChanges = editingProduct.rsProducts
+        .filter((rp) => supplierDrafts.get(rp.id) !== rp.supplier)
+        .map((rp) => ({ id: rp.id, supplier: supplierDrafts.get(rp.id) ?? rp.supplier }));
+      fd.set("id",             editingProduct.id);
+      fd.set("supplierChanges", JSON.stringify(supplierChanges));
+      startSavingEdit(async () => {
+        await updateProduct(fd);
+        setEditingProduct(null);
+      });
+    }
   }
 
   const set = (field: keyof EditDraft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -334,7 +353,13 @@ export default function ProductsClient({ products, activeType }: Props) {
       </div>
     </div>
   ) : (
-    <div className="mb-6 flex justify-end">
+    <div className="mb-6 flex items-center justify-between">
+      <button
+        onClick={openNew}
+        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+      >
+        + New Product
+      </button>
       <button
         onClick={enterStockTake}
         className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
@@ -771,17 +796,17 @@ export default function ProductsClient({ products, activeType }: Props) {
       )}
 
       {/* ── Edit modal ───────────────────────────────────────────────────── */}
-      {editingProduct && (
+      {(editingProduct || isCreating) && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4">
           <div className="w-full max-w-md overflow-y-auto rounded-t-3xl border border-slate-700 bg-slate-900 shadow-2xl sm:max-h-[90vh] sm:rounded-2xl">
             {/* Modal header */}
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div>
-                <h2 className="text-base font-bold text-white">Edit product</h2>
-                <p className="mt-0.5 font-mono text-xs text-slate-500">{editingProduct.code}</p>
+                <h2 className="text-base font-bold text-white">{isCreating ? "New product" : "Edit product"}</h2>
+                <p className="mt-0.5 font-mono text-xs text-slate-500">{isCreating ? "Fill in the details below" : editingProduct?.code}</p>
               </div>
               <button
-                onClick={() => setEditingProduct(null)}
+                onClick={() => { setEditingProduct(null); setIsCreating(false); }}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
@@ -1072,7 +1097,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                 </div>
 
                 {/* Existing links */}
-                {editingProduct.rsProducts.length > 0 && (
+                {editingProduct && editingProduct.rsProducts.length > 0 && (
                   <div className="mb-2 space-y-2">
                     {editingProduct.rsProducts.map((rp) => (
                       <div key={rp.id} className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 p-2.5">
@@ -1117,7 +1142,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                 )}
 
                 {/* No links yet */}
-                {editingProduct.rsProducts.length === 0 && !showAddLink && (
+                {(!editingProduct || editingProduct.rsProducts.length === 0) && !showAddLink && (
                   <p className="text-xs text-slate-600">No supplier links yet — click "+ Add link" above.</p>
                 )}
 
@@ -1213,7 +1238,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                 </div>
 
                 {/* Existing BOM lines */}
-                {editingProduct.bomAsComposite.length > 0 && (
+                {editingProduct && editingProduct.bomAsComposite.length > 0 && (
                   <div className="mb-2 space-y-1.5">
                     {editingProduct.bomAsComposite.map((line) => (
                       <div key={line.id} className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 p-2.5">
@@ -1243,7 +1268,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                   </div>
                 )}
 
-                {editingProduct.bomAsComposite.length === 0 && !showAddBom && (
+                {(!editingProduct || editingProduct.bomAsComposite.length === 0) && !showAddBom && (
                   <p className="text-xs text-slate-600">No components — standalone product. Click "+ Add component" to build a BOM.</p>
                 )}
 
@@ -1311,8 +1336,8 @@ export default function ProductsClient({ products, activeType }: Props) {
 
             {/* Footer */}
             <div className="flex items-center justify-between gap-3 border-t border-slate-800 px-6 py-4">
-              {/* Delete — left side */}
-              {!confirmDelete ? (
+              {/* Delete — left side (hidden when creating) */}
+              {!isCreating && (!confirmDelete ? (
                 <button
                   onClick={() => setConfirmDelete(true)}
                   disabled={isSavingEdit || isDeletingProduct}
@@ -1346,11 +1371,11 @@ export default function ProductsClient({ products, activeType }: Props) {
                     Cancel
                   </button>
                 </div>
-              )}
+              ))}
               {/* Save — right side */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setEditingProduct(null)}
+                  onClick={() => { setEditingProduct(null); setIsCreating(false); }}
                   disabled={isSavingEdit}
                   className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
                 >
@@ -1361,7 +1386,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                   disabled={isSavingEdit || !editDraft.name.trim() || !editDraft.code.trim()}
                   className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
                 >
-                  {isSavingEdit ? "Saving…" : "Save changes"}
+                  {isSavingEdit ? "Saving…" : isCreating ? "Create product" : "Save changes"}
                 </button>
               </div>
             </div>
