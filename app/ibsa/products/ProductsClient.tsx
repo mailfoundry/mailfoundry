@@ -1283,7 +1283,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                     >
                       <option value="">— select component product —</option>
                       {products
-                        .filter((p) => p.id !== editingProduct.id)
+                        .filter((p) => p.id !== editingProduct?.id)
                         .map((p) => (
                           <option key={p.id} value={p.id}>
                             {p.name}{p.variant ? ` (${p.variant})` : ""} — {p.code}
