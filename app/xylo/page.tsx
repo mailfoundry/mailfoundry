@@ -1,0 +1,119 @@
+export const metadata = {
+  title: "Xylo Supplies — UK Wholesale Cleaning & First Aid",
+  description:
+    "UK-based wholesale supplier of professional cleaning products and first aid consumables for trade customers and event organisers.",
+};
+
+export default function XyloHomePage() {
+  return (
+    <main className="min-h-screen bg-[#090e1a] text-white flex flex-col">
+
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-10 py-7 border-b border-white/5">
+        <XyloLogo />
+        <a
+          href="mailto:hello@xylouk.co.uk"
+          className="text-sm text-slate-400 hover:text-white transition-colors"
+        >
+          hello@xylouk.co.uk
+        </a>
+      </nav>
+
+      {/* Hero */}
+      <section className="flex-1 flex items-center justify-center px-6 py-24">
+        <div className="max-w-2xl w-full text-center">
+
+          {/* Eyebrow */}
+          <p className="text-xs font-bold tracking-[0.22em] uppercase text-orange-500 mb-5">
+            UK Trade Supplier
+          </p>
+
+          {/* Headline */}
+          <h1 className="text-5xl font-black leading-[1.08] tracking-tight mb-6">
+            Wholesale Cleaning<br />
+            <span className="text-orange-400">&amp; First Aid</span> Supplies
+          </h1>
+
+          {/* Orange rule */}
+          <div className="w-12 h-[3px] bg-orange-500 mx-auto mb-8 rounded-full" />
+
+          {/* Description */}
+          <p className="text-lg leading-relaxed text-slate-400 max-w-lg mx-auto mb-12">
+            Xylo Supplies is a UK-based wholesale distributor of professional
+            cleaning products and first aid consumables, serving trade customers,
+            event organisers and convention centres.
+          </p>
+
+          {/* Category cards */}
+          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-12">
+            <div className="rounded-xl border border-white/8 bg-white/3 p-5 text-left">
+              <div className="w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center mb-3">
+                <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                </svg>
+              </div>
+              <p className="font-bold text-sm text-white mb-1">Cleaning Supplies</p>
+              <p className="text-xs text-slate-500 leading-relaxed">PPE, janitorial &amp; hygiene products</p>
+            </div>
+            <div className="rounded-xl border border-white/8 bg-white/3 p-5 text-left">
+              <div className="w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center mb-3">
+                <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>
+              </div>
+              <p className="font-bold text-sm text-white mb-1">First Aid</p>
+              <p className="text-xs text-slate-500 leading-relaxed">Kits, consumables &amp; safety equipment</p>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <a
+            href="mailto:hello@xylouk.co.uk"
+            className="inline-block bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-8 py-3.5 rounded-xl transition-colors tracking-wide"
+          >
+            Trade Enquiries →
+          </a>
+          <p className="mt-3 text-xs text-slate-600">hello@xylouk.co.uk</p>
+
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 px-10 py-6 text-center">
+        <p className="text-xs text-slate-600">
+          © {new Date().getFullYear()} Xylo Supplies Ltd &nbsp;·&nbsp; United Kingdom
+        </p>
+      </footer>
+
+    </main>
+  );
+}
+
+function XyloLogo() {
+  return (
+    <svg width="148" height="40" viewBox="0 0 148 40" xmlns="http://www.w3.org/2000/svg" aria-label="Xylo Supplies">
+      {/* XYLO */}
+      <text
+        x="0" y="30"
+        fontFamily="Arial Black, Arial, sans-serif"
+        fontWeight="900"
+        fontSize="30"
+        letterSpacing="-0.5"
+      >
+        <tspan fill="#f97316">X</tspan>
+        <tspan fill="#f1f5f9">YLO</tspan>
+      </text>
+      {/* SUPPLIES */}
+      <text
+        x="1" y="39"
+        fontFamily="Arial, Helvetica, sans-serif"
+        fontWeight="400"
+        fontSize="8.5"
+        letterSpacing="4.5"
+        fill="#475569"
+      >
+        SUPPLIES
+      </text>
+    </svg>
+  );
+}
