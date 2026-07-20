@@ -29,28 +29,33 @@ export async function sendOrderFormLink(formData: FormData) {
     day: "numeric", month: "long", year: "numeric",
   });
 
-  await sendEmail({
-    to: convention.contactEmail,
-    subject: `Your order form — ${convention.name}`,
-    text: `Hi,\n\nClick the link below to fill in your product requirements for ${convention.name} (${date}).\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-        <div style="background:#0f172a;padding:32px;border-radius:12px;">
-          <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo Supplies</p>
-          <h1 style="color:#fff;font-size:22px;margin:0 0 8px;">Your order form</h1>
-          <div style="background:#1e293b;border-radius:8px;padding:14px;margin-bottom:20px;">
-            <p style="color:#94a3b8;font-size:12px;margin:0 0 2px;">${date}</p>
-            <p style="color:#f1f5f9;font-size:16px;font-weight:bold;margin:0;">${convention.name}</p>
+  try {
+    await sendEmail({
+      to: convention.contactEmail,
+      subject: `Your order form — ${convention.name}`,
+      text: `Hi,\n\nClick the link below to fill in your product requirements for ${convention.name} (${date}).\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+          <div style="background:#0f172a;padding:32px;border-radius:12px;">
+            <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo Supplies</p>
+            <h1 style="color:#fff;font-size:22px;margin:0 0 8px;">Your order form</h1>
+            <div style="background:#1e293b;border-radius:8px;padding:14px;margin-bottom:20px;">
+              <p style="color:#94a3b8;font-size:12px;margin:0 0 2px;">${date}</p>
+              <p style="color:#f1f5f9;font-size:16px;font-weight:bold;margin:0;">${convention.name}</p>
+            </div>
+            <p style="color:#94a3b8;margin:0 0 20px;">Click the button below to select the products you need for this convention. The link expires in 1 hour.</p>
+            <a href="${verifyUrl}" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:bold;font-size:15px;">
+              Open order form →
+            </a>
+            <p style="color:#475569;font-size:12px;margin:20px 0 0;">If you didn't expect this email, you can safely ignore it.</p>
           </div>
-          <p style="color:#94a3b8;margin:0 0 20px;">Click the button below to select the products you need for this convention. The link expires in 1 hour.</p>
-          <a href="${verifyUrl}" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:bold;font-size:15px;">
-            Open order form →
-          </a>
-          <p style="color:#475569;font-size:12px;margin:20px 0 0;">If you didn't expect this email, you can safely ignore it.</p>
         </div>
-      </div>
-    `,
-  });
+      `,
+    });
+  } catch (err) {
+    console.error("sendOrderFormLink: SES error", err);
+    return { error: err instanceof Error ? err.message : "Failed to send email" };
+  }
 
   return { ok: true, email: convention.contactEmail };
 }
