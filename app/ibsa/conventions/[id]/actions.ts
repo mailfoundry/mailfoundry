@@ -35,21 +35,65 @@ export async function sendOrderFormLink(formData: FormData) {
       subject: `Your order form — ${convention.name}`,
       text: `Hi,\n\nClick the link below to fill in your product requirements for ${convention.name} (${date}).\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
       html: `
-        <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-          <div style="background:#0f172a;padding:32px;border-radius:12px;">
-            <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo Supplies</p>
-            <h1 style="color:#fff;font-size:22px;margin:0 0 8px;">Your order form</h1>
-            <div style="background:#1e293b;border-radius:8px;padding:14px;margin-bottom:20px;">
-              <p style="color:#94a3b8;font-size:12px;margin:0 0 2px;">${date}</p>
-              <p style="color:#f1f5f9;font-size:16px;font-weight:bold;margin:0;">${convention.name}</p>
-            </div>
-            <p style="color:#94a3b8;margin:0 0 20px;">Click the button below to select the products you need for this convention. The link expires in 1 hour.</p>
-            <a href="${verifyUrl}" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:bold;font-size:15px;">
-              Open order form →
-            </a>
-            <p style="color:#475569;font-size:12px;margin:20px 0 0;">If you didn't expect this email, you can safely ignore it.</p>
-          </div>
-        </div>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 16px;">
+            <tr><td align="center">
+              <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+
+                <!-- Header -->
+                <tr>
+                  <td style="background:#0f172a;border-radius:12px 12px 0 0;padding:28px 36px;border-bottom:3px solid #f97316;">
+                    <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#f97316;">IBSA · Xylo Supplies</p>
+                  </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                  <td style="background:#1e293b;padding:36px;">
+                    <h1 style="margin:0 0 6px;font-size:24px;font-weight:700;color:#f1f5f9;">Your order form is ready</h1>
+                    <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;">Please review and submit your product requirements at your earliest convenience.</p>
+
+                    <!-- Convention card -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border-radius:8px;margin-bottom:28px;">
+                      <tr>
+                        <td style="padding:18px 20px;border-left:4px solid #f97316;border-radius:0 8px 8px 0;">
+                          <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#64748b;">Convention</p>
+                          <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#f1f5f9;">${convention.name}</p>
+                          <p style="margin:0;font-size:13px;color:#94a3b8;">${date}</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#94a3b8;">Click the button below to open your order form. You can select the products you need and submit your requirements directly through the form. <strong style="color:#cbd5e1;">This link expires in 1 hour.</strong></p>
+
+                    <!-- CTA -->
+                    <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="background:#f97316;border-radius:8px;">
+                          <a href="${verifyUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;letter-spacing:0.01em;">Open order form →</a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0;font-size:12px;color:#475569;border-top:1px solid #334155;padding-top:20px;">If you have any questions, please contact the Xylo Supplies team. If you didn't expect this email, you can safely ignore it.</p>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="background:#0f172a;border-radius:0 0 12px 12px;padding:20px 36px;">
+                    <p style="margin:0;font-size:11px;color:#475569;text-align:center;">Xylo Supplies Ltd &nbsp;·&nbsp; This is an automated message, please do not reply</p>
+                  </td>
+                </tr>
+
+              </table>
+            </td></tr>
+          </table>
+        </body>
+        </html>
       `,
     });
   } catch (err) {
