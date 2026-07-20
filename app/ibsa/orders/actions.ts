@@ -119,3 +119,11 @@ export async function deleteGroupOrder(formData: FormData) {
   await (prisma as any).ibsaGroupOrder.delete({ where: { id } });
   revalidatePath("/ibsa/orders");
 }
+
+export async function deleteGroupOrderLine(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  if (!id) return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (prisma as any).ibsaGroupOrderLine.delete({ where: { id } });
+  revalidatePath("/ibsa/orders");
+}

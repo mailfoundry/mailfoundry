@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateGroupOrderStatus, deleteGroupOrder } from "./actions";
+import { updateGroupOrderStatus, deleteGroupOrder, deleteGroupOrderLine } from "./actions";
 import ImportOrderModal from "./ImportOrderModal";
 
 export type GroupOrderLine = {
@@ -111,6 +111,47 @@ export default function GroupOrdersSection({ orders }: { orders: GroupOrder[] })
         </div>
       )}
     </div>
+  );
+}
+
+function GroupOrderLineRow({ line }: { line: GroupOrderLine }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [, startTransition] = useTransition();
+
+  function handleDelete() {
+    const fd = new FormData();
+    fd.set("id", line.id);
+    startTransition(() => deleteGroupOrderLine(fd));
+  }
+
+  return (
+    <tr className="border-t border-slate-800/50 group">
+      <td className="py-2 text-white">
+        {line.productName}
+        {line.productVariant && (
+          <span className="ml-2 text-xs text-slate-500">{line.productVariant}</span>
+        )}
+        <span className="ml-2 font-mono text-xs text-slate-600">{line.productCode}</span>
+      </td>
+      <td className="py-2 text-right font-semibold text-white">{line.qty}</td>
+      <td className="py-2 text-right text-slate-400">{fmtGbp(line.unitCost)}</td>
+      <td className="py-2 text-right text-amber-400">{fmtGbp(line.qty * line.unitCost)}</td>
+      <td className="py-2 pl-4 text-right">
+        {confirmDelete ? (
+          <span className="flex items-center justify-end gap-2">
+            <button onClick={handleDelete} className="text-xs font-semibold text-red-400 hover:text-red-300">Remove</button>
+            <button onClick={() => setConfirmDelete(false)} className="text-xs text-slate-500 hover:text-slate-300">Cancel</button>
+          </span>
+        ) : (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="text-xs text-slate-700 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity"
+          >
+            ✕
+          </button>
+        )}
+      </td>
+    </tr>
   );
 }
 
@@ -230,22 +271,12 @@ function GroupOrderCard({
                       <th className="pb-2 text-right font-semibold uppercase tracking-wider">Qty</th>
                       <th className="pb-2 text-right font-semibold uppercase tracking-wider">Unit</th>
                       <th className="pb-2 text-right font-semibold uppercase tracking-wider">Total</th>
+                      <th className="pb-2 pl-4"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {lines.map((l) => (
-                      <tr key={l.id} className="border-t border-slate-800/50">
-                        <td className="py-2 text-white">
-                          {l.productName}
-                          {l.productVariant && (
-                            <span className="ml-2 text-xs text-slate-500">{l.productVariant}</span>
-                          )}
-                          <span className="ml-2 font-mono text-xs text-slate-600">{l.productCode}</span>
-                        </td>
-                        <td className="py-2 text-right font-semibold text-white">{l.qty}</td>
-                        <td className="py-2 text-right text-slate-400">{fmtGbp(l.unitCost)}</td>
-                        <td className="py-2 text-right text-amber-400">{fmtGbp(l.qty * l.unitCost)}</td>
-                      </tr>
+                      <GroupOrderLineRow key={l.id} line={l} />
                     ))}
                   </tbody>
                 </table>
