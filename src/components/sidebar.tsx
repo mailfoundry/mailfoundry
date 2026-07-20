@@ -36,7 +36,7 @@ export default function Sidebar({ active, ibsaOnly = false }: SidebarProps) {
   }, []);
 
   return (
-    <aside className="w-64 border-r border-slate-800 bg-slate-900 p-6">
+    <aside className="sticky top-0 h-screen w-64 shrink-0 overflow-y-auto border-r border-slate-800 bg-slate-900 p-6">
       <div className="mb-10">
         <Link href={ibsaOnly ? "/ibsa" : "/dashboard"}>
           <Logo height={26} variant="icon" />
