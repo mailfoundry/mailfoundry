@@ -81,7 +81,7 @@ export default function XyloHomePage() {
       {/* Footer */}
       <footer className="border-t border-white/5 px-10 py-6 text-center">
         <p className="text-xs text-slate-600">
-          © {new Date().getFullYear()} Xylo Supplies Ltd &nbsp;·&nbsp; United Kingdom
+          © {new Date().getFullYear()} Xylo (UK) Ltd &nbsp;·&nbsp; United Kingdom
         </p>
       </footer>
 
