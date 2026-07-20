@@ -53,7 +53,7 @@ export async function sendOrderFormLink(formData: FormData) {
       `,
     });
   } catch (err) {
-    console.error("sendOrderFormLink: SES error", err);
+    console.error("sendOrderFormLink: email error", err);
     return { error: err instanceof Error ? err.message : "Failed to send email" };
   }
 

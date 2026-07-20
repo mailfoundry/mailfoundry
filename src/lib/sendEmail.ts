@@ -1,16 +1,3 @@
-import {
-  SESv2Client,
-  SendEmailCommand,
-} from "@aws-sdk/client-sesv2";
-
-const sesClient = new SESv2Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
-
 type SendEmailInput = {
   to: string;
   subject: string;
@@ -18,40 +5,29 @@ type SendEmailInput = {
   html?: string;
 };
 
-export async function sendEmail({
-  to,
-  subject,
-  text,
-  html,
-}: SendEmailInput) {
-  const fromEmail = process.env.SES_FROM_EMAIL;
+export async function sendEmail({ to, subject, text, html }: SendEmailInput) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("RESEND_API_KEY is not set");
 
-  if (!fromEmail) {
-    throw new Error("SES_FROM_EMAIL is not set in .env");
-  }
-
-  const command = new SendEmailCommand({
-    FromEmailAddress: fromEmail,
-    ConfigurationSetName: "mailfoundry",
-    Destination: {
-      ToAddresses: [to],
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
-    Content: {
-      Simple: {
-        Subject: {
-          Data: subject,
-        },
-        Body: {
-          Text: {
-            Data: text,
-          },
-          Html: {
-            Data: html ?? text.replace(/\n/g, "<br />"),
-          },
-        },
-      },
-    },
+    body: JSON.stringify({
+      from: "IBSA · Xylo Supplies <noreply@xylouk.co.uk>",
+      to,
+      subject,
+      text,
+      html: html ?? text.replace(/\n/g, "<br />"),
+    }),
   });
 
-  return sesClient.send(command);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Resend error ${res.status}: ${body}`);
+  }
+
+  return res.json();
 }
