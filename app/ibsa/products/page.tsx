@@ -88,7 +88,7 @@ export default async function IbsaProductsPage({
         </Link>
       </div>
 
-      <ProductsClient products={products} />
+      <ProductsClient products={products} activeType={activeType} />
     </IbsaAppShell>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Logo from "./logo";
 import { logout } from "../../app/login/actions";
@@ -26,6 +27,13 @@ type SidebarProps = {
 export default function Sidebar({ active, ibsaOnly = false }: SidebarProps) {
   const base = "block rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white";
   const activeClass = "block rounded-lg bg-slate-800 px-3 py-2";
+
+  const [productsHref, setProductsHref] = useState("/ibsa/products?type=CS");
+  useEffect(() => {
+    const saved = localStorage.getItem("ibsa-products-tab");
+    if (saved === "FA") setProductsHref("/ibsa/products?type=FA");
+    else setProductsHref("/ibsa/products?type=CS");
+  }, []);
 
   return (
     <aside className="w-64 border-r border-slate-800 bg-slate-900 p-6">
@@ -60,7 +68,7 @@ export default function Sidebar({ active, ibsaOnly = false }: SidebarProps) {
             </p>
           )}
           <Link href="/ibsa" className={active === "ibsa" ? activeClass : base}>Conventions</Link>
-          <Link href="/ibsa/products" className={`mt-1 ${active === "ibsa-products" ? activeClass : base}`}>Products</Link>
+          <Link href={productsHref} className={`mt-1 ${active === "ibsa-products" ? activeClass : base}`}>Products</Link>
           <Link href="/ibsa/purchasing" className={`mt-1 ${active === "ibsa-purchasing" ? activeClass : base}`}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={`mt-1 ${active === "ibsa-suppliers" ? activeClass : base}`}>Suppliers</Link>
           <Link href="/ibsa/orders" className={`mt-1 ${active === "ibsa-orders" ? activeClass : base}`}>Orders</Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { updateProductStock, bulkUpdateInStock, updateProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
@@ -76,13 +76,18 @@ type EditDraft = {
   groupWithVariants: boolean;
 };
 
-type Props = { products: ProductRow[] };
+type Props = { products: ProductRow[]; activeType: "CS" | "FA" };
 
-export default function ProductsClient({ products }: Props) {
+export default function ProductsClient({ products, activeType }: Props) {
   const [search, setSearch] = useState("");
   const [stockTakeMode, setStockTakeMode] = useState(false);
   const [draft, setDraft] = useState<Record<string, number>>({});
   const [isSaving, startSaving] = useTransition();
+
+  // Persist last-used tab so sidebar link and refresh restore position
+  useEffect(() => {
+    localStorage.setItem("ibsa-products-tab", activeType);
+  }, [activeType]);
 
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
