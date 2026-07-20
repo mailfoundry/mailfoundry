@@ -6,8 +6,10 @@ import { revalidatePath } from "next/cache";
 type BreakdownItem = { ibsaProductId: string; name: string; units: number };
 
 /**
- * Records cartons received for a single PO line and increments inStock proportionally.
- * Only the DELTA (new - old cartonsReceived) triggers stock changes, so re-confirming is safe.
+ * Records cartons received for a single PO line and adjusts inStock proportionally.
+ * Uses delta logic so re-confirming (including corrections downward) is safe.
+ * Positive delta: stock increases, GIT decreases (goods arriving).
+ * Negative delta: stock decreases, GIT increases (correcting an over-count).
  */
 export async function bookInLine(formData: FormData) {
   const lineId = formData.get("lineId") as string;
@@ -26,48 +28,47 @@ export async function bookInLine(formData: FormData) {
   });
   if (!line) throw new Error("Line not found");
 
-  // ── Stock increment (delta only) ────────────────────────────────────────
+  // ── Stock adjustment (delta — handles both increases and corrections) ──
   const deltaCartons = cartonsReceived - line.cartonsReceived;
 
   const stockUpdates: Array<{ id: string; delta: number }> = [];
 
-  if (deltaCartons > 0 && line.cartonSize) {
-    const deltaUnits = deltaCartons * line.cartonSize;
+  if (deltaCartons !== 0 && line.cartonSize) {
+    const deltaUnits = deltaCartons * line.cartonSize; // negative when correcting down
+    const absUnits   = Math.abs(deltaUnits);
+    const sign       = deltaUnits > 0 ? 1 : -1;
     const breakdown: BreakdownItem[] = JSON.parse(line.productBreakdown as string);
 
     if (breakdown.length > 0) {
       const totalNeeded = breakdown.reduce((s, p) => s + p.units, 0);
-      let remaining = deltaUnits;
+      let remaining = absUnits;
 
       for (let i = 0; i < breakdown.length; i++) {
         const p = breakdown[i];
         const share =
           i === breakdown.length - 1
             ? remaining
-            : Math.floor((p.units / totalNeeded) * deltaUnits);
+            : Math.floor((p.units / totalNeeded) * absUnits);
         remaining -= share;
-        if (share > 0) stockUpdates.push({ id: p.ibsaProductId, delta: share });
+        if (share > 0) stockUpdates.push({ id: p.ibsaProductId, delta: sign * share });
       }
     }
   }
 
   // ── Persist: line + stock/GIT changes in one transaction ─────────────
-  // inStock increases by delta units; GIT decreases by the same amount
-  // (goods moving from in-transit to in-stock). GREATEST(0, ...) prevents
-  // GIT going negative if it was manually set lower than expected.
+  // Positive delta: inStock up, GIT down (goods arriving).
+  // Negative delta: inStock down, GIT up (reversing an over-count).
+  // GREATEST(0, ...) prevents either value going negative.
   await prisma.$transaction(async (tx) => {
     await tx.ibsaPurchaseOrderLine.update({
       where: { id: lineId },
       data: { cartonsReceived },
     });
     for (const u of stockUpdates) {
-      await tx.ibsaProduct.update({
-        where: { id: u.id },
-        data: { inStock: { increment: u.delta } },
-      });
       await tx.$executeRaw`
         UPDATE "IbsaProduct"
-        SET "git" = GREATEST(0, "git" - ${u.delta})
+        SET "inStock" = GREATEST(0, "inStock" + ${u.delta}),
+            "git"     = GREATEST(0, "git"     - ${u.delta})
         WHERE "id" = ${u.id}
       `;
     }
