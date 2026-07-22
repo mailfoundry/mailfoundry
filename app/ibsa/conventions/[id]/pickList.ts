@@ -2,7 +2,8 @@
  * pickList.ts
  * Client-side stock pick list generator — opens a print-optimised HTML page
  * in a new tab so warehouse staff can print it and physically check off items.
- * No external dependencies.
+ * Designed for readability on a printed sheet: large type, big checkboxes,
+ * and a prominent quantity column. No external dependencies.
  */
 
 export type PickListLine = {
@@ -56,16 +57,18 @@ export function downloadPickList({
   const rows = Object.entries(grouped)
     .map(
       ([category, lines]) => `
-    <tr class="cat-row"><td colspan="5">${CATEGORY_LABELS[category] ?? category}</td></tr>
+    <tr class="cat-row"><td colspan="4">${CATEGORY_LABELS[category] ?? category}</td></tr>
     ${lines
       .map(
         (l) => `
     <tr>
       <td class="checkbox"><span class="box"></span></td>
-      <td class="mono">${l.code}</td>
-      <td>${l.name}</td>
-      <td class="center">${l.variant ?? "—"}</td>
-      <td class="right bold">${l.qty}</td>
+      <td class="product">
+        <div class="product-name">${l.name}</div>
+        <div class="product-code">${l.code}</div>
+      </td>
+      <td class="variant">${l.variant ?? "—"}</td>
+      <td class="qty"><span class="qty-pill">${l.qty}</span></td>
     </tr>`
       )
       .join("\n")}`
@@ -79,30 +82,52 @@ export function downloadPickList({
   <title>Pick List — ${conventionName} (${deptLabel})</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; color: #1e293b; background: white; }
-    .page { padding: 18mm 18mm 16mm; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-    .header-left h1 { font-size: 22pt; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
-    .header-left .org { color: #64748b; margin-top: 5px; font-size: 9pt; }
-    .header-right { text-align: right; font-size: 9pt; color: #475569; }
-    .header-right strong { color: #1e293b; }
-    hr { border: none; border-top: 2px solid #e2e8f0; margin: 14px 0; }
-    .stats { margin-bottom: 14px; font-size: 9pt; color: #64748b; }
-    table { width: 100%; border-collapse: collapse; font-size: 9pt; }
-    thead tr { background: #1e293b; color: #94a3b8; }
-    thead th { padding: 8px 10px; text-align: left; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.06em; }
-    tbody td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-    .cat-row td { background: #f1f5f9; font-weight: 700; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; padding: 6px 10px; }
-    .checkbox { width: 24px; }
-    .box { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #64748b; }
-    .mono { font-family: 'Courier New', monospace; color: #64748b; font-size: 8.5pt; }
-    .center { text-align: center; }
-    .right { text-align: right; }
-    .bold { font-weight: 700; color: #0f172a; }
-    .footer { margin-top: 14px; font-size: 8pt; color: #94a3b8; display: flex; justify-content: space-between; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: #1e293b; background: white; }
+    .page { padding: 14mm 14mm 12mm; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .header-left h1 { font-size: 26pt; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
+    .header-left .org { color: #64748b; margin-top: 4px; font-size: 11pt; }
+    .header-right { text-align: right; font-size: 11pt; color: #475569; }
+    .header-right strong { color: #1e293b; font-size: 13pt; }
+    hr { border: none; border-top: 2px solid #cbd5e1; margin: 12px 0; }
+    .stats { margin-bottom: 12px; font-size: 12pt; color: #334155; font-weight: 700; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #1e293b; color: #cbd5e1; }
+    thead th { padding: 8px 12px; text-align: left; font-weight: 700; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    tbody tr:not(.cat-row) { border-bottom: 1px solid #e2e8f0; }
+    tbody tr:not(.cat-row):nth-child(even) { background: #f8fafc; }
+    tbody td { padding: 11px 12px; vertical-align: middle; }
+
+    .cat-row td { background: #dbe3ee; font-weight: 800; font-size: 10.5pt; text-transform: uppercase; letter-spacing: 0.05em; color: #1e293b; padding: 8px 12px; border-top: 2px solid #94a3b8; }
+
+    .checkbox { width: 40px; }
+    .box { display: inline-block; width: 22px; height: 22px; border: 2.5px solid #334155; border-radius: 4px; }
+
+    .product-name { font-weight: 700; font-size: 12.5pt; color: #0f172a; line-height: 1.3; }
+    .product-code { font-family: 'Courier New', monospace; color: #94a3b8; font-size: 8.5pt; margin-top: 2px; }
+
+    .variant { color: #334155; font-size: 11.5pt; width: 26%; }
+
+    .qty { text-align: right; width: 70px; }
+    .qty-pill {
+      display: inline-block;
+      min-width: 36px;
+      padding: 4px 10px;
+      background: #1e293b;
+      color: #fff;
+      font-size: 15pt;
+      font-weight: 800;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .footer { margin-top: 16px; font-size: 9pt; color: #94a3b8; display: flex; justify-content: space-between; }
+
     @media print {
       @page { margin: 0; size: A4 portrait; }
-      .page { padding: 12mm 14mm 12mm; }
+      .page { padding: 10mm 12mm 10mm; }
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
   </style>
@@ -128,9 +153,8 @@ export function downloadPickList({
       <thead>
         <tr>
           <th></th>
-          <th>Code</th>
           <th>Product</th>
-          <th style="text-align:center">Variant</th>
+          <th>Variant</th>
           <th style="text-align:right">Qty</th>
         </tr>
       </thead>
