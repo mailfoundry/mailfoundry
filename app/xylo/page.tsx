@@ -59,7 +59,7 @@ export default function XyloHomePage() {
             href="mailto:hello@xylouk.co.uk"
             className="inline-block bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-8 py-3.5 rounded-xl transition-colors tracking-wide"
           >
-            Trade Enquiries →
+            General Enquiries →
           </a>
           <p className="mt-3 text-xs text-slate-600">hello@xylouk.co.uk &nbsp;·&nbsp; 07714 747777</p>
 
