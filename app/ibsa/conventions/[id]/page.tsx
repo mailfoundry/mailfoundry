@@ -567,6 +567,8 @@ export default async function ConventionDetailPage({
         qtyMap={csQtyMap}
         overrideMap={csOverrideMap}
         conventionId={convention.id}
+        conventionName={convention.name}
+        paymentDueDate={convention.paymentDueDate ? convention.paymentDueDate.toISOString() : null}
         title="Cleaning Supplies Order"
         dept="CS"
       />
@@ -578,6 +580,8 @@ export default async function ConventionDetailPage({
           qtyMap={faQtyMap}
           overrideMap={faOverrideMap}
           conventionId={convention.id}
+          conventionName={convention.name}
+          paymentDueDate={convention.faPaymentDueDate ? convention.faPaymentDueDate.toISOString() : null}
           title="First Aid Order"
           dept="FA"
         />

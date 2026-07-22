@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import ConventionQtyInput from "./ConventionQtyInput";
+import { downloadPickList } from "./pickList";
+import { downloadXeroExport } from "./xeroExport";
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
@@ -30,14 +32,45 @@ type Props = {
   qtyMap: Record<string, number>;
   overrideMap: Record<string, number>;
   conventionId: string;
+  conventionName: string;
+  paymentDueDate: string | null;
   title: string;
-  dept: string;
+  dept: "CS" | "FA";
 };
 
-export default function ConventionProductTable({ products, qtyMap, overrideMap, conventionId, title, dept }: Props) {
+export default function ConventionProductTable({ products, qtyMap, overrideMap, conventionId, conventionName, paymentDueDate, title, dept }: Props) {
   const [showAll, setShowAll] = useState(false);
 
   const orderedCount = products.filter((p) => (qtyMap[p.id] ?? 0) > 0).length;
+
+  const handlePrintPickList = () => {
+    downloadPickList({
+      conventionName,
+      dept,
+      items: products.map((p) => ({
+        code: p.code,
+        name: p.name,
+        variant: p.variant,
+        category: p.category,
+        qty: qtyMap[p.id] ?? 0,
+      })),
+    });
+  };
+
+  const handleXeroExport = () => {
+    downloadXeroExport({
+      conventionName,
+      dept,
+      paymentDueDate,
+      items: products.map((p) => ({
+        code: p.code,
+        name: p.name,
+        variant: p.variant,
+        qty: qtyMap[p.id] ?? 0,
+        unitCost: p.unitCost,
+      })),
+    });
+  };
 
   const visibleProducts = showAll ? products : products.filter((p) => (qtyMap[p.id] ?? 0) > 0);
 
@@ -51,14 +84,30 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
     <section className="mb-10">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold">{title}</h3>
-        <button
-          onClick={() => setShowAll((v) => !v)}
-          className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
-        >
-          {showAll
-            ? `Hide unordered`
-            : `Show all products (${products.length - orderedCount} hidden)`}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handlePrintPickList}
+            disabled={orderedCount === 0}
+            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+          >
+            Print pick list
+          </button>
+          <button
+            onClick={handleXeroExport}
+            disabled={orderedCount === 0}
+            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+          >
+            Export to Xero
+          </button>
+          <button
+            onClick={() => setShowAll((v) => !v)}
+            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
+          >
+            {showAll
+              ? `Hide unordered`
+              : `Show all products (${products.length - orderedCount} hidden)`}
+          </button>
+        </div>
       </div>
 
       {Object.keys(grouped).length === 0 ? (
