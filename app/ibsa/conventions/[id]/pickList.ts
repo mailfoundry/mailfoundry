@@ -119,7 +119,7 @@ export function downloadPickList({
     .checkbox { width: 26px; }
     .box { display: inline-block; width: 14px; height: 14px; border: 1.3px solid #1a1a1a; }
 
-    .code { font-family: 'Courier New', monospace; font-weight: 700; font-size: 11pt; padding-left: 4px; }
+    .code { font-weight: 700; font-size: 11pt; padding-left: 4px; }
     .variant { color: #555; font-size: 10.5pt; text-align: right; padding-right: 18px; }
     .qty { font-weight: 700; font-size: 13pt; text-align: right; width: 40px; }
 
