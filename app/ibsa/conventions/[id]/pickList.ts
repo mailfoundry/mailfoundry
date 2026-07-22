@@ -76,9 +76,9 @@ export function downloadPickList({
               (l) => `
           <tr>
             <td class="checks">
-              <span class="chk"><span class="box"></span><span class="lbl">Picked</span></span>
-              <span class="chk"><span class="box"></span><span class="lbl">Palletised</span></span>
-              <span class="chk"><span class="box"></span><span class="lbl">Checked</span></span>
+              <span class="box"></span>
+              <span class="box"></span>
+              <span class="box"></span>
             </td>
             <td class="code">${l.code}</td>
             <td class="variant">${l.variant ?? "—"}</td>
@@ -131,11 +131,12 @@ export function downloadPickList({
     td { padding: 9px 0; border-bottom: 1px solid #ddd; vertical-align: middle; }
     tr:last-child td { border-bottom: 1px solid #ddd; }
 
-    .checks { width: 76px; }
-    .checks { display: flex; gap: 8px; }
-    .chk { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .box { display: inline-block; width: 14px; height: 14px; border: 1.3px solid #1a1a1a; }
-    .lbl { font-size: 6pt; color: #666; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+    .checks { width: 56px; display: flex; gap: 7px; align-items: center; }
+    .box { display: inline-block; width: 14px; height: 14px; border: 1.3px solid #1a1a1a; flex-shrink: 0; }
+
+    .legend { display: flex; gap: 20px; margin-bottom: 16px; font-size: 9pt; color: #444; }
+    .leg-item { display: flex; align-items: center; gap: 5px; }
+    .legbox { display: inline-block; width: 11px; height: 11px; border: 1.3px solid #444; flex-shrink: 0; }
 
     .code { font-weight: 700; font-size: 11pt; padding-left: 4px; }
     .variant { color: #555; font-size: 10.5pt; text-align: right; padding-right: 18px; }
@@ -174,6 +175,12 @@ export function downloadPickList({
     <hr />
 
     <div class="stats"><strong>${totalLines}</strong> line${totalLines !== 1 ? "s" : ""} &middot; <strong>${totalUnits}</strong> unit${totalUnits !== 1 ? "s" : ""} to pick</div>
+
+    <div class="legend">
+      <span class="leg-item"><span class="legbox"></span> Picked</span>
+      <span class="leg-item"><span class="legbox"></span> Palletised</span>
+      <span class="leg-item"><span class="legbox"></span> Checked</span>
+    </div>
 
     ${sections}
 
