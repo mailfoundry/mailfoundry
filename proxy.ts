@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order"];
+const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
@@ -15,7 +15,8 @@ export function proxy(request: NextRequest) {
 
   if (isXylo) {
     const url = request.nextUrl.clone();
-    url.pathname = "/xylo";
+    const xyloPath = request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname;
+    url.pathname = `/xylo${xyloPath}`;
     return NextResponse.rewrite(url);
   }
 
