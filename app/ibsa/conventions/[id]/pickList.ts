@@ -145,8 +145,11 @@ export function downloadPickList({
     .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 8.5pt; color: #888; display: flex; justify-content: space-between; }
 
     @media print {
-      @page { margin: 0; size: A4 portrait; }
-      .page { padding: 12mm 14mm 10mm; }
+      @page { margin: 14mm 14mm 16mm; size: A4 portrait; }
+      .page { padding: 0; }
+      tr { page-break-inside: avoid; break-inside: avoid; }
+      .section-title { page-break-after: avoid; break-after: avoid; }
+      .summary { page-break-inside: avoid; break-inside: avoid; }
     }
   </style>
 </head>
