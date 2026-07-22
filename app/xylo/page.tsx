@@ -6,19 +6,7 @@ export const metadata = {
 
 export default function XyloHomePage() {
   return (
-    <main className="min-h-screen bg-[#090e1a] text-white flex flex-col">
-
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-10 py-7 border-b border-white/5">
-        <XyloLogo />
-        <a
-          href="mailto:hello@xylouk.co.uk"
-          className="text-sm text-slate-400 hover:text-white transition-colors"
-        >
-          hello@xylouk.co.uk
-        </a>
-      </nav>
-
+    <>
       {/* Hero */}
       <section className="flex-1 flex items-center justify-center px-6 py-24">
         <div className="max-w-2xl w-full text-center">
@@ -73,47 +61,29 @@ export default function XyloHomePage() {
           >
             Trade Enquiries →
           </a>
-          <p className="mt-3 text-xs text-slate-600">hello@xylouk.co.uk</p>
+          <p className="mt-3 text-xs text-slate-600">hello@xylouk.co.uk &nbsp;·&nbsp; 07714 747777</p>
 
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-10 py-6 text-center">
-        <p className="text-xs text-slate-600">
-          © {new Date().getFullYear()} Xylo (UK) Ltd &nbsp;·&nbsp; United Kingdom
-        </p>
-      </footer>
-
-    </main>
+      {/* Trust strip */}
+      <section className="border-t border-white/5 px-6 py-12 bg-white/[0.015]">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+          <TrustItem label="Registered UK Company" detail="No. GB073 23863" />
+          <TrustItem label="VAT Registered" detail="442 8892 61" />
+          <TrustItem label="Staffordshire Based" detail="ST3 1LZ" />
+          <TrustItem label="Trade & Bulk Orders" detail="Direct account manager" />
+        </div>
+      </section>
+    </>
   );
 }
 
-function XyloLogo() {
+function TrustItem({ label, detail }: { label: string; detail: string }) {
   return (
-    <svg width="148" height="40" viewBox="0 0 148 40" xmlns="http://www.w3.org/2000/svg" aria-label="Xylo Supplies">
-      {/* XYLO */}
-      <text
-        x="0" y="30"
-        fontFamily="Arial Black, Arial, sans-serif"
-        fontWeight="900"
-        fontSize="30"
-        letterSpacing="-0.5"
-      >
-        <tspan fill="#f97316">X</tspan>
-        <tspan fill="#f1f5f9">YLO</tspan>
-      </text>
-      {/* SUPPLIES */}
-      <text
-        x="1" y="39"
-        fontFamily="Arial, Helvetica, sans-serif"
-        fontWeight="400"
-        fontSize="8.5"
-        letterSpacing="4.5"
-        fill="#475569"
-      >
-        SUPPLIES
-      </text>
-    </svg>
+    <div>
+      <p className="text-xs font-bold text-white mb-1">{label}</p>
+      <p className="text-[11px] text-slate-500">{detail}</p>
+    </div>
   );
 }
