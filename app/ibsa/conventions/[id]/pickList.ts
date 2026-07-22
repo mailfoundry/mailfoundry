@@ -64,8 +64,8 @@ export function downloadPickList({
     <tr>
       <td class="checkbox"><span class="box"></span></td>
       <td class="product">
-        <div class="product-name">${l.name}</div>
         <div class="product-code">${l.code}</div>
+        <div class="product-name">${l.name}</div>
       </td>
       <td class="variant">${l.variant ?? "—"}</td>
       <td class="qty"><span class="qty-pill">${l.qty}</span></td>
@@ -105,8 +105,8 @@ export function downloadPickList({
     .checkbox { width: 40px; }
     .box { display: inline-block; width: 22px; height: 22px; border: 2.5px solid #334155; border-radius: 4px; }
 
-    .product-name { font-weight: 700; font-size: 12.5pt; color: #0f172a; line-height: 1.3; }
-    .product-code { font-family: 'Courier New', monospace; color: #94a3b8; font-size: 8.5pt; margin-top: 2px; }
+    .product-code { font-family: 'Courier New', monospace; font-weight: 700; font-size: 14pt; color: #0f172a; letter-spacing: -0.2px; line-height: 1.3; }
+    .product-name { color: #64748b; font-size: 9.5pt; margin-top: 3px; line-height: 1.3; }
 
     .variant { color: #334155; font-size: 11.5pt; width: 26%; }
 
@@ -153,7 +153,7 @@ export function downloadPickList({
       <thead>
         <tr>
           <th></th>
-          <th>Product</th>
+          <th>Code</th>
           <th>Variant</th>
           <th style="text-align:right">Qty</th>
         </tr>
