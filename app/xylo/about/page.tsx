@@ -15,7 +15,7 @@ export default function AboutPage() {
           A registered UK supplier,<br />built for trade.
         </h1>
 
-        <div className="space-y-6 text-slate-400 leading-relaxed">
+        <div className="space-y-6 text-slate-600 leading-relaxed">
           <p>
             Xylo Supplies is the trading name of Xylo (UK) Ltd, a registered
             wholesale distributor of professional cleaning products and first
@@ -37,12 +37,12 @@ export default function AboutPage() {
         </div>
 
         {/* Company details card */}
-        <div className="mt-14 rounded-xl border border-white/8 bg-white/3 p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div className="mt-14 rounded-xl border border-slate-200 bg-slate-50 p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-3">
               Registered Office
             </p>
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-700 leading-relaxed">
               Xylo (UK) Ltd<br />
               R08 Regent Works Studio<br />
               Regent Works, Lawley Street<br />
@@ -54,7 +54,7 @@ export default function AboutPage() {
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-3">
               Company Information
             </p>
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-700 leading-relaxed">
               Company Registration No. GB073 23863<br />
               VAT Registration No. 442 8892 61<br />
               Registered in England &amp; Wales

@@ -14,7 +14,7 @@ export default function ContactPage() {
         <h1 className="text-4xl font-black leading-tight tracking-tight mb-6">
           Talk to us about a trade account
         </h1>
-        <p className="text-lg text-slate-400 max-w-lg mx-auto mb-16 leading-relaxed">
+        <p className="text-lg text-slate-600 max-w-lg mx-auto mb-16 leading-relaxed">
           Whether you&apos;re setting up a new trade account, placing a bulk
           order, or just have a question about stock — reach us directly.
         </p>
@@ -43,16 +43,16 @@ function ContactCard({ label, value, href }: { label: string; value: string; hre
   const content = (
     <>
       <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-2">{label}</p>
-      <p className="text-sm text-slate-300 leading-relaxed">{value}</p>
+      <p className="text-sm text-slate-700 leading-relaxed">{value}</p>
     </>
   );
 
   const className =
-    "rounded-xl border border-white/8 bg-white/3 p-5 text-left block h-full";
+    "rounded-xl border border-slate-200 bg-slate-50 p-5 text-left block h-full";
 
   if (href) {
     return (
-      <a href={href} className={`${className} hover:border-orange-500/40 hover:bg-white/5 transition-colors`}>
+      <a href={href} className={`${className} hover:border-orange-500/40 hover:bg-orange-50 transition-colors`}>
         {content}
       </a>
     );

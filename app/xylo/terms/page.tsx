@@ -15,9 +15,9 @@ export default function TermsPage() {
           Last updated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
         </p>
 
-        <div className="space-y-8 text-sm text-slate-400 leading-relaxed">
+        <div className="space-y-8 text-sm text-slate-600 leading-relaxed">
           <div>
-            <h2 className="text-white font-bold mb-2">1. Company Information</h2>
+            <h2 className="text-slate-900 font-bold mb-2">1. Company Information</h2>
             <p>
               These terms apply to trade supplied by Xylo (UK) Ltd (&quot;Xylo
               Supplies&quot;, &quot;we&quot;, &quot;us&quot;), registered in
@@ -29,7 +29,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">2. Trade Accounts &amp; Orders</h2>
+            <h2 className="text-slate-900 font-bold mb-2">2. Trade Accounts &amp; Orders</h2>
             <p>
               Products are supplied on a wholesale/trade basis. Orders are
               subject to acceptance and stock availability. Prices are quoted
@@ -39,7 +39,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">3. Payment</h2>
+            <h2 className="text-slate-900 font-bold mb-2">3. Payment</h2>
             <p>
               Payment terms are agreed individually with each trade account
               at the time of account set-up. Standard terms apply unless
@@ -48,7 +48,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">4. Delivery</h2>
+            <h2 className="text-slate-900 font-bold mb-2">4. Delivery</h2>
             <p>
               Delivery timescales are estimates only and are not guaranteed.
               Risk in goods passes to the customer on delivery. We are not
@@ -58,7 +58,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">5. Returns &amp; Faulty Goods</h2>
+            <h2 className="text-slate-900 font-bold mb-2">5. Returns &amp; Faulty Goods</h2>
             <p>
               Please notify us within a reasonable period of receipt if goods
               arrive damaged, faulty, or incorrect, so we can arrange a
@@ -67,7 +67,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">6. Liability</h2>
+            <h2 className="text-slate-900 font-bold mb-2">6. Liability</h2>
             <p>
               Nothing in these terms excludes or limits our liability for
               death or personal injury caused by negligence, or for fraud.
@@ -77,7 +77,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">7. Governing Law</h2>
+            <h2 className="text-slate-900 font-bold mb-2">7. Governing Law</h2>
             <p>
               These terms are governed by the laws of England &amp; Wales and
               subject to the exclusive jurisdiction of the courts of England
@@ -86,7 +86,7 @@ export default function TermsPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">8. Contact</h2>
+            <h2 className="text-slate-900 font-bold mb-2">8. Contact</h2>
             <p>
               Questions about these terms can be sent to{" "}
               <a href="mailto:hello@xylouk.co.uk" className="text-orange-400 hover:text-orange-300">
@@ -96,7 +96,7 @@ export default function TermsPage() {
           </div>
         </div>
 
-        <p className="mt-16 text-xs text-slate-600 border-t border-white/5 pt-6">
+        <p className="mt-16 text-xs text-slate-500 border-t border-slate-200 pt-6">
           This is a general template and has not been reviewed by a
           solicitor. We recommend having it checked against your specific
           trading arrangements before relying on it.

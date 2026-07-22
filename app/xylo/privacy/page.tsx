@@ -15,9 +15,9 @@ export default function PrivacyPage() {
           Last updated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
         </p>
 
-        <div className="space-y-8 text-sm text-slate-400 leading-relaxed">
+        <div className="space-y-8 text-sm text-slate-600 leading-relaxed">
           <div>
-            <h2 className="text-white font-bold mb-2">1. Who We Are</h2>
+            <h2 className="text-slate-900 font-bold mb-2">1. Who We Are</h2>
             <p>
               Xylo (UK) Ltd (&quot;Xylo Supplies&quot;), company number
               GB073 23863, registered office R08 Regent Works Studio, Regent
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">2. What We Collect</h2>
+            <h2 className="text-slate-900 font-bold mb-2">2. What We Collect</h2>
             <p>
               When you make a trade enquiry or set up an account, we collect
               information you provide directly — such as your name, company
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">3. How We Use It</h2>
+            <h2 className="text-slate-900 font-bold mb-2">3. How We Use It</h2>
             <p>
               We use your information to respond to enquiries, set up and
               manage trade accounts, process and fulfil orders, and meet our
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">4. Retention</h2>
+            <h2 className="text-slate-900 font-bold mb-2">4. Retention</h2>
             <p>
               We keep personal data for as long as needed to provide our
               services and to meet legal, accounting or reporting
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">5. Your Rights</h2>
+            <h2 className="text-slate-900 font-bold mb-2">5. Your Rights</h2>
             <p>
               Under UK data protection law you have the right to request
               access to, correction of, or deletion of your personal data.
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           </div>
 
           <div>
-            <h2 className="text-white font-bold mb-2">6. Contact</h2>
+            <h2 className="text-slate-900 font-bold mb-2">6. Contact</h2>
             <p>
               For any privacy-related questions, contact{" "}
               <a href="mailto:hello@xylouk.co.uk" className="text-orange-400 hover:text-orange-300">
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
           </div>
         </div>
 
-        <p className="mt-16 text-xs text-slate-600 border-t border-white/5 pt-6">
+        <p className="mt-16 text-xs text-slate-500 border-t border-slate-200 pt-6">
           This is a general template and has not been reviewed by a
           solicitor. We recommend having it checked against your specific
           data handling practices before relying on it.
