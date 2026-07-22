@@ -569,6 +569,7 @@ export default async function ConventionDetailPage({
         conventionId={convention.id}
         conventionName={convention.name}
         paymentDueDate={convention.paymentDueDate ? convention.paymentDueDate.toISOString() : null}
+        shippingCost={convention.shippingCost}
         title="Cleaning Supplies Order"
         dept="CS"
       />
@@ -582,6 +583,7 @@ export default async function ConventionDetailPage({
           conventionId={convention.id}
           conventionName={convention.name}
           paymentDueDate={convention.faPaymentDueDate ? convention.faPaymentDueDate.toISOString() : null}
+          shippingCost={convention.faShippingCost}
           title="First Aid Order"
           dept="FA"
         />

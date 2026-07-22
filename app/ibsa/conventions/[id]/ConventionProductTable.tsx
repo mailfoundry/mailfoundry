@@ -34,11 +34,12 @@ type Props = {
   conventionId: string;
   conventionName: string;
   paymentDueDate: string | null;
+  shippingCost: number;
   title: string;
   dept: "CS" | "FA";
 };
 
-export default function ConventionProductTable({ products, qtyMap, overrideMap, conventionId, conventionName, paymentDueDate, title, dept }: Props) {
+export default function ConventionProductTable({ products, qtyMap, overrideMap, conventionId, conventionName, paymentDueDate, shippingCost, title, dept }: Props) {
   const [showAll, setShowAll] = useState(false);
 
   const orderedCount = products.filter((p) => (qtyMap[p.id] ?? 0) > 0).length;
@@ -47,12 +48,14 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
     downloadPickList({
       conventionName,
       dept,
+      shippingCost,
       items: products.map((p) => ({
         code: p.code,
         name: p.name,
         variant: p.variant,
         category: p.category,
         qty: qtyMap[p.id] ?? 0,
+        unitCost: p.unitCost,
       })),
     });
   };
