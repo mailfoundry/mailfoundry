@@ -75,7 +75,11 @@ export function downloadPickList({
             .map(
               (l) => `
           <tr>
-            <td class="checkbox"><span class="box"></span></td>
+            <td class="checks">
+              <span class="chk"><span class="box"></span><span class="lbl">Picked</span></span>
+              <span class="chk"><span class="box"></span><span class="lbl">Palletised</span></span>
+              <span class="chk"><span class="box"></span><span class="lbl">Checked</span></span>
+            </td>
             <td class="code">${l.code}</td>
             <td class="variant">${l.variant ?? "—"}</td>
             <td class="qty">${l.qty}</td>
@@ -127,8 +131,11 @@ export function downloadPickList({
     td { padding: 9px 0; border-bottom: 1px solid #ddd; vertical-align: middle; }
     tr:last-child td { border-bottom: 1px solid #ddd; }
 
-    .checkbox { width: 26px; }
+    .checks { width: 76px; }
+    .checks { display: flex; gap: 8px; }
+    .chk { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .box { display: inline-block; width: 14px; height: 14px; border: 1.3px solid #1a1a1a; }
+    .lbl { font-size: 6pt; color: #666; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
 
     .code { font-weight: 700; font-size: 11pt; padding-left: 4px; }
     .variant { color: #555; font-size: 10.5pt; text-align: right; padding-right: 18px; }

@@ -561,7 +561,6 @@ export default async function ConventionDetailPage({
         </form>
       </div>
 
-      {/* ── Cleaning Supplies pick sheet ───────────────────────────── */}
       <ConventionProductTable
         products={csProductRows}
         qtyMap={csQtyMap}
@@ -574,7 +573,7 @@ export default async function ConventionDetailPage({
         dept="CS"
       />
 
-      {/* ── First Aid pick sheet (only when FA items exist) ────────── */}
+      {/* ── First Aid order (only when FA items exist) ─────────────── */}
       {hasFaData && (
         <ConventionProductTable
           products={faProductRows}
