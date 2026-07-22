@@ -4,6 +4,9 @@
  * bulk invoice import format (ContactName, InvoiceNumber, InvoiceDate,
  * DueDate, Description, Quantity, UnitAmount, AccountCode, TaxType) and
  * triggers a browser download. No external dependencies.
+ *
+ * AccountCode is intentionally left blank on export — set it during import
+ * or bulk-edit before uploading to Xero.
  */
 
 export type XeroLine = {
