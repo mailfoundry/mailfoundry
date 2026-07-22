@@ -81,7 +81,6 @@ export function downloadPickList({
               <span class="box"></span>
             </td>
             <td class="code">${l.code}</td>
-            <td class="variant">${l.variant ?? "—"}</td>
             <td class="qty">${l.qty}</td>
             <td class="value">${fmtGbp(l.qty * l.unitCost)}</td>
           </tr>`
@@ -138,8 +137,7 @@ export function downloadPickList({
     .leg-item { display: flex; align-items: center; gap: 5px; }
     .legbox { display: inline-block; width: 11px; height: 11px; border: 1.3px solid #444; flex-shrink: 0; }
 
-    .code { font-weight: 700; font-size: 11pt; padding-left: 4px; }
-    .variant { color: #555; font-size: 10.5pt; text-align: right; padding-right: 18px; }
+    .code { font-weight: 700; font-size: 7.5pt; padding-left: 4px; }
     .qty { font-weight: 700; font-size: 13pt; text-align: right; width: 40px; }
     .value { color: #333; font-size: 10.5pt; text-align: right; width: 80px; padding-left: 18px; }
 
