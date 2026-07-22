@@ -137,9 +137,9 @@ export function downloadPickList({
     .leg-item { display: flex; align-items: center; gap: 5px; }
     .legbox { display: inline-block; width: 11px; height: 11px; border: 1.3px solid #444; flex-shrink: 0; }
 
-    .code { font-weight: 700; font-size: 7.5pt; padding-left: 4px; }
-    .qty { font-weight: 700; font-size: 13pt; text-align: right; width: 40px; }
-    .value { color: #333; font-size: 10.5pt; text-align: right; width: 80px; padding-left: 18px; }
+    .code { font-weight: 700; font-size: 8pt; padding-left: 4px; }
+    .qty { font-weight: 700; font-size: 8pt; text-align: right; width: 40px; }
+    .value { color: #333; font-size: 8pt; text-align: right; width: 80px; padding-left: 18px; }
 
     .summary { margin-top: 22px; display: flex; justify-content: flex-end; }
     .summary table { width: auto; min-width: 260px; }
