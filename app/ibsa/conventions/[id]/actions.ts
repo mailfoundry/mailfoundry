@@ -47,7 +47,7 @@ export async function sendOrderFormLink(formData: FormData) {
                 <!-- Header -->
                 <tr>
                   <td style="background:#0f172a;border-radius:12px 12px 0 0;padding:28px 36px;border-bottom:3px solid #f97316;">
-                    <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#f97316;">IBSA · Xylo Supplies</p>
+                    <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#f97316;">IBSA · Xylo (UK) Ltd</p>
                   </td>
                 </tr>
 
@@ -79,14 +79,14 @@ export async function sendOrderFormLink(formData: FormData) {
                       </tr>
                     </table>
 
-                    <p style="margin:0;font-size:12px;color:#475569;border-top:1px solid #334155;padding-top:20px;">If you have any questions, please contact the Xylo Supplies team. If you didn't expect this email, you can safely ignore it.</p>
+                    <p style="margin:0;font-size:12px;color:#475569;border-top:1px solid #334155;padding-top:20px;">If you have any questions, please contact the Xylo (UK) Ltd team. If you didn't expect this email, you can safely ignore it.</p>
                   </td>
                 </tr>
 
                 <!-- Footer -->
                 <tr>
                   <td style="background:#0f172a;border-radius:0 0 12px 12px;padding:20px 36px;">
-                    <p style="margin:0;font-size:11px;color:#475569;text-align:center;">Xylo Supplies Ltd &nbsp;·&nbsp; This is an automated message, please do not reply</p>
+                    <p style="margin:0;font-size:11px;color:#475569;text-align:center;">Xylo (UK) Ltd &nbsp;·&nbsp; This is an automated message, please do not reply</p>
                   </td>
                 </tr>
 
