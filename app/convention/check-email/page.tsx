@@ -20,7 +20,7 @@ export default async function ConventionCheckEmailPage({ searchParams }: Props) 
           We've sent a sign-in link to{" "}
           <span className="font-medium text-white">{email ?? "your email address"}</span>.
         </p>
-        <p className="mt-2 text-sm text-slate-500">The link expires in 1 hour.</p>
+        <p className="mt-2 text-sm text-slate-500">The link expires in 24 hours.</p>
 
         <a
           href="/convention"

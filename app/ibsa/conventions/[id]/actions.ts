@@ -19,7 +19,7 @@ export async function sendOrderFormLink(formData: FormData) {
 
   const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
   const token      = crypto.randomUUID();
-  const expiresAt  = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  const expiresAt  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   await prisma.conventionOrderToken.create({
     data: { token, email: convention.contactEmail, conventionId, expiresAt },
@@ -34,7 +34,7 @@ export async function sendOrderFormLink(formData: FormData) {
     await sendEmail({
       to: convention.contactEmail,
       subject: `Please review your order — ${convention.name}${convention.venue ? ` (${convention.venue})` : ""}`,
-      text: `Hi,\n\nWe've recorded your order for ${convention.name}${convention.venue ? ` (${convention.venue})` : ""} (${date}). Please click the link below to check that we've accurately captured everything — if anything looks incorrect, you can adjust the quantities directly.\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
+      text: `Hi,\n\nWe've recorded your order for ${convention.name}${convention.venue ? ` (${convention.venue})` : ""} (${date}). Please click the link below to check that we've accurately captured everything — if anything looks incorrect, you can adjust the quantities directly.\n\n${verifyUrl}\n\nThis link expires in 24 hours.\n\nIf you didn't expect this email, please ignore it.`,
       html: `
         <!DOCTYPE html>
         <html lang="en">
@@ -68,7 +68,7 @@ export async function sendOrderFormLink(formData: FormData) {
                       </tr>
                     </table>
 
-                    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#94a3b8;">Click the button below to view the items we have on record for your convention. If the quantities don't look right, you can update them directly. <strong style="color:#cbd5e1;">This link expires in 1 hour.</strong></p>
+                    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#94a3b8;">Click the button below to view the items we have on record for your convention. If the quantities don't look right, you can update them directly. <strong style="color:#cbd5e1;">This link expires in 24 hours.</strong></p>
 
                     <!-- CTA -->
                     <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
@@ -127,7 +127,7 @@ export async function getOrderFormPreviewUrl(formData: FormData) {
 
   const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
   const token      = crypto.randomUUID();
-  const expiresAt  = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  const expiresAt  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   // Use a placeholder email for preview tokens
   await prisma.conventionOrderToken.create({

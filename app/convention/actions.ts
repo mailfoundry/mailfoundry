@@ -26,7 +26,7 @@ export async function requestConventionLink(formData: FormData) {
   }
 
   const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
-  const expiresAt  = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  const expiresAt  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   // Send one email with a link per convention (usually just one)
   const links = await Promise.all(
@@ -58,13 +58,13 @@ export async function requestConventionLink(formData: FormData) {
   await sendEmail({
     to: email,
     subject: `Your IBSA convention order form${links.length > 1 ? "s" : ""}`,
-    text: `Click a link below to open your convention order form. Links expire in 1 hour.\n\n${linksText}\n\nIf you didn't request this email you can safely ignore it.`,
+    text: `Click a link below to open your convention order form. Links expire in 24 hours.\n\n${linksText}\n\nIf you didn't request this email you can safely ignore it.`,
     html: `
       <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
         <div style="background:#0f172a;padding:32px;border-radius:12px;">
           <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo (UK) Ltd</p>
           <h1 style="color:#fff;font-size:22px;margin:0 0 8px;">Your order form${links.length > 1 ? "s" : ""}</h1>
-          <p style="color:#94a3b8;margin:0 0 20px;">Click below to fill in your product requirements. Links expire in 1 hour.</p>
+          <p style="color:#94a3b8;margin:0 0 20px;">Click below to fill in your product requirements. Links expire in 24 hours.</p>
           ${linksHtml}
           <p style="color:#475569;font-size:12px;margin:20px 0 0;">If you didn't request this email you can safely ignore it.</p>
         </div>
