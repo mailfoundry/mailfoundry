@@ -2,6 +2,7 @@
 
 import { prisma } from "../../../../src/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { sendEmail } from "../../../../src/lib/sendEmail";
 
 /** Send the convention order form magic link to the contact email on file */
@@ -350,4 +351,12 @@ export async function updateFaLogistics(formData: FormData) {
   });
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
+}
+
+export async function deleteConvention(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.delete({ where: { id: conventionId } });
+  revalidatePath("/ibsa");
+  redirect("/ibsa");
 }
