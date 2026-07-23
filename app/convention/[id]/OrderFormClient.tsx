@@ -486,10 +486,17 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           <p className="mt-1 text-sm text-slate-500">{fmtDate(convention.conventionDate)}</p>
         </div>
 
+        {/* Review banner */}
+        {!convention.isLocked && (
+          <div className="mb-6 rounded-xl border border-blue-800/40 bg-blue-950/20 px-4 py-3 text-sm text-blue-300">
+            We've recorded your order below. Please check the quantities are correct and update anything that doesn't match what you originally requested.
+          </div>
+        )}
+
         {/* Locked banner */}
         {convention.isLocked && (
           <div className="mb-6 rounded-xl border border-green-800/40 bg-green-950/20 px-4 py-3 text-sm text-green-400">
-            ✓ Your order has been received and is being processed. No further changes can be made.
+            ✓ Your order has been confirmed. No further changes can be made — please contact Xylo (UK) Ltd if you need to amend anything.
           </div>
         )}
 
@@ -632,7 +639,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             {/* Footer note */}
             {!convention.isLocked && (
               <p className="mt-8 text-center text-xs text-slate-600">
-                Quantities save automatically. You can return and adjust until your order is confirmed.
+                Please check the quantities match your original order. Any changes save automatically — contact Xylo (UK) Ltd if you have questions.
               </p>
             )}
           </>

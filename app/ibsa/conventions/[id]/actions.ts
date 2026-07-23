@@ -33,8 +33,8 @@ export async function sendOrderFormLink(formData: FormData) {
   try {
     await sendEmail({
       to: convention.contactEmail,
-      subject: `Your order form — ${convention.name}`,
-      text: `Hi,\n\nClick the link below to fill in your product requirements for ${convention.name} (${date}).\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
+      subject: `Please review your order — ${convention.name}`,
+      text: `Hi,\n\nWe've recorded your order for ${convention.name} (${date}). Please click the link below to check that we've accurately captured everything — if anything looks incorrect, you can adjust the quantities directly.\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
       html: `
         <!DOCTYPE html>
         <html lang="en">
@@ -54,8 +54,8 @@ export async function sendOrderFormLink(formData: FormData) {
                 <!-- Body -->
                 <tr>
                   <td style="background:#1e293b;padding:36px;">
-                    <h1 style="margin:0 0 6px;font-size:24px;font-weight:700;color:#f1f5f9;">Your order form is ready</h1>
-                    <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;">Please review and submit your product requirements at your earliest convenience.</p>
+                    <h1 style="margin:0 0 6px;font-size:24px;font-weight:700;color:#f1f5f9;">Please review your order</h1>
+                    <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;">We've recorded your order — please check the quantities are correct and let us know if anything needs adjusting.</p>
 
                     <!-- Convention card -->
                     <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border-radius:8px;margin-bottom:28px;">
@@ -68,13 +68,13 @@ export async function sendOrderFormLink(formData: FormData) {
                       </tr>
                     </table>
 
-                    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#94a3b8;">Click the button below to open your order form. You can select the products you need and submit your requirements directly through the form. <strong style="color:#cbd5e1;">This link expires in 1 hour.</strong></p>
+                    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#94a3b8;">Click the button below to view the items we have on record for your convention. If the quantities don't look right, you can update them directly. <strong style="color:#cbd5e1;">This link expires in 1 hour.</strong></p>
 
                     <!-- CTA -->
                     <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                       <tr>
                         <td style="background:#f97316;border-radius:8px;">
-                          <a href="${verifyUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;letter-spacing:0.01em;">Open order form →</a>
+                          <a href="${verifyUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;letter-spacing:0.01em;">Review your order →</a>
                         </td>
                       </tr>
                     </table>
