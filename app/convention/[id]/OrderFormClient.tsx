@@ -230,6 +230,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         setFaConfirmed(true);
         setActiveTab("details");
       }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
