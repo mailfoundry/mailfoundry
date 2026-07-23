@@ -43,14 +43,26 @@ export default async function ConventionOrderPage({ params }: Props) {
 
   if (!convention) redirect("/convention?error=not-found");
 
+  // Product IDs already ordered under FA dept for this convention
+  const faOrderedIds = convention.orderItems
+    .filter((i) => i.dept === "FA")
+    .map((i) => i.productId);
+
   const csProducts = await prisma.ibsaProduct.findMany({
     where: { type: "CS", visibleInOrderForm: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
     select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
   });
 
+  // FA tab: native FA-type products + any CS-type products already ordered under FA
+  // (mirrors the logic in the admin detail page)
   const faProducts = await prisma.ibsaProduct.findMany({
-    where: { type: "FA", visibleInOrderForm: true },
+    where: {
+      OR: [
+        { type: "FA", visibleInOrderForm: true },
+        ...(faOrderedIds.length > 0 ? [{ id: { in: faOrderedIds } }] : []),
+      ],
+    },
     orderBy: [{ category: "asc" }, { name: "asc" }],
     select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
   });
@@ -61,8 +73,8 @@ export default async function ConventionOrderPage({ params }: Props) {
     existingQty[item.productId] = item.qty;
   }
 
-  const isLocked =
-    convention.status === "ordered" || convention.status === "complete";
+  const isLocked   = convention.status   === "ordered" || convention.status   === "complete";
+  const isFaLocked = convention.faStatus === "ordered" || convention.faStatus === "complete";
 
   return (
     <OrderFormClient
@@ -83,6 +95,7 @@ export default async function ConventionOrderPage({ params }: Props) {
         deliveryContactEmail:  convention.deliveryContactEmail ?? null,
         deliveryContactMobile: convention.deliveryContactMobile ?? null,
         isLocked,
+        isFaLocked,
       }}
       csProducts={csProducts}
       faProducts={faProducts}

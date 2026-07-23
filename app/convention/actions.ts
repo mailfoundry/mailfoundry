@@ -133,6 +133,22 @@ export async function saveConventionDetails(formData: FormData) {
   revalidatePath("/ibsa");
 }
 
+/** Convention team confirms the order is correct — locks the form */
+export async function confirmOrder(formData: FormData) {
+  const conventionId = (formData.get("conventionId") as string).trim();
+  const dept = (formData.get("dept") as string).trim() as "CS" | "FA";
+  if (!conventionId) return;
+
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: dept === "FA" ? { faStatus: "ordered" } : { status: "ordered" },
+  });
+
+  revalidatePath(`/convention/${conventionId}`);
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+}
+
 /** Save order items — upserts qty per product, deletes zeroed items */
 export async function saveOrderItem(formData: FormData) {
   const conventionId = (formData.get("conventionId") as string).trim();

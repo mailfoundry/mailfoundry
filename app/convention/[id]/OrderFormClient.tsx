@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { saveOrderItem, saveConventionDetails } from "../actions";
+import { saveOrderItem, saveConventionDetails, confirmOrder } from "../actions";
 
 import { getImageSrc } from "../../../src/lib/image-utils";
 
@@ -37,6 +37,7 @@ type Convention = {
   deliveryContactEmail: string | null;
   deliveryContactMobile: string | null;
   isLocked: boolean;
+  isFaLocked: boolean;
 };
 
 type Props = {
@@ -169,7 +170,9 @@ function Field({ label, value, onChange, placeholder, type = "text" }: {
 }
 
 export default function OrderFormClient({ convention, csProducts, faProducts, existingQty }: Props) {
-  const [activeTab, setActiveTab] = useState<"CS" | "FA" | "details">("CS");
+  const [activeTab, setActiveTab] = useState<"CS" | "FA" | "details">(
+    convention.isLocked && !convention.isFaLocked && faProducts.length > 0 ? "FA" : "CS"
+  );
   const [search, setSearch] = useState("");
   const [detailsDraft, setDetailsDraft] = useState({
     name:                  convention.name,
@@ -197,8 +200,10 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
+  const tabLocked = activeTab === "FA" ? convention.isFaLocked : convention.isLocked;
+
   function save(productId: string, dept: "CS" | "FA", n: number) {
-    if (convention.isLocked) return;
+    if (dept === "FA" ? convention.isFaLocked : convention.isLocked) return;
     setSaving((prev) => ({ ...prev, [productId]: true }));
     setSaved((prev)   => ({ ...prev, [productId]: false }));
     const fd = new FormData();
@@ -215,7 +220,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   }
 
   function adjust(productId: string, dept: "CS" | "FA", delta: number) {
-    if (convention.isLocked) return;
+    if (dept === "FA" ? convention.isFaLocked : convention.isLocked) return;
     const current = qty[productId] ?? 0;
     const next = Math.max(0, current + delta);
     if (next === current) return;
@@ -231,7 +236,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     const isSaving = saving[p.id];
     const isSaved  = saved[p.id];
 
-    if (convention.isLocked) {
+    const locked = dept === "FA" ? convention.isFaLocked : convention.isLocked;
+    if (locked) {
       return (
         <span className={`text-sm font-bold ${q > 0 ? "text-white" : "text-slate-700"}`}>{q}</span>
       );
@@ -486,18 +492,17 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           <p className="mt-1 text-sm text-slate-500">{fmtDate(convention.conventionDate)}</p>
         </div>
 
-        {/* Review banner */}
-        {!convention.isLocked && (
-          <div className="mb-6 rounded-xl border border-blue-800/40 bg-blue-950/20 px-4 py-3 text-sm text-blue-300">
-            We've recorded your order below. Please check the quantities are correct and update anything that doesn't match what you originally requested.
-          </div>
-        )}
-
-        {/* Locked banner */}
-        {convention.isLocked && (
-          <div className="mb-6 rounded-xl border border-green-800/40 bg-green-950/20 px-4 py-3 text-sm text-green-400">
-            ✓ Your order has been confirmed. No further changes can be made — please contact Xylo (UK) Ltd if you need to amend anything.
-          </div>
+        {/* Review / locked banner — shown per active tab */}
+        {activeTab !== "details" && (
+          tabLocked ? (
+            <div className="mb-6 rounded-xl border border-green-800/40 bg-green-950/20 px-4 py-3 text-sm text-green-400">
+              ✓ Your {activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order has been confirmed. No further changes can be made — please contact Xylo (UK) Ltd if you need to amend anything.
+            </div>
+          ) : (
+            <div className="mb-6 rounded-xl border border-blue-800/40 bg-blue-950/20 px-4 py-3 text-sm text-blue-300">
+              We've recorded your order below. Please check the quantities are correct and update anything that doesn't match what you originally requested.
+            </div>
+          )
         )}
 
         {/* Tabs */}
@@ -594,7 +599,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             </div>
 
             {/* Save button */}
-            {!convention.isLocked && (
+            {!convention.isLocked && !convention.isFaLocked && (
               <button
                 onClick={() => {
                   const fd = new FormData();
@@ -636,11 +641,33 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               renderProducts(activeProducts, activeTab as "CS" | "FA")
             )}
 
-            {/* Footer note */}
-            {!convention.isLocked && (
-              <p className="mt-8 text-center text-xs text-slate-600">
-                Please check the quantities match your original order. Any changes save automatically — contact Xylo (UK) Ltd if you have questions.
-              </p>
+            {/* Footer note + confirm button */}
+            {!tabLocked && (
+              <div className="mt-10 space-y-4">
+                <p className="text-center text-xs text-slate-600">
+                  Please check the quantities match your original order. Any changes save automatically — contact Xylo (UK) Ltd if you have questions.
+                </p>
+                {/* Show confirm button only on the tab that has items */}
+                {((activeTab === "CS" && csLines > 0) || (activeTab === "FA" && faLines > 0)) && (
+                  <form
+                    action={confirmOrder}
+                    onSubmit={(e) => {
+                      if (!window.confirm("Are you happy that this order is correct?\n\nOnce confirmed you won't be able to make further changes.")) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <input type="hidden" name="conventionId" value={convention.id} />
+                    <input type="hidden" name="dept" value={activeTab} />
+                    <button
+                      type="submit"
+                      className="w-full rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition-colors hover:bg-green-500"
+                    >
+                      ✓ Order is correct — Confirm {activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order
+                    </button>
+                  </form>
+                )}
+              </div>
             )}
           </>
         )}

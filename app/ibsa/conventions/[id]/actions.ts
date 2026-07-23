@@ -12,7 +12,7 @@ export async function sendOrderFormLink(formData: FormData) {
 
   const convention = await prisma.ibsaConvention.findUnique({
     where: { id: conventionId },
-    select: { name: true, conventionDate: true, contactEmail: true },
+    select: { name: true, venue: true, conventionDate: true, contactEmail: true },
   });
 
   if (!convention?.contactEmail) return { error: "No contact email on file" };
@@ -33,8 +33,8 @@ export async function sendOrderFormLink(formData: FormData) {
   try {
     await sendEmail({
       to: convention.contactEmail,
-      subject: `Please review your order — ${convention.name}`,
-      text: `Hi,\n\nWe've recorded your order for ${convention.name} (${date}). Please click the link below to check that we've accurately captured everything — if anything looks incorrect, you can adjust the quantities directly.\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
+      subject: `Please review your order — ${convention.name}${convention.venue ? ` (${convention.venue})` : ""}`,
+      text: `Hi,\n\nWe've recorded your order for ${convention.name}${convention.venue ? ` (${convention.venue})` : ""} (${date}). Please click the link below to check that we've accurately captured everything — if anything looks incorrect, you can adjust the quantities directly.\n\n${verifyUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't expect this email, please ignore it.`,
       html: `
         <!DOCTYPE html>
         <html lang="en">
@@ -54,7 +54,7 @@ export async function sendOrderFormLink(formData: FormData) {
                 <!-- Body -->
                 <tr>
                   <td style="background:#1e293b;padding:36px;">
-                    <h1 style="margin:0 0 6px;font-size:24px;font-weight:700;color:#f1f5f9;">Please review your order</h1>
+                    <h1 style="margin:0 0 6px;font-size:24px;font-weight:700;color:#f1f5f9;">Please review your order — ${convention.name}${convention.venue ? ` (${convention.venue})` : ""}</h1>
                     <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;">We've recorded your order — please check the quantities are correct and let us know if anything needs adjusting.</p>
 
                     <!-- Convention card -->
