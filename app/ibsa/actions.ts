@@ -22,6 +22,7 @@ export async function createConvention(formData: FormData) {
   const contactName    = formData.get("contactName")?.toString().trim() || null;
   const contactEmail   = formData.get("contactEmail")?.toString().trim() || null;
   const contactMobile  = formData.get("contactMobile")?.toString().trim() || null;
+  const faEnabled      = formData.get("faEnabled") === "true";
 
   if (!name || !conventionDate) return;
 
@@ -35,8 +36,9 @@ export async function createConvention(formData: FormData) {
       contactName,
       contactEmail,
       contactMobile,
-      status:   "pending",
-      faStatus: "pending",
+      status:    "pending",
+      faStatus:  "pending",
+      faEnabled,
     },
   });
 

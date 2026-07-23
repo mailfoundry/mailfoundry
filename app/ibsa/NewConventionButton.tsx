@@ -12,11 +12,13 @@ type Draft = {
   contactName: string;
   contactEmail: string;
   contactMobile: string;
+  faEnabled: boolean;
 };
 
 const empty = (): Draft => ({
   name: "", venue: "", conventionDate: "", deliveryDate: "",
   deliveryAddress: "", contactName: "", contactEmail: "", contactMobile: "",
+  faEnabled: false,
 });
 
 export default function NewConventionButton() {
@@ -30,7 +32,7 @@ export default function NewConventionButton() {
 
   function submit() {
     const fd = new FormData();
-    Object.entries(draft).forEach(([k, v]) => fd.set(k, v));
+    Object.entries(draft).forEach(([k, v]) => fd.set(k, String(v)));
     startTransition(async () => {
       await createConvention(fd);
       setOpen(false);
@@ -163,6 +165,36 @@ export default function NewConventionButton() {
                       className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* FA toggle */}
+              <div
+                onClick={() => setDraft((p) => ({ ...p, faEnabled: !p.faEnabled }))}
+                className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+                  draft.faEnabled
+                    ? "border-blue-700/60 bg-blue-950/30"
+                    : "border-slate-700 bg-slate-800/30 hover:border-slate-600"
+                }`}
+              >
+                <div
+                  className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border transition-colors ${
+                    draft.faEnabled
+                      ? "border-blue-500 bg-blue-600"
+                      : "border-slate-600 bg-slate-800"
+                  }`}
+                >
+                  {draft.faEnabled && (
+                    <svg viewBox="0 0 12 12" fill="none" className="h-3 w-3">
+                      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold ${draft.faEnabled ? "text-blue-300" : "text-slate-300"}`}>
+                    Include First Aid section
+                  </p>
+                  <p className="text-xs text-slate-500">Enables the blue FA order section on this convention card</p>
                 </div>
               </div>
             </div>
