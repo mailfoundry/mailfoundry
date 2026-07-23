@@ -94,14 +94,16 @@ export default async function ConventionDetailPage({
   const csOverrideMap: Record<string, number> = {};
   const faOverrideMap: Record<string, number> = {};
 
-  const orderSaleTotal = csItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
-  const orderCostTotal = csItems.reduce(
+  // Top-row stats: CS items normally; fall back to FA items for FA-only conventions
+  const topItems = csItems.length > 0 ? csItems : faItems;
+  const orderSaleTotal = topItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
+  const orderCostTotal = topItems.reduce(
     (sum, item) => sum + item.qty * (item.product.xyloCost ?? item.product.unitCost),
     0
   );
   const orderProfit = orderSaleTotal - orderCostTotal;
   const orderMarginPct = orderSaleTotal > 0 ? (orderProfit / orderSaleTotal) * 100 : 0;
-  const itemsWithQty = csItems.filter((i) => i.qty > 0).length;
+  const itemsWithQty = topItems.filter((i) => i.qty > 0).length;
 
   const faSaleTotal = faItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
   const faCostTotal = faItems.reduce(
