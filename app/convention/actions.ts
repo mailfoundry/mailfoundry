@@ -75,6 +75,8 @@ export async function requestConventionLink(formData: FormData) {
   redirect(`/convention/check-email?email=${encodeURIComponent(email)}`);
 }
 
+const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
+
 /** Step 2: overseer clicks the magic link — verify token and set cookie */
 export async function verifyConventionToken(formData: FormData) {
   const token = (formData.get("token") as string).trim();
@@ -84,6 +86,32 @@ export async function verifyConventionToken(formData: FormData) {
 
   if (!record || record.usedAt || record.expiresAt < new Date()) {
     redirect("/convention?error=invalid-token");
+  }
+
+  // Skip access notification for internal preview tokens
+  if (record.email !== "preview@xylo.internal") {
+    const convention = await prisma.ibsaConvention.findUnique({
+      where: { id: record.conventionId },
+      select: { name: true, venue: true, conventionDate: true },
+    });
+    if (convention) {
+      const dateStr = convention.conventionDate.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+      await sendEmail({
+        to: IBSA_NOTIFY_EMAIL,
+        subject: `Order form accessed — ${convention.name}${convention.venue ? ` (${convention.venue})` : ""}`,
+        text: `The order form for ${convention.name} (${dateStr}) has been opened by ${record.email}.`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+            <div style="background:#0f172a;padding:32px;border-radius:12px;">
+              <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo (UK) Ltd</p>
+              <h1 style="color:#fff;font-size:20px;margin:0 0 16px;">Order form accessed</h1>
+              <p style="color:#94a3b8;margin:0 0 8px;font-size:14px;"><strong style="color:#f1f5f9;">${convention.name}${convention.venue ? ` (${convention.venue})` : ""}</strong> · ${dateStr}</p>
+              <p style="color:#94a3b8;font-size:14px;margin:0;">Opened by <strong style="color:#f1f5f9;">${record.email}</strong></p>
+            </div>
+          </div>
+        `,
+      }).catch(() => {}); // don't block the redirect if email fails
+    }
   }
 
   await prisma.conventionOrderToken.update({
@@ -101,6 +129,37 @@ export async function verifyConventionToken(formData: FormData) {
   });
 
   redirect(`/convention/${record.conventionId}`);
+}
+
+/** Notify IBSA that the convention team has completed their order review */
+export async function notifyOrderConfirmed(formData: FormData) {
+  const conventionId = (formData.get("conventionId") as string).trim();
+  if (!conventionId) return;
+
+  const convention = await prisma.ibsaConvention.findUnique({
+    where: { id: conventionId },
+    select: { name: true, venue: true, conventionDate: true, contactName: true, contactEmail: true },
+  });
+  if (!convention) return;
+
+  const dateStr = convention.conventionDate.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const displayName = convention.contactName || convention.contactEmail || "The convention team";
+
+  await sendEmail({
+    to: IBSA_NOTIFY_EMAIL,
+    subject: `Order confirmed — ${convention.name}${convention.venue ? ` (${convention.venue})` : ""}`,
+    text: `${displayName} has confirmed their order for ${convention.name} (${dateStr}). All sections have been reviewed and marked as correct.`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+        <div style="background:#0f172a;padding:32px;border-radius:12px;">
+          <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo (UK) Ltd</p>
+          <h1 style="color:#fff;font-size:20px;margin:0 0 16px;">Order confirmed ✓</h1>
+          <p style="color:#94a3b8;margin:0 0 8px;font-size:14px;"><strong style="color:#f1f5f9;">${convention.name}${convention.venue ? ` (${convention.venue})` : ""}</strong> · ${dateStr}</p>
+          <p style="color:#94a3b8;font-size:14px;margin:0;">Confirmed by <strong style="color:#f1f5f9;">${displayName}</strong>. All sections reviewed and marked as correct.</p>
+        </div>
+      </div>
+    `,
+  });
 }
 
 /** Save convention details (contact info, delivery address, dates) */

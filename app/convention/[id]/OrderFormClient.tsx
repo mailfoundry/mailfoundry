@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { saveOrderItem, saveConventionDetails, confirmOrder } from "../actions";
+import { saveOrderItem, saveConventionDetails, confirmOrder, notifyOrderConfirmed } from "../actions";
 
 import { getImageSrc } from "../../../src/lib/image-utils";
 
@@ -519,7 +519,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           </div>
           <h1 className="text-2xl font-bold text-white">All done — thank you!</h1>
           <p className="mt-3 text-sm text-slate-400">
-            Your order review is complete. Xylo (UK) Ltd will be in touch if there&apos;s anything to follow up on.
+            Your order review is complete. A confirmation has been sent to the Xylo (UK) Ltd team and we&apos;ll be in touch if there&apos;s anything to follow up on.
           </p>
         </div>
       )}
@@ -668,6 +668,9 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 Object.entries(detailsDraft).forEach(([k, v]) => fd.set(k, v));
                 startSavingDetails(async () => {
                   await saveConventionDetails(fd);
+                  const nfd = new FormData();
+                  nfd.set("conventionId", convention.id);
+                  await notifyOrderConfirmed(nfd);
                   setAllDone(true);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 });
