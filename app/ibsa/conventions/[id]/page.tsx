@@ -53,8 +53,15 @@ export default async function ConventionDetailPage({
 
   if (!convention) notFound();
 
-  const allProducts = await prisma.ibsaProduct.findMany({
+  const SIZE_RANK: Record<string, number> = { Small: 1, Medium: 2, Large: 3, XLarge: 4, XXLarge: 5, XXXLarge: 6 };
+
+  const allProducts = (await prisma.ibsaProduct.findMany({
     orderBy: [{ type: "asc" }, { category: "asc" }, { name: "asc" }],
+  })).sort((a, b) => {
+    if (a.type !== b.type) return a.type.localeCompare(b.type);
+    if (a.category !== b.category) return a.category.localeCompare(b.category);
+    if (a.name !== b.name) return a.name.localeCompare(b.name);
+    return (SIZE_RANK[a.variant ?? ""] ?? 99) - (SIZE_RANK[b.variant ?? ""] ?? 99);
   });
 
   // Separate qty maps per dept — same product can appear in both CS and FA orders
