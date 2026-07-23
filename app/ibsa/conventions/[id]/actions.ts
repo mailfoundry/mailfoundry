@@ -105,6 +105,23 @@ export async function sendOrderFormLink(formData: FormData) {
   return { ok: true, email: convention.contactEmail };
 }
 
+/** Generate a preview URL for the order form without sending an email */
+export async function getOrderFormPreviewUrl(formData: FormData) {
+  const conventionId = (formData.get("conventionId") as string).trim();
+  if (!conventionId) return { error: "Missing convention ID" };
+
+  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const token      = crypto.randomUUID();
+  const expiresAt  = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+  // Use a placeholder email for preview tokens
+  await prisma.conventionOrderToken.create({
+    data: { token, email: "preview@xylo.internal", conventionId, expiresAt },
+  });
+
+  return { url: `${appBaseUrl}/convention/verify?token=${token}` };
+}
+
 export async function updateOrderQty(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const productId = formData.get("productId")?.toString() ?? "";
