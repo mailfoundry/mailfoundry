@@ -95,21 +95,24 @@ export default async function IbsaPage() {
       .filter((i) => i.dept === "FA")
       .map((i) => ({ qty: i.qty, unitCost: i.product.unitCost, xyloCost: i.product.xyloCost }));
 
-    // CS card always shown
-    allCards.push({
-      convention: c,
-      dept: "CS",
-      status: c.status,
-      paidAt: c.paidAt,
-      paymentDueDate: c.paymentDueDate,
-      collectionDate: c.collectionDate,
-      deliveryDate: c.deliveryDate,
-      items: csItems,
-      sortDate: c.collectionDate,
-    });
+    // CS card: show when convention has CS items, OR when FA is not enabled
+    // (avoids a blank CS card appearing on FA-only conventions)
+    if (csItems.length > 0 || !c.faEnabled) {
+      allCards.push({
+        convention: c,
+        dept: "CS",
+        status: c.status,
+        paidAt: c.paidAt,
+        paymentDueDate: c.paymentDueDate,
+        collectionDate: c.collectionDate,
+        deliveryDate: c.deliveryDate,
+        items: csItems,
+        sortDate: c.collectionDate,
+      });
+    }
 
-    // FA card shown only if there are FA dept items or FA logistics dates
-    if (faItems.length > 0 || c.faCollectionDate || c.faPaymentDueDate) {
+    // FA card: show when faEnabled, or when FA items/logistics dates exist
+    if (c.faEnabled || faItems.length > 0 || c.faCollectionDate || c.faPaymentDueDate) {
       allCards.push({
         convention: c,
         dept: "FA",
