@@ -105,6 +105,21 @@ export async function sendOrderFormLink(formData: FormData) {
   return { ok: true, email: convention.contactEmail };
 }
 
+/** Reset status/faStatus to "pending" so the order form can be tested from scratch */
+export async function resetOrderStatus(formData: FormData) {
+  const conventionId = (formData.get("conventionId") as string).trim();
+  if (!conventionId) return { error: "Missing convention ID" };
+
+  await prisma.ibsaConvention.update({
+    where: { id: conventionId },
+    data: { status: "pending", faStatus: "pending" },
+  });
+
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+  revalidatePath("/ibsa");
+  return { ok: true };
+}
+
 /** Generate a preview URL for the order form without sending an email */
 export async function getOrderFormPreviewUrl(formData: FormData) {
   const conventionId = (formData.get("conventionId") as string).trim();

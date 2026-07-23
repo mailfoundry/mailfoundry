@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { sendOrderFormLink, getOrderFormPreviewUrl } from "./actions";
+import { sendOrderFormLink, getOrderFormPreviewUrl, resetOrderStatus } from "./actions";
 
 export default function SendOrderLinkButton({
   conventionId,
@@ -14,6 +14,7 @@ export default function SendOrderLinkButton({
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isPreviewing, startPreview] = useTransition();
+  const [isResetting, startReset] = useTransition();
 
   function handleSend() {
     const fd = new FormData();
@@ -42,6 +43,13 @@ export default function SendOrderLinkButton({
     });
   }
 
+  function handleReset() {
+    if (!window.confirm("Reset confirmation status to pending? This lets you test the wizard from the start.")) return;
+    const fd = new FormData();
+    fd.set("conventionId", conventionId);
+    startReset(async () => { await resetOrderStatus(fd); });
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* Preview button — always available */}
@@ -52,6 +60,16 @@ export default function SendOrderLinkButton({
         className="rounded-lg border border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isPreviewing ? "Opening…" : "Preview order form"}
+      </button>
+
+      {/* Reset button — clears confirmed status for testing */}
+      <button
+        type="button"
+        disabled={isResetting}
+        onClick={handleReset}
+        className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-800 hover:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        {isResetting ? "Resetting…" : "Reset for testing"}
       </button>
 
       {/* Send button — only if contact email exists */}
