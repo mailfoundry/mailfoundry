@@ -201,7 +201,6 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     deliveryContactMobile: convention.deliveryContactMobile ?? "",
   });
   const [isSavingDetails, startSavingDetails] = useTransition();
-  const [detailsSaved, setDetailsSaved] = useState(false);
   const [isConfirming, startConfirming] = useTransition();
   const [qty, setQty] = useState<Record<string, number>>(existingQty);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
@@ -659,35 +658,24 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               </div>
             </div>
 
-            {/* Save button — always available; details are independent of order confirmation */}
-            <button
-                onClick={() => {
-                  const fd = new FormData();
-                  fd.set("conventionId", convention.id);
-                  Object.entries(detailsDraft).forEach(([k, v]) => fd.set(k, v));
-                  startSavingDetails(async () => {
-                    await saveConventionDetails(fd);
-                    setDetailsSaved(true);
-                    setTimeout(() => setDetailsSaved(false), 2500);
-                  });
-                }}
-                disabled={isSavingDetails}
-                className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400 disabled:opacity-50"
-              >
-                {isSavingDetails ? "Saving…" : detailsSaved ? "✓ Saved" : "Save details"}
-            </button>
-
-            {/* Green confirm button — marks the whole form as complete */}
+            {/* Single confirm button — saves details and marks the form complete */}
             <button
               type="button"
               onClick={() => {
                 if (!window.confirm("Are you happy that all details are correct?\n\nThis will complete your order review.")) return;
-                setAllDone(true);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                const fd = new FormData();
+                fd.set("conventionId", convention.id);
+                Object.entries(detailsDraft).forEach(([k, v]) => fd.set(k, v));
+                startSavingDetails(async () => {
+                  await saveConventionDetails(fd);
+                  setAllDone(true);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                });
               }}
-              className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-white transition-colors hover:bg-green-600"
+              disabled={isSavingDetails}
+              className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-white transition-colors hover:bg-green-600 disabled:opacity-50"
             >
-              ✓ Details are correct — all done
+              {isSavingDetails ? "Saving…" : "✓ Details are correct — all done"}
             </button>
           </div>
         ) : (
