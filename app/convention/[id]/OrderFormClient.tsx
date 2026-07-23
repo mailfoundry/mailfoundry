@@ -685,7 +685,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 setAllDone(true);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="w-full rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition-colors hover:bg-green-500"
+              className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-white transition-colors hover:bg-green-600"
             >
               ✓ Details are correct — all done
             </button>
@@ -725,7 +725,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     type="button"
                     onClick={handleConfirm}
                     disabled={isConfirming}
-                    className="w-full rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition-colors hover:bg-green-500 disabled:opacity-50"
+                    className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-white transition-colors hover:bg-green-600 disabled:opacity-50"
                   >
                     {isConfirming
                       ? "Confirming…"
