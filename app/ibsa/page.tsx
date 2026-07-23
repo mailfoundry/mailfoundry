@@ -142,13 +142,15 @@ export default async function IbsaPage() {
     .sort((a, b) => {
       const keyDiff = convSortKey(a) - convSortKey(b);
       if (keyDiff !== 0) return keyDiff;
-      // Same convention: sort by whichever card's collection date is soonest
+      // Same convention record: CS before FA
       if (a.convention.id === b.convention.id) {
-        const aDate = a.sortDate ? new Date(a.sortDate).getTime() : Infinity;
-        const bDate = b.sortDate ? new Date(b.sortDate).getTime() : Infinity;
-        return aDate - bDate;
+        return a.dept === "CS" ? -1 : 1;
       }
-      return 0;
+      // Different conventions tied on date: group by name so e.g. Glasgow CS + Glasgow FA stay adjacent
+      const nameDiff = a.convention.name.localeCompare(b.convention.name);
+      if (nameDiff !== 0) return nameDiff;
+      // Same name, different IDs: CS before FA
+      return a.dept === "CS" ? -1 : 1;
     });
 
   const pastConventions = conventions.filter(
