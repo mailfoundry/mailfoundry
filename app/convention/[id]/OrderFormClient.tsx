@@ -183,6 +183,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     return "details";
   });
 
+  const [allDone, setAllDone] = useState(false);
   const [search, setSearch] = useState("");
   const [detailsDraft, setDetailsDraft] = useState({
     name:                  convention.name,
@@ -512,7 +513,19 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         </div>
       )}
 
-      <div className="mx-auto max-w-3xl px-4 py-8">
+      {allDone && (
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+          <div className="mb-6 flex justify-center">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-green-600 text-3xl">✓</span>
+          </div>
+          <h1 className="text-2xl font-bold text-white">All done — thank you!</h1>
+          <p className="mt-3 text-sm text-slate-400">
+            Your order review is complete. Xylo (UK) Ltd will be in touch if there&apos;s anything to follow up on.
+          </p>
+        </div>
+      )}
+
+      {!allDone && <div className="mx-auto max-w-3xl px-4 py-8">
 
         {/* Header */}
         <div className="mb-6">
@@ -663,6 +676,19 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               >
                 {isSavingDetails ? "Saving…" : detailsSaved ? "✓ Saved" : "Save details"}
             </button>
+
+            {/* Green confirm button — marks the whole form as complete */}
+            <button
+              type="button"
+              onClick={() => {
+                if (!window.confirm("Are you happy that all details are correct?\n\nThis will complete your order review.")) return;
+                setAllDone(true);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="w-full rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition-colors hover:bg-green-500"
+            >
+              ✓ Details are correct — all done
+            </button>
           </div>
         ) : (
           <>
@@ -710,7 +736,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             )}
           </>
         )}
-      </div>
+      </div>}
     </main>
   );
 }
