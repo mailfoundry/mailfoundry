@@ -259,6 +259,13 @@ export async function markUnpaid(formData: FormData) {
   revalidatePath("/ibsa");
 }
 
+export async function enableFa(formData: FormData) {
+  const conventionId = formData.get("conventionId")?.toString() ?? "";
+  if (!conventionId) return;
+  await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { faEnabled: true } });
+  revalidatePath(`/ibsa/conventions/${conventionId}`);
+}
+
 export async function updateFaStatus(formData: FormData) {
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const status = formData.get("status")?.toString() ?? "";

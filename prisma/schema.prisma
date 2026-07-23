@@ -191,6 +191,7 @@ model IbsaConvention {
   paidAt          DateTime?
 
   // FA (First Aid) logistics
+  faEnabled         Boolean   @default(false)     // true once "Add First Aid Order" is clicked
   faStatus          String    @default("pending") // pending | ordered | complete
   faCollectionDate  DateTime?
   faDeliveryDate    DateTime?

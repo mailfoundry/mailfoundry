@@ -14,6 +14,7 @@ import {
   markFaPaid,
   markFaUnpaid,
   updateFaStatus,
+  enableFa,
 } from "./actions";
 import { updateConventionDetails } from "../../actions";
 import ConventionProductTable from "./ConventionProductTable";
@@ -119,6 +120,7 @@ export default async function ConventionDetailPage({
     .map((i) => ({ name: i.product.name, variant: i.product.variant ?? null, qty: i.qty }));
 
   const hasFaData =
+    convention.faEnabled ||
     convention.orderItems.some((i) => i.product.type === "FA") ||
     !!convention.faCollectionDate ||
     !!convention.faPaymentDueDate ||
@@ -579,6 +581,19 @@ export default async function ConventionDetailPage({
         title="Cleaning Supplies Order"
         dept="CS"
       />
+
+      {/* ── Add First Aid button (shown when FA not yet enabled) ─────── */}
+      {!hasFaData && (
+        <form action={enableFa} className="mb-8">
+          <input type="hidden" name="conventionId" value={convention.id} />
+          <button
+            type="submit"
+            className="rounded-xl border border-blue-800/50 bg-blue-950/40 px-5 py-3 text-sm font-semibold text-blue-300 hover:bg-blue-900/50 hover:text-white transition-colors"
+          >
+            + Add First Aid Order
+          </button>
+        </form>
+      )}
 
       {/* ── First Aid order (only when FA items exist) ─────────────── */}
       {hasFaData && (
