@@ -14,7 +14,7 @@ export default async function ConventionCheckEmailPage({ searchParams }: Props) 
           </div>
         </div>
 
-        <p className="text-lg font-bold text-orange-500">IBSA · Xylo Supplies</p>
+        <p className="text-lg font-bold text-orange-500">IBSA · Xylo (UK) Ltd</p>
         <h1 className="mt-2 text-2xl font-bold text-white">Check your email</h1>
         <p className="mt-3 text-sm text-slate-400">
           We've sent a sign-in link to{" "}

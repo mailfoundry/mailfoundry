@@ -62,7 +62,7 @@ export async function requestConventionLink(formData: FormData) {
     html: `
       <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
         <div style="background:#0f172a;padding:32px;border-radius:12px;">
-          <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo Supplies</p>
+          <p style="color:#f97316;font-size:18px;font-weight:bold;margin:0 0 8px;">IBSA · Xylo (UK) Ltd</p>
           <h1 style="color:#fff;font-size:22px;margin:0 0 8px;">Your order form${links.length > 1 ? "s" : ""}</h1>
           <p style="color:#94a3b8;margin:0 0 20px;">Click below to fill in your product requirements. Links expire in 1 hour.</p>
           ${linksHtml}

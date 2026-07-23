@@ -16,7 +16,7 @@ export default async function ConventionLoginPage({ searchParams }: Props) {
       <div className="w-full max-w-sm">
         {/* Logo / brand */}
         <div className="mb-8 text-center">
-          <p className="text-lg font-bold text-orange-500">IBSA · Xylo Supplies</p>
+          <p className="text-lg font-bold text-orange-500">IBSA · Xylo (UK) Ltd</p>
           <h1 className="mt-1 text-2xl font-bold text-white">Convention Order Form</h1>
           <p className="mt-2 text-sm text-slate-400">Enter your email to receive a secure sign-in link.</p>
         </div>
