@@ -170,9 +170,19 @@ function Field({ label, value, onChange, placeholder, type = "text" }: {
 }
 
 export default function OrderFormClient({ convention, csProducts, faProducts, existingQty }: Props) {
-  const [activeTab, setActiveTab] = useState<"CS" | "FA" | "details">(
-    convention.isLocked && !convention.isFaLocked && faProducts.length > 0 ? "FA" : "CS"
-  );
+  const hasFa = faProducts.length > 0;
+
+  // Local confirmed state — updates immediately on confirm without waiting for server re-render
+  const [csConfirmed, setCsConfirmed] = useState(convention.isLocked);
+  const [faConfirmed, setFaConfirmed] = useState(convention.isFaLocked);
+
+  // Start at first unconfirmed section
+  const [activeTab, setActiveTab] = useState<"CS" | "FA" | "details">(() => {
+    if (!convention.isLocked) return "CS";
+    if (!convention.isFaLocked && hasFa) return "FA";
+    return "details";
+  });
+
   const [search, setSearch] = useState("");
   const [detailsDraft, setDetailsDraft] = useState({
     name:                  convention.name,
@@ -191,6 +201,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   });
   const [isSavingDetails, startSavingDetails] = useTransition();
   const [detailsSaved, setDetailsSaved] = useState(false);
+  const [isConfirming, startConfirming] = useTransition();
   const [qty, setQty] = useState<Record<string, number>>(existingQty);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [saved, setSaved]   = useState<Record<string, boolean>>({});
@@ -200,10 +211,30 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
-  const tabLocked = activeTab === "FA" ? convention.isFaLocked : convention.isLocked;
+  const tabLocked = activeTab === "FA" ? faConfirmed : csConfirmed;
+
+  function handleConfirm() {
+    const dept = activeTab as "CS" | "FA";
+    if (!window.confirm(
+      `Are you happy that the ${dept === "FA" ? "First Aid" : "Cleaning Supplies"} section is correct?\n\nOnce confirmed you won't be able to make further changes to this section.`
+    )) return;
+    const fd = new FormData();
+    fd.set("conventionId", convention.id);
+    fd.set("dept", dept);
+    startConfirming(async () => {
+      await confirmOrder(fd);
+      if (dept === "CS") {
+        setCsConfirmed(true);
+        setActiveTab(hasFa ? "FA" : "details");
+      } else {
+        setFaConfirmed(true);
+        setActiveTab("details");
+      }
+    });
+  }
 
   function save(productId: string, dept: "CS" | "FA", n: number) {
-    if (dept === "FA" ? convention.isFaLocked : convention.isLocked) return;
+    if (dept === "FA" ? faConfirmed : csConfirmed) return;
     setSaving((prev) => ({ ...prev, [productId]: true }));
     setSaved((prev)   => ({ ...prev, [productId]: false }));
     const fd = new FormData();
@@ -220,7 +251,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   }
 
   function adjust(productId: string, dept: "CS" | "FA", delta: number) {
-    if (dept === "FA" ? convention.isFaLocked : convention.isLocked) return;
+    if (dept === "FA" ? faConfirmed : csConfirmed) return;
     const current = qty[productId] ?? 0;
     const next = Math.max(0, current + delta);
     if (next === current) return;
@@ -236,7 +267,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     const isSaving = saving[p.id];
     const isSaved  = saved[p.id];
 
-    const locked = dept === "FA" ? convention.isFaLocked : convention.isLocked;
+    const locked = dept === "FA" ? faConfirmed : csConfirmed;
     if (locked) {
       return (
         <span className={`text-sm font-bold ${q > 0 ? "text-white" : "text-slate-700"}`}>{q}</span>
@@ -484,63 +515,79 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
         {/* Header */}
         <div className="mb-6">
-          <p className="text-sm font-semibold text-orange-500">IBSA · Xylo Supplies</p>
-          <h1 className="mt-1 text-2xl font-bold text-white">{convention.name}</h1>
-          {convention.venue && (
-            <p className="mt-0.5 text-sm text-slate-400">{convention.venue}</p>
-          )}
+          <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
+          <h1 className="mt-1 text-2xl font-bold text-white">{convention.name}{convention.venue ? ` (${convention.venue})` : ""}</h1>
           <p className="mt-1 text-sm text-slate-500">{fmtDate(convention.conventionDate)}</p>
         </div>
 
-        {/* Review / locked banner — shown per active tab */}
+        {/* Step progress bar */}
+        {(() => {
+          const steps = [
+            { key: "CS", label: "Cleaning Supplies", confirmed: csConfirmed },
+            ...(hasFa ? [{ key: "FA", label: "First Aid", confirmed: faConfirmed }] : []),
+            { key: "details", label: "Your Details", confirmed: false },
+          ];
+          return (
+            <div className="mb-6 flex items-center gap-0">
+              {steps.map((step, i) => {
+                const isActive = activeTab === step.key;
+                return (
+                  <div key={step.key} className="flex items-center flex-1 min-w-0">
+                    <button
+                      onClick={() => setActiveTab(step.key as "CS" | "FA" | "details")}
+                      className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-center transition-colors ${
+                        isActive ? "bg-slate-700" : "hover:bg-slate-800/60"
+                      }`}
+                    >
+                      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                        step.confirmed
+                          ? "bg-green-600 text-white"
+                          : isActive
+                          ? "bg-white text-slate-900"
+                          : "border border-slate-600 text-slate-500"
+                      }`}>
+                        {step.confirmed ? "✓" : i + 1}
+                      </span>
+                      <span className={`text-xs font-semibold leading-tight ${
+                        step.confirmed ? "text-green-400" : isActive ? "text-white" : "text-slate-500"
+                      }`}>
+                        {step.label}
+                      </span>
+                    </button>
+                    {i < steps.length - 1 && (
+                      <div className={`h-px w-4 shrink-0 ${csConfirmed && i === 0 ? "bg-green-700" : "bg-slate-700"}`} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {/* Per-tab banner */}
         {activeTab !== "details" && (
           tabLocked ? (
             <div className="mb-6 rounded-xl border border-green-800/40 bg-green-950/20 px-4 py-3 text-sm text-green-400">
-              ✓ Your {activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order has been confirmed. No further changes can be made — please contact Xylo (UK) Ltd if you need to amend anything.
+              ✓ Your {activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order has been confirmed.
+              {activeTab === "CS" && hasFa && " Please now review the First Aid section."}
+              {" "}Contact Xylo (UK) Ltd if you need to amend anything.
             </div>
           ) : (
             <div className="mb-6 rounded-xl border border-blue-800/40 bg-blue-950/20 px-4 py-3 text-sm text-blue-300">
-              We've recorded your order below. Please check the quantities are correct and update anything that doesn't match what you originally requested.
+              {activeTab === "CS"
+                ? hasFa
+                  ? "Please check your Cleaning Supplies quantities are correct, then confirm. You'll then be taken to the First Aid section."
+                  : "Please check your Cleaning Supplies quantities are correct, then confirm."
+                : "Please check your First Aid quantities are correct, then confirm. You'll then be asked to verify your contact details."}
             </div>
           )
         )}
 
-        {/* Tabs */}
-        <div className="mb-6 flex gap-2 flex-wrap">
-          {(["CS", "FA"] as const).map((tab) => {
-            const count = tab === "CS" ? csLines : faLines;
-            return (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
-                  activeTab === tab
-                    ? "bg-white text-slate-900"
-                    : "border border-slate-700 text-slate-400 hover:bg-slate-800"
-                }`}
-              >
-                {tab === "CS" ? "Cleaning Supplies" : "First Aid"}
-                {count > 0 && (
-                  <span className={`rounded-full px-1.5 py-0.5 text-xs font-bold ${
-                    activeTab === tab ? "bg-slate-900 text-white" : "bg-slate-700 text-slate-300"
-                  }`}>
-                    {count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-          <button
-            onClick={() => setActiveTab("details")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
-              activeTab === "details"
-                ? "bg-white text-slate-900"
-                : "border border-slate-700 text-slate-400 hover:bg-slate-800"
-            }`}
-          >
-            Details
-          </button>
-        </div>
+        {activeTab === "details" && (
+          <div className="mb-6 rounded-xl border border-blue-800/40 bg-blue-950/20 px-4 py-3 text-sm text-blue-300">
+            Please check your contact and delivery details are correct and save any changes.
+          </div>
+        )}
 
         {activeTab === "details" ? (
           /* ── Details tab ──────────────────────────────────────────────── */
@@ -598,9 +645,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
               </div>
             </div>
 
-            {/* Save button */}
-            {!convention.isLocked && !convention.isFaLocked && (
-              <button
+            {/* Save button — always available; details are independent of order confirmation */}
+            <button
                 onClick={() => {
                   const fd = new FormData();
                   fd.set("conventionId", convention.id);
@@ -615,8 +661,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-400 disabled:opacity-50"
               >
                 {isSavingDetails ? "Saving…" : detailsSaved ? "✓ Saved" : "Save details"}
-              </button>
-            )}
+            </button>
           </div>
         ) : (
           <>
@@ -649,23 +694,16 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 </p>
                 {/* Show confirm button only on the tab that has items */}
                 {((activeTab === "CS" && csLines > 0) || (activeTab === "FA" && faLines > 0)) && (
-                  <form
-                    action={confirmOrder}
-                    onSubmit={(e) => {
-                      if (!window.confirm("Are you happy that this order is correct?\n\nOnce confirmed you won't be able to make further changes.")) {
-                        e.preventDefault();
-                      }
-                    }}
+                  <button
+                    type="button"
+                    onClick={handleConfirm}
+                    disabled={isConfirming}
+                    className="w-full rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition-colors hover:bg-green-500 disabled:opacity-50"
                   >
-                    <input type="hidden" name="conventionId" value={convention.id} />
-                    <input type="hidden" name="dept" value={activeTab} />
-                    <button
-                      type="submit"
-                      className="w-full rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition-colors hover:bg-green-500"
-                    >
-                      ✓ Order is correct — Confirm {activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order
-                    </button>
-                  </form>
+                    {isConfirming
+                      ? "Confirming…"
+                      : `✓ ${activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order is correct — Confirm`}
+                  </button>
                 )}
               </div>
             )}
