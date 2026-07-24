@@ -1,5 +1,3 @@
-import Link from "next/link";
-import Logo from "../../src/components/logo";
 import { login } from "./actions";
 
 type LoginPageProps = {
@@ -29,26 +27,26 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <main className="flex min-h-screen bg-slate-950 text-white">
       {/* Left panel — branding */}
       <div className="hidden flex-col justify-between p-12 lg:flex lg:w-1/2">
-        <Link href="/">
-          <Logo height={36} />
-        </Link>
+        <div>
+          <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
+        </div>
 
         <div>
           <h1 className="text-4xl font-bold leading-tight">
-            Email marketing
+            Convention &amp; congregation
             <br />
-            <span className="text-orange-400">built to perform</span>
+            <span className="text-orange-400">supply ordering</span>
           </h1>
           <p className="mt-4 max-w-sm text-slate-400">
-            Send campaigns, track opens, and grow your audience — all from one
-            clean dashboard.
+            Order cleaning supplies and first aid products for your regional convention,
+            circuit assembly, or congregation — all from one place.
           </p>
 
           <ul className="mt-10 space-y-4">
             {[
-              "Send campaigns to your lists in minutes",
-              "Open tracking on every email you send",
-              "Automatic bounce and unsubscribe handling",
+              "Cleaning supplies, first aid and safety equipment",
+              "Order for regional conventions, circuits and congregations",
+              "Fast fulfilment direct from Xylo (UK) Ltd",
             ].map((item) => (
               <li key={item} className="flex items-center gap-3 text-sm text-slate-300">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-orange-400">
@@ -63,7 +61,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
 
         <p className="text-sm text-slate-600">
-          © {new Date().getFullYear()} MailFoundry
+          © {new Date().getFullYear()} Xylo (UK) Ltd · <a href="https://www.xylouk.co.uk" className="hover:text-slate-400 transition-colors">xylouk.co.uk</a>
         </p>
       </div>
 
@@ -71,13 +69,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="flex flex-1 items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
-          <Link href="/" className="mb-8 block lg:hidden">
-            <Logo height={28} />
-          </Link>
+          <div className="mb-8 block lg:hidden">
+            <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
+          </div>
 
-          <h2 className="text-2xl font-bold">Welcome back</h2>
+          <h2 className="text-2xl font-bold">Staff sign in</h2>
           <p className="mt-2 text-sm text-slate-400">
-            Enter your email and password. We&apos;ll send you a sign-in link to confirm it&apos;s you.
+            Enter your email and password to access the ordering portal.
           </p>
 
           {errorMessage && (
