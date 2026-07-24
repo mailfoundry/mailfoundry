@@ -12,7 +12,7 @@ export default function Logo({ height = 32, variant = "horizontal", className = 
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src="/logo-icon.svg"
-        alt="MailFoundry"
+        alt="Xylo (UK) Ltd"
         width={height}
         height={height}
         className={className}
@@ -20,13 +20,13 @@ export default function Logo({ height = 32, variant = "horizontal", className = 
     );
   }
 
-  // Horizontal: 640×130 native aspect ratio
-  const width = Math.round((640 / 130) * height);
+  // Horizontal: 320×125 native aspect ratio
+  const width = Math.round((320 / 125) * height);
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src="/logo-horizontal.svg"
-      alt="MailFoundry"
+      alt="Xylo (UK) Ltd"
       width={width}
       height={height}
       className={className}

@@ -1,4 +1,5 @@
 import { login } from "./actions";
+import Logo from "../../src/components/logo";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -28,7 +29,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       {/* Left panel — branding */}
       <div className="hidden flex-col justify-between p-12 lg:flex lg:w-1/2">
         <div>
-          <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
+          <Logo height={44} />
         </div>
 
         <div>
@@ -70,7 +71,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="mb-8 block lg:hidden">
-            <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
+            <Logo height={34} />
           </div>
 
           <h2 className="text-2xl font-bold">Staff sign in</h2>

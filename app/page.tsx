@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import Logo from "../src/components/logo";
 
 export default async function HomePage() {
   const cookieStore = await cookies();
@@ -12,9 +13,7 @@ export default async function HomePage() {
     <main className="min-h-screen bg-slate-950 text-white">
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-6">
-        <span className="text-sm font-semibold text-orange-500 tracking-wide">
-          IBSA · Xylo (UK) Ltd
-        </span>
+        <Logo height={38} />
         <Link
           href={isLoggedIn ? dashHref : "/login"}
           className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
