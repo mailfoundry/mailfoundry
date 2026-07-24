@@ -22,9 +22,10 @@ type SidebarProps = {
     | "ibsa-orders"
     | "ibsa-contacts";
   ibsaOnly?: boolean;
+  submittedOrdersCount?: number;
 };
 
-export default function Sidebar({ active, ibsaOnly = false }: SidebarProps) {
+export default function Sidebar({ active, ibsaOnly = false, submittedOrdersCount = 0 }: SidebarProps) {
   const base = "block rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white";
   const activeClass = "block rounded-lg bg-slate-800 px-3 py-2";
 
@@ -71,7 +72,14 @@ export default function Sidebar({ active, ibsaOnly = false }: SidebarProps) {
           <Link href={productsHref} className={`mt-1 ${active === "ibsa-products" ? activeClass : base}`}>Products</Link>
           <Link href="/ibsa/purchasing" className={`mt-1 ${active === "ibsa-purchasing" ? activeClass : base}`}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={`mt-1 ${active === "ibsa-suppliers" ? activeClass : base}`}>Suppliers</Link>
-          <Link href="/ibsa/orders" className={`mt-1 ${active === "ibsa-orders" ? activeClass : base}`}>Orders</Link>
+          <Link href="/ibsa/orders" className={`mt-1 flex items-center justify-between ${active === "ibsa-orders" ? activeClass : base}`}>
+            <span>Orders</span>
+            {submittedOrdersCount > 0 && (
+              <span className="ml-2 rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white tabular-nums">
+                {submittedOrdersCount}
+              </span>
+            )}
+          </Link>
           <Link href="/ibsa/contacts" className={`mt-1 ${active === "ibsa-contacts" ? activeClass : base}`}>Contacts</Link>
         </div>
       </nav>

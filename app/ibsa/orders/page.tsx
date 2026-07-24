@@ -15,14 +15,26 @@ const GROUP_LABELS: Record<string, string> = {
   regional:     "Regional",
 };
 
+const fmtGbp = (n: number) =>
+  "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export default async function OrdersPage() {
   const orders = await prisma.ibsaGroupOrder.findMany({
     orderBy: { submittedAt: "desc" },
-    include: { lines: true },
+    include: {
+      lines: {
+        include: { product: { select: { unitCost: true, xyloCost: true } } },
+      },
+    },
   });
 
   const fmtDate = (d: Date) =>
     d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+  const submittedCount  = orders.filter((o) => o.status === "submitted").length;
+  const processingCount = orders.filter((o) => o.status === "processing").length;
+  const totalRevenue    = orders.reduce((sum, o) => sum + o.lines.reduce((s, l) => s + l.qty * l.product.unitCost, 0), 0);
+  const totalProfit     = orders.reduce((sum, o) => sum + o.lines.reduce((s, l) => s + l.qty * (l.product.unitCost - (l.product.xyloCost ?? l.product.unitCost)), 0), 0);
 
   return (
     <IbsaAppShell active="ibsa-orders">
@@ -31,6 +43,30 @@ export default async function OrdersPage() {
         <div>
           <h1 className="text-xl font-bold text-white">Public Orders</h1>
           <p className="mt-0.5 text-sm text-slate-500">{orders.length} order{orders.length !== 1 ? "s" : ""} received</p>
+        </div>
+      </div>
+
+      {/* Stat cards */}
+      <div className="mb-8 grid grid-cols-4 gap-4">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">New</p>
+          <p className={`mt-1 text-2xl font-bold ${submittedCount > 0 ? "text-orange-400" : "text-white"}`}>{submittedCount}</p>
+          <p className="mt-0.5 text-xs text-slate-600">awaiting action</p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">In Progress</p>
+          <p className="mt-1 text-2xl font-bold text-amber-400">{processingCount}</p>
+          <p className="mt-0.5 text-xs text-slate-600">being processed</p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Total Revenue</p>
+          <p className="mt-1 text-2xl font-bold">{fmtGbp(totalRevenue)}</p>
+          <p className="mt-0.5 text-xs text-slate-600">across all orders</p>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <p className="text-xs text-slate-500">Total Profit</p>
+          <p className={`mt-1 text-2xl font-bold ${totalProfit >= 0 ? "text-green-400" : "text-red-400"}`}>{fmtGbp(totalProfit)}</p>
+          <p className="mt-0.5 text-xs text-slate-600">ex VAT</p>
         </div>
       </div>
 
