@@ -64,12 +64,9 @@ export async function sendStripeInvoice(orderId: string) {
     await stripe.invoiceItems.create({
       customer: stripeCustomerId,
       invoice: invoice.id,
-      quantity: line.qty,
-      price_data: {
-        currency: "gbp",
-        product_data: { name: description },
-        unit_amount: Math.round(unitPrice * 100), // pence
-      },
+      description: `${description} ×${line.qty}`,
+      amount: Math.round(unitPrice * line.qty * 100), // total in pence
+      currency: "gbp",
     });
   }
 
