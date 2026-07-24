@@ -7,9 +7,10 @@ type Props = {
   orderId: string;
   stripeInvoiceId: string | null;
   invoicedAt: Date | null;
+  contactEmail?: string;
 };
 
-export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt }: Props) {
+export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt, contactEmail }: Props) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -49,9 +50,11 @@ export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt
         >
           Send invoice via Stripe
         </button>
-        <p className="mt-2 text-xs text-slate-500">
-          Stripe will email the invoice directly to {"{email}"} with a Pay Online link.
-        </p>
+        {contactEmail && (
+          <p className="mt-2 text-xs text-slate-500">
+            Stripe will email the invoice directly to <span className="text-slate-400">{contactEmail}</span> with a Pay Online link.
+          </p>
+        )}
       </div>
     );
   }

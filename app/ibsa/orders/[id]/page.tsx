@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
+
+export const dynamic = "force-dynamic";
+
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import UpdateStatusButton from "./UpdateStatusButton";
 import SendInvoiceButton from "./SendInvoiceButton";
@@ -117,11 +120,10 @@ export default async function OrderDetailPage({ params }: Props) {
             orderId={order.id}
             stripeInvoiceId={order.stripeInvoiceId ?? null}
             invoicedAt={order.invoicedAt ?? null}
+            contactEmail={order.contactEmail}
           />
           {!order.stripeInvoiceId && (
-            <p className="mt-2 text-xs text-slate-500">
-              Stripe will email the invoice to <span className="text-slate-400">{order.contactEmail}</span> with a Pay Online link. Payment due in 14 days.
-            </p>
+            <p className="mt-2 text-xs text-slate-500">Payment due in 14 days after sending.</p>
           )}
           {order.paidAt && (
             <p className="mt-2 text-xs text-green-400">
