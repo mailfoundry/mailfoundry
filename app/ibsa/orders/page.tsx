@@ -25,7 +25,7 @@ export default async function OrdersPage() {
     d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
   return (
-    <IbsaAppShell>
+    <IbsaAppShell active="ibsa-orders">
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>

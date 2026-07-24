@@ -41,7 +41,7 @@ export default async function OrderDetailPage({ params }: Props) {
     d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   return (
-    <IbsaAppShell>
+    <IbsaAppShell active="ibsa-orders">
     <div className="p-6 max-w-3xl">
       <div className="mb-6 flex items-center gap-3">
         <Link href="/ibsa/orders" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
