@@ -3,9 +3,11 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../src/lib/prisma";
-import { stripe } from "../../../../src/lib/stripe";
 
 export async function sendStripeInvoice(orderId: string) {
+  // Lazy import — keeps stripe.ts from running at module load time,
+  // which would crash the page if STRIPE_SECRET_KEY isn't set.
+  const { stripe } = await import("../../../../src/lib/stripe");
   const order = await prisma.ibsaGroupOrder.findUnique({
     where: { id: orderId },
     include: {
@@ -53,7 +55,7 @@ export async function sendStripeInvoice(orderId: string) {
   // ── Add line items ────────────────────────────────────────────────────────
   for (const line of order.lines) {
     // xyloCost is the customer-facing price; unitCost is the buy price fallback
-    const unitPrice = line.product.xyloCost ?? line.product.unitCost;
+    const unitPrice = line.product.unitCost;
     const description = [
       line.product.name,
       line.product.variant ? `(${line.product.variant})` : null,
