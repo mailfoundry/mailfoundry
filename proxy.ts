@@ -27,7 +27,7 @@ function fireTrack(request: NextRequest, hostname: string, pathname: string) {
   }).catch(() => {});
 }
 
-const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo"];
+const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
@@ -63,6 +63,13 @@ export function proxy(request: NextRequest) {
 
   if (isPublicPath(pathname) || pathname.startsWith("/_next")) {
     return NextResponse.next();
+  }
+
+  // Group account portal: accessible with group_auth cookie only
+  if (pathname.startsWith("/account")) {
+    const isGroupLoggedIn = request.cookies.get("group_auth")?.value;
+    if (isGroupLoggedIn) return NextResponse.next();
+    return NextResponse.redirect(new URL("/account/login", request.url));
   }
 
   // Convention order form: protected by convention_auth cookie (contains the conventionId)

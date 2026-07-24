@@ -290,6 +290,37 @@ model ConventionOrderToken {
   @@index([conventionId])
 }
 
+/// A group (congregation / circuit / regional) that has placed at least one order.
+model GroupAccount {
+  id            String    @id @default(cuid())
+  /// congregation | circuit | regional
+  groupType     String
+  groupName     String
+  contactEmail  String    @unique
+  contactName   String
+  contactMobile String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  orders IbsaGroupOrder[]
+  tokens GroupAccountToken[]
+
+  @@index([contactEmail])
+}
+
+/// Single-use magic-link token for group account login.
+model GroupAccountToken {
+  id             String       @id @default(cuid())
+  token          String       @unique
+  groupAccountId String
+  groupAccount   GroupAccount @relation(fields: [groupAccountId], references: [id], onDelete: Cascade)
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([token])
+}
+
 /// An order placed by a congregation, circuit assembly, or regional group.
 model IbsaGroupOrder {
   id              String    @id @default(cuid())
@@ -308,9 +339,13 @@ model IbsaGroupOrder {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  groupAccountId String?
+  groupAccount   GroupAccount? @relation(fields: [groupAccountId], references: [id], onDelete: SetNull)
+
   lines IbsaGroupOrderLine[]
 
   @@index([status])
+  @@index([groupAccountId])
 }
 
 /// One line within a group order.

@@ -1,10 +1,12 @@
 "use server";
 
+import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
 
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 export async function submitGroupOrder(formData: FormData) {
   const groupType       = (formData.get("groupType")       as string).trim();
@@ -35,7 +37,25 @@ export async function submitGroupOrder(formData: FormData) {
 
   if (lines.length === 0) redirect("/order?error=no-items");
 
-  // Save to DB
+  // ── Upsert GroupAccount ────────────────────────────────────────────────────
+  const account = await prisma.groupAccount.upsert({
+    where: { contactEmail },
+    create: { groupType, groupName, contactEmail, contactName, contactMobile: contactMobile ?? undefined },
+    update: { groupName, contactName, contactMobile: contactMobile ?? undefined },
+  });
+
+  // ── Generate magic-link token (7 day expiry) ───────────────────────────────
+  const rawToken = randomBytes(32).toString("hex");
+  await prisma.groupAccountToken.create({
+    data: {
+      token: rawToken,
+      groupAccountId: account.id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  });
+  const accountUrl = `${BASE_URL}/account/verify?token=${rawToken}`;
+
+  // ── Save order, linked to account ─────────────────────────────────────────
   const order = await prisma.ibsaGroupOrder.create({
     data: {
       groupType,
@@ -46,6 +66,7 @@ export async function submitGroupOrder(formData: FormData) {
       deliveryAddress: deliveryAddress ?? undefined,
       requiredBy: requiredBy ?? undefined,
       notes: notes ?? undefined,
+      groupAccountId: account.id,
       lines: { create: lines },
     },
     include: { lines: { include: { product: true } } },
@@ -103,16 +124,24 @@ export async function submitGroupOrder(formData: FormData) {
     </div>`,
   });
 
-  // ── Confirmation to submitter ─────────────────────────────────────────────
+  // ── Confirmation + account setup to submitter ──────────────────────────────
   await sendEmail({
     to: contactEmail,
     subject: `Order received — Xylo (UK) Ltd`,
-    text: `Hi ${contactName},\n\nThank you — we've received your order for ${groupName}. We'll be in touch to confirm delivery details.\n\nIf you have any questions contact us at ${IBSA_NOTIFY_EMAIL}.\n\nIBSA · Xylo (UK) Ltd`,
+    text: `Hi ${contactName},\n\nThank you — we've received your order for ${groupName}. We'll be in touch to confirm delivery details.\n\nYour account is ready. Use the link below to view your orders and re-order at any time (link valid 7 days):\n${accountUrl}\n\nQuestions? Email ${IBSA_NOTIFY_EMAIL}.\n\nIBSA · Xylo (UK) Ltd`,
     html: `${baseHtml}
         <h1 style="color:#fff;font-size:20px;margin:0 0 8px;">Order received ✓</h1>
         <p style="color:#94a3b8;font-size:14px;margin:0 0 20px;">Hi ${contactName}, thank you — we've received your order for <strong style="color:#f1f5f9;">${groupName}</strong> and will be in touch to confirm delivery details.</p>
         ${sectionHtml("Cleaning Supplies", csLines)}
         ${sectionHtml("First Aid", faLines)}
+
+        <div style="margin:28px 0 0;padding:20px;background:#1e293b;border-radius:10px;border-left:3px solid #f97316;">
+          <p style="color:#f97316;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;margin:0 0 6px;">Your account</p>
+          <p style="color:#94a3b8;font-size:13px;margin:0 0 16px;">View your order history and re-order with one click — no password needed.</p>
+          <a href="${accountUrl}" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">Access your account →</a>
+          <p style="color:#475569;font-size:11px;margin:12px 0 0;">Link valid for 7 days. <a href="${BASE_URL}/account/login" style="color:#64748b;">Request a new link</a> any time.</p>
+        </div>
+
         <p style="color:#94a3b8;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
       </div>
     </div>`,
