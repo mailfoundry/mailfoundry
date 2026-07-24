@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MailFoundry",
-  description: "Email marketing built to perform.",
+  title: "IBSA Portal",
+  description: "Convention & congregation supply ordering by Xylo (UK) Ltd.",
   icons: {
     icon: [
       { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
