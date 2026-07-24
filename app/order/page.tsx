@@ -9,13 +9,13 @@ export default async function OrderPage({ searchParams }: Props) {
   const csProducts = await prisma.ibsaProduct.findMany({
     where: { type: "CS", visibleInOrderForm: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true },
+    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
   });
 
   const faProducts = await prisma.ibsaProduct.findMany({
     where: { type: "FA", visibleInOrderForm: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true },
+    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
   });
 
   return <OrderFormClient csProducts={csProducts} faProducts={faProducts} error={error} />;
