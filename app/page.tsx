@@ -1,49 +1,58 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import Logo from "../src/components/logo";
 
-export default async function MarketingPage() {
+export default async function HomePage() {
   const cookieStore = await cookies();
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const isLoggedIn = cookieStore.get(cookieName)?.value === "1";
+  const isMainUser  = cookieStore.get("mailfoundry_auth")?.value === "1";
+  const isIbsaUser  = cookieStore.get("ibsa_auth")?.value === "1";
+  const isLoggedIn  = isMainUser || isIbsaUser;
+  const dashHref    = isMainUser ? "/dashboard" : "/ibsa?type=regional";
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-6">
-        <Logo height={28} />
+        <span className="text-sm font-semibold text-orange-500 tracking-wide">
+          IBSA · Xylo (UK) Ltd
+        </span>
         <Link
-          href={isLoggedIn ? "/dashboard" : "/login"}
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          href={isLoggedIn ? dashHref : "/login"}
+          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
         >
-          {isLoggedIn ? "Open dashboard" : "Sign in"}
+          {isLoggedIn ? "Go to portal" : "Staff sign in"}
         </Link>
       </nav>
 
       {/* Hero */}
       <section className="mx-auto max-w-4xl px-8 pb-24 pt-20 text-center">
         <div className="mb-6 inline-block rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 text-sm font-medium text-orange-400">
-          Email marketing, simplified
+          Convention &amp; congregation supplies
         </div>
 
         <h1 className="text-5xl font-bold leading-tight tracking-tight sm:text-6xl">
-          Send campaigns that
+          Supplies for every
           <br />
-          <span className="text-orange-400">actually get read</span>
+          <span className="text-orange-400">convention &amp; assembly</span>
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-          MailFoundry gives you everything you need to build your audience,
-          send beautiful campaigns, and track what's working — without the
-          complexity of bloated marketing platforms.
+          Cleaning supplies and first aid products for regional conventions,
+          circuit assemblies, and congregations — ordered in one place and
+          fulfilled directly by Xylo (UK) Ltd.
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/login"
-            className="rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600"
+            className="rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
           >
-            Sign in to MailFoundry
+            Staff sign in
+          </Link>
+          <Link
+            href="/order"
+            className="rounded-xl border border-slate-700 px-8 py-3.5 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
+          >
+            Place a group order
           </Link>
         </div>
       </section>
@@ -52,49 +61,49 @@ export default async function MarketingPage() {
       <section className="border-t border-slate-800 bg-slate-900/50">
         <div className="mx-auto max-w-5xl px-8 py-20">
           <h2 className="mb-12 text-center text-2xl font-bold">
-            Everything you need, nothing you don&apos;t
+            Everything your event needs
           </h2>
 
           <div className="grid gap-8 md:grid-cols-3">
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10">
                 <svg className="h-5 w-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-semibold">Send with confidence</h3>
+              <h3 className="mb-2 text-lg font-semibold">Simple online ordering</h3>
               <p className="text-sm text-slate-400">
-                Build and preview campaigns before sending. Bounces and
-                complaints are automatically suppressed so your sender
-                reputation stays clean.
+                Submit your convention or congregation order online with a
+                clear product list, quantities, and delivery details — no
+                phone calls or spreadsheets required.
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10">
                 <svg className="h-5 w-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-semibold">Know who&apos;s reading</h3>
+              <h3 className="mb-2 text-lg font-semibold">Full product range</h3>
               <p className="text-sm text-slate-400">
-                Open tracking built in. See exactly who opened your campaign
-                and when, with overall open rates on every campaign.
+                Cleaning supplies, hygiene products, and first aid equipment —
+                all sourced and stocked by Xylo (UK) Ltd specifically for
+                IBSA events.
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10">
                 <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-semibold">Your audience, under control</h3>
+              <h3 className="mb-2 text-lg font-semibold">Direct fulfilment</h3>
               <p className="text-sm text-slate-400">
-                Import contacts via CSV, organise them into lists, and let
-                MailFoundry handle unsubscribes automatically so you stay
-                compliant.
+                Orders are picked, packed, and dispatched directly from Xylo
+                (UK) Ltd — delivered to your venue or collection point in time
+                for your event.
               </p>
             </div>
           </div>
@@ -103,21 +112,25 @@ export default async function MarketingPage() {
 
       {/* CTA */}
       <section className="mx-auto max-w-3xl px-8 py-20 text-center">
-        <h2 className="text-3xl font-bold">Ready to get started?</h2>
+        <h2 className="text-3xl font-bold">Ready to place an order?</h2>
         <p className="mt-4 text-slate-400">
-          Sign in to your MailFoundry account and send your next campaign.
+          Use the group order form to request supplies for your upcoming
+          convention, circuit assembly, or congregation.
         </p>
         <Link
-          href="/login"
-          className="mt-8 inline-block rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600"
+          href="/order"
+          className="mt-8 inline-block rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
         >
-          Sign in to MailFoundry
+          Place a group order
         </Link>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-slate-800 px-8 py-8 text-center text-sm text-slate-500">
-        © {new Date().getFullYear()} MailFoundry. All rights reserved.
+        © {new Date().getFullYear()} Xylo (UK) Ltd ·{" "}
+        <a href="https://www.xylouk.co.uk" className="hover:text-slate-400 transition-colors">
+          xylouk.co.uk
+        </a>
       </footer>
     </main>
   );
