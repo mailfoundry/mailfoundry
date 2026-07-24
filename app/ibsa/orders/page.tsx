@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "../../../src/lib/prisma";
+import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 
 const STATUS_STYLES: Record<string, string> = {
   submitted:  "bg-blue-900/40 text-blue-300",
@@ -24,6 +25,7 @@ export default async function OrdersPage() {
     d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
   return (
+    <IbsaAppShell>
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -85,5 +87,6 @@ export default async function OrdersPage() {
         </div>
       )}
     </div>
+    </IbsaAppShell>
   );
 }

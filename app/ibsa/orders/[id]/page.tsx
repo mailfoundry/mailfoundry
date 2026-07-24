@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
+import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import UpdateStatusButton from "./UpdateStatusButton";
 
 type Props = { params: Promise<{ id: string }> };
@@ -40,6 +41,7 @@ export default async function OrderDetailPage({ params }: Props) {
     d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   return (
+    <IbsaAppShell>
     <div className="p-6 max-w-3xl">
       <div className="mb-6 flex items-center gap-3">
         <Link href="/ibsa/orders" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
@@ -106,5 +108,6 @@ export default async function OrderDetailPage({ params }: Props) {
         <UpdateStatusButton orderId={order.id} currentStatus={order.status} />
       </div>
     </div>
+    </IbsaAppShell>
   );
 }
