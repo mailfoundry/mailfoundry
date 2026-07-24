@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "Xylo Supplies — UK Wholesale Cleaning & First Aid",
+  title: "Xylo (UK) Ltd — UK Wholesale Cleaning & First Aid",
   description:
-    "UK-based wholesale supplier of professional cleaning products and first aid consumables for trade customers and event organisers.",
+    "UK-based wholesale supplier of professional cleaning products and first aid consumables for trade customers, event organisers and convention centres.",
 };
 
 export default function XyloHomePage() {
@@ -27,7 +27,7 @@ export default function XyloHomePage() {
 
           {/* Description */}
           <p className="text-lg leading-relaxed text-slate-600 max-w-lg mx-auto mb-12">
-            Xylo Supplies is a UK-based wholesale distributor of professional
+            Xylo (UK) Ltd is a UK-based wholesale distributor of professional
             cleaning products and first aid consumables, serving trade customers,
             event organisers and convention centres.
           </p>

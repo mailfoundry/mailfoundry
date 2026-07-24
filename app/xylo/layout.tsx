@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "../../src/components/logo";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -12,7 +13,7 @@ export default function XyloLayout({ children }: { children: React.ReactNode }) 
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 md:px-10 py-7 border-b border-slate-200">
         <Link href="/">
-          <XyloLogo />
+          <Logo height={42} />
         </Link>
         <div className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((link) => (
@@ -98,32 +99,3 @@ export default function XyloLayout({ children }: { children: React.ReactNode }) 
   );
 }
 
-export function XyloLogo() {
-  return (
-    <svg width="148" height="40" viewBox="0 0 148 40" xmlns="http://www.w3.org/2000/svg" aria-label="Xylo Supplies">
-      {/* XYLO */}
-      <text
-        x="0" y="30"
-        fontFamily="Arial Black, Arial, sans-serif"
-        fontWeight="900"
-        fontSize="30"
-        letterSpacing="-0.5"
-      >
-        <tspan fill="#f97316">X</tspan>
-        <tspan fill="#1e293b">YLO</tspan>
-      </text>
-      {/* SUPPLIES */}
-      <text
-        x="0" y="39"
-        fontFamily="Arial, Helvetica, sans-serif"
-        fontWeight="400"
-        fontSize="8.5"
-        textLength="92"
-        lengthAdjust="spacingAndGlyphs"
-        fill="#475569"
-      >
-        SUPPLIES
-      </text>
-    </svg>
-  );
-}
