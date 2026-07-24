@@ -32,7 +32,8 @@ export default async function IbsaAppShell({ active, children }: Props) {
   return (
     <AppShell
       active={active}
-      ibsaOnly={ibsaOnly}
+      ibsaOnly={true}
+      isMainUser={isMainUser}
       orderCounts={{
         regional:     goCount("regional")     + convCount("regional"),
         circuit:      goCount("circuit")      + convCount("circuit"),

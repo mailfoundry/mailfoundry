@@ -20,14 +20,15 @@ type AppShellProps = {
     | "ibsa-contacts";
   children: ReactNode;
   ibsaOnly?: boolean;
+  isMainUser?: boolean;
   orderCounts?: { regional: number; circuit: number; congregation: number };
 };
 
-export default function AppShell({ active, children, ibsaOnly = false, orderCounts }: AppShellProps) {
+export default function AppShell({ active, children, ibsaOnly = false, isMainUser = false, orderCounts }: AppShellProps) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <div className="flex min-h-screen">
-        <Sidebar active={active} ibsaOnly={ibsaOnly} orderCounts={orderCounts} />
+        <Sidebar active={active} ibsaOnly={ibsaOnly} isMainUser={isMainUser} orderCounts={orderCounts} />
         <section className="flex-1 p-10">{children}</section>
       </div>
     </main>
