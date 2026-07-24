@@ -91,19 +91,64 @@ export default async function AccountPage({ searchParams }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {account.orders.map((order, i) => {
               const status = STATUS_LABEL[order.status] ?? STATUS_LABEL.submitted;
               const date = order.submittedAt.toLocaleDateString("en-GB", {
-                day: "numeric", month: "short", year: "numeric",
+                day: "numeric", month: "long", year: "numeric",
               });
-              const csCount = order.lines.filter((l) => l.dept === "CS").reduce((s, l) => s + l.qty, 0);
-              const faCount = order.lines.filter((l) => l.dept === "FA").reduce((s, l) => s + l.qty, 0);
+              const csLines = order.lines.filter((l) => l.dept === "CS");
+              const faLines = order.lines.filter((l) => l.dept === "FA");
+              const fmtGbp = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              const lineTotal = (lines: typeof csLines) => lines.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
+              const grandTotal = lineTotal(order.lines);
+
+              const SectionTable = ({ lines, label }: { lines: typeof csLines; label: string }) =>
+                lines.length === 0 ? null : (
+                  <div className="mb-3">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">{label}</p>
+                    <div className="overflow-hidden rounded-lg border border-slate-800">
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr className="bg-slate-950">
+                            <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-600 w-20">Code</th>
+                            <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-600">Product</th>
+                            <th className="px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-600 w-10">Qty</th>
+                            <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-600 w-16">Unit</th>
+                            <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-600 w-20">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {lines.map((l) => (
+                            <tr key={l.id} className="border-t border-slate-800">
+                              <td className="px-3 py-2.5 font-mono text-[11px] text-slate-500">{l.product.code}</td>
+                              <td className="px-3 py-2.5 text-slate-200">
+                                {l.product.name}
+                                {l.product.variant && (
+                                  <span className="block text-[11px] text-slate-500">{l.product.variant}</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-2.5 text-center font-bold text-white">{l.qty}</td>
+                              <td className="px-3 py-2.5 text-right text-slate-400 tabular-nums">{fmtGbp(l.product.unitCost)}</td>
+                              <td className="px-3 py-2.5 text-right font-semibold text-white tabular-nums">{fmtGbp(l.qty * l.product.unitCost)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot>
+                          <tr className="border-t border-slate-700">
+                            <td colSpan={4} className="px-3 py-2 text-right text-xs text-slate-500">Section total</td>
+                            <td className="px-3 py-2 text-right font-bold text-orange-400 tabular-nums">{fmtGbp(lineTotal(lines))}</td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                );
 
               return (
                 <div key={order.id} className="rounded-xl border border-slate-800 bg-slate-900 p-5">
                   {/* Order header */}
-                  <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex items-start justify-between gap-4 mb-5">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${status.colour}`}>
@@ -116,6 +161,12 @@ export default async function AccountPage({ searchParams }: Props) {
                         )}
                       </div>
                       <p className="text-xs text-slate-500">{date}</p>
+                      {order.requiredBy && (
+                        <p className="text-xs text-slate-500 mt-0.5">Required by: <span className="text-slate-400">{order.requiredBy}</span></p>
+                      )}
+                      {order.deliveryAddress && (
+                        <p className="text-xs text-slate-500 mt-0.5">Delivery: <span className="text-slate-400">{order.deliveryAddress.split("\n")[0]}</span></p>
+                      )}
                     </div>
                     <form action={reorder.bind(null, order.id)}>
                       <button
@@ -127,30 +178,16 @@ export default async function AccountPage({ searchParams }: Props) {
                     </form>
                   </div>
 
-                  {/* Line summary */}
-                  <div className="space-y-1">
-                    {order.lines.map((l) => (
-                      <div key={l.id} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-400">
-                          {l.product.name}
-                          {l.product.variant && (
-                            <span className="text-slate-600"> ({l.product.variant})</span>
-                          )}
-                        </span>
-                        <span className="tabular-nums font-semibold text-slate-300 ml-4">
-                          ×{l.qty}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  {/* Line items */}
+                  <SectionTable lines={csLines} label="Cleaning Supplies" />
+                  <SectionTable lines={faLines} label="First Aid" />
 
-                  {/* Totals strip */}
-                  <div className="mt-4 pt-3 border-t border-slate-800 flex gap-4 text-xs text-slate-500">
-                    {csCount > 0 && <span>{csCount} cleaning item{csCount !== 1 ? "s" : ""}</span>}
-                    {faCount > 0 && <span>{faCount} first aid item{faCount !== 1 ? "s" : ""}</span>}
-                    {order.deliveryAddress && (
-                      <span className="ml-auto truncate max-w-[200px]">{order.deliveryAddress.split("\n")[0]}</span>
-                    )}
+                  {/* Grand total */}
+                  <div className="mt-2 flex justify-end">
+                    <div className="flex items-center gap-6 rounded-lg bg-slate-950 px-4 py-2.5">
+                      <span className="text-xs text-slate-500">Order total</span>
+                      <span className="text-base font-black text-orange-400 tabular-nums">{fmtGbp(grandTotal)}</span>
+                    </div>
                   </div>
                 </div>
               );
