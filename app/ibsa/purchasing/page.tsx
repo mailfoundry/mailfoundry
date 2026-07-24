@@ -19,7 +19,11 @@ export default async function PurchasingPage() {
     ],
   };
 
-  const [conventions, orderItems] = await Promise.all([
+  const GROUP_TYPE_LABEL: Record<string, string> = {
+    regional: "Regional", circuit: "Circuit Assembly", congregation: "Congregation",
+  };
+
+  const [conventions, orderItems, groupOrders] = await Promise.all([
     prisma.ibsaConvention.findMany({
       where: upcomingWhere,
       orderBy: [
@@ -52,6 +56,27 @@ export default async function PurchasingPage() {
             xyloCost: true,
             inStock: true,
             git: true,
+          },
+        },
+      },
+    }),
+    prisma.ibsaGroupOrder.findMany({
+      where: { status: { notIn: ["complete", "cancelled"] } },
+      include: {
+        lines: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                variant: true,
+                category: true,
+                unitCost: true,
+                xyloCost: true,
+                inStock: true,
+                git: true,
+              },
+            },
           },
         },
       },
@@ -123,6 +148,39 @@ export default async function PurchasingPage() {
     });
   }
 
+  // Merge group orders into convention + orderItem arrays
+  // Use a far-future date so they always appear in the purchasing list
+  const farFuture = new Date("2099-12-31").toISOString();
+  const statusMap: Record<string, string> = { submitted: "pending", processing: "ordered" };
+
+  const groupConventions: Convention[] = groupOrders.map(o => ({
+    id: o.id,
+    name: `${o.groupName} (${GROUP_TYPE_LABEL[o.groupType] ?? o.groupType})`,
+    conventionDate: farFuture,
+    status: statusMap[o.status] ?? "pending",
+    collectionDate: null,
+    faStatus: statusMap[o.status] ?? "pending",
+    faCollectionDate: null,
+  }));
+
+  const groupOrderItems: OrderItemFlat[] = groupOrders.flatMap(o =>
+    o.lines.map(l => ({
+      conventionId: o.id,
+      dept: l.dept,
+      qty: l.qty,
+      product: {
+        id: l.product.id,
+        name: l.product.name,
+        variant: l.product.variant,
+        category: l.product.category,
+        unitCost: l.product.unitCost,
+        xyloCost: l.product.xyloCost,
+        inStock: l.product.inStock,
+        git: l.product.git,
+      },
+    }))
+  );
+
   // Serialise dates to strings for the client component
   const conventionData: Convention[] = conventions.map(c => ({
     id: c.id,
@@ -134,21 +192,24 @@ export default async function PurchasingPage() {
     faCollectionDate: c.faCollectionDate?.toISOString() ?? null,
   }));
 
-  const orderItemData: OrderItemFlat[] = orderItems.map(i => ({
-    conventionId: i.conventionId,
-    dept: i.dept,
-    qty: i.qty,
-    product: {
-      id: i.product.id,
-      name: i.product.name,
-      variant: i.product.variant,
-      category: i.product.category,
-      unitCost: i.product.unitCost,
-      xyloCost: i.product.xyloCost,
-      inStock: i.product.inStock,
-      git: i.product.git,
-    },
-  }));
+  const orderItemData: OrderItemFlat[] = [
+    ...orderItems.map(i => ({
+      conventionId: i.conventionId,
+      dept: i.dept,
+      qty: i.qty,
+      product: {
+        id: i.product.id,
+        name: i.product.name,
+        variant: i.product.variant,
+        category: i.product.category,
+        unitCost: i.product.unitCost,
+        xyloCost: i.product.xyloCost,
+        inStock: i.product.inStock,
+        git: i.product.git,
+      },
+    })),
+    ...groupOrderItems,
+  ];
 
   const rsProductData: RsProductLine[] = rsProducts.map(r => ({
     id: r.id,
@@ -164,7 +225,7 @@ export default async function PurchasingPage() {
   return (
     <IbsaAppShell active="ibsa-purchasing">
       <PurchasingClient
-        conventions={conventionData}
+        conventions={[...conventionData, ...groupConventions]}
         orderItems={orderItemData}
         rsProducts={rsProductData}
         bomByComposite={bomByComposite}

@@ -13,18 +13,31 @@ export default async function IbsaAppShell({ active, children }: Props) {
   const isMainUser = cookieStore.get("mailfoundry_auth")?.value === "1";
   const ibsaOnly = !isMainUser && cookieStore.get("ibsa_auth")?.value === "1";
 
-  const orderCounts = await prisma.ibsaGroupOrder.groupBy({
-    by: ["groupType"],
-    where: { status: "submitted" },
-    _count: true,
-  });
-  const countFor = (t: string) => orderCounts.find((r) => r.groupType === t)?._count ?? 0;
+  const [groupOrderCounts, conventionCounts] = await Promise.all([
+    prisma.ibsaGroupOrder.groupBy({
+      by: ["groupType"],
+      where: { status: "submitted" },
+      _count: true,
+    }),
+    prisma.ibsaConvention.groupBy({
+      by: ["eventType"],
+      where: { archivedAt: null, status: { not: "complete" } },
+      _count: true,
+    }),
+  ]);
+
+  const goCount  = (t: string) => groupOrderCounts.find((r) => r.groupType === t)?._count ?? 0;
+  const convCount = (t: string) => conventionCounts.find((r) => r.eventType === t)?._count ?? 0;
 
   return (
     <AppShell
       active={active}
       ibsaOnly={ibsaOnly}
-      orderCounts={{ regional: countFor("regional"), circuit: countFor("circuit"), congregation: countFor("congregation") }}
+      orderCounts={{
+        regional:     goCount("regional")     + convCount("regional"),
+        circuit:      goCount("circuit")      + convCount("circuit"),
+        congregation: goCount("congregation") + convCount("congregation"),
+      }}
     >
       {children}
     </AppShell>
