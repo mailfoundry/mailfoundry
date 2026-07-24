@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import UpdateStatusButton from "./UpdateStatusButton";
+import SendInvoiceButton from "./SendInvoiceButton";
 import { deleteOrder } from "./actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -30,6 +31,7 @@ export default async function OrderDetailPage({ params }: Props) {
         include: { product: true },
         orderBy: [{ dept: "asc" }],
       },
+      groupAccount: true,
     },
   });
 
@@ -105,6 +107,28 @@ export default async function OrderDetailPage({ params }: Props) {
             </div>
           </div>
         )
+      )}
+
+      {/* Invoice */}
+      {order.status !== "cancelled" && (
+        <div className="mb-4 rounded-2xl border border-slate-800 bg-slate-900 p-4">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Invoice</p>
+          <SendInvoiceButton
+            orderId={order.id}
+            stripeInvoiceId={order.stripeInvoiceId ?? null}
+            invoicedAt={order.invoicedAt ?? null}
+          />
+          {!order.stripeInvoiceId && (
+            <p className="mt-2 text-xs text-slate-500">
+              Stripe will email the invoice to <span className="text-slate-400">{order.contactEmail}</span> with a Pay Online link. Payment due in 14 days.
+            </p>
+          )}
+          {order.paidAt && (
+            <p className="mt-2 text-xs text-green-400">
+              Paid {order.paidAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+            </p>
+          )}
+        </div>
       )}
 
       {/* Status update */}

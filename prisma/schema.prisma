@@ -302,6 +302,8 @@ model GroupAccount {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  stripeCustomerId String?
+
   orders IbsaGroupOrder[]
   tokens GroupAccountToken[]
 
@@ -339,8 +341,12 @@ model IbsaGroupOrder {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  groupAccountId String?
-  groupAccount   GroupAccount? @relation(fields: [groupAccountId], references: [id], onDelete: SetNull)
+  groupAccountId  String?
+  groupAccount    GroupAccount? @relation(fields: [groupAccountId], references: [id], onDelete: SetNull)
+
+  stripeInvoiceId String?
+  invoicedAt      DateTime?
+  paidAt          DateTime?
 
   lines IbsaGroupOrderLine[]
 
