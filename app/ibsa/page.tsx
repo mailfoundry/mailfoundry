@@ -189,6 +189,12 @@ export default async function IbsaPage() {
         <div className="flex items-center gap-3">
           <NewConventionButton />
           <Link
+            href="/ibsa/orders"
+            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          >
+            Orders →
+          </Link>
+          <Link
             href="/ibsa/products"
             className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
           >

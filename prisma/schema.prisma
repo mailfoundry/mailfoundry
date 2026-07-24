@@ -290,19 +290,20 @@ model ConventionOrderToken {
 
 /// An order placed by a congregation, circuit assembly, or regional group.
 model IbsaGroupOrder {
-  id            String    @id @default(cuid())
+  id              String    @id @default(cuid())
   /// congregation | circuit | regional
-  groupType     String
-  groupName     String
-  contactName   String
-  contactEmail  String
-  contactMobile String?
+  groupType       String
+  groupName       String
+  contactName     String
+  contactEmail    String
+  contactMobile   String?
+  deliveryAddress String?
   /// submitted | processing | complete | cancelled
-  status        String    @default("submitted")
-  notes         String?
-  submittedAt   DateTime  @default(now())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  status          String    @default("submitted")
+  notes           String?
+  submittedAt     DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   lines IbsaGroupOrderLine[]
 

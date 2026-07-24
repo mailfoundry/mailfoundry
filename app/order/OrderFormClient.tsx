@@ -40,11 +40,13 @@ export default function OrderFormClient({
   const [isPending, startTransition] = useTransition();
 
   // Group identity
-  const [groupType, setGroupType]       = useState("congregation");
-  const [groupName, setGroupName]       = useState("");
-  const [contactName, setContactName]   = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactMobile, setContactMobile] = useState("");
+  const [groupType, setGroupType]           = useState("congregation");
+  const [groupName, setGroupName]           = useState("");
+  const [contactName, setContactName]       = useState("");
+  const [contactEmail, setContactEmail]     = useState("");
+  const [contactMobile, setContactMobile]   = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [notes, setNotes]                   = useState("");
 
   const csCount = csProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
   const faCount = faProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
@@ -130,7 +132,7 @@ export default function OrderFormClient({
 
         {/* Header */}
         <div className="mb-8">
-          <p className="text-sm font-semibold text-orange-500">IBSA · Xylo Supplies</p>
+          <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
           <h1 className="mt-1 text-2xl font-bold text-white">Supply Order Form</h1>
           <p className="mt-1 text-sm text-slate-400">
             Select the products you need and submit your order. We'll be in touch to confirm.
@@ -210,7 +212,7 @@ export default function OrderFormClient({
               </div>
 
               {/* Contact mobile */}
-              <div className="sm:col-span-2">
+              <div>
                 <label className="mb-1 block text-xs text-slate-500">Mobile (optional)</label>
                 <input
                   type="tel"
@@ -219,6 +221,32 @@ export default function OrderFormClient({
                   onChange={(e) => setContactMobile(e.target.value)}
                   placeholder="+44 7700 000000"
                   className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500 placeholder:text-slate-600"
+                />
+              </div>
+
+              {/* Delivery address */}
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-xs text-slate-500">Delivery address (optional)</label>
+                <textarea
+                  name="deliveryAddress"
+                  rows={3}
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  placeholder={"Venue / Hall name\nStreet address\nCity, Postcode"}
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500 placeholder:text-slate-600 resize-none"
+                />
+              </div>
+
+              {/* Notes */}
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-xs text-slate-500">Additional notes (optional)</label>
+                <textarea
+                  name="notes"
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="e.g. preferred delivery time, access instructions…"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500 placeholder:text-slate-600 resize-none"
                 />
               </div>
             </div>

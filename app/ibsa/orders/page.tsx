@@ -1,94 +1,89 @@
+import Link from "next/link";
 import { prisma } from "../../../src/lib/prisma";
 
-export const dynamic = "force-dynamic";
-import IbsaAppShell from "../../../src/components/ibsa-app-shell";
-import OrdersClient, { type PurchaseOrder } from "./OrdersClient";
-import GroupOrdersSection, { type GroupOrder } from "./GroupOrdersSection";
+const STATUS_STYLES: Record<string, string> = {
+  submitted:  "bg-blue-900/40 text-blue-300",
+  processing: "bg-amber-900/40 text-amber-300",
+  complete:   "bg-green-900/40 text-green-300",
+  cancelled:  "bg-slate-800 text-slate-500",
+};
+
+const GROUP_LABELS: Record<string, string> = {
+  congregation: "Congregation",
+  circuit:      "Circuit Assembly",
+  regional:     "Regional",
+};
 
 export default async function OrdersPage() {
-  const pos = await prisma.ibsaPurchaseOrder.findMany({
-    include: { lines: { orderBy: { createdAt: "asc" } } },
-    orderBy: { orderedAt: "desc" },
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const groupOrders: any[] = await (prisma as any).ibsaGroupOrder.findMany({
-    include: {
-      lines: {
-        include: { product: { select: { name: true, variant: true, code: true, unitCost: true } } },
-        orderBy: [{ dept: "asc" }],
-      },
-    },
+  const orders = await prisma.ibsaGroupOrder.findMany({
     orderBy: { submittedAt: "desc" },
+    include: { lines: true },
   });
 
-  const poData: PurchaseOrder[] = pos.map((o) => ({
-    id: o.id,
-    poNumber: o.poNumber,
-    supplier: o.supplier,
-    status: o.status,
-    orderedAt: o.orderedAt.toISOString(),
-    receivedAt: o.receivedAt?.toISOString() ?? null,
-    totalExVat: o.totalExVat,
-    notes: o.notes ?? null,
-    lines: o.lines.map((l) => ({
-      id: l.id,
-      rsCode: l.rsCode,
-      description: l.description,
-      variant: l.variant,
-      cartonSize: l.cartonSize,
-      cartonsOrdered: l.cartonsOrdered,
-      cartonsReceived: l.cartonsReceived,
-      pricePerCarton: l.pricePerCarton,
-      totalCost: l.totalCost,
-      productBreakdown: JSON.parse(l.productBreakdown as string) as Array<{
-        ibsaProductId: string;
-        name: string;
-        units: number;
-      }>,
-    })),
-  }));
-
-  const groupData: GroupOrder[] = groupOrders.map((o) => ({
-    id: o.id,
-    groupType: o.groupType,
-    groupName: o.groupName,
-    contactName: o.contactName,
-    contactEmail: o.contactEmail,
-    contactMobile: o.contactMobile ?? null,
-    status: o.status,
-    submittedAt: o.submittedAt.toISOString(),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    lines: o.lines.map((l: any) => ({
-      id: l.id,
-      dept: l.dept,
-      qty: l.qty,
-      productName: l.product.name,
-      productVariant: l.product.variant ?? null,
-      productCode: l.product.code,
-      unitCost: l.product.unitCost,
-    })),
-  }));
+  const fmtDate = (d: Date) =>
+    d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
   return (
-    <IbsaAppShell active="ibsa-orders">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Orders</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Group supply orders and supplier purchase orders.
-        </p>
+    <div className="p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-white">Public Orders</h1>
+          <p className="mt-0.5 text-sm text-slate-500">{orders.length} order{orders.length !== 1 ? "s" : ""} received</p>
+        </div>
       </div>
 
-      {/* Group orders — congregation/circuit/regional */}
-      <GroupOrdersSection orders={groupData} />
-
-      {/* Purchase orders — supplier POs */}
-      <div className="mt-10">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Supplier Purchase Orders
-        </p>
-        <OrdersClient orders={poData} hideHeader />
-      </div>
-    </IbsaAppShell>
+      {orders.length === 0 ? (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 px-6 py-12 text-center">
+          <p className="text-slate-500">No orders yet. Share <span className="text-slate-300">/order</span> to start receiving them.</p>
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-800">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Group</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Contact</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Lines</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Submitted</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((o, i) => {
+                const csCount = o.lines.filter((l) => l.dept === "CS").length;
+                const faCount = o.lines.filter((l) => l.dept === "FA").length;
+                return (
+                  <tr key={o.id} className={`${i > 0 ? "border-t border-slate-800" : ""} hover:bg-slate-800/50 transition-colors`}>
+                    <td className="px-4 py-3">
+                      <Link href={`/ibsa/orders/${o.id}`} className="block">
+                        <p className="font-semibold text-white">{o.groupName}</p>
+                        <p className="text-xs text-slate-500">{GROUP_LABELS[o.groupType] ?? o.groupType}</p>
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-sm text-slate-300">{o.contactName}</p>
+                      <p className="text-xs text-slate-500">{o.contactEmail}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-sm text-slate-300">
+                        {csCount > 0 && <span>{csCount} CS</span>}
+                        {csCount > 0 && faCount > 0 && <span className="text-slate-600"> · </span>}
+                        {faCount > 0 && <span>{faCount} FA</span>}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-400">{fmtDate(o.submittedAt)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLES[o.status] ?? "bg-slate-800 text-slate-400"}`}>
+                        {o.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }

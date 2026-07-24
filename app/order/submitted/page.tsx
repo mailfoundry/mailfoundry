@@ -9,7 +9,7 @@ export default async function OrderSubmittedPage({ searchParams }: Props) {
         <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-900/40 text-3xl">
           ✓
         </div>
-        <p className="mb-2 text-sm font-semibold text-orange-500">IBSA · Xylo Supplies</p>
+        <p className="mb-2 text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
         <h1 className="mb-3 text-2xl font-bold text-white">Order submitted</h1>
         {name && (
           <p className="mb-4 text-slate-400">
