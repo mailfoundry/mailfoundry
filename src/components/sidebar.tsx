@@ -22,7 +22,8 @@ type SidebarProps = {
     | "ibsa-purchasing"
     | "ibsa-suppliers"
     | "ibsa-orders"
-    | "ibsa-contacts";
+    | "ibsa-contacts"
+    | "ibsa-tools";
   /** True when the logged-in user has IBSA credentials only (no MailFoundry access) */
   ibsaOnly?: boolean;
   /** True when the main MailFoundry user is viewing an IBSA page */
@@ -33,7 +34,7 @@ type SidebarProps = {
 const ibsaActive = new Set([
   "ibsa", "ibsa-circuits", "ibsa-congregations",
   "ibsa-products", "ibsa-purchasing", "ibsa-suppliers",
-  "ibsa-orders", "ibsa-contacts",
+  "ibsa-orders", "ibsa-contacts", "ibsa-tools",
 ]);
 
 export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, orderCounts }: SidebarProps) {
@@ -96,6 +97,10 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
           <Link href="/ibsa/purchasing" className={active === "ibsa-purchasing" ? activeClass : base}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={active === "ibsa-suppliers" ? activeClass : base}>Suppliers</Link>
           <Link href="/ibsa/contacts" className={active === "ibsa-contacts" ? activeClass : base}>Contacts</Link>
+
+          <div className="my-3 border-t border-slate-800" />
+
+          <Link href="/ibsa/tools" className={active === "ibsa-tools" ? activeClass : base}>Tools</Link>
         </nav>
 
         {/* Footer: logout for IBSA-only users; nothing for main user (they use ← MailFoundry) */}
@@ -139,6 +144,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </Link>
+        <Link href="/ibsa/tools" className={base}>Tools</Link>
       </nav>
 
       <form action={logout} className="mt-6">

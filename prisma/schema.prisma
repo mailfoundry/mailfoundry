@@ -344,6 +344,20 @@ model IbsaProductBom {
   @@index([componentId])
 }
 
+/// Page view recorded server-side by the tracking proxy.
+model PageView {
+  id        String   @id @default(cuid())
+  hostname  String
+  pathname  String
+  ip        String
+  userAgent String
+  referer   String   @default("")
+  viewedAt  DateTime @default(now())
+
+  @@index([viewedAt(sort: Desc)])
+  @@index([hostname])
+}
+
 /// Supplier contact book. name matches RsProduct.supplier for cascade renames.
 model IbsaSupplier {
   id          String   @id @default(cuid())
