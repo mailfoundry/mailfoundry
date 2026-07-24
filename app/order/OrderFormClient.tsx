@@ -179,7 +179,7 @@ export default function OrderFormClient({
                         <div className="flex items-center gap-4 p-4">
                           <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800 group">
                             {imgSrc
-                              ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110" />
+                              ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-150" />
                               : <div className="h-full w-full" />}
                           </div>
                           <div className="min-w-0 flex-1">
@@ -207,7 +207,7 @@ export default function OrderFormClient({
                       <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
                         <div className="w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-slate-800 group">
                           {imgSrc
-                            ? <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110" />
+                            ? <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-150" />
                             : <div className="h-full w-full" />}
                         </div>
                         <div className="min-w-0">
@@ -233,7 +233,7 @@ export default function OrderFormClient({
                             <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                               <div className="w-14 h-14 shrink-0 overflow-hidden rounded-lg bg-slate-800 group">
                                 {variantImgSrc
-                                  ? <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110" />
+                                  ? <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-150" />
                                   : <div className="h-full w-full" />}
                               </div>
                               {swatchColors.length > 0 ? <ColourDot colors={swatchColors} /> : <span className="w-4 shrink-0" />}
