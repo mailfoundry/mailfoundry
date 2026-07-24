@@ -1,17 +1,16 @@
 "use client";
 
-export default function OrderDetailError({ error }: { error: Error & { digest?: string } }) {
+import Link from "next/link";
+
+export default function OrderDetailError() {
   return (
-    <div className="min-h-screen bg-slate-950 p-8">
-      <div className="max-w-xl rounded-2xl border border-red-900/40 bg-red-950/20 p-6">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-red-600">Server error — order detail</p>
-        <p className="mb-4 text-sm font-semibold text-red-300">{error.message}</p>
-        {error.digest && (
-          <p className="text-xs text-slate-600">Digest: {error.digest}</p>
-        )}
-        <p className="mt-4 text-xs text-slate-500">
-          Check Vercel function logs for the full stack trace.
-        </p>
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 p-8">
+      <div className="text-center">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Error</p>
+        <p className="mb-4 text-lg font-semibold text-white">Could not load this order</p>
+        <Link href="/ibsa/orders" className="text-sm text-slate-400 hover:text-white transition-colors">
+          ← Back to orders
+        </Link>
       </div>
     </div>
   );

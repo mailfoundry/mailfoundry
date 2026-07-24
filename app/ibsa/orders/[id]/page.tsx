@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import UpdateStatusButton from "./UpdateStatusButton";
 import SendInvoiceButton from "./SendInvoiceButton";
-import { deleteOrder } from "./actions";
+import DeleteOrderButton from "./DeleteOrderButton";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -142,15 +142,11 @@ export default async function OrderDetailPage({ params }: Props) {
       {/* Delete */}
       <div className="mt-4 rounded-2xl border border-red-900/30 bg-red-950/10 p-4">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-red-700">Danger Zone</p>
-        <form action={deleteOrder}>
-          <input type="hidden" name="orderId" value={order.id} />
-          <input type="hidden" name="groupType" value={order.groupType} />
-          <button type="submit"
-            className="rounded-lg border border-red-800/50 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-red-900/30 transition-colors"
-            onClick={(e) => { if (!confirm(`Delete order from "${order.groupName}"? This cannot be undone.`)) e.preventDefault(); }}>
-            Delete order
-          </button>
-        </form>
+        <DeleteOrderButton
+          orderId={order.id}
+          groupType={order.groupType}
+          groupName={order.groupName}
+        />
       </div>
     </div>
     </IbsaAppShell>
