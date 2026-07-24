@@ -16,6 +16,8 @@ type SidebarProps = {
     | "reports"
     | "settings"
     | "ibsa"
+    | "ibsa-circuits"
+    | "ibsa-congregations"
     | "ibsa-products"
     | "ibsa-purchasing"
     | "ibsa-suppliers"
@@ -68,7 +70,9 @@ export default function Sidebar({ active, ibsaOnly = false, submittedOrdersCount
               IBSA · Xylo Supplies
             </p>
           )}
-          <Link href="/ibsa" className={active === "ibsa" ? activeClass : base}>Conventions</Link>
+          <Link href="/ibsa?type=regional" className={active === "ibsa" ? activeClass : base}>Regionals</Link>
+          <Link href="/ibsa?type=circuit" className={`mt-1 ${active === "ibsa-circuits" ? activeClass : base}`}>Circuit Assemblies</Link>
+          <Link href="/ibsa?type=congregation" className={`mt-1 ${active === "ibsa-congregations" ? activeClass : base}`}>Congregations</Link>
           <Link href={productsHref} className={`mt-1 ${active === "ibsa-products" ? activeClass : base}`}>Products</Link>
           <Link href="/ibsa/purchasing" className={`mt-1 ${active === "ibsa-purchasing" ? activeClass : base}`}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={`mt-1 ${active === "ibsa-suppliers" ? activeClass : base}`}>Suppliers</Link>

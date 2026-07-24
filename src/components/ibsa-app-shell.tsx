@@ -4,7 +4,7 @@ import AppShell from "./app-shell";
 import { prisma } from "../lib/prisma";
 
 type Props = {
-  active: "ibsa" | "ibsa-products" | "ibsa-purchasing" | "ibsa-suppliers" | "ibsa-orders" | "ibsa-contacts";
+  active: "ibsa" | "ibsa-circuits" | "ibsa-congregations" | "ibsa-products" | "ibsa-purchasing" | "ibsa-suppliers" | "ibsa-orders" | "ibsa-contacts";
   children: ReactNode;
 };
 

@@ -11,6 +11,8 @@ type AppShellProps = {
     | "reports"
     | "settings"
     | "ibsa"
+    | "ibsa-circuits"
+    | "ibsa-congregations"
     | "ibsa-products"
     | "ibsa-purchasing"
     | "ibsa-suppliers"

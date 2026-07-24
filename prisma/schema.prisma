@@ -178,6 +178,8 @@ model RsProduct {
 model IbsaConvention {
   id              String    @id @default(cuid())
   name            String
+  /// regional | circuit | congregation
+  eventType       String    @default("regional")
   venue           String?
   conventionDate  DateTime
 

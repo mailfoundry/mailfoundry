@@ -54,9 +54,21 @@ function PaymentBadge({ paidAt, paymentDueDate }: { paidAt: Date | null; payment
   return <span className="text-slate-600 text-xs">—</span>;
 }
 
-export default async function IbsaPage() {
+const EVENT_TYPE_CONFIG = {
+  regional:     { label: "Regionals",          heading: "Regional Conventions", active: "ibsa"                as const },
+  circuit:      { label: "Circuit Assemblies", heading: "Circuit Assemblies",   active: "ibsa-circuits"       as const },
+  congregation: { label: "Congregations",      heading: "Congregations",        active: "ibsa-congregations"  as const },
+};
+
+type Props = { searchParams: Promise<{ type?: string }> };
+
+export default async function IbsaPage({ searchParams }: Props) {
+  const { type } = await searchParams;
+  const eventType = (type === "circuit" || type === "congregation") ? type : "regional";
+  const config = EVENT_TYPE_CONFIG[eventType];
+
   const conventions = await prisma.ibsaConvention.findMany({
-    where: { archivedAt: null },
+    where: { archivedAt: null, eventType },
     orderBy: { conventionDate: "asc" },
     include: {
       _count: { select: { orderItems: true } },
@@ -180,14 +192,14 @@ export default async function IbsaPage() {
   const upcomingCount = conventions.filter((c) => c.conventionDate >= now).length;
 
   return (
-    <IbsaAppShell active="ibsa">
+    <IbsaAppShell active={config.active}>
       <header className="mb-8 flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-400">IBSA · Xylo Supplies</p>
-          <h2 className="text-3xl font-bold">Conventions 2026</h2>
+          <h2 className="text-3xl font-bold">{config.heading} 2026</h2>
         </div>
         <div className="flex items-center gap-3">
-          <NewConventionButton />
+          <NewConventionButton eventType={eventType} />
           <Link
             href="/ibsa/orders"
             className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"

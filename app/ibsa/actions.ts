@@ -22,7 +22,9 @@ export async function createConvention(formData: FormData) {
   const contactName    = formData.get("contactName")?.toString().trim() || null;
   const contactEmail   = formData.get("contactEmail")?.toString().trim() || null;
   const contactMobile  = formData.get("contactMobile")?.toString().trim() || null;
-  const faEnabled      = formData.get("faEnabled") === "true";
+  const faEnabled  = formData.get("faEnabled") === "true";
+  const rawType    = formData.get("eventType")?.toString().trim() ?? "regional";
+  const eventType  = (rawType === "circuit" || rawType === "congregation") ? rawType : "regional";
 
   if (!name || !conventionDate) return;
 
@@ -30,6 +32,7 @@ export async function createConvention(formData: FormData) {
     data: {
       name,
       venue,
+      eventType,
       conventionDate: new Date(conventionDate),
       deliveryDate:   deliveryDate ? new Date(deliveryDate) : null,
       deliveryAddress,
