@@ -298,6 +298,7 @@ model IbsaGroupOrder {
   contactEmail    String
   contactMobile   String?
   deliveryAddress String?
+  requiredBy      String?
   /// submitted | processing | complete | cancelled
   status          String    @default("submitted")
   notes           String?

@@ -68,6 +68,10 @@ export default async function OrderDetailPage({ params }: Props) {
           <p className="text-sm text-slate-400">{order.contactEmail}</p>
           {order.contactMobile && <p className="text-sm text-slate-400">{order.contactMobile}</p>}
         </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Required By</p>
+          <p className="text-sm text-slate-300">{order.requiredBy ?? "As soon as possible"}</p>
+        </div>
         {order.deliveryAddress && (
           <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Delivery Address</p>
