@@ -175,12 +175,19 @@ export default function OrderFormClient({
                     const swatchColors = getSwatchColors(variantLabel);
                     const ordered = (qty[p.id] ?? 0) > 0;
                     return (
-                      <div key={p.id} className={`overflow-hidden rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"} ${bumped[p.id] ? "card-lift" : ""}`}>
+                      <div key={p.id} className={`rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"} ${bumped[p.id] ? "card-lift" : ""}`}>
                         <div className="flex items-center gap-4 p-4">
-                          <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800 group">
-                            {imgSrc
-                              ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-150" />
-                              : <div className="h-full w-full" />}
+                          <div className="relative shrink-0 group cursor-zoom-in">
+                            <div className="w-24 h-24 overflow-hidden rounded-xl bg-slate-800">
+                              {imgSrc
+                                ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
+                                : <div className="h-full w-full" />}
+                            </div>
+                            {imgSrc && (
+                              <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-slate-600 bg-slate-900 p-2 shadow-2xl shadow-black/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                <Image src={imgSrc} alt={p.name} width={208} height={208} className="h-full w-full object-contain" />
+                              </div>
+                            )}
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
@@ -203,12 +210,19 @@ export default function OrderFormClient({
                   const anyOrdered = group.some((p) => (qty[p.id] ?? 0) > 0);
                   const anyBumped  = group.some((p) => bumped[p.id]);
                   return (
-                    <div key={first.name} className={`overflow-hidden rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${anyOrdered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"} ${anyBumped ? "card-lift" : ""}`}>
+                    <div key={first.name} className={`rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${anyOrdered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"} ${anyBumped ? "card-lift" : ""}`}>
                       <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
-                        <div className="w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-slate-800 group">
-                          {imgSrc
-                            ? <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-150" />
-                            : <div className="h-full w-full" />}
+                        <div className="relative shrink-0 group cursor-zoom-in">
+                          <div className="w-16 h-16 overflow-hidden rounded-xl bg-slate-800">
+                            {imgSrc
+                              ? <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain" />
+                              : <div className="h-full w-full" />}
+                          </div>
+                          {imgSrc && (
+                            <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-slate-600 bg-slate-900 p-2 shadow-2xl shadow-black/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                              <Image src={imgSrc} alt={first.name} width={208} height={208} className="h-full w-full object-contain" />
+                            </div>
+                          )}
                         </div>
                         <div className="min-w-0">
                           <p className="text-base font-bold leading-snug text-white">{first.name}</p>
@@ -231,10 +245,17 @@ export default function OrderFormClient({
                           const ordered = (qty[p.id] ?? 0) > 0;
                           return (
                             <div key={p.id} className="flex items-center gap-3 px-4 py-3">
-                              <div className="w-14 h-14 shrink-0 overflow-hidden rounded-lg bg-slate-800 group">
-                                {variantImgSrc
-                                  ? <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-150" />
-                                  : <div className="h-full w-full" />}
+                              <div className="relative shrink-0 group cursor-zoom-in">
+                                <div className="w-14 h-14 overflow-hidden rounded-lg bg-slate-800">
+                                  {variantImgSrc
+                                    ? <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain" />
+                                    : <div className="h-full w-full" />}
+                                </div>
+                                {variantImgSrc && (
+                                  <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-44 w-44 -translate-y-1/2 overflow-hidden rounded-xl border border-slate-600 bg-slate-900 p-2 shadow-2xl shadow-black/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                    <Image src={variantImgSrc} alt={variantLabel || p.name} width={176} height={176} className="h-full w-full object-contain" />
+                                  </div>
+                                )}
                               </div>
                               {swatchColors.length > 0 ? <ColourDot colors={swatchColors} /> : <span className="w-4 shrink-0" />}
                               <div className="min-w-0 flex-1">
