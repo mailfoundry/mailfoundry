@@ -56,7 +56,7 @@ export default function XyloHomePage() {
 
           {/* CTA */}
           <a
-            href="mailto:hello@xylouk.co.uk"
+            href="/contact"
             className="inline-block bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-8 py-3.5 rounded-xl transition-colors tracking-wide"
           >
             General Enquiries →
