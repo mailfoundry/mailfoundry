@@ -13,19 +13,12 @@ export async function submitGroupOrder(formData: FormData) {
   const contactEmail    = (formData.get("contactEmail")    as string).trim().toLowerCase();
   const contactMobile   = (formData.get("contactMobile")   as string | null)?.trim() || null;
   const deliveryAddress = (formData.get("deliveryAddress") as string | null)?.trim() || null;
-  const requiredByRaw   = (formData.get("requiredBy")      as string | null)?.trim() || "asap";
   const requiredByDate  = (formData.get("requiredByDate")  as string | null)?.trim() || null;
   const notes           = (formData.get("notes")           as string | null)?.trim() || null;
 
-  const TIMEFRAME_LABELS: Record<string, string> = {
-    asap:    "As soon as possible",
-    "2weeks": "Within 2 weeks",
-    "1month": "Within 1 month",
-    "2months":"Within 2 months",
-  };
-  const requiredBy = requiredByRaw === "date" && requiredByDate
-    ? `By ${new Date(requiredByDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
-    : (TIMEFRAME_LABELS[requiredByRaw] ?? "As soon as possible");
+  const requiredBy = requiredByDate
+    ? new Date(requiredByDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+    : null;
 
   if (!groupType || !groupName || !contactName || !contactEmail) {
     redirect("/order?error=missing-fields");
@@ -92,14 +85,14 @@ export async function submitGroupOrder(formData: FormData) {
   await sendEmail({
     to: IBSA_NOTIFY_EMAIL,
     subject: `New order — ${groupTypeLabel[groupType] ?? groupType}: ${groupName}`,
-    text: `New order from ${groupName} (${groupTypeLabel[groupType] ?? groupType})\nContact: ${contactName} <${contactEmail}>${contactMobile ? `\nMobile: ${contactMobile}` : ""}\nRequired by: ${requiredBy}${deliveryAddress ? `\nDelivery: ${deliveryAddress}` : ""}${notes ? `\nNotes: ${notes}` : ""}\n\nCS lines: ${csLines.length} | FA lines: ${faLines.length}`,
+    text: `New order from ${groupName} (${groupTypeLabel[groupType] ?? groupType})\nContact: ${contactName} <${contactEmail}>${contactMobile ? `\nMobile: ${contactMobile}` : ""}${requiredBy ? `\nRequired by: ${requiredBy}` : ""}${deliveryAddress ? `\nDelivery: ${deliveryAddress}` : ""}${notes ? `\nNotes: ${notes}` : ""}\n\nCS lines: ${csLines.length} | FA lines: ${faLines.length}`,
     html: `${baseHtml}
         <h1 style="color:#fff;font-size:20px;margin:0 0 20px;">New order received</h1>
         <div style="background:#1e293b;border-radius:8px;padding:16px;margin-bottom:4px;">
           <p style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 2px;">${groupTypeLabel[groupType] ?? groupType}</p>
           <p style="color:#f1f5f9;font-size:16px;font-weight:bold;margin:0 0 10px;">${groupName}</p>
           <p style="color:#94a3b8;font-size:13px;margin:0 0 3px;"><strong style="color:#cbd5e1;">Contact:</strong> ${contactName} · ${contactEmail}${contactMobile ? ` · ${contactMobile}` : ""}</p>
-          <p style="color:#94a3b8;font-size:13px;margin:3px 0 0;"><strong style="color:#cbd5e1;">Required by:</strong> ${requiredBy}</p>
+          ${requiredBy ? `<p style="color:#94a3b8;font-size:13px;margin:3px 0 0;"><strong style="color:#cbd5e1;">Required by:</strong> ${requiredBy}</p>` : ""}
           ${deliveryAddress ? `<p style="color:#94a3b8;font-size:13px;margin:3px 0 0;"><strong style="color:#cbd5e1;">Delivery:</strong> ${deliveryAddress.replace(/\n/g, ", ")}</p>` : ""}
           ${notes ? `<p style="color:#94a3b8;font-size:13px;margin:3px 0 0;"><strong style="color:#cbd5e1;">Notes:</strong> ${notes}</p>` : ""}
         </div>

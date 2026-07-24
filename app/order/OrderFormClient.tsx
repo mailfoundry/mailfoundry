@@ -85,7 +85,6 @@ export default function OrderFormClient({
   const [contactEmail, setContactEmail]       = useState("");
   const [contactMobile, setContactMobile]     = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [requiredBy, setRequiredBy]           = useState("asap");
   const [requiredByDate, setRequiredByDate]   = useState("");
   const [notes, setNotes]                     = useState("");
 
@@ -275,7 +274,7 @@ export default function OrderFormClient({
       {/* Sticky summary bar */}
       {totalLines > 0 && (
         <div className="sticky top-0 z-30 bg-slate-800/95 backdrop-blur-md shadow-lg shadow-black/40 border-b border-slate-700">
-          <div className="mx-auto max-w-2xl px-4 py-3 flex items-center justify-between gap-4">
+          <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
             <p className="text-xs font-bold text-white">
               {totalLines} item{totalLines !== 1 ? "s" : ""}
               {csLines > 0 && faLines > 0 && <span className="font-normal text-slate-400"> (CS {csLines} · FA {faLines})</span>}
@@ -286,7 +285,7 @@ export default function OrderFormClient({
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="mx-auto max-w-2xl px-4 py-8">
+        <div className="mx-auto max-w-4xl px-4 py-8">
 
           {/* Header */}
           <div className="mb-8">
@@ -343,23 +342,11 @@ export default function OrderFormClient({
                   placeholder="+44 7700 000000"
                   className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2.5 text-sm text-white outline-none focus:border-orange-500 placeholder:text-slate-600" />
               </div>
-              <div className="sm:col-span-2">
-                <label className="mb-1 block text-xs text-slate-500">Required by</label>
-                <div className="flex gap-2">
-                  <select name="requiredBy" value={requiredBy} onChange={(e) => setRequiredBy(e.target.value)}
-                    className="flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2.5 text-sm text-white outline-none focus:border-orange-500">
-                    <option value="asap">As soon as possible</option>
-                    <option value="2weeks">Within 2 weeks</option>
-                    <option value="1month">Within 1 month</option>
-                    <option value="2months">Within 2 months</option>
-                    <option value="date">By a specific date…</option>
-                  </select>
-                  {requiredBy === "date" && (
-                    <input type="date" name="requiredByDate" value={requiredByDate} onChange={(e) => setRequiredByDate(e.target.value)}
-                      min={new Date().toISOString().split("T")[0]}
-                      className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-2.5 text-sm text-white outline-none focus:border-orange-500" />
-                  )}
-                </div>
+              <div>
+                <label className="mb-1 block text-xs text-slate-500">Required by date</label>
+                <input type="date" name="requiredByDate" value={requiredByDate} onChange={(e) => setRequiredByDate(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2.5 text-sm text-white outline-none focus:border-orange-500" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-slate-500">Delivery address (optional)</label>
