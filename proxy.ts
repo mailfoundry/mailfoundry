@@ -1,5 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const BOT_PATTERN =
+  /bot|crawler|spider|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|semrushbot|ahrefsbot|ia_archiver|mj12bot|dotbot/i;
+
+function fireTrack(request: NextRequest, hostname: string, pathname: string) {
+  // Skip API routes and internal paths
+  if (pathname.startsWith("/api") || pathname.startsWith("/_next")) return;
+  const ua = request.headers.get("user-agent") ?? "";
+  if (!ua || BOT_PATTERN.test(ua)) return;
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const referer = request.headers.get("referer") ?? "";
+
+  fetch(new URL("/api/track", request.url).toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      pathname,
+      hostname,
+      ip,
+      userAgent: ua,
+      referer,
+      timestamp: new Date().toISOString(),
+    }),
+  }).catch(() => {});
+}
+
 const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo"];
 
 function isPublicPath(pathname: string) {
@@ -11,6 +38,11 @@ function isPublicPath(pathname: string) {
 
 export function proxy(request: NextRequest) {
   const hostname = request.headers.get("host") ?? "";
+  const { pathname } = request.nextUrl;
+
+  // Track every real page visit (fire and forget)
+  fireTrack(request, hostname, pathname);
+
   const isXylo = hostname === "www.xylouk.co.uk" || hostname === "xylouk.co.uk";
 
   if (isXylo) {
@@ -19,8 +51,6 @@ export function proxy(request: NextRequest) {
     url.pathname = `/xylo${xyloPath}`;
     return NextResponse.rewrite(url);
   }
-
-  const { pathname } = request.nextUrl;
 
   const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
   const isMainLoggedIn = request.cookies.get(cookieName)?.value === "1";
