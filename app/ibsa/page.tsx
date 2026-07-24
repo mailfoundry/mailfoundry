@@ -67,7 +67,8 @@ export default async function IbsaPage({ searchParams }: Props) {
   const eventType = (type === "circuit" || type === "congregation") ? type : "regional";
   const config = EVENT_TYPE_CONFIG[eventType];
 
-  const conventions = await prisma.ibsaConvention.findMany({
+  const [conventions, incomingOrders] = await Promise.all([
+   prisma.ibsaConvention.findMany({
     where: { archivedAt: null, eventType },
     orderBy: { conventionDate: "asc" },
     include: {
@@ -80,7 +81,13 @@ export default async function IbsaPage({ searchParams }: Props) {
         },
       },
     },
-  });
+   }),
+   prisma.ibsaGroupOrder.findMany({
+    where: { groupType: eventType },
+    orderBy: { submittedAt: "desc" },
+    include: { lines: true },
+   }),
+  ]);
 
   const now = new Date();
 
@@ -402,6 +409,68 @@ export default async function IbsaPage({ searchParams }: Props) {
                             Remove
                           </button>
                         </form>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* Incoming public orders */}
+      {incomingOrders.length > 0 && (
+        <section className="mt-10">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
+            Incoming Orders
+          </h3>
+          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-800">
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Group</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Contact</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Lines</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Required by</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Submitted</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {incomingOrders.map((o, i) => {
+                  const csCount = o.lines.filter((l) => l.dept === "CS").length;
+                  const faCount = o.lines.filter((l) => l.dept === "FA").length;
+                  const STATUS_STYLES: Record<string, string> = {
+                    submitted:  "bg-blue-900/40 text-blue-300",
+                    processing: "bg-amber-900/40 text-amber-300",
+                    complete:   "bg-green-900/40 text-green-300",
+                    cancelled:  "bg-slate-800 text-slate-500",
+                  };
+                  return (
+                    <tr key={o.id} className={`${i > 0 ? "border-t border-slate-800" : ""} hover:bg-slate-800/50 transition-colors`}>
+                      <td className="px-4 py-3">
+                        <Link href={`/ibsa/orders/${o.id}`} className="block font-semibold text-white hover:text-orange-400 transition-colors">
+                          {o.groupName}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-sm text-slate-300">{o.contactName}</p>
+                        <p className="text-xs text-slate-500">{o.contactEmail}</p>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-300">
+                        {csCount > 0 && <span>{csCount} CS</span>}
+                        {csCount > 0 && faCount > 0 && <span className="text-slate-600"> · </span>}
+                        {faCount > 0 && <span>{faCount} FA</span>}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-400">{o.requiredBy ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-slate-400">
+                        {o.submittedAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLES[o.status] ?? "bg-slate-800 text-slate-400"}`}>
+                          {o.status}
+                        </span>
                       </td>
                     </tr>
                   );

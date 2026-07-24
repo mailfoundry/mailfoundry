@@ -13,12 +13,19 @@ export default async function IbsaAppShell({ active, children }: Props) {
   const isMainUser = cookieStore.get("mailfoundry_auth")?.value === "1";
   const ibsaOnly = !isMainUser && cookieStore.get("ibsa_auth")?.value === "1";
 
-  const submittedOrdersCount = await prisma.ibsaGroupOrder.count({
+  const orderCounts = await prisma.ibsaGroupOrder.groupBy({
+    by: ["groupType"],
     where: { status: "submitted" },
+    _count: true,
   });
+  const countFor = (t: string) => orderCounts.find((r) => r.groupType === t)?._count ?? 0;
 
   return (
-    <AppShell active={active} ibsaOnly={ibsaOnly} submittedOrdersCount={submittedOrdersCount}>
+    <AppShell
+      active={active}
+      ibsaOnly={ibsaOnly}
+      orderCounts={{ regional: countFor("regional"), circuit: countFor("circuit"), congregation: countFor("congregation") }}
+    >
       {children}
     </AppShell>
   );

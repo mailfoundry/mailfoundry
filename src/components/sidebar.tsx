@@ -24,10 +24,12 @@ type SidebarProps = {
     | "ibsa-orders"
     | "ibsa-contacts";
   ibsaOnly?: boolean;
-  submittedOrdersCount?: number;
+  orderCounts?: { regional: number; circuit: number; congregation: number };
 };
 
-export default function Sidebar({ active, ibsaOnly = false, submittedOrdersCount = 0 }: SidebarProps) {
+export default function Sidebar({ active, ibsaOnly = false, orderCounts }: SidebarProps) {
+  const badge = (n: number) =>
+    n > 0 ? <span className="ml-auto rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white tabular-nums">{n}</span> : null;
   const base = "block rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white";
   const activeClass = "block rounded-lg bg-slate-800 px-3 py-2";
 
@@ -70,20 +72,18 @@ export default function Sidebar({ active, ibsaOnly = false, submittedOrdersCount
               IBSA · Xylo Supplies
             </p>
           )}
-          <Link href="/ibsa?type=regional" className={active === "ibsa" ? activeClass : base}>Regionals</Link>
-          <Link href="/ibsa?type=circuit" className={`mt-1 ${active === "ibsa-circuits" ? activeClass : base}`}>Circuit Assemblies</Link>
-          <Link href="/ibsa?type=congregation" className={`mt-1 ${active === "ibsa-congregations" ? activeClass : base}`}>Congregations</Link>
+          <Link href="/ibsa?type=regional" className={`flex items-center justify-between ${active === "ibsa" ? activeClass : base}`}>
+            <span>Regionals</span>{badge(orderCounts?.regional ?? 0)}
+          </Link>
+          <Link href="/ibsa?type=circuit" className={`mt-1 flex items-center justify-between ${active === "ibsa-circuits" ? activeClass : base}`}>
+            <span>Circuit Assemblies</span>{badge(orderCounts?.circuit ?? 0)}
+          </Link>
+          <Link href="/ibsa?type=congregation" className={`mt-1 flex items-center justify-between ${active === "ibsa-congregations" ? activeClass : base}`}>
+            <span>Congregations</span>{badge(orderCounts?.congregation ?? 0)}
+          </Link>
           <Link href={productsHref} className={`mt-1 ${active === "ibsa-products" ? activeClass : base}`}>Products</Link>
           <Link href="/ibsa/purchasing" className={`mt-1 ${active === "ibsa-purchasing" ? activeClass : base}`}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={`mt-1 ${active === "ibsa-suppliers" ? activeClass : base}`}>Suppliers</Link>
-          <Link href="/ibsa/orders" className={`mt-1 flex items-center justify-between ${active === "ibsa-orders" ? activeClass : base}`}>
-            <span>Orders</span>
-            {submittedOrdersCount > 0 && (
-              <span className="ml-2 rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white tabular-nums">
-                {submittedOrdersCount}
-              </span>
-            )}
-          </Link>
           <Link href="/ibsa/contacts" className={`mt-1 ${active === "ibsa-contacts" ? activeClass : base}`}>Contacts</Link>
         </div>
       </nav>

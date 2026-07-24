@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../src/lib/prisma";
 
@@ -15,4 +16,18 @@ export async function updateOrderStatus(formData: FormData) {
 
   revalidatePath(`/ibsa/orders/${orderId}`);
   revalidatePath("/ibsa/orders");
+}
+
+export async function deleteOrder(formData: FormData) {
+  const orderId   = (formData.get("orderId")   as string).trim();
+  const groupType = (formData.get("groupType") as string).trim();
+  if (!orderId) return;
+
+  await prisma.ibsaGroupOrder.delete({ where: { id: orderId } });
+
+  revalidatePath("/ibsa");
+  revalidatePath("/ibsa/orders");
+
+  const typeParam = groupType === "circuit" ? "circuit" : groupType === "congregation" ? "congregation" : "regional";
+  redirect(`/ibsa?type=${typeParam}`);
 }
