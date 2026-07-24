@@ -17,9 +17,9 @@ export default async function HomePage() {
         </span>
         <Link
           href={isLoggedIn ? dashHref : "/login"}
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
+          className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
         >
-          {isLoggedIn ? "Go to portal" : "Staff sign in"}
+          {isLoggedIn ? "Portal" : "Sign in"}
         </Link>
       </nav>
 
@@ -41,16 +41,10 @@ export default async function HomePage() {
           fulfilled directly by Xylo (UK) Ltd.
         </p>
 
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Link
-            href="/login"
-            className="rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
-          >
-            Staff sign in
-          </Link>
+        <div className="mt-10">
           <Link
             href="/order"
-            className="rounded-xl border border-slate-700 px-8 py-3.5 text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
+            className="rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
           >
             Place a group order
           </Link>
