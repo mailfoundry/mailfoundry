@@ -67,7 +67,7 @@ export async function sendStripeInvoice(orderId: string) {
       customer: stripeCustomerId,
       invoice: invoice.id,
       description,
-      unit_amount: Math.round(unitPrice * 100), // per-unit price in pence
+      unit_amount_decimal: String(Math.round(unitPrice * 100)), // per-unit in pence; Stripe multiplies by quantity
       quantity: line.qty,
       currency: "gbp",
     });
