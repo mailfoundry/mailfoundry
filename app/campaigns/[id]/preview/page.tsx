@@ -42,9 +42,9 @@ export default async function PreviewCampaignPage({
     <AppShell active="campaigns">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Marketing</p>
+          <p className="text-sm text-gray-500">Marketing</p>
           <h2 className="text-3xl font-bold">Campaign Preview</h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-gray-500">
             Previewing: {campaign.name}
           </p>
         </div>
@@ -52,7 +52,7 @@ export default async function PreviewCampaignPage({
         <div className="flex gap-3">
           <Link
             href={`/campaigns/${campaign.id}`}
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
           >
             Back to Campaign
           </Link>
@@ -64,27 +64,27 @@ export default async function PreviewCampaignPage({
       </div>
 
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Subject Line</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Subject Line</p>
           <p className="mt-3 text-lg font-semibold">{campaign.subject}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Target List</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Target List</p>
           <p className="mt-3 text-lg font-semibold">{campaign.list.name}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Status</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Status</p>
           <p className="mt-3 text-lg font-semibold capitalize">
             {campaign.status}
           </p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-800 bg-white text-slate-900 shadow-sm">
-        <div className="border-b border-slate-200 px-8 py-6">
-          <p className="text-sm text-slate-500">Subject</p>
+      <div className="rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-sm">
+        <div className="border-b border-gray-200 px-8 py-6">
+          <p className="text-sm text-gray-400">Subject</p>
           <h3 className="mt-2 text-2xl font-bold">{campaign.subject}</h3>
         </div>
 

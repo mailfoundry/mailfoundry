@@ -54,17 +54,17 @@ export default function OrdersClient({ orders, hideHeader }: { orders: PurchaseO
     <div className="max-w-5xl">
       {!hideHeader && (
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">Orders</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
+          <p className="mt-1 text-sm text-gray-500">
             Track purchase orders and book in deliveries line by line.
           </p>
         </div>
       )}
 
       {orders.length === 0 && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center">
-          <p className="text-slate-400">No purchase orders yet.</p>
-          <p className="mt-1 text-xs text-slate-600">
+        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center shadow-sm">
+          <p className="text-gray-400">No purchase orders yet.</p>
+          <p className="mt-1 text-xs text-gray-300">
             Go to Purchasing → Supplier Order tab, then click &ldquo;✓ Mark as Ordered&rdquo; on a supplier.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function OrdersClient({ orders, hideHeader }: { orders: PurchaseO
 
       {outstanding.length > 0 && (
         <div className="mb-10">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
             Outstanding · {outstanding.length}
           </p>
           <div className="space-y-4">
@@ -90,7 +90,7 @@ export default function OrdersClient({ orders, hideHeader }: { orders: PurchaseO
 
       {received.length > 0 && (
         <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
             Received · {received.length}
           </p>
           <div className="space-y-3">
@@ -128,34 +128,34 @@ function OrderCard({
   );
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-800">
-      <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-5 py-4">
+    <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-sm font-semibold text-blue-400">{order.poNumber}</span>
-            <span className="text-sm font-medium text-white">{order.supplier}</span>
+            <span className="font-mono text-sm font-semibold text-blue-600">{order.poNumber}</span>
+            <span className="text-sm font-medium text-gray-900">{order.supplier}</span>
             {isReceived && (
-              <span className="rounded border border-green-700/40 bg-green-950/30 px-2 py-0.5 text-xs font-semibold text-green-400">
+              <span className="rounded border border-green-200 bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
                 ✓ Received
               </span>
             )}
             {isPartial && (
-              <span className="rounded border border-amber-700/40 bg-amber-950/30 px-2 py-0.5 text-xs font-semibold text-amber-400">
+              <span className="rounded border border-amber-200 bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
                 Partial
               </span>
             )}
           </div>
-          <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+          <div className="mt-1 flex items-center gap-2 text-xs text-gray-400">
             <span>Ordered {fmtDate(order.orderedAt)}</span>
             {isReceived && order.receivedAt && (
               <>
-                <span className="text-slate-700">·</span>
+                <span className="text-gray-200">·</span>
                 <span>Received {fmtDate(order.receivedAt)}</span>
               </>
             )}
             {!isReceived && (
               <>
-                <span className="text-slate-700">·</span>
+                <span className="text-gray-200">·</span>
                 <span>{receivedLines.length}/{order.lines.length} lines booked in</span>
               </>
             )}
@@ -164,16 +164,16 @@ function OrderCard({
 
         <div className="flex items-center gap-3">
           {order.totalExVat > 0 && (
-            <span className="text-sm font-semibold text-amber-400">{fmtGbp(order.totalExVat)}</span>
+            <span className="text-sm font-semibold text-amber-600">{fmtGbp(order.totalExVat)}</span>
           )}
           <button
             onClick={onToggle}
             className={`rounded border px-3 py-1.5 text-xs font-semibold transition-colors ${
               isOpen
-                ? "border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600"
+                ? "border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200"
                 : isReceived
-                ? "border-slate-700 bg-slate-800/50 text-slate-400 hover:bg-slate-800 hover:text-white"
-                : "border-blue-700/60 bg-blue-950/40 text-blue-300 hover:bg-blue-900/50 hover:text-blue-200"
+                ? "border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                : "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
             }`}
           >
             {isOpen ? "Close" : isReceived ? "View" : "Book In"}
@@ -217,7 +217,6 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
     return s;
   });
 
-  // Which line is awaiting the "are you sure?" modal
   const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [, startTransition] = useTransition();
@@ -255,7 +254,7 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
     <>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-800 bg-slate-800/50 text-xs text-slate-500">
+          <tr className="border-b border-gray-200 bg-gray-50 text-xs text-gray-500">
             <th className="px-5 py-2.5 text-left font-semibold uppercase tracking-wider">Code</th>
             <th className="px-5 py-2.5 text-left font-semibold uppercase tracking-wider">Description</th>
             <th className="px-5 py-2.5 text-left font-semibold uppercase tracking-wider">Var</th>
@@ -265,7 +264,7 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
             {!isReadOnly && <th className="px-5 py-2.5"></th>}
           </tr>
         </thead>
-        <tbody className="bg-slate-900">
+        <tbody className="bg-white">
           {order.lines.map((line) => {
             const isDone    = confirmed.has(line.id);
             const draft     = drafts.get(line.id) ?? String(line.cartonsOrdered);
@@ -275,40 +274,40 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
             return (
               <tr
                 key={line.id}
-                className={`border-t border-slate-800 ${
+                className={`border-t border-gray-100 ${
                   isDone
                     ? isShort
-                      ? "bg-amber-950/10"
-                      : "bg-green-950/10"
-                    : "hover:bg-slate-800/30"
+                      ? "bg-amber-50"
+                      : "bg-green-50"
+                    : "hover:bg-gray-50"
                 }`}
               >
-                <td className="px-5 py-3 font-mono text-xs text-slate-400">
-                  {line.rsCode ?? <span className="text-slate-700">—</span>}
+                <td className="px-5 py-3 font-mono text-xs text-gray-400">
+                  {line.rsCode ?? <span className="text-gray-200">—</span>}
                 </td>
-                <td className="px-5 py-3 text-white">{line.description}</td>
+                <td className="px-5 py-3 text-gray-900">{line.description}</td>
                 <td className="px-5 py-3">
                   {line.variant ? (
-                    <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs font-medium text-slate-300">
+                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
                       {line.variant}
                     </span>
                   ) : (
-                    <span className="text-slate-600">—</span>
+                    <span className="text-gray-300">—</span>
                   )}
                 </td>
-                <td className="px-5 py-3 text-right tabular-nums text-slate-400">
-                  {line.cartonSize ?? <span className="text-slate-600">—</span>}
+                <td className="px-5 py-3 text-right tabular-nums text-gray-400">
+                  {line.cartonSize ?? <span className="text-gray-200">—</span>}
                 </td>
-                <td className="px-5 py-3 text-right tabular-nums text-slate-300">
+                <td className="px-5 py-3 text-right tabular-nums text-gray-700">
                   {line.cartonsOrdered}
                 </td>
                 <td className="px-5 py-3 text-right">
                   {isDone ? (
-                    <span className={`tabular-nums font-semibold ${isShort ? "text-amber-400" : "text-green-400"}`}>
+                    <span className={`tabular-nums font-semibold ${isShort ? "text-amber-600" : "text-green-600"}`}>
                       {draftNum}
                     </span>
                   ) : isReadOnly ? (
-                    <span className="tabular-nums text-slate-300">{line.cartonsReceived}</span>
+                    <span className="tabular-nums text-gray-700">{line.cartonsReceived}</span>
                   ) : (
                     <input
                       type="number"
@@ -318,7 +317,7 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
                       onChange={(e) =>
                         setDrafts((prev) => new Map(prev).set(line.id, e.target.value))
                       }
-                      className="w-16 rounded border border-slate-600 bg-slate-800 px-2 py-1 text-right text-sm text-white focus:border-blue-500 focus:outline-none"
+                      className="w-16 rounded border border-gray-200 bg-white px-2 py-1 text-right text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
                     />
                   )}
                 </td>
@@ -326,12 +325,12 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
                   <td className="px-5 py-3 text-right">
                     {isDone ? (
                       <span className="flex items-center justify-end gap-2">
-                        <span className={isShort ? "text-amber-400" : "text-green-400"}>
+                        <span className={isShort ? "text-amber-600" : "text-green-600"}>
                           {isShort ? "⚠ Short" : "✓"}
                         </span>
                         <button
                           onClick={() => setConfirmed((prev) => { const s = new Set(prev); s.delete(line.id); return s; })}
-                          className="text-xs text-slate-500 hover:text-slate-300 underline"
+                          className="text-xs text-gray-400 hover:text-gray-700 underline"
                           title="Correct this entry"
                         >
                           edit
@@ -340,7 +339,7 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
                     ) : (
                       <button
                         onClick={() => requestConfirm(line)}
-                        className="rounded border border-green-700/60 bg-green-950/40 px-3 py-1 text-xs font-semibold text-green-400 transition-colors hover:bg-green-900/50 hover:text-green-300"
+                        className="rounded border border-green-200 bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 transition-colors hover:bg-green-100"
                       >
                         Confirm
                       </button>
@@ -353,7 +352,6 @@ function BookInTable({ order }: { order: PurchaseOrder }) {
         </tbody>
       </table>
 
-      {/* ── Confirm modal ─────────────────────────────────────────────────── */}
       {pendingConfirm && (
         <BookInConfirmModal
           pending={pendingConfirm}
@@ -382,7 +380,6 @@ function BookInConfirmModal({
   const { qty, description, variant, cartonSize, breakdown, totalNeeded } = pending;
   const receivedUnits = cartonSize ? qty * cartonSize : null;
 
-  // Compute per-product stock additions
   const stockLines: Array<{ name: string; units: number }> = [];
   if (receivedUnits && breakdown.length > 0) {
     let remaining = receivedUnits;
@@ -398,16 +395,16 @@ function BookInConfirmModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-        <h2 className="text-base font-bold text-white">Confirm receipt</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
+        <h2 className="text-base font-bold text-gray-900">Confirm receipt</h2>
 
-        <div className="mt-3 rounded-lg border border-slate-800 bg-slate-800/60 px-4 py-3">
-          <p className="text-sm font-medium text-white">
+        <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+          <p className="text-sm font-medium text-gray-900">
             {description}
-            {variant && <span className="ml-1.5 text-slate-400">· {variant}</span>}
+            {variant && <span className="ml-1.5 text-gray-500">· {variant}</span>}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">
+          <p className="mt-0.5 text-xs text-gray-400">
             {qty} carton{qty !== 1 ? "s" : ""}
             {receivedUnits ? ` · ${receivedUnits} units` : ""}
           </p>
@@ -415,20 +412,20 @@ function BookInConfirmModal({
 
         {stockLines.length > 0 ? (
           <div className="mt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-green-500">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-green-600">
               This will add to stock
             </p>
             <ul className="space-y-1">
               {stockLines.map((s) => (
                 <li key={s.name} className="flex items-center justify-between text-sm">
-                  <span className="text-slate-300">{s.name}</span>
-                  <span className="font-semibold text-green-400">+{s.units}</span>
+                  <span className="text-gray-700">{s.name}</span>
+                  <span className="font-semibold text-green-600">+{s.units}</span>
                 </li>
               ))}
             </ul>
           </div>
         ) : (
-          <p className="mt-4 text-xs text-slate-500">
+          <p className="mt-4 text-xs text-gray-400">
             No product links found — stock won&apos;t be updated automatically.
           </p>
         )}
@@ -437,14 +434,14 @@ function BookInConfirmModal({
           <button
             onClick={onCancel}
             disabled={isSubmitting}
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-50"
+            className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-500 disabled:opacity-50"
           >
             {isSubmitting ? "Saving…" : stockLines.length > 0 ? "Yes, add to stock" : "Confirm receipt"}
           </button>

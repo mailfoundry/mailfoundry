@@ -32,7 +32,7 @@ export default async function ContactPage({ searchParams }: Props) {
           <h1 className="text-4xl font-black leading-tight tracking-tight mb-4">
             Get in touch
           </h1>
-          <p className="text-lg text-slate-600 leading-relaxed">
+          <p className="text-lg text-gray-300 leading-relaxed">
             Trade accounts, bulk orders, stock queries — we&apos;re happy to help.
           </p>
         </div>
@@ -45,8 +45,8 @@ export default async function ContactPage({ searchParams }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-lg font-bold text-slate-900 mb-2">Message sent</h2>
-            <p className="text-sm text-slate-600">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Message sent</h2>
+            <p className="text-sm text-gray-300">
               Thanks for getting in touch — we&apos;ll come back to you as soon as possible.
             </p>
             <a
@@ -69,7 +69,7 @@ export default async function ContactPage({ searchParams }: Props) {
             <form action={submitContactForm} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
                     Name <span className="text-orange-500">*</span>
                   </label>
                   <input
@@ -78,11 +78,11 @@ export default async function ContactPage({ searchParams }: Props) {
                     required
                     autoComplete="name"
                     placeholder="Your name"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
                     Email <span className="text-orange-500">*</span>
                   </label>
                   <input
@@ -91,14 +91,14 @@ export default async function ContactPage({ searchParams }: Props) {
                     required
                     autoComplete="email"
                     placeholder="you@example.com"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
                     Company / Organisation
                   </label>
                   <input
@@ -106,11 +106,11 @@ export default async function ContactPage({ searchParams }: Props) {
                     name="company"
                     autoComplete="organization"
                     placeholder="Optional"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
                     Phone
                   </label>
                   <input
@@ -118,13 +118,13 @@ export default async function ContactPage({ searchParams }: Props) {
                     name="phone"
                     autoComplete="tel"
                     placeholder="Optional"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                <label className="block text-sm font-semibold text-gray-200 mb-1.5">
                   Message <span className="text-orange-500">*</span>
                 </label>
                 <textarea
@@ -132,12 +132,12 @@ export default async function ContactPage({ searchParams }: Props) {
                   required
                   rows={5}
                   placeholder="Tell us what you need..."
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors resize-none"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors resize-none"
                 />
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gray-400">
                   Or email us directly at{" "}
                   <a href="mailto:hello@xylouk.co.uk" className="text-orange-600 hover:underline">
                     hello@xylouk.co.uk
@@ -145,7 +145,7 @@ export default async function ContactPage({ searchParams }: Props) {
                 </p>
                 <button
                   type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm px-8 py-3 rounded-xl transition-colors tracking-wide"
+                  className="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold text-sm px-8 py-3 rounded-xl transition-colors tracking-wide"
                 >
                   Send message →
                 </button>
@@ -155,22 +155,22 @@ export default async function ContactPage({ searchParams }: Props) {
         )}
 
         {/* Contact details */}
-        <div className="mt-14 pt-10 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        <div className="mt-14 pt-10 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-1">Email</p>
-            <a href="mailto:hello@xylouk.co.uk" className="text-sm text-slate-700 hover:text-orange-600 transition-colors">
+            <a href="mailto:hello@xylouk.co.uk" className="text-sm text-gray-200 hover:text-orange-600 transition-colors">
               hello@xylouk.co.uk
             </a>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-1">Phone</p>
-            <a href="tel:+447714747777" className="text-sm text-slate-700 hover:text-orange-600 transition-colors">
+            <a href="tel:+447714747777" className="text-sm text-gray-200 hover:text-orange-600 transition-colors">
               07714 747777
             </a>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-1">Address</p>
-            <p className="text-sm text-slate-700 leading-relaxed">
+            <p className="text-sm text-gray-200 leading-relaxed">
               R08 Regent Works Studio<br />
               Lawley Street, Longton<br />
               Staffordshire ST3 1LZ

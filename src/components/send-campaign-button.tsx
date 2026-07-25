@@ -79,14 +79,14 @@ export default function SendCampaignButton({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
       {!isConfirming ? (
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-slate-300">
+            <p className="text-sm font-medium text-gray-600">
               {hasAlreadyBeenSent ? "Send Again" : "Send Campaign"}
             </p>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-gray-400">
               {hasAlreadyBeenSent
                 ? "This campaign has already been sent. Sending again will email eligible contacts in the selected list again."
                 : "Sends this campaign to eligible contacts in the selected list."}
@@ -99,8 +99,8 @@ export default function SendCampaignButton({
             disabled={isSending}
             className={
               hasAlreadyBeenSent
-                ? "rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
-                : "rounded-lg bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
+                ? "rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                : "rounded-lg bg-orange-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
             }
           >
             {isSending
@@ -148,7 +148,7 @@ export default function SendCampaignButton({
               type="button"
               onClick={() => setIsConfirming(false)}
               disabled={isSending}
-              className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Cancel
             </button>
@@ -159,8 +159,8 @@ export default function SendCampaignButton({
               disabled={isSending}
               className={
                 hasAlreadyBeenSent
-                  ? "rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
-                  : "rounded-lg bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  ? "rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  : "rounded-lg bg-orange-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
               }
             >
               {isSending
@@ -177,22 +177,22 @@ export default function SendCampaignButton({
         <div className="mt-4 rounded-xl border border-green-500/20 bg-green-500/10 p-4 text-sm">
           <p className="font-semibold text-green-300">Campaign send complete</p>
 
-          <div className="mt-3 grid gap-2 text-slate-300 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-3 grid gap-2 text-gray-600 md:grid-cols-2 xl:grid-cols-4">
             <p>
               Sent:{" "}
-              <span className="font-semibold text-green-400">
+              <span className="font-semibold text-green-600">
                 {result.sent}
               </span>
             </p>
             <p>
               Failed:{" "}
-              <span className="font-semibold text-red-400">
+              <span className="font-semibold text-red-500">
                 {result.failed}
               </span>
             </p>
             <p>
               Total processed:{" "}
-              <span className="font-semibold text-white">{result.total}</span>
+              <span className="font-semibold text-gray-900">{result.total}</span>
             </p>
             <p>
               Total skipped:{" "}
@@ -208,7 +208,7 @@ export default function SendCampaignButton({
             </p>
             <p>
               Archived:{" "}
-              <span className="font-semibold text-slate-300">
+              <span className="font-semibold text-gray-600">
                 {result.skippedArchived}
               </span>
             </p>
@@ -220,13 +220,13 @@ export default function SendCampaignButton({
             </p>
             <p>
               Complained:{" "}
-              <span className="font-semibold text-red-400">
+              <span className="font-semibold text-red-500">
                 {result.skippedComplained}
               </span>
             </p>
             <p>
               Unknown:{" "}
-              <span className="font-semibold text-slate-400">
+              <span className="font-semibold text-gray-500">
                 {result.skippedUnknown}
               </span>
             </p>
@@ -234,7 +234,7 @@ export default function SendCampaignButton({
         </div>
       )}
 
-      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
     </div>
   );
 }

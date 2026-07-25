@@ -25,14 +25,14 @@ function getSubscriptionStatus(contact: {
   if (contact.unsubscribedAt) {
     return {
       label: "Unsubscribed",
-      className: "bg-red-500/10 text-red-400",
+      className: "bg-red-500/10 text-red-500",
     };
   }
 
   if (contact.archivedAt) {
     return {
       label: "Archived",
-      className: "bg-slate-500/10 text-slate-300",
+      className: "bg-gray-100 text-gray-600",
     };
   }
 
@@ -46,26 +46,26 @@ function getSubscriptionStatus(contact: {
   if (contact.complainedAt) {
     return {
       label: "Complained",
-      className: "bg-red-500/10 text-red-400",
+      className: "bg-red-500/10 text-red-500",
     };
   }
 
   if (contact.subscribedAt) {
     return {
       label: "Subscribed",
-      className: "bg-green-500/10 text-green-400",
+      className: "bg-green-500/10 text-green-600",
     };
   }
 
   return {
     label: "Unknown",
-    className: "bg-slate-500/10 text-slate-400",
+    className: "bg-gray-100 text-gray-500",
   };
 }
 
 function getSendStatusClassName(status: string) {
   if (status === "sent") {
-    return "rounded-full bg-green-500/10 px-2 py-1 text-xs font-semibold text-green-400";
+    return "rounded-full bg-green-500/10 px-2 py-1 text-xs font-semibold text-green-600";
   }
 
   if (status === "skipped_unsubscribed") {
@@ -73,7 +73,7 @@ function getSendStatusClassName(status: string) {
   }
 
   if (status === "skipped_archived") {
-    return "rounded-full bg-slate-500/10 px-2 py-1 text-xs font-semibold text-slate-300";
+    return "rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600";
   }
 
   if (status === "skipped_bounced") {
@@ -81,14 +81,14 @@ function getSendStatusClassName(status: string) {
   }
 
   if (status === "skipped_complained") {
-    return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-400";
+    return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-500";
   }
 
   if (status === "skipped_unknown") {
-    return "rounded-full bg-slate-500/10 px-2 py-1 text-xs font-semibold text-slate-400";
+    return "rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-500";
   }
 
-  return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-400";
+  return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-500";
 }
 
 function formatDate(date: Date | null) {
@@ -152,9 +152,9 @@ export default async function ContactDetailPage({
     <AppShell active="contacts">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Audience</p>
+          <p className="text-sm text-gray-500">Audience</p>
           <h2 className="text-3xl font-bold">{contact.email}</h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-gray-500">
             Contact record and campaign history.
           </p>
         </div>
@@ -162,7 +162,7 @@ export default async function ContactDetailPage({
         <div className="flex gap-3">
           <Link
             href={`/contacts/${contact.id}/edit`}
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
           >
             Edit Contact
           </Link>
@@ -189,7 +189,7 @@ export default async function ContactDetailPage({
 
           <Link
             href="/contacts"
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
           >
             Back to Contacts
           </Link>
@@ -197,16 +197,16 @@ export default async function ContactDetailPage({
       </header>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Name</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Name</p>
           <p className="mt-3 text-lg font-semibold">
             {[contact.firstName, contact.lastName].filter(Boolean).join(" ") ||
               "—"}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Contact Status</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Contact Status</p>
           <p className="mt-3">
             <span
               className={`rounded-full px-2 py-1 text-xs font-semibold ${status.className}`}
@@ -216,57 +216,57 @@ export default async function ContactDetailPage({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Source</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Source</p>
           <p className="mt-3 text-lg font-semibold">{contact.source || "—"}</p>
         </div>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Created</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Created</p>
           <p className="mt-3 text-lg font-semibold">
             {formatDate(contact.createdAt)}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Subscribed At</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Subscribed At</p>
           <p className="mt-3 text-lg font-semibold">
             {formatDate(contact.subscribedAt)}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Unsubscribed At</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Unsubscribed At</p>
           <p className="mt-3 text-lg font-semibold">
             {formatDate(contact.unsubscribedAt)}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Archived At</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Archived At</p>
           <p className="mt-3 text-lg font-semibold">
             {formatDate(contact.archivedAt)}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Bounced At</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Bounced At</p>
           <p className="mt-3 text-lg font-semibold">
             {formatDate(contact.bouncedAt)}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Complained At</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Complained At</p>
           <p className="mt-3 text-lg font-semibold">
             {formatDate(contact.complainedAt)}
           </p>
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <h3 className="text-xl font-semibold">Lists</h3>
 
         <form action={addContactToListAction} className="mt-4 flex gap-3">
@@ -274,7 +274,7 @@ export default async function ContactDetailPage({
             name="listId"
             required
             disabled={availableLists.length === 0}
-            className="min-w-80 rounded-lg border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-white outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-w-80 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="">
               {availableLists.length === 0
@@ -292,30 +292,30 @@ export default async function ContactDetailPage({
           <button
             type="submit"
             disabled={availableLists.length === 0}
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Add to List
           </button>
         </form>
 
         {contact.lists.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-gray-400">
             This contact is not currently assigned to any lists.
           </p>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-800">
+          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950 text-slate-400">
+              <thead className="bg-gray-50 text-gray-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">List</th>
                   <th className="px-4 py-3 font-medium">Added</th>
                   <th className="px-4 py-3 font-medium">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-gray-100">
                 {contact.lists.map((entry) => (
                   <tr key={entry.id}>
-                    <td className="px-4 py-3 text-slate-300">
+                    <td className="px-4 py-3 text-gray-600">
                       <Link
                         href={`/lists/${entry.list.id}`}
                         className="hover:underline"
@@ -324,7 +324,7 @@ export default async function ContactDetailPage({
                       </Link>
                     </td>
 
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 text-gray-500">
                       {new Date(entry.createdAt).toLocaleString()}
                     </td>
 
@@ -337,7 +337,7 @@ export default async function ContactDetailPage({
                         />
                         <button
                           type="submit"
-                          className="rounded-lg border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                          className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100"
                         >
                           Remove
                         </button>
@@ -351,17 +351,17 @@ export default async function ContactDetailPage({
         )}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <h3 className="text-xl font-semibold">Recent Campaign Activity</h3>
 
         {contact.campaignSends.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-gray-400">
             No campaign activity recorded for this contact yet.
           </p>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-800">
+          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950 text-slate-400">
+              <thead className="bg-gray-50 text-gray-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">Campaign</th>
                   <th className="px-4 py-3 font-medium">Status</th>
@@ -369,10 +369,10 @@ export default async function ContactDetailPage({
                   <th className="px-4 py-3 font-medium">Error</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-gray-100">
                 {contact.campaignSends.map((send) => (
                   <tr key={send.id}>
-                    <td className="px-4 py-3 text-slate-300">
+                    <td className="px-4 py-3 text-gray-600">
                       <Link
                         href={`/campaigns/${send.campaign.id}`}
                         className="hover:underline"
@@ -387,11 +387,11 @@ export default async function ContactDetailPage({
                       </span>
                     </td>
 
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 text-gray-500">
                       {new Date(send.sentAt).toLocaleString()}
                     </td>
 
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 text-gray-400">
                       {send.error || "—"}
                     </td>
                   </tr>

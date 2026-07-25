@@ -54,15 +54,15 @@ export default function SendTestEmailForm({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-      <p className="text-sm text-slate-400">Send Test Email</p>
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+      <p className="text-sm text-gray-500">Send Test Email</p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <input
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-white outline-none focus:border-orange-500"
+          className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
           placeholder="test@example.com"
         />
 
@@ -70,7 +70,7 @@ export default function SendTestEmailForm({
           type="button"
           onClick={handleSendTest}
           disabled={status === "sending"}
-          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === "sending" ? "Sending..." : "Send Test"}
         </button>
@@ -79,7 +79,7 @@ export default function SendTestEmailForm({
       {message && (
         <p
           className={`mt-3 text-sm ${
-            status === "sent" ? "text-green-400" : "text-red-400"
+            status === "sent" ? "text-green-600" : "text-red-500"
           }`}
         >
           {message}

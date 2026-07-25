@@ -57,7 +57,7 @@ export default function SendOrderLinkButton({
         type="button"
         disabled={isPreviewing}
         onClick={handlePreview}
-        className="rounded-lg border border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isPreviewing ? "Opening…" : "Preview order form"}
       </button>
@@ -67,18 +67,18 @@ export default function SendOrderLinkButton({
         type="button"
         disabled={isResetting}
         onClick={handleReset}
-        className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-800 hover:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-400 hover:bg-gray-100 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isResetting ? "Resetting…" : "Reset for testing"}
       </button>
 
       {/* Send button — only if contact email exists */}
       {!contactEmail ? (
-        <span className="text-xs text-slate-600 italic">No contact email — save one first</span>
+        <span className="text-xs text-gray-400 italic">No contact email — save one first</span>
       ) : status === "sent" ? (
-        <span className="text-xs text-green-400">✓ Link sent to {sentTo}</span>
+        <span className="text-xs text-green-600">✓ Link sent to {sentTo}</span>
       ) : status === "error" ? (
-        <span className="text-xs text-red-400">Failed to send — check contact email and try again</span>
+        <span className="text-xs text-red-500">Failed to send — check contact email and try again</span>
       ) : (
         <button
           type="button"

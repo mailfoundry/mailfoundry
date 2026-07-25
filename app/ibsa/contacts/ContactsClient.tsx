@@ -96,7 +96,7 @@ export default function ContactsClient({ suppliers }: Props) {
       <div className="mb-6 flex justify-end">
         <button
           onClick={openAdd}
-          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100"
+          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-100"
         >
           + Add Supplier
         </button>
@@ -105,7 +105,7 @@ export default function ContactsClient({ suppliers }: Props) {
       {/* Add card (inline at top) */}
       {showAdd && (
         <div className="mb-4 rounded-2xl border border-blue-500/40 bg-blue-950/20 p-5">
-          <p className="mb-4 text-sm font-semibold text-blue-300">New supplier</p>
+          <p className="mb-4 text-sm font-semibold text-blue-700">New supplier</p>
           <SupplierForm
             draft={draft}
             set={set}
@@ -119,14 +119,14 @@ export default function ContactsClient({ suppliers }: Props) {
 
       {/* Supplier cards */}
       {suppliers.length === 0 && !showAdd ? (
-        <p className="text-sm text-slate-500">No suppliers yet — click "Add Supplier" to get started.</p>
+        <p className="text-sm text-gray-400">No suppliers yet — click "Add Supplier" to get started.</p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {suppliers.map((s) =>
             editingId === s.id ? (
               /* Edit mode */
-              <div key={s.id} className="rounded-2xl border border-amber-500/40 bg-amber-950/10 p-5">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-amber-400">Editing</p>
+              <div key={s.id} className="rounded-2xl border border-amber-500/40 bg-amber-50 p-5">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-amber-600">Editing</p>
                 <SupplierForm
                   draft={draft}
                   set={set}
@@ -141,17 +141,17 @@ export default function ContactsClient({ suppliers }: Props) {
               /* Display mode */
               <div
                 key={s.id}
-                className="group relative rounded-2xl border border-slate-700 bg-slate-800 p-5 transition-colors hover:border-slate-600"
+                className="group relative rounded-2xl border border-gray-200 bg-white p-5 transition-colors hover:border-gray-200"
               >
                 {/* Supplier name */}
-                <p className="text-base font-bold text-white">{s.name}</p>
+                <p className="text-base font-bold text-gray-900">{s.name}</p>
 
                 {/* Contact details */}
                 <div className="mt-3 space-y-2">
                   {s.contactName && (
                     <div className="flex items-center gap-2">
                       <PersonIcon />
-                      <span className="text-sm text-slate-300">{s.contactName}</span>
+                      <span className="text-sm text-gray-600">{s.contactName}</span>
                     </div>
                   )}
                   {s.mobile && (
@@ -159,7 +159,7 @@ export default function ContactsClient({ suppliers }: Props) {
                       <PhoneIcon />
                       <a
                         href={`tel:${s.mobile}`}
-                        className="text-sm text-slate-300 hover:text-white"
+                        className="text-sm text-gray-600 hover:text-gray-900"
                       >
                         {s.mobile}
                       </a>
@@ -170,17 +170,17 @@ export default function ContactsClient({ suppliers }: Props) {
                       <EmailIcon />
                       <a
                         href={`mailto:${s.email}`}
-                        className="text-sm text-blue-400 hover:underline"
+                        className="text-sm text-blue-600 hover:underline"
                       >
                         {s.email}
                       </a>
                     </div>
                   )}
                   {s.notes && (
-                    <p className="mt-2 text-xs text-slate-500 leading-relaxed">{s.notes}</p>
+                    <p className="mt-2 text-xs text-gray-400 leading-relaxed">{s.notes}</p>
                   )}
                   {!s.contactName && !s.mobile && !s.email && !s.notes && (
-                    <p className="text-xs text-slate-600 italic">No contact details yet</p>
+                    <p className="text-xs text-gray-300 italic">No contact details yet</p>
                   )}
                 </div>
 
@@ -188,13 +188,13 @@ export default function ContactsClient({ suppliers }: Props) {
                 <div className="mt-4 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={() => openEdit(s)}
-                    className="flex-1 rounded-lg border border-slate-600 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700"
+                    className="flex-1 rounded-lg border border-gray-200 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => setConfirmDelete(s)}
-                    className="rounded-lg border border-red-900/50 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-950/40"
+                    className="rounded-lg border border-red-900/50 px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-950/40"
                   >
                     Remove
                   </button>
@@ -207,24 +207,24 @@ export default function ContactsClient({ suppliers }: Props) {
 
       {/* Delete confirm modal */}
       {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-sm rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-            <h2 className="text-base font-bold text-white">Remove supplier?</h2>
-            <p className="mt-2 text-sm text-slate-400">
-              <span className="font-medium text-white">{confirmDelete.name}</span> will be removed from your contacts. Their RS product links won't be affected.
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
+            <h2 className="text-base font-bold text-gray-900">Remove supplier?</h2>
+            <p className="mt-2 text-sm text-gray-500">
+              <span className="font-medium text-gray-900">{confirmDelete.name}</span> will be removed from your contacts. Their RS product links won't be affected.
             </p>
             <div className="mt-5 flex justify-end gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
                 disabled={isPending}
-                className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={() => submitDelete(confirmDelete)}
                 disabled={isPending}
-                className="rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+                className="rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-red-600 disabled:opacity-50"
               >
                 {isPending ? "Removing…" : "Remove"}
               </button>
@@ -257,65 +257,65 @@ function SupplierForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="mb-1 block text-xs font-semibold text-slate-400">Supplier Name</label>
+        <label className="mb-1 block text-xs font-semibold text-gray-500">Supplier Name</label>
         <input
           type="text"
           value={draft.name}
           onChange={set("name")}
           placeholder="e.g. Robert Scott"
-          className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+          className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 placeholder:text-gray-300"
         />
         {showNameWarning && (
-          <p className="mt-1 text-xs text-amber-400">
+          <p className="mt-1 text-xs text-amber-600">
             ⚠ Renaming will update all RS product links automatically
           </p>
         )}
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-slate-400">Contact Name</label>
+        <label className="mb-1 block text-xs font-semibold text-gray-500">Contact Name</label>
         <input
           type="text"
           value={draft.contactName}
           onChange={set("contactName")}
           placeholder="e.g. Sarah Jones"
-          className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+          className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 placeholder:text-gray-300"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-400">Mobile</label>
+          <label className="mb-1 block text-xs font-semibold text-gray-500">Mobile</label>
           <input
             type="tel"
             value={draft.mobile}
             onChange={set("mobile")}
             placeholder="07700 900000"
-            className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+            className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 placeholder:text-gray-300"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-400">Email</label>
+          <label className="mb-1 block text-xs font-semibold text-gray-500">Email</label>
           <input
             type="email"
             value={draft.email}
             onChange={set("email")}
             placeholder="name@supplier.com"
-            className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+            className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 placeholder:text-gray-300"
           />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-semibold text-slate-400">
-          Notes <span className="font-normal text-slate-600">(optional)</span>
+        <label className="mb-1 block text-xs font-semibold text-gray-500">
+          Notes <span className="font-normal text-gray-300">(optional)</span>
         </label>
         <textarea
           value={draft.notes}
           onChange={set("notes")}
           rows={2}
           placeholder="Account number, delivery days, etc."
-          className="w-full resize-none rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500 placeholder:text-slate-600"
+          className="w-full resize-none rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 placeholder:text-gray-300"
         />
       </div>
 
@@ -323,14 +323,14 @@ function SupplierForm({
         <button
           onClick={onCancel}
           disabled={isPending}
-          className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           onClick={onSave}
           disabled={isPending || !draft.name.trim()}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-blue-500 disabled:opacity-40"
         >
           {isPending ? "Saving…" : saveLabel}
         </button>
@@ -342,21 +342,21 @@ function SupplierForm({
 // ── Tiny icons ─────────────────────────────────────────────────────────────
 function PersonIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-slate-500">
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-gray-400">
       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
     </svg>
   );
 }
 function PhoneIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-slate-500">
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-gray-400">
       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
     </svg>
   );
 }
 function EmailIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-slate-500">
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-gray-400">
       <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
       <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
     </svg>

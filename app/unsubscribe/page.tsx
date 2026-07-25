@@ -19,9 +19,9 @@ export default async function UnsubscribePage({
   const businessName = process.env.BUSINESS_NAME || "MailFoundry";
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
-      <div className="mx-auto max-w-xl rounded-2xl border border-slate-800 bg-slate-900 p-8">
-        <p className="text-sm text-slate-400">{businessName}</p>
+    <main className="min-h-screen bg-gray-50 px-6 py-16 text-gray-900">
+      <div className="mx-auto max-w-xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
+        <p className="text-sm text-gray-500">{businessName}</p>
 
         <h1 className="mt-3 text-3xl font-bold">Unsubscribe</h1>
 
@@ -38,7 +38,7 @@ export default async function UnsubscribePage({
           </div>
         ) : (
           <>
-            <p className="mt-4 text-sm leading-6 text-slate-300">
+            <p className="mt-4 text-sm leading-6 text-gray-600">
               Confirm below if you no longer want to receive marketing emails
               from {businessName}.
             </p>
@@ -59,14 +59,14 @@ export default async function UnsubscribePage({
               <form action={unsubscribeContact} className="mt-6 space-y-4">
                 <input type="hidden" name="email" value={email} />
 
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <p className="text-sm text-slate-400">Email address</p>
-                  <p className="mt-1 font-semibold text-white">{email}</p>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p className="text-sm text-gray-500">Email address</p>
+                  <p className="mt-1 font-semibold text-gray-900">{email}</p>
                 </div>
 
                 <button
                   type="submit"
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-red-500"
                 >
                   Unsubscribe me
                 </button>

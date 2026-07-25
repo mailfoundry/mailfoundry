@@ -34,8 +34,8 @@ export default function ProductStockInput({ productId, inStock, git }: Props) {
             min="0"
             defaultValue={inStock}
             onBlur={save}
-            className={`w-20 rounded border bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-green-400 ${
-              isPending ? "border-slate-400 opacity-60" : "border-slate-500"
+            className={`w-20 rounded border bg-white px-2 py-1 text-right text-gray-900 outline-none focus:border-green-500 ${
+              isPending ? "border-gray-300 opacity-60" : "border-gray-200"
             }`}
           />
         </div>
@@ -48,8 +48,8 @@ export default function ProductStockInput({ productId, inStock, git }: Props) {
             min="0"
             defaultValue={git}
             onBlur={save}
-            className={`w-20 rounded border bg-slate-700 px-2 py-1 text-right text-white outline-none focus:border-amber-400 ${
-              isPending ? "border-slate-400 opacity-60" : "border-slate-500"
+            className={`w-20 rounded border bg-white px-2 py-1 text-right text-gray-900 outline-none focus:border-amber-500 ${
+              isPending ? "border-gray-300 opacity-60" : "border-gray-200"
             }`}
           />
         </div>

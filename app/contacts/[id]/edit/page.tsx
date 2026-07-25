@@ -62,32 +62,32 @@ export default async function EditContactPage({
     <AppShell active="contacts">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Audience</p>
+          <p className="text-sm text-gray-500">Audience</p>
           <h2 className="text-3xl font-bold">Edit Contact</h2>
-          <p className="mt-2 text-sm text-slate-400">{contact.email}</p>
+          <p className="mt-2 text-sm text-gray-500">{contact.email}</p>
         </div>
 
         <Link
           href={`/contacts/${contact.id}`}
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
         >
           Back to Contact
         </Link>
       </header>
 
-      <div className="max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <form action={updateContactAction} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Email
             </label>
             <input
               type="email"
               value={contact.email}
               disabled
-              className="w-full cursor-not-allowed rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-500 outline-none"
+              className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-400 outline-none"
             />
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Email editing is disabled for now to avoid accidental duplicate
               contacts.
             </p>
@@ -95,32 +95,32 @@ export default async function EditContactPage({
 
           <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
+              <label className="mb-2 block text-sm font-medium text-gray-600">
                 First Name
               </label>
               <input
                 type="text"
                 name="firstName"
                 defaultValue={contact.firstName || ""}
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
+              <label className="mb-2 block text-sm font-medium text-gray-600">
                 Last Name
               </label>
               <input
                 type="text"
                 name="lastName"
                 defaultValue={contact.lastName || ""}
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Source
             </label>
             <input
@@ -128,18 +128,18 @@ export default async function EditContactPage({
               name="source"
               defaultValue={contact.source || ""}
               placeholder="manual, internal_test, customer, imported..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Contact Status
             </label>
             <select
               name="contactStatus"
               defaultValue={currentContactStatus}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             >
               <option value="subscribed">Subscribed</option>
               <option value="unsubscribed">Unsubscribed</option>
@@ -148,7 +148,7 @@ export default async function EditContactPage({
               <option value="complained">Complained</option>
               <option value="unknown">Unknown</option>
             </select>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Changing this updates the relevant contact status timestamp and
               clears conflicting status fields.
             </p>
@@ -156,7 +156,7 @@ export default async function EditContactPage({
 
           <button
             type="submit"
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
           >
             Save Contact
           </button>

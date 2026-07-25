@@ -53,12 +53,12 @@ export default async function IbsaProductsPage({
     <IbsaAppShell active="ibsa-products">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">IBSA · Xylo Supplies</p>
-          <h2 className="text-3xl font-bold">Products</h2>
+          <p className="text-sm text-gray-500">IBSA · Xylo Supplies</p>
+          <h2 className="text-3xl font-bold text-gray-900">Products</h2>
         </div>
         <Link
           href="/ibsa"
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
         >
           ← Conventions
         </Link>
@@ -70,8 +70,8 @@ export default async function IbsaProductsPage({
           href="/ibsa/products?type=CS"
           className={`rounded-lg px-4 py-2 text-sm font-semibold ${
             activeType === "CS"
-              ? "bg-white text-slate-900"
-              : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+              ? "bg-gray-900 text-white"
+              : "border border-gray-200 text-gray-500 hover:bg-gray-100"
           }`}
         >
           Cleaning Supplies
@@ -80,8 +80,8 @@ export default async function IbsaProductsPage({
           href="/ibsa/products?type=FA"
           className={`rounded-lg px-4 py-2 text-sm font-semibold ${
             activeType === "FA"
-              ? "bg-white text-slate-900"
-              : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+              ? "bg-gray-900 text-white"
+              : "border border-gray-200 text-gray-500 hover:bg-gray-100"
           }`}
         >
           First Aid

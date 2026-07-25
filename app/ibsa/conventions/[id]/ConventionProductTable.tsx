@@ -86,25 +86,25 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
   return (
     <section className="mb-10">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrintPickList}
             disabled={orderedCount === 0}
-            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 transition-colors"
           >
             Print pick list
           </button>
           <button
             onClick={handleXeroExport}
             disabled={orderedCount === 0}
-            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 transition-colors"
           >
             Export to Xero
           </button>
           <button
             onClick={() => setShowAll((v) => !v)}
-            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
           >
             {showAll
               ? `Hide unordered`
@@ -114,11 +114,11 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
       </div>
 
       {Object.keys(grouped).length === 0 ? (
-        <p className="text-sm text-slate-500">No products ordered yet.</p>
+        <p className="text-sm text-gray-400">No products ordered yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
           <table className="min-w-full text-sm">
-            <thead className="border-b border-slate-700 bg-slate-700/50 text-slate-200">
+            <thead className="border-b border-gray-200 bg-gray-50 text-gray-500">
               <tr>
                 <th className="px-4 py-3 text-left font-semibold">Code</th>
                 <th className="px-4 py-3 text-left font-semibold">Product</th>
@@ -135,8 +135,8 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
               {Object.entries(grouped).map(([category, items]) => (
                 <>
                   {/* Category divider row */}
-                  <tr key={`cat-${category}`} className="border-t border-slate-700 bg-slate-700/30">
-                    <td colSpan={9} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  <tr key={`cat-${category}`} className="border-t border-gray-200 bg-gray-50">
+                    <td colSpan={9} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                       {CATEGORY_LABELS[category] ?? category}
                     </td>
                   </tr>
@@ -149,32 +149,32 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
                       p.unitCost > 0 ? ((p.unitCost - xyloCost) / p.unitCost) * 100 : 0;
                     const marginColour =
                       marginPct >= 30
-                        ? "text-green-400"
+                        ? "text-green-600"
                         : marginPct >= 15
-                        ? "text-amber-400"
-                        : "text-red-400";
+                        ? "text-amber-600"
+                        : "text-red-500";
 
                     return (
                       <tr
                         key={p.id}
-                        className="border-t border-slate-700/50 transition-opacity hover:bg-slate-700/30"
+                        className="border-t border-gray-100 transition-colors hover:bg-gray-50"
                       >
-                        <td className="px-4 py-3 font-mono text-xs text-slate-400">{p.code}</td>
-                        <td className="px-4 py-3 font-medium text-white">{p.name}</td>
-                        <td className="px-4 py-3 text-slate-300">{p.variant ?? "—"}</td>
-                        <td className="px-4 py-3 text-right text-slate-200">£{p.unitCost.toFixed(2)}</td>
-                        <td className="px-4 py-3 text-right text-slate-400">£{xyloCost.toFixed(2)}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-gray-400">{p.code}</td>
+                        <td className="px-4 py-3 font-medium text-gray-900">{p.name}</td>
+                        <td className="px-4 py-3 text-gray-600">{p.variant ?? "—"}</td>
+                        <td className="px-4 py-3 text-right text-gray-700">£{p.unitCost.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-right text-gray-400">£{xyloCost.toFixed(2)}</td>
                         <td className="px-4 py-3">
                           <div className="flex justify-center">
                             <ConventionQtyInput conventionId={conventionId} productId={p.id} qty={qty} dept={dept} />
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right text-slate-200">
+                        <td className="px-4 py-3 text-right text-gray-700">
                           {lineSale > 0 ? `£${fmtGbp(lineSale)}` : "—"}
                         </td>
                         <td className="px-4 py-3 text-right font-medium">
                           {qty > 0 ? (
-                            <span className={lineMarginGbp >= 0 ? "text-green-400" : "text-red-400"}>
+                            <span className={lineMarginGbp >= 0 ? "text-green-600" : "text-red-500"}>
                               £{fmtGbp(lineMarginGbp)}
                             </span>
                           ) : "—"}

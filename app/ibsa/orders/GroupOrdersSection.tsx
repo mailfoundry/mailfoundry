@@ -27,10 +27,10 @@ export type GroupOrder = {
 };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  submitted:  { label: "Submitted",  color: "text-blue-400 border-blue-700/40 bg-blue-950/30" },
-  processing: { label: "Processing", color: "text-amber-400 border-amber-700/40 bg-amber-950/30" },
-  complete:   { label: "Complete",   color: "text-green-400 border-green-700/40 bg-green-950/30" },
-  cancelled:  { label: "Cancelled",  color: "text-slate-500 border-slate-700/40 bg-slate-800/30" },
+  submitted:  { label: "Submitted",  color: "text-blue-700 border-blue-200 bg-blue-100" },
+  processing: { label: "Processing", color: "text-amber-700 border-amber-200 bg-amber-100" },
+  complete:   { label: "Complete",   color: "text-green-700 border-green-200 bg-green-100" },
+  cancelled:  { label: "Cancelled",  color: "text-gray-500 border-gray-200 bg-gray-100" },
 };
 
 const GROUP_TYPE_LABELS: Record<string, string> = {
@@ -57,25 +57,25 @@ export default function GroupOrdersSection({ orders }: { orders: GroupOrder[] })
       {showImport && <ImportOrderModal onClose={() => setShowImport(false)} />}
 
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
           Group Orders — Congregation / Circuit / Regional
           {active.length > 0 && (
-            <span className="ml-2 rounded-full bg-blue-900/50 px-2 py-0.5 text-blue-300">{active.length}</span>
+            <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-blue-700">{active.length}</span>
           )}
         </p>
         <button
           onClick={() => setShowImport(true)}
-          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700"
+          className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
         >
           Import from Spreadsheet
         </button>
       </div>
 
       {orders.length === 0 && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center">
-          <p className="text-slate-400">No group orders yet.</p>
-          <p className="mt-1 text-xs text-slate-600">
-            Orders submitted via <span className="font-mono text-slate-500">/order</span> will appear here.
+        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-gray-400">No group orders yet.</p>
+          <p className="mt-1 text-xs text-gray-300">
+            Orders submitted via <span className="font-mono text-gray-400">/order</span> will appear here.
           </p>
         </div>
       )}
@@ -95,7 +95,7 @@ export default function GroupOrdersSection({ orders }: { orders: GroupOrder[] })
 
       {completed.length > 0 && (
         <div className="mt-6">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-600">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
             Completed / Cancelled · {completed.length}
           </p>
           <div className="space-y-2">
@@ -125,27 +125,27 @@ function GroupOrderLineRow({ line }: { line: GroupOrderLine }) {
   }
 
   return (
-    <tr className="border-t border-slate-800/50 group">
-      <td className="py-2 text-white">
+    <tr className="border-t border-gray-100 group">
+      <td className="py-2 text-gray-900">
         {line.productName}
         {line.productVariant && (
-          <span className="ml-2 text-xs text-slate-500">{line.productVariant}</span>
+          <span className="ml-2 text-xs text-gray-400">{line.productVariant}</span>
         )}
-        <span className="ml-2 font-mono text-xs text-slate-600">{line.productCode}</span>
+        <span className="ml-2 font-mono text-xs text-gray-300">{line.productCode}</span>
       </td>
-      <td className="py-2 text-right font-semibold text-white">{line.qty}</td>
-      <td className="py-2 text-right text-slate-400">{fmtGbp(line.unitCost)}</td>
-      <td className="py-2 text-right text-amber-400">{fmtGbp(line.qty * line.unitCost)}</td>
+      <td className="py-2 text-right font-semibold text-gray-900">{line.qty}</td>
+      <td className="py-2 text-right text-gray-400">{fmtGbp(line.unitCost)}</td>
+      <td className="py-2 text-right text-amber-600">{fmtGbp(line.qty * line.unitCost)}</td>
       <td className="py-2 pl-4 text-right">
         {confirmDelete ? (
           <span className="flex items-center justify-end gap-2">
-            <button onClick={handleDelete} className="text-xs font-semibold text-red-400 hover:text-red-300">Remove</button>
-            <button onClick={() => setConfirmDelete(false)} className="text-xs text-slate-500 hover:text-slate-300">Cancel</button>
+            <button onClick={handleDelete} className="text-xs font-semibold text-red-500 hover:text-red-600">Remove</button>
+            <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-700">Cancel</button>
           </span>
         ) : (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="text-xs text-slate-700 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity"
+            className="text-xs text-gray-200 opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity"
           >
             ✕
           </button>
@@ -186,43 +186,42 @@ function GroupOrderCard({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-800">
+    <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-5 py-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-slate-500">{GROUP_TYPE_LABELS[order.groupType] ?? order.groupType}</span>
-            <span className="font-semibold text-white">{order.groupName}</span>
+            <span className="text-xs text-gray-400">{GROUP_TYPE_LABELS[order.groupType] ?? order.groupType}</span>
+            <span className="font-semibold text-gray-900">{order.groupName}</span>
             <span className={`rounded border px-2 py-0.5 text-xs font-semibold ${st.color}`}>
               {st.label}
             </span>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-400">
             <span>{order.contactName}</span>
-            <span className="text-slate-700">·</span>
+            <span className="text-gray-200">·</span>
             <span>{order.contactEmail}</span>
             {order.contactMobile && (
               <>
-                <span className="text-slate-700">·</span>
+                <span className="text-gray-200">·</span>
                 <span>{order.contactMobile}</span>
               </>
             )}
-            <span className="text-slate-700">·</span>
+            <span className="text-gray-200">·</span>
             <span>{fmtDate(order.submittedAt)}</span>
           </div>
-          <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
+          <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
             {csLines.length > 0 && <span>CS: {csLines.length} product{csLines.length !== 1 ? "s" : ""}</span>}
             {faLines.length > 0 && <span>FA: {faLines.length} product{faLines.length !== 1 ? "s" : ""}</span>}
-            {totalValue > 0 && <span className="text-amber-400 font-semibold">{fmtGbp(totalValue)}</span>}
+            {totalValue > 0 && <span className="text-amber-600 font-semibold">{fmtGbp(totalValue)}</span>}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Status changer */}
           {order.status === "submitted" && (
             <button
               onClick={() => changeStatus("processing")}
-              className="rounded border border-amber-700/60 bg-amber-950/40 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-900/50"
+              className="rounded border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
             >
               Mark processing
             </button>
@@ -230,7 +229,7 @@ function GroupOrderCard({
           {order.status === "processing" && (
             <button
               onClick={() => changeStatus("complete")}
-              className="rounded border border-green-700/60 bg-green-950/40 px-3 py-1.5 text-xs font-semibold text-green-300 hover:bg-green-900/50"
+              className="rounded border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 hover:bg-green-100 transition-colors"
             >
               Mark complete
             </button>
@@ -238,7 +237,7 @@ function GroupOrderCard({
           {(order.status === "submitted" || order.status === "processing") && (
             <button
               onClick={() => changeStatus("cancelled")}
-              className="rounded border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-red-400 hover:border-red-700/40"
+              className="rounded border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors"
             >
               Cancel
             </button>
@@ -246,7 +245,7 @@ function GroupOrderCard({
 
           <button
             onClick={onToggle}
-            className="rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700"
+            className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
           >
             {isOpen ? "Close" : "View"}
           </button>
@@ -255,18 +254,18 @@ function GroupOrderCard({
 
       {/* Detail */}
       {isOpen && (
-        <div className="bg-slate-950 p-5">
+        <div className="bg-gray-50 p-5">
           {(["CS", "FA"] as const).map((dept) => {
             const lines = order.lines.filter((l) => l.dept === dept);
             if (lines.length === 0) return null;
             return (
               <div key={dept} className="mb-4 last:mb-0">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                   {dept === "CS" ? "Cleaning Supplies" : "First Aid"}
                 </p>
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-800 text-xs text-slate-500">
+                    <tr className="border-b border-gray-200 text-xs text-gray-400">
                       <th className="pb-2 text-left font-semibold uppercase tracking-wider">Product</th>
                       <th className="pb-2 text-right font-semibold uppercase tracking-wider">Qty</th>
                       <th className="pb-2 text-right font-semibold uppercase tracking-wider">Unit</th>
@@ -285,21 +284,21 @@ function GroupOrderCard({
           })}
 
           {/* Delete */}
-          <div className="mt-4 border-t border-slate-800 pt-4">
+          <div className="mt-4 border-t border-gray-100 pt-4">
             {confirmDelete ? (
               <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-400">Delete this order?</span>
-                <button onClick={handleDelete} className="text-xs font-semibold text-red-400 hover:text-red-300">
+                <span className="text-xs text-gray-400">Delete this order?</span>
+                <button onClick={handleDelete} className="text-xs font-semibold text-red-500 hover:text-red-600">
                   Yes, delete
                 </button>
-                <button onClick={() => setConfirmDelete(false)} className="text-xs text-slate-500 hover:text-slate-300">
+                <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-700">
                   Cancel
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => setConfirmDelete(true)}
-                className="text-xs text-slate-600 hover:text-red-400"
+                className="text-xs text-gray-300 hover:text-red-500 transition-colors"
               >
                 Delete order
               </button>

@@ -18,14 +18,14 @@ export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt
   if (stripeInvoiceId) {
     return (
       <div className="flex items-center gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-900/30 px-3 py-1 text-xs font-semibold text-green-400">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
           <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
           </svg>
           Invoice sent
         </span>
         {invoicedAt && (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-gray-400">
             {invoicedAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
           </span>
         )}
@@ -33,7 +33,7 @@ export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt
           href={`https://dashboard.stripe.com/invoices/${stripeInvoiceId}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
         >
           View in Stripe →
         </a>
@@ -51,8 +51,8 @@ export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt
           Send invoice via Stripe
         </button>
         {contactEmail && (
-          <p className="mt-2 text-xs text-slate-500">
-            Stripe will email the invoice directly to <span className="text-slate-400">{contactEmail}</span> with a Pay Online link.
+          <p className="mt-2 text-xs text-gray-400">
+            Stripe will email the invoice directly to <span className="text-gray-600">{contactEmail}</span> with a Pay Online link.
           </p>
         )}
       </div>
@@ -61,11 +61,11 @@ export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-slate-300">
+      <p className="text-sm text-gray-600">
         This will create and send a Stripe invoice. The customer will receive an email with a payment link. This cannot be undone.
       </p>
       {error && (
-        <p className="text-xs text-red-400">{error}</p>
+        <p className="text-xs text-red-500">{error}</p>
       )}
       <div className="flex items-center gap-3">
         <button
@@ -86,7 +86,7 @@ export default function SendInvoiceButton({ orderId, stripeInvoiceId, invoicedAt
         </button>
         <button
           onClick={() => setConfirmed(false)}
-          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
         >
           Cancel
         </button>

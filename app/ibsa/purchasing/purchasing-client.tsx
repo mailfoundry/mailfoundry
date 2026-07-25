@@ -421,24 +421,24 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
     <div className="max-w-6xl">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Purchasing</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-2xl font-bold text-gray-900">Purchasing</h1>
+        <p className="mt-1 text-sm text-gray-500">
           Select the convention shipments you&apos;re buying for to see what you&apos;re short on.
         </p>
       </div>
 
       {/* Convention selector */}
-      <div className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="mb-8 rounded-xl border border-gray-200 bg-white shadow-sm p-5">
         <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm font-semibold text-white">Shipments</p>
+          <p className="text-sm font-semibold text-gray-900">Shipments</p>
           <div className="flex gap-3 text-xs">
-            <button onClick={selectAll} className="text-slate-400 hover:text-white transition-colors">Select all</button>
-            <span className="text-slate-700">·</span>
-            <button onClick={clearAll} className="text-slate-400 hover:text-white transition-colors">Clear</button>
+            <button onClick={selectAll} className="text-gray-500 hover:text-gray-900 transition-colors">Select all</button>
+            <span className="text-gray-200">·</span>
+            <button onClick={clearAll} className="text-gray-500 hover:text-gray-900 transition-colors">Clear</button>
           </div>
         </div>
         {cards.length === 0 ? (
-          <p className="text-sm text-slate-500">No upcoming shipments found.</p>
+          <p className="text-sm text-gray-400">No upcoming shipments found.</p>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {cards.map(c => {
@@ -453,32 +453,32 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                   className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
                     isSelected
                       ? "border-blue-700 bg-blue-950/40"
-                      : "border-slate-800 hover:border-slate-600 hover:bg-slate-800/50"
+                      : "border-gray-200 hover:border-gray-200 hover:bg-gray-50"
                   }`}
                 >
                   <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
-                    isSelected ? "border-blue-500 bg-blue-600" : "border-slate-600"
+                    isSelected ? "border-blue-500 bg-blue-600" : "border-gray-200"
                   }`}>
                     {isSelected && (
-                      <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 12 12">
+                      <svg className="h-2.5 w-2.5 text-gray-900" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 12 12">
                         <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </span>
                   <span>
                     <span className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-white">{c.name}</span>
+                      <span className="text-sm font-medium text-gray-900">{c.name}</span>
                       <span className={`rounded px-1.5 py-0 text-xs font-bold ${
                         c.dept === "CS"
-                          ? "bg-blue-900/50 text-blue-300"
+                          ? "bg-blue-900/50 text-blue-700"
                           : "bg-green-900/50 text-green-300"
                       }`}>{c.dept}</span>
                     </span>
-                    <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
-                      <span className="text-slate-600">{c.collectionDate ? "Collection:" : "Convention:"}</span>
+                    <span className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+                      <span className="text-gray-300">{c.collectionDate ? "Collection:" : "Convention:"}</span>
                       {fmtDate(displayDate)}
                       {soon && (
-                        <span className="rounded-full bg-amber-900/50 border border-amber-700/40 px-1.5 py-0 text-amber-400">
+                        <span className="rounded-full bg-amber-900/50 border border-amber-200 px-1.5 py-0 text-amber-600">
                           {days === 0 ? "today" : `${days}d`}
                         </span>
                       )}
@@ -493,28 +493,28 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
 
       {/* Results */}
       {selected.size === 0 ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center">
-          <p className="text-slate-400">Select one or more shipments above to see what you need to buy.</p>
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-12 text-center">
+          <p className="text-gray-500">Select one or more shipments above to see what you need to buy.</p>
         </div>
       ) : rows.length === 0 ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center">
-          <p className="text-slate-400">You&apos;re fully stocked for the selected shipments. Nothing to buy.</p>
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-12 text-center">
+          <p className="text-gray-500">You&apos;re fully stocked for the selected shipments. Nothing to buy.</p>
         </div>
       ) : (
         <>
           {/* Summary cards */}
           <div className="mb-6 grid grid-cols-3 gap-4">
-            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Products to buy</p>
-              <p className="mt-2 text-3xl font-bold text-white">{rows.length}</p>
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Products to buy</p>
+              <p className="mt-2 text-3xl font-bold text-gray-900">{rows.length}</p>
             </div>
-            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total units short</p>
-              <p className="mt-2 text-3xl font-bold text-white">{totalUnits.toLocaleString()}</p>
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Total units short</p>
+              <p className="mt-2 text-3xl font-bold text-gray-900">{totalUnits.toLocaleString()}</p>
             </div>
-            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Est. cost (ex VAT)</p>
-              <p className="mt-2 text-3xl font-bold text-amber-400">{fmtGbp(totalCost)}</p>
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Est. cost (ex VAT)</p>
+              <p className="mt-2 text-3xl font-bold text-amber-600">{fmtGbp(totalCost)}</p>
             </div>
           </div>
 
@@ -523,7 +523,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
             <button
               onClick={() => setShowRsOrder(false)}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                !showRsOrder ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
+                !showRsOrder ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900"
               }`}
             >
               Deficit
@@ -531,7 +531,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
             <button
               onClick={() => setShowRsOrder(true)}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                showRsOrder ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
+                showRsOrder ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900"
               }`}
             >
               Supplier Order
@@ -540,10 +540,10 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
 
           {/* ── DEFICIT VIEW ─────────────────────────────────────────────── */}
           {!showRsOrder && (
-            <div className="overflow-hidden rounded-xl border border-slate-800">
+            <div className="overflow-hidden rounded-xl border border-gray-200">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900/80 text-xs text-slate-500">
+                  <tr className="border-b border-gray-200 bg-white shadow-sm/80 text-xs text-gray-400">
                     <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Product</th>
                     <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">CS</th>
                     <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">FA</th>
@@ -554,46 +554,46 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                     <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Est. cost</th>
                   </tr>
                 </thead>
-                <tbody className="bg-slate-900">
+                <tbody className="bg-white">
                   {Array.from(byCategory.entries()).map(([cat, catRows]) => (
                     <>
-                      <tr key={`cat-${cat}`} className="border-t border-slate-800 bg-slate-800/60">
-                        <td colSpan={8} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      <tr key={`cat-${cat}`} className="border-t border-gray-200 bg-gray-50">
+                        <td colSpan={8} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                           {categoryLabel[cat] ?? cat}
                         </td>
                       </tr>
                       {catRows.map(r => (
-                        <tr key={r.productId} className="border-t border-slate-800 hover:bg-slate-800/50">
+                        <tr key={r.productId} className="border-t border-gray-200 hover:bg-gray-50">
                           <td className="px-4 py-3">
-                            <p className="font-medium text-white">{r.name}</p>
-                            {r.variant && <p className="text-xs text-slate-500">{r.variant}</p>}
+                            <p className="font-medium text-gray-900">{r.name}</p>
+                            {r.variant && <p className="text-xs text-gray-400">{r.variant}</p>}
                           </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                            {r.csOrdered > 0 ? r.csOrdered : <span className="text-slate-600">—</span>}
+                          <td className="px-4 py-3 text-right tabular-nums text-gray-600">
+                            {r.csOrdered > 0 ? r.csOrdered : <span className="text-gray-300">—</span>}
                           </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                            {r.faOrdered > 0 ? r.faOrdered : <span className="text-slate-600">—</span>}
+                          <td className="px-4 py-3 text-right tabular-nums text-gray-600">
+                            {r.faOrdered > 0 ? r.faOrdered : <span className="text-gray-300">—</span>}
                           </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">{r.inStock}</td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                            {r.git > 0 ? r.git : <span className="text-slate-600">—</span>}
+                          <td className="px-4 py-3 text-right tabular-nums text-gray-600">{r.inStock}</td>
+                          <td className="px-4 py-3 text-right tabular-nums text-gray-600">
+                            {r.git > 0 ? r.git : <span className="text-gray-300">—</span>}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className="inline-block rounded-full border border-red-800/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-400">
+                            <span className="inline-block rounded-full border border-red-200/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-500">
                               {r.deficit}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-slate-400">{fmtGbp(r.xyloCost ?? r.unitCost)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
+                          <td className="px-4 py-3 text-right tabular-nums text-gray-500">{fmtGbp(r.xyloCost ?? r.unitCost)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums font-semibold text-gray-900">
                             {fmtGbp(r.deficit * (r.xyloCost ?? r.unitCost))}
                           </td>
                         </tr>
                       ))}
-                      <tr key={`sub-${cat}`} className="border-t border-slate-700 bg-slate-900/80">
-                        <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      <tr key={`sub-${cat}`} className="border-t border-gray-200 bg-white/80">
+                        <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
                           Subtotal
                         </td>
-                        <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
+                        <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-600">
                           {fmtGbp(catRows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0))}
                         </td>
                       </tr>
@@ -608,22 +608,22 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
           {showRsOrder && (
             <div className="space-y-6">
               {/* Summary bar */}
-              <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-5 py-4">
-                <p className="text-sm text-slate-400">
-                  <span className="font-semibold text-white">
+              <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white shadow-sm px-5 py-4">
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-gray-900">
                     {Array.from(rsOrderBySupplier.bySupplier.values()).reduce((s, l) => s + l.length, 0)}
                   </span>{" "}
                   supplier lines across{" "}
-                  <span className="font-semibold text-white">{rsOrderBySupplier.bySupplier.size}</span>{" "}
+                  <span className="font-semibold text-gray-900">{rsOrderBySupplier.bySupplier.size}</span>{" "}
                   {rsOrderBySupplier.bySupplier.size === 1 ? "supplier" : "suppliers"}
                 </p>
-                <p className="text-sm font-semibold text-amber-400">{fmtGbp(rsOrderTotalCost)} total (ex VAT)</p>
+                <p className="text-sm font-semibold text-amber-600">{fmtGbp(rsOrderTotalCost)} total (ex VAT)</p>
               </div>
 
               {/* Warning: deficit products with no supplier link */}
               {rsOrderBySupplier.unlinkedProducts.length > 0 && (
-                <div className="rounded-xl border border-amber-700/40 bg-amber-950/20 px-5 py-4">
-                  <p className="text-sm font-semibold text-amber-300">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+                  <p className="text-sm font-semibold text-amber-700">
                     {rsOrderBySupplier.unlinkedProducts.length} product{rsOrderBySupplier.unlinkedProducts.length !== 1 ? "s" : ""} not linked to a supplier — not included in order:
                   </p>
                   <p className="mt-1 text-xs text-amber-500">
@@ -637,24 +637,24 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                 const supplierTotal = lines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
                 const pendingCount = lines.filter(l => l.cartonSize == null).length;
                 return (
-                  <div key={supplier} className="overflow-hidden rounded-xl border border-slate-800">
-                    <div className="flex items-center justify-between border-b border-slate-800 bg-slate-800/80 px-4 py-3">
+                  <div key={supplier} className="overflow-hidden rounded-xl border border-gray-200">
+                    <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100/80 px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <p className="font-semibold text-white">{supplier}</p>
+                        <p className="font-semibold text-gray-900">{supplier}</p>
                         {pendingCount > 0 && (
-                          <span className="rounded border border-amber-700/40 bg-amber-950/30 px-2 py-0.5 text-xs text-amber-400">
+                          <span className="rounded border border-amber-200 bg-amber-950/30 px-2 py-0.5 text-xs text-amber-600">
                             {pendingCount} without catalog data
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-3">
                         {supplierTotal > 0
-                          ? <p className="text-sm font-semibold text-amber-400">{fmtGbp(supplierTotal)}</p>
-                          : <p className="text-xs text-slate-500">cost unknown</p>
+                          ? <p className="text-sm font-semibold text-amber-600">{fmtGbp(supplierTotal)}</p>
+                          : <p className="text-xs text-gray-400">cost unknown</p>
                         }
                         <button
                           onClick={() => handleDownloadPO(supplier, lines)}
-                          className="rounded border border-slate-600 bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 hover:text-white"
+                          className="rounded border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-900"
                         >
                           ↓ Download PO
                         </button>
@@ -662,7 +662,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           const state = orderStates.get(supplier) ?? "idle";
                           if (state === "done") {
                             return (
-                              <span className="rounded border border-green-700/60 bg-green-950/40 px-3 py-1 text-xs font-semibold text-green-400">
+                              <span className="rounded border border-green-700/60 bg-green-950/40 px-3 py-1 text-xs font-semibold text-green-600">
                                 ✓ Ordered
                               </span>
                             );
@@ -671,7 +671,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                             <button
                               onClick={() => openConfirmOrder(supplier, lines)}
                               disabled={state === "submitting" || lines.filter(l => l.cartonsNeeded != null).length === 0}
-                              className="rounded border border-blue-700/60 bg-blue-950/40 px-3 py-1 text-xs font-semibold text-blue-300 transition-colors hover:bg-blue-900/50 hover:text-blue-200 disabled:cursor-not-allowed disabled:opacity-40"
+                              className="rounded border border-blue-700/60 bg-blue-950/40 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-900/50 hover:text-blue-200 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                               {state === "submitting" ? "Saving…" : "✓ Mark as Ordered"}
                             </button>
@@ -681,7 +681,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                     </div>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-slate-800 bg-slate-900/60 text-xs text-slate-500">
+                        <tr className="border-b border-gray-200 bg-white shadow-sm/60 text-xs text-gray-400">
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Code</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
@@ -692,48 +692,48 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Total</th>
                         </tr>
                       </thead>
-                      <tbody className="bg-slate-900">
+                      <tbody className="bg-white">
                         {lines.map(line => {
                           const hasCatalog = line.cartonSize != null;
                           return (
-                            <tr key={line.id} className={`border-t border-slate-800 ${hasCatalog ? "hover:bg-slate-800/50" : "opacity-70 hover:opacity-100"}`}>
-                              <td className="px-4 py-3 font-mono text-xs text-slate-400">
-                                {line.rsCode ?? <span className="text-slate-700">—</span>}
+                            <tr key={line.id} className={`border-t border-gray-200 ${hasCatalog ? "hover:bg-gray-50" : "opacity-70 hover:opacity-100"}`}>
+                              <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                                {line.rsCode ?? <span className="text-gray-200">—</span>}
                               </td>
-                              <td className="px-4 py-3 text-white">{line.displayLabel}</td>
+                              <td className="px-4 py-3 text-gray-900">{line.displayLabel}</td>
                               <td className="px-4 py-3">
                                 {line.rsVariant
-                                  ? <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs font-medium text-slate-300">{line.rsVariant}</span>
-                                  : <span className="text-slate-600">—</span>
+                                  ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{line.rsVariant}</span>
+                                  : <span className="text-gray-300">—</span>
                                 }
                               </td>
-                              <td className="px-4 py-3 text-right tabular-nums text-slate-400">
-                                {line.cartonSize ?? <span className="text-slate-600">—</span>}
+                              <td className="px-4 py-3 text-right tabular-nums text-gray-500">
+                                {line.cartonSize ?? <span className="text-gray-300">—</span>}
                               </td>
-                              <td className="px-4 py-3 text-right tabular-nums text-slate-300">{line.unitsNeeded}</td>
+                              <td className="px-4 py-3 text-right tabular-nums text-gray-600">{line.unitsNeeded}</td>
                               <td className="px-4 py-3 text-right">
                                 {line.cartonsNeeded != null
-                                  ? <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-300">
+                                  ? <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-700">
                                       {line.cartonsNeeded}
                                     </span>
-                                  : <span className="text-slate-600">—</span>
+                                  : <span className="text-gray-300">—</span>
                                 }
                               </td>
-                              <td className="px-4 py-3 text-right tabular-nums text-slate-400">
-                                {line.cartonPrice != null ? fmtGbp(line.cartonPrice) : <span className="text-slate-600">—</span>}
+                              <td className="px-4 py-3 text-right tabular-nums text-gray-500">
+                                {line.cartonPrice != null ? fmtGbp(line.cartonPrice) : <span className="text-gray-300">—</span>}
                               </td>
-                              <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
-                                {line.totalCost != null ? fmtGbp(line.totalCost) : <span className="font-normal text-slate-600">—</span>}
+                              <td className="px-4 py-3 text-right tabular-nums font-semibold text-gray-900">
+                                {line.totalCost != null ? fmtGbp(line.totalCost) : <span className="font-normal text-gray-300">—</span>}
                               </td>
                             </tr>
                           );
                         })}
-                        <tr className="border-t border-slate-700 bg-slate-900/80">
-                          <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <tr className="border-t border-gray-200 bg-white/80">
+                          <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
                             {pendingCount > 0 ? `Subtotal (excl. ${pendingCount} pending)` : "Subtotal"}
                           </td>
-                          <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">
-                            {supplierTotal > 0 ? fmtGbp(supplierTotal) : <span className="text-slate-600">—</span>}
+                          <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-600">
+                            {supplierTotal > 0 ? fmtGbp(supplierTotal) : <span className="text-gray-300">—</span>}
                           </td>
                         </tr>
                       </tbody>
@@ -747,30 +747,30 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
       )}
       {/* Mark-as-Ordered confirm dialog */}
       {confirmSupplier && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-            <h2 className="text-base font-bold text-white">Confirm order</h2>
-            <p className="mt-2 text-sm text-slate-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
+            <h2 className="text-base font-bold text-gray-900">Confirm order</h2>
+            <p className="mt-2 text-sm text-gray-600">
               Save{" "}
-              <span className="font-mono font-semibold text-blue-400">
+              <span className="font-mono font-semibold text-blue-600">
                 {confirmSupplier.poNumber}
               </span>{" "}
-              for <span className="font-semibold text-white">{confirmSupplier.supplier}</span>?
+              for <span className="font-semibold text-gray-900">{confirmSupplier.supplier}</span>?
             </p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-gray-400">
               {confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length} orderable line{confirmSupplier.lines.filter(l => l.cartonsNeeded != null).length !== 1 ? "s" : ""}{" "}will be recorded.
               GIT will be updated immediately — book in the delivery when it arrives.
             </p>
             <div className="mt-5 flex justify-end gap-3">
               <button
                 onClick={() => setConfirmSupplier(null)}
-                className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={submitOrder}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-blue-500"
               >
                 Save order
               </button>

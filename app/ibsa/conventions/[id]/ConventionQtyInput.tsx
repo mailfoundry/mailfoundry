@@ -32,8 +32,8 @@ export default function ConventionQtyInput({ conventionId, productId, qty, dept 
       defaultValue={qty || ""}
       placeholder="0"
       onBlur={save}
-      className={`w-20 rounded border bg-slate-700 px-2 py-1 text-center text-white outline-none focus:border-orange-500 ${
-        isPending ? "border-slate-400 opacity-60" : "border-slate-600"
+      className={`w-20 rounded border bg-white px-2 py-1 text-center text-gray-900 outline-none focus:border-orange-500 ${
+        isPending ? "border-gray-300 opacity-60" : "border-gray-200"
       }`}
     />
   );

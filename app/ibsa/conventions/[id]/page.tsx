@@ -66,7 +66,6 @@ export default async function ConventionDetailPage({
     return (SIZE_RANK[a.variant ?? ""] ?? 99) - (SIZE_RANK[b.variant ?? ""] ?? 99);
   });
 
-  // Separate qty maps per dept — same product can appear in both CS and FA orders
   const csQtyMap: Record<string, number> = {};
   const faQtyMap: Record<string, number> = {};
   for (const item of convention.orderItems) {
@@ -82,19 +81,16 @@ export default async function ConventionDetailPage({
   }));
 
   const csProductRows = allProductRows.filter((p) => p.type === "CS");
-  // FA pick sheet: FA-type products + any CS-type products ordered under the FA invoice
   const faProductRows = allProductRows.filter(
     (p) => p.type === "FA" || (faQtyMap[p.id] ?? 0) > 0
   );
 
-  // Stats based on dept, not product type
   const csItems = convention.orderItems.filter((i) => i.dept !== "FA");
   const faItems = convention.orderItems.filter((i) => i.dept === "FA");
 
   const csOverrideMap: Record<string, number> = {};
   const faOverrideMap: Record<string, number> = {};
 
-  // Top-row stats: CS items normally; fall back to FA items for FA-only conventions
   const topItems = csItems.length > 0 ? csItems : faItems;
   const orderSaleTotal = topItems.reduce((sum, item) => sum + item.qty * item.product.unitCost, 0);
   const orderCostTotal = topItems.reduce(
@@ -113,7 +109,6 @@ export default async function ConventionDetailPage({
   const faProfit = faSaleTotal - faCostTotal;
   const faItemsWithQty = faItems.filter((i) => i.qty > 0).length;
 
-  // Items for CompleteButton stock deduction modals
   const csStockItems: StockItem[] = csItems
     .filter((i) => i.qty > 0)
     .map((i) => ({ name: i.product.name, variant: i.product.variant ?? null, qty: i.qty }));
@@ -136,7 +131,7 @@ export default async function ConventionDetailPage({
       {/* Header */}
       <header className="mb-8 flex items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
-          <Link href="/ibsa" className="mb-1 block text-sm text-slate-400 hover:text-white">
+          <Link href="/ibsa" className="mb-1 block text-sm text-gray-500 hover:text-gray-900 transition-colors">
             ← All Conventions
           </Link>
           {/* Editable name + venue */}
@@ -146,18 +141,18 @@ export default async function ConventionDetailPage({
               type="text"
               name="name"
               defaultValue={convention.name}
-              className="w-full bg-transparent text-3xl font-bold text-white outline-none focus:border-b focus:border-orange-500 group-hover:border-b group-hover:border-slate-700"
+              className="w-full bg-transparent text-3xl font-bold text-gray-900 outline-none focus:border-b focus:border-orange-500 group-hover:border-b group-hover:border-gray-200"
             />
             <input
               type="text"
               name="venue"
               defaultValue={convention.venue ?? ""}
               placeholder="Venue"
-              className="w-full bg-transparent text-sm text-slate-400 outline-none placeholder:text-slate-700 focus:border-b focus:border-orange-500 group-hover:border-b group-hover:border-slate-800"
+              className="w-full bg-transparent text-sm text-gray-500 outline-none placeholder:text-gray-300 focus:border-b focus:border-orange-500 group-hover:border-b group-hover:border-gray-100"
             />
             <button
               type="submit"
-              className="mt-1 self-start text-xs text-slate-700 hover:text-orange-400 transition-colors"
+              className="mt-1 self-start text-xs text-gray-400 hover:text-orange-500 transition-colors"
             >
               Save name
             </button>
@@ -166,7 +161,7 @@ export default async function ConventionDetailPage({
         <div className="flex shrink-0 flex-col items-end gap-2">
           <ConventionImportButton conventionId={convention.id} />
           <DeleteConventionButton conventionId={convention.id} conventionName={convention.name} />
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">CS Status</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">CS Status</p>
           <div className="flex gap-2">
             {(["pending", "ordered"] as const).map((s) => (
               <form key={s} action={updateConventionStatus}>
@@ -177,7 +172,7 @@ export default async function ConventionDetailPage({
                   className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize ${
                     convention.status === s
                       ? "bg-blue-600 text-white"
-                      : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+                      : "border border-gray-200 text-gray-500 hover:bg-gray-100"
                   }`}
                 >
                   {s}
@@ -197,39 +192,39 @@ export default async function ConventionDetailPage({
 
       {/* ── Row 1: Order summary stats ──────────────────────────────── */}
       <div className="mb-4 grid grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Order Lines</p>
-          <p className="mt-1 text-2xl font-bold">{itemsWithQty}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-xs text-gray-500">Order Lines</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900">{itemsWithQty}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Order Value (ex VAT)</p>
-          <p className="mt-1 text-2xl font-bold">£{fmtGbp(orderSaleTotal)}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-xs text-gray-500">Order Value (ex VAT)</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900">£{fmtGbp(orderSaleTotal)}</p>
           {convention.shippingCost > 0 && (
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-gray-400">
               + £{fmtGbp(convention.shippingCost)} shipping
             </p>
           )}
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Order Profit</p>
-          <p className={`mt-1 text-2xl font-bold ${orderProfit >= 0 ? "text-green-400" : "text-red-400"}`}>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-xs text-gray-500">Order Profit</p>
+          <p className={`mt-1 text-2xl font-bold ${orderProfit >= 0 ? "text-green-600" : "text-red-500"}`}>
             £{fmtGbp(orderProfit)}
           </p>
-          <p className="mt-0.5 text-xs text-slate-500">{orderMarginPct.toFixed(1)}% margin</p>
+          <p className="mt-0.5 text-xs text-gray-400">{orderMarginPct.toFixed(1)}% margin</p>
         </div>
 
         {/* Payment */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-xs text-slate-500">Payment</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-xs text-gray-500">Payment</p>
           {convention.paidAt ? (
             <div className="mt-1">
-              <p className="font-semibold text-green-400">✓ Paid</p>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <p className="font-semibold text-green-600">✓ Paid</p>
+              <p className="mt-0.5 text-xs text-gray-400">
                 {fmtDate(convention.paidAt)}
               </p>
               <form action={markUnpaid} className="mt-2">
                 <input type="hidden" name="conventionId" value={convention.id} />
-                <button type="submit" className="text-xs text-slate-600 hover:text-red-400">
+                <button type="submit" className="text-xs text-gray-400 hover:text-red-500 transition-colors">
                   Mark unpaid
                 </button>
               </form>
@@ -237,7 +232,7 @@ export default async function ConventionDetailPage({
           ) : (
             <div className="mt-1">
               {convention.paymentDueDate && (
-                <p className="text-sm text-amber-400">
+                <p className="text-sm text-amber-600">
                   Due {fmtDate(convention.paymentDueDate)}
                 </p>
               )}
@@ -245,7 +240,7 @@ export default async function ConventionDetailPage({
                 <input type="hidden" name="conventionId" value={convention.id} />
                 <button
                   type="submit"
-                  className="rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
+                  className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700 transition-colors"
                 >
                   Mark paid
                 </button>
@@ -264,9 +259,9 @@ export default async function ConventionDetailPage({
             label="Days to Collection"
           />
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-700 bg-slate-800 p-5 text-center">
-            <p className="text-xs text-slate-500">Days to Collection</p>
-            <p className="mt-2 text-xs text-slate-600">Set collection date</p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white shadow-sm p-5 text-center">
+            <p className="text-xs text-gray-500">Days to Collection</p>
+            <p className="mt-2 text-xs text-gray-400">Set collection date</p>
           </div>
         )}
 
@@ -295,68 +290,63 @@ export default async function ConventionDetailPage({
       </div>
 
       {/* ── Logistics panel ────────────────────────────────────────── */}
-      <div className="mb-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
+      <div className="mb-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500">
           Logistics
         </h3>
         <form action={updateLogistics} className="grid grid-cols-3 gap-x-6 gap-y-4">
           <input type="hidden" name="conventionId" value={convention.id} />
 
-          {/* Collection date */}
           <div>
-            <label className="mb-1 block text-xs text-slate-500">Reid Freight Collection Date</label>
+            <label className="mb-1 block text-xs text-gray-500">Reid Freight Collection Date</label>
             <input
               type="date"
               name="collectionDate"
               defaultValue={toInput(convention.collectionDate)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
             />
           </div>
 
-          {/* Payment due */}
           <div>
-            <label className="mb-1 block text-xs text-slate-500">Payment Due Date</label>
+            <label className="mb-1 block text-xs text-gray-500">Payment Due Date</label>
             <input
               type="date"
               name="paymentDueDate"
               defaultValue={toInput(convention.paymentDueDate)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
             />
           </div>
 
-          {/* Delivery address */}
           <div>
-            <label className="mb-1 block text-xs text-slate-500">Delivery Address</label>
+            <label className="mb-1 block text-xs text-gray-500">Delivery Address</label>
             <input
               type="text"
               name="deliveryAddress"
               defaultValue={convention.deliveryAddress ?? ""}
               placeholder="Venue address"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500"
             />
           </div>
 
-          {/* Contact name */}
           <div>
-            <label className="mb-1 block text-xs text-slate-500">Contact Name</label>
+            <label className="mb-1 block text-xs text-gray-500">Contact Name</label>
             <input
               type="text"
               name="contactName"
               defaultValue={convention.contactName ?? ""}
               placeholder="On-site contact"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500"
             />
           </div>
 
-          {/* Contact email + send order form link */}
           <div>
-            <label className="mb-1 block text-xs text-slate-500">Contact Email</label>
+            <label className="mb-1 block text-xs text-gray-500">Contact Email</label>
             <input
               type="email"
               name="contactEmail"
               defaultValue={convention.contactEmail ?? ""}
               placeholder="email@example.com"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500"
             />
             <div className="mt-2">
               <SendOrderLinkButton
@@ -366,52 +356,49 @@ export default async function ConventionDetailPage({
             </div>
           </div>
 
-          {/* Contact mobile */}
           <div>
-            <label className="mb-1 block text-xs text-slate-500">Contact Mobile</label>
+            <label className="mb-1 block text-xs text-gray-500">Contact Mobile</label>
             <input
               type="tel"
               name="contactMobile"
               defaultValue={convention.contactMobile ?? ""}
               placeholder="+44 7700 000000"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500"
             />
           </div>
 
-          {/* Cleaning overseer */}
-          <div className="col-span-3 border-t border-slate-700 pt-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Cleaning Overseer</p>
+          <div className="col-span-3 border-t border-gray-100 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Cleaning Overseer</p>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="mb-1 block text-xs text-slate-500">Name</label>
-                <input type="text" name="cleaningOverseerName" defaultValue={convention.cleaningOverseerName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+                <label className="mb-1 block text-xs text-gray-500">Name</label>
+                <input type="text" name="cleaningOverseerName" defaultValue={convention.cleaningOverseerName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-500">Email</label>
-                <input type="email" name="cleaningOverseerEmail" defaultValue={convention.cleaningOverseerEmail ?? ""} placeholder="email@example.com" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+                <label className="mb-1 block text-xs text-gray-500">Email</label>
+                <input type="email" name="cleaningOverseerEmail" defaultValue={convention.cleaningOverseerEmail ?? ""} placeholder="email@example.com" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-500">Mobile</label>
-                <input type="tel" name="cleaningOverseerMobile" defaultValue={convention.cleaningOverseerMobile ?? ""} placeholder="+44 7700 000000" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+                <label className="mb-1 block text-xs text-gray-500">Mobile</label>
+                <input type="tel" name="cleaningOverseerMobile" defaultValue={convention.cleaningOverseerMobile ?? ""} placeholder="+44 7700 000000" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
               </div>
             </div>
           </div>
 
-          {/* Delivery contact */}
-          <div className="col-span-3 border-t border-slate-700 pt-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Delivery Contact</p>
+          <div className="col-span-3 border-t border-gray-100 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Delivery Contact</p>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="mb-1 block text-xs text-slate-500">Name</label>
-                <input type="text" name="deliveryContactName" defaultValue={convention.deliveryContactName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+                <label className="mb-1 block text-xs text-gray-500">Name</label>
+                <input type="text" name="deliveryContactName" defaultValue={convention.deliveryContactName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-500">Email</label>
-                <input type="email" name="deliveryContactEmail" defaultValue={convention.deliveryContactEmail ?? ""} placeholder="email@example.com" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+                <label className="mb-1 block text-xs text-gray-500">Email</label>
+                <input type="email" name="deliveryContactEmail" defaultValue={convention.deliveryContactEmail ?? ""} placeholder="email@example.com" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-500">Mobile</label>
-                <input type="tel" name="deliveryContactMobile" defaultValue={convention.deliveryContactMobile ?? ""} placeholder="+44 7700 000000" className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+                <label className="mb-1 block text-xs text-gray-500">Mobile</label>
+                <input type="tel" name="deliveryContactMobile" defaultValue={convention.deliveryContactMobile ?? ""} placeholder="+44 7700 000000" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
               </div>
             </div>
           </div>
@@ -419,7 +406,7 @@ export default async function ConventionDetailPage({
           <div className="col-span-3 flex justify-end">
             <button
               type="submit"
-              className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600"
+              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 transition-colors"
             >
               Save logistics
             </button>
@@ -428,35 +415,35 @@ export default async function ConventionDetailPage({
       </div>
 
       {/* ── FA Logistics panel (only when FA data exists) ──────────── */}
-      {hasFaData && <div className="mb-8 rounded-2xl border border-blue-900/40 bg-slate-900 p-6">
+      {hasFaData && <div className="mb-8 rounded-2xl border border-blue-200 bg-blue-50 p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-blue-400">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-blue-600">
             First Aid Logistics
           </h3>
           <div className="flex items-center gap-3">
             {/* FA Payment */}
             {convention.faPaidAt ? (
               <>
-                <span className="text-xs text-green-400">✓ FA Paid {fmtDate(convention.faPaidAt)}</span>
+                <span className="text-xs text-green-600">✓ FA Paid {fmtDate(convention.faPaidAt)}</span>
                 <form action={markFaUnpaid}>
                   <input type="hidden" name="conventionId" value={convention.id} />
-                  <button type="submit" className="text-xs text-slate-600 hover:text-red-400">Mark FA unpaid</button>
+                  <button type="submit" className="text-xs text-gray-400 hover:text-red-500 transition-colors">Mark FA unpaid</button>
                 </form>
               </>
             ) : (
               <form action={markFaPaid} className="flex items-center gap-2">
                 <input type="hidden" name="conventionId" value={convention.id} />
                 {convention.faPaymentDueDate && (
-                  <span className="text-xs text-amber-400">FA due {fmtDate(convention.faPaymentDueDate)}</span>
+                  <span className="text-xs text-amber-600">FA due {fmtDate(convention.faPaymentDueDate)}</span>
                 )}
-                <button type="submit" className="rounded-lg bg-blue-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+                <button type="submit" className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors">
                   Mark FA paid
                 </button>
               </form>
             )}
             {/* FA Status */}
             <div className="flex flex-col items-end gap-1">
-              <p className="text-xs font-semibold uppercase tracking-wider text-green-400">FA Status</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-green-600">FA Status</p>
               <div className="flex gap-1">
                 {(["pending", "ordered"] as const).map((s) => (
                   <form key={s} action={updateFaStatus}>
@@ -466,8 +453,8 @@ export default async function ConventionDetailPage({
                       type="submit"
                       className={`rounded-lg px-2.5 py-1 text-xs font-semibold capitalize ${
                         convention.faStatus === s
-                          ? "bg-green-700 text-white"
-                          : "border border-slate-700 text-slate-400 hover:bg-slate-800"
+                          ? "bg-green-600 text-white"
+                          : "border border-gray-200 text-gray-500 hover:bg-gray-100"
                       }`}
                     >
                       {s}
@@ -490,19 +477,19 @@ export default async function ConventionDetailPage({
         {faItemsWithQty > 0 && (
           <div className="mb-4 flex gap-6 text-sm">
             <div>
-              <span className="text-slate-500">FA Lines </span>
-              <span className="font-semibold text-white">{faItemsWithQty}</span>
+              <span className="text-gray-500">FA Lines </span>
+              <span className="font-semibold text-gray-900">{faItemsWithQty}</span>
             </div>
             <div>
-              <span className="text-slate-500">Value </span>
-              <span className="font-semibold text-white">£{fmtGbp(faSaleTotal)}</span>
+              <span className="text-gray-500">Value </span>
+              <span className="font-semibold text-gray-900">£{fmtGbp(faSaleTotal)}</span>
               {convention.faShippingCost > 0 && (
-                <span className="ml-1 text-xs text-slate-500">+ £{fmtGbp(convention.faShippingCost)} shipping</span>
+                <span className="ml-1 text-xs text-gray-400">+ £{fmtGbp(convention.faShippingCost)} shipping</span>
               )}
             </div>
             <div>
-              <span className="text-slate-500">Profit </span>
-              <span className={`font-semibold ${faProfit >= 0 ? "text-green-400" : "text-red-400"}`}>
+              <span className="text-gray-500">Profit </span>
+              <span className={`font-semibold ${faProfit >= 0 ? "text-green-600" : "text-red-500"}`}>
                 £{fmtGbp(faProfit)}
               </span>
             </div>
@@ -512,48 +499,47 @@ export default async function ConventionDetailPage({
         <form action={updateFaLogistics} className="grid grid-cols-3 gap-x-6 gap-y-4">
           <input type="hidden" name="conventionId" value={convention.id} />
           <div>
-            <label className="mb-1 block text-xs text-slate-500">FA Collection Date</label>
+            <label className="mb-1 block text-xs text-gray-500">FA Collection Date</label>
             <input type="date" name="faCollectionDate" defaultValue={toInput(convention.faCollectionDate)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-slate-500">FA Delivery Date</label>
+            <label className="mb-1 block text-xs text-gray-500">FA Delivery Date</label>
             <input type="date" name="faDeliveryDate" defaultValue={toInput(convention.faDeliveryDate)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-slate-500">FA Payment Due</label>
+            <label className="mb-1 block text-xs text-gray-500">FA Payment Due</label>
             <input type="date" name="faPaymentDueDate" defaultValue={toInput(convention.faPaymentDueDate)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-slate-500">FA Delivery Address</label>
+            <label className="mb-1 block text-xs text-gray-500">FA Delivery Address</label>
             <input type="text" name="faDeliveryAddress" defaultValue={convention.faDeliveryAddress ?? ""}
               placeholder="If different from CS delivery"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500" />
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-blue-500" />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-slate-500">FA Shipping Cost</label>
-            <div className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2">
-              <span className="text-sm text-slate-400">£</span>
+            <label className="mb-1 block text-xs text-gray-500">FA Shipping Cost</label>
+            <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2">
+              <span className="text-sm text-gray-400">£</span>
               <input type="number" name="faShippingCost" min="0" step="0.01"
                 defaultValue={convention.faShippingCost > 0 ? convention.faShippingCost : ""}
                 placeholder="0.00"
-                className="w-full bg-transparent text-sm text-white outline-none" />
+                className="w-full bg-transparent text-sm text-gray-900 outline-none" />
             </div>
           </div>
           <div className="flex items-end">
-            <button type="submit" className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600">
+            <button type="submit" className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 transition-colors">
               Save FA logistics
             </button>
           </div>
         </form>
       </div>}
 
-      {/* ── Cleaning Supplies pick sheet ───────────────────────────── */}
       {/* ── Notes ─────────────────────────────────────────────────── */}
-      <div className="mb-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">Notes</h3>
+      <div className="mb-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500">Notes</h3>
         <form action={updateNotes} className="flex flex-col gap-3">
           <input type="hidden" name="conventionId" value={convention.id} />
           <textarea
@@ -561,12 +547,12 @@ export default async function ConventionDetailPage({
             defaultValue={convention.notes ?? ""}
             rows={3}
             placeholder="e.g. Dublin invoice INV-0206 shows Bio Hazard Kits at £7.00 — invoice error, correct price is £6.59."
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-600 focus:border-orange-500 resize-none"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500 resize-none"
           />
           <div className="flex justify-end">
             <button
               type="submit"
-              className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600"
+              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 transition-colors"
             >
               Save notes
             </button>
@@ -592,7 +578,7 @@ export default async function ConventionDetailPage({
           <input type="hidden" name="conventionId" value={convention.id} />
           <button
             type="submit"
-            className="rounded-xl border border-blue-800/50 bg-blue-950/40 px-5 py-3 text-sm font-semibold text-blue-300 hover:bg-blue-900/50 hover:text-white transition-colors"
+            className="rounded-xl border border-blue-200 bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-100 hover:text-blue-800 transition-colors"
           >
             + Add First Aid Order
           </button>

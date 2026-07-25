@@ -157,13 +157,13 @@ function Field({ label, value, onChange, placeholder, type = "text" }: {
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-slate-400">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-gray-500">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-slate-600 bg-slate-700 px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+        className="w-full rounded-xl border border-gray-200 bg-gray-100 px-3 py-2.5 text-sm text-gray-900 placeholder-slate-500 focus:border-orange-500 focus:outline-none"
       />
     </div>
   );
@@ -271,28 +271,28 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     const locked = dept === "FA" ? faConfirmed : csConfirmed;
     if (locked) {
       return (
-        <span className={`text-sm font-bold ${q > 0 ? "text-white" : "text-slate-700"}`}>{q}</span>
+        <span className={`text-sm font-bold ${q > 0 ? "text-gray-900" : "text-slate-700"}`}>{q}</span>
       );
     }
     return (
-      <div className="flex items-center overflow-hidden rounded-xl border border-slate-600">
+      <div className="flex items-center overflow-hidden rounded-xl border border-gray-200">
         <button
           onClick={() => adjust(p.id, dept, -1)}
           disabled={q === 0 || isSaving}
-          className="flex h-10 w-10 items-center justify-center text-xl font-light text-slate-300 bg-slate-800 transition-colors hover:bg-slate-700 active:bg-slate-600 disabled:opacity-25"
+          className="flex h-10 w-10 items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-100 active:bg-slate-600 disabled:opacity-25"
           aria-label="Decrease"
         >
           −
         </button>
-        <div className={`flex h-10 min-w-[2.75rem] items-center justify-center border-x border-slate-600 px-1 text-base font-bold tabular-nums ${
-          isSaved ? "text-green-400" : q > 0 ? "text-white" : "text-slate-500"
+        <div className={`flex h-10 min-w-[2.75rem] items-center justify-center border-x border-gray-200 px-1 text-base font-bold tabular-nums ${
+          isSaved ? "text-green-600" : q > 0 ? "text-gray-900" : "text-gray-400"
         }`}>
-          {isSaving ? <span className="text-xs text-slate-500">…</span> : q}
+          {isSaving ? <span className="text-xs text-gray-400">…</span> : q}
         </div>
         <button
           onClick={() => adjust(p.id, dept, 1)}
           disabled={isSaving}
-          className="flex h-10 w-10 items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600 disabled:opacity-40"
+          className="flex h-10 w-10 items-center justify-center text-xl font-light text-gray-900 bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600 disabled:opacity-40"
           aria-label="Increase"
         >
           +
@@ -320,7 +320,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
           return (
             <div key={cat}>
-              <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-gray-500">
                 {CATEGORY_LABELS[cat] ?? cat}
               </p>
               <div className="space-y-3">
@@ -339,12 +339,12 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     return (
                       <div
                         key={p.id}
-                        className={`overflow-hidden rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${
-                          ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"
+                        className={`overflow-hidden rounded-2xl border bg-gray-100 shadow-lg shadow-black/30 transition-colors ${
+                          ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-gray-200"
                         } ${bumped[p.id] ? "card-lift" : ""}`}
                       >
                         <div className="flex items-center gap-4 p-4">
-                          <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                          <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
                             {imgSrc ? (
                               <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
                             ) : (
@@ -355,11 +355,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-                              <p className="text-base font-bold leading-snug text-white">{p.name}</p>
+                              <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
                             </div>
-                            {variantLabel && <p className="mt-0.5 text-sm text-slate-400">{variantLabel}</p>}
-                            {p.description && <p className="mt-0.5 text-xs italic text-slate-400">{p.description}</p>}
-                            <p className="mt-1 text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
+                            {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
+                            {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
+                            <p className="mt-1 text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
                           </div>
                           {/* Right: stepper + running total */}
                           <div className="shrink-0 flex items-center gap-2">
@@ -377,13 +377,13 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                   return (
                     <div
                       key={getCodeFamily(first.code)}
-                      className={`overflow-hidden rounded-2xl border bg-slate-800 shadow-lg shadow-black/30 transition-colors ${
-                        anyOrdered ? "border-orange-500/60 shadow-orange-900/20" : "border-slate-600"
+                      className={`overflow-hidden rounded-2xl border bg-gray-100 shadow-lg shadow-black/30 transition-colors ${
+                        anyOrdered ? "border-orange-500/60 shadow-orange-900/20" : "border-gray-200"
                       } ${anyBumped ? "card-lift" : ""}`}
                     >
                       {/* Group header — shared image + product name */}
                       <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
-                        <div className="w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-slate-800">
+                        <div className="w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-gray-100">
                           {imgSrc ? (
                             <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain" />
                           ) : (
@@ -391,13 +391,13 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-base font-bold leading-snug text-white">{first.name}</p>
-                          {group.find(p => p.groupDescription)?.groupDescription && <p className="mt-0.5 text-xs italic text-slate-400">{group.find(p => p.groupDescription)?.groupDescription}</p>}
+                          <p className="text-base font-bold leading-snug text-gray-900">{first.name}</p>
+                          {group.find(p => p.groupDescription)?.groupDescription && <p className="mt-0.5 text-xs italic text-gray-500">{group.find(p => p.groupDescription)?.groupDescription}</p>}
                         </div>
                       </div>
 
                       {/* Variant rows — each with its own image */}
-                      <div className="border-t border-slate-700 divide-y divide-slate-700/60">
+                      <div className="border-t border-gray-200 divide-y divide-slate-700/60">
                         {[...group].sort((a, b) => {
                           const SIZE_ORDER: Record<string, number> = { small: 0, s: 0, medium: 1, m: 1, large: 2, l: 2, "x-large": 3, xlarge: 3, xl: 3, "xx-large": 4, xxlarge: 4, xxl: 4, "xxx-large": 5, xxxlarge: 5, xxxl: 5 };
                           const getSize = (v: string | null) => { const k = (v ?? "").toLowerCase().trim(); return SIZE_ORDER[k] ?? 99; };
@@ -415,7 +415,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           return (
                             <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                               {/* Per-variant image */}
-                              <div className="w-14 h-14 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                              <div className="w-14 h-14 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                                 {variantImgSrc ? (
                                   <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain" />
                                 ) : (
@@ -427,8 +427,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                                 : <span className="w-4 shrink-0" />
                               }
                               <div className="min-w-0 flex-1">
-                                <p className="text-sm text-slate-300">{variantLabel || p.name}</p>
-                                <p className="text-xs text-slate-500">£{p.unitCost.toFixed(2)} each</p>
+                                <p className="text-sm text-gray-600">{variantLabel || p.name}</p>
+                                <p className="text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 {renderStepper(p, dept)}
@@ -474,7 +474,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <main className="min-h-screen bg-slate-900 text-white">
+    <main className="min-h-screen bg-white text-gray-900">
       <style>{`
         @keyframes lift {
           0%   { transform: translateY(0)   scale(1);    box-shadow: none; }
@@ -486,27 +486,27 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
       {/* ── Sticky summary bar ──────────────────────────────────────────── */}
       {grandLines > 0 && (
-        <div className="sticky top-0 z-30 bg-slate-800/95 backdrop-blur-md shadow-lg shadow-black/40 border-b border-slate-700">
+        <div className="sticky top-0 z-30 bg-gray-100/95 backdrop-blur-md shadow-lg shadow-black/40 border-b border-gray-200">
           <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between gap-4">
             {/* Left: convention + breakdown */}
             <div className="min-w-0">
-              <p className="truncate text-xs font-bold text-white">
+              <p className="truncate text-xs font-bold text-gray-900">
                 {convention.name}
-                <span className="ml-2 font-normal text-slate-400">
+                <span className="ml-2 font-normal text-gray-500">
                   · {grandLines} line{grandLines !== 1 ? "s" : ""}
                   {csLines > 0 && faLines > 0 && <> (CS&nbsp;{csLines} · FA&nbsp;{faLines})</>}
                 </span>
               </p>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Ex VAT <span className="font-semibold text-slate-200">{fmtGbp(grandValue)}</span>
+              <p className="mt-0.5 text-xs text-gray-500">
+                Ex VAT <span className="font-semibold text-gray-700">{fmtGbp(grandValue)}</span>
                 <span className="mx-2 text-slate-600">+</span>
-                VAT <span className="font-semibold text-slate-200">{fmtGbp(grandValue * 0.2)}</span>
+                VAT <span className="font-semibold text-gray-700">{fmtGbp(grandValue * 0.2)}</span>
               </p>
             </div>
             {/* Right: total */}
             <div className="shrink-0 text-right">
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Total inc. VAT</p>
-              <p className="text-xl font-bold text-green-400">{fmtGbp(grandValue * 1.2)}</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-gray-400">Total inc. VAT</p>
+              <p className="text-xl font-bold text-green-600">{fmtGbp(grandValue * 1.2)}</p>
             </div>
           </div>
         </div>
@@ -517,8 +517,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           <div className="mb-6 flex justify-center">
             <span className="flex h-16 w-16 items-center justify-center rounded-full bg-green-600 text-3xl">✓</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">All done — thank you!</h1>
-          <p className="mt-3 text-sm text-slate-400">
+          <h1 className="text-2xl font-bold text-gray-900">All done — thank you!</h1>
+          <p className="mt-3 text-sm text-gray-500">
             Your order review is complete. A confirmation has been sent to the Xylo (UK) Ltd team and we&apos;ll be in touch if there&apos;s anything to follow up on.
           </p>
         </div>
@@ -529,8 +529,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         {/* Header */}
         <div className="mb-6">
           <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
-          <h1 className="mt-1 text-2xl font-bold text-white">{convention.name}{convention.venue ? ` (${convention.venue})` : ""}</h1>
-          <p className="mt-1 text-sm text-slate-500">{fmtDate(convention.conventionDate)}</p>
+          <h1 className="mt-1 text-2xl font-bold text-gray-900">{convention.name}{convention.venue ? ` (${convention.venue})` : ""}</h1>
+          <p className="mt-1 text-sm text-gray-400">{fmtDate(convention.conventionDate)}</p>
         </div>
 
         {/* Step progress bar */}
@@ -549,26 +549,26 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     <button
                       onClick={() => setActiveTab(step.key as "CS" | "FA" | "details")}
                       className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-center transition-colors ${
-                        isActive ? "bg-slate-700" : "hover:bg-slate-800/60"
+                        isActive ? "bg-gray-100" : "hover:bg-gray-50"
                       }`}
                     >
                       <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
                         step.confirmed
-                          ? "bg-green-600 text-white"
+                          ? "bg-green-600 text-gray-900"
                           : isActive
                           ? "bg-white text-slate-900"
-                          : "border border-slate-600 text-slate-500"
+                          : "border border-gray-200 text-gray-400"
                       }`}>
                         {step.confirmed ? "✓" : i + 1}
                       </span>
                       <span className={`text-xs font-semibold leading-tight ${
-                        step.confirmed ? "text-green-400" : isActive ? "text-white" : "text-slate-500"
+                        step.confirmed ? "text-green-600" : isActive ? "text-gray-900" : "text-gray-400"
                       }`}>
                         {step.label}
                       </span>
                     </button>
                     {i < steps.length - 1 && (
-                      <div className={`h-px w-4 shrink-0 ${csConfirmed && i === 0 ? "bg-green-700" : "bg-slate-700"}`} />
+                      <div className={`h-px w-4 shrink-0 ${csConfirmed && i === 0 ? "bg-green-700" : "bg-gray-100"}`} />
                     )}
                   </div>
                 );
@@ -580,7 +580,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
         {/* Per-tab banner */}
         {activeTab !== "details" && (
           tabLocked ? (
-            <div className="mb-6 rounded-xl border border-green-800/40 bg-green-950/20 px-4 py-3 text-sm text-green-400">
+            <div className="mb-6 rounded-xl border border-green-800/40 bg-green-950/20 px-4 py-3 text-sm text-green-600">
               ✓ Your {activeTab === "FA" ? "First Aid" : "Cleaning Supplies"} order has been confirmed.
               {activeTab === "CS" && hasFa && " Please now review the First Aid section."}
               {" "}Contact Xylo (UK) Ltd if you need to amend anything.
@@ -607,8 +607,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           <div className="space-y-6">
 
             {/* Convention */}
-            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Convention</p>
+            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">Convention</p>
               <div className="space-y-3">
                 <Field label="Convention name" value={detailsDraft.name} onChange={(v) => setDetailsDraft((d) => ({ ...d, name: v }))} placeholder="e.g. Wembley Convention 2026" />
                 <div className="grid grid-cols-2 gap-3">
@@ -619,8 +619,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             </div>
 
             {/* Convention overseer */}
-            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Convention Overseer</p>
+            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">Convention Overseer</p>
               <div className="space-y-3">
                 <Field label="Name" value={detailsDraft.contactName} onChange={(v) => setDetailsDraft((d) => ({ ...d, contactName: v }))} placeholder="Full name" />
                 <Field label="Email" type="email" value={detailsDraft.contactEmail} onChange={(v) => setDetailsDraft((d) => ({ ...d, contactEmail: v }))} placeholder="email@example.com" />
@@ -629,8 +629,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             </div>
 
             {/* Cleaning overseer */}
-            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Cleaning Overseer</p>
+            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">Cleaning Overseer</p>
               <div className="space-y-3">
                 <Field label="Name" value={detailsDraft.cleaningOverseerName} onChange={(v) => setDetailsDraft((d) => ({ ...d, cleaningOverseerName: v }))} placeholder="Full name" />
                 <Field label="Email" type="email" value={detailsDraft.cleaningOverseerEmail} onChange={(v) => setDetailsDraft((d) => ({ ...d, cleaningOverseerEmail: v }))} placeholder="email@example.com" />
@@ -639,17 +639,17 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
             </div>
 
             {/* Delivery */}
-            <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Delivery</p>
+            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">Delivery</p>
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-400">Delivery address</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-500">Delivery address</label>
                   <textarea
                     rows={3}
                     value={detailsDraft.deliveryAddress}
                     onChange={(e) => setDetailsDraft((d) => ({ ...d, deliveryAddress: e.target.value }))}
                     placeholder={"Venue name\nStreet address\nCity, Postcode"}
-                    className="w-full rounded-xl border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none resize-none"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 placeholder-slate-500 focus:border-orange-500 focus:outline-none resize-none"
                   />
                 </div>
                 <Field label="Contact name" value={detailsDraft.deliveryContactName} onChange={(v) => setDetailsDraft((d) => ({ ...d, deliveryContactName: v }))} placeholder="Person receiving the order" />
@@ -676,7 +676,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 });
               }}
               disabled={isSavingDetails}
-              className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-white transition-colors hover:bg-green-600 disabled:opacity-50"
+              className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-gray-900 transition-colors hover:bg-green-600 disabled:opacity-50"
             >
               {isSavingDetails ? "Saving…" : "✓ Details are correct — all done"}
             </button>
@@ -685,7 +685,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           <>
             {/* Search */}
             <div className="mb-5 relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
               <input
@@ -693,13 +693,13 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                 placeholder="Search products…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 focus:border-slate-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-slate-500 focus:border-slate-500 focus:outline-none"
               />
             </div>
 
             {/* Product list */}
             {activeProducts.length === 0 && search.trim() ? (
-              <p className="py-12 text-center text-sm text-slate-500">No products match &ldquo;{search}&rdquo;</p>
+              <p className="py-12 text-center text-sm text-gray-400">No products match &ldquo;{search}&rdquo;</p>
             ) : (
               renderProducts(activeProducts, activeTab as "CS" | "FA")
             )}
@@ -716,7 +716,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                     type="button"
                     onClick={handleConfirm}
                     disabled={isConfirming}
-                    className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-white transition-colors hover:bg-green-600 disabled:opacity-50"
+                    className="w-full rounded-xl bg-orange-500 py-4 text-sm font-bold text-gray-900 transition-colors hover:bg-green-600 disabled:opacity-50"
                   >
                     {isConfirming
                       ? "Confirming…"

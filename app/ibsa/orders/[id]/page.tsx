@@ -18,10 +18,10 @@ const GROUP_LABELS: Record<string, string> = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  submitted:  "bg-blue-900/40 text-blue-300",
-  processing: "bg-amber-900/40 text-amber-300",
-  complete:   "bg-green-900/40 text-green-300",
-  cancelled:  "bg-slate-800 text-slate-500",
+  submitted:  "bg-blue-100 text-blue-700",
+  processing: "bg-amber-100 text-amber-700",
+  complete:   "bg-green-100 text-green-700",
+  cancelled:  "bg-gray-100 text-gray-500",
 };
 
 const fmtGbp = (n: number) =>
@@ -57,7 +57,7 @@ export default async function OrderDetailPage({ params }: Props) {
     <IbsaAppShell active="ibsa-orders">
     <div className="p-6">
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/ibsa/orders" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+        <Link href="/ibsa/orders" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
           ← Orders
         </Link>
       </div>
@@ -65,36 +65,36 @@ export default async function OrderDetailPage({ params }: Props) {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white">{order.groupName}</h1>
-          <p className="mt-0.5 text-sm text-slate-500">{GROUP_LABELS[order.groupType] ?? order.groupType} · {fmtDate(order.submittedAt)}</p>
+          <h1 className="text-xl font-bold text-gray-900">{order.groupName}</h1>
+          <p className="mt-0.5 text-sm text-gray-500">{GROUP_LABELS[order.groupType] ?? order.groupType} · {fmtDate(order.submittedAt)}</p>
         </div>
-        <span className={`shrink-0 inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[order.status] ?? "bg-slate-800 text-slate-400"}`}>
+        <span className={`shrink-0 inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[order.status] ?? "bg-gray-100 text-gray-500"}`}>
           {order.status}
         </span>
       </div>
 
       {/* Contact & delivery */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Contact</p>
-          <p className="font-semibold text-white">{order.contactName}</p>
-          <p className="text-sm text-slate-400">{order.contactEmail}</p>
-          {order.contactMobile && <p className="text-sm text-slate-400">{order.contactMobile}</p>}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Contact</p>
+          <p className="font-semibold text-gray-900">{order.contactName}</p>
+          <p className="text-sm text-gray-500">{order.contactEmail}</p>
+          {order.contactMobile && <p className="text-sm text-gray-500">{order.contactMobile}</p>}
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Required By</p>
-          <p className="text-sm text-slate-300">{order.requiredBy ?? "As soon as possible"}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Required By</p>
+          <p className="text-sm text-gray-700">{order.requiredBy ?? "As soon as possible"}</p>
         </div>
         {order.deliveryAddress && (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Delivery Address</p>
-            <p className="whitespace-pre-line text-sm text-slate-300">{order.deliveryAddress}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Delivery Address</p>
+            <p className="whitespace-pre-line text-sm text-gray-700">{order.deliveryAddress}</p>
           </div>
         )}
         {order.notes && (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:col-span-2">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Notes</p>
-            <p className="text-sm text-slate-300">{order.notes}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:col-span-2">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Notes</p>
+            <p className="text-sm text-gray-700">{order.notes}</p>
           </div>
         )}
       </div>
@@ -107,19 +107,19 @@ export default async function OrderDetailPage({ params }: Props) {
         const sectionPct    = sectionTotal > 0 ? (sectionProfit / sectionTotal) * 100 : 0;
         return (
           <div key={label} className="mb-6">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</p>
-            <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">{label}</p>
+            <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800">
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Code</th>
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Product</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Sale</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Cost</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Qty</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Line Sale</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Margin £</th>
-                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Margin %</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Code</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Product</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Sale</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Cost</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Qty</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Line Sale</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Margin £</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Margin %</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -131,32 +131,32 @@ export default async function OrderDetailPage({ params }: Props) {
                     const margin    = lineTotal - lineCost;
                     const marginPct = lineTotal > 0 ? (margin / lineTotal) * 100 : 0;
                     return (
-                      <tr key={l.id} className={i > 0 ? "border-t border-slate-800/60" : ""}>
-                        <td className="px-4 py-3 font-mono text-xs text-slate-500">{l.product.code}</td>
-                        <td className="px-4 py-3 text-white">
+                      <tr key={l.id} className={i > 0 ? "border-t border-gray-100" : ""}>
+                        <td className="px-4 py-3 font-mono text-xs text-gray-400">{l.product.code}</td>
+                        <td className="px-4 py-3 text-gray-900">
                           {l.product.name}
                           {l.product.variant && (
-                            <span className="ml-1.5 text-xs text-slate-400">{l.product.variant}</span>
+                            <span className="ml-1.5 text-xs text-gray-400">{l.product.variant}</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right text-slate-300">{fmtGbp(sale)}</td>
-                        <td className="px-4 py-3 text-right text-slate-500">{fmtGbp(cost)}</td>
-                        <td className="px-4 py-3 text-right font-bold text-white">{l.qty}</td>
-                        <td className="px-4 py-3 text-right text-slate-300">{fmtGbp(lineTotal)}</td>
-                        <td className="px-4 py-3 text-right text-green-400">{fmtGbp(margin)}</td>
-                        <td className="px-4 py-3 text-right text-green-400">{marginPct.toFixed(1)}%</td>
+                        <td className="px-4 py-3 text-right text-gray-700">{fmtGbp(sale)}</td>
+                        <td className="px-4 py-3 text-right text-gray-400">{fmtGbp(cost)}</td>
+                        <td className="px-4 py-3 text-right font-bold text-gray-900">{l.qty}</td>
+                        <td className="px-4 py-3 text-right text-gray-700">{fmtGbp(lineTotal)}</td>
+                        <td className="px-4 py-3 text-right text-green-600">{fmtGbp(margin)}</td>
+                        <td className="px-4 py-3 text-right text-green-600">{marginPct.toFixed(1)}%</td>
                       </tr>
                     );
                   })}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t border-slate-700">
-                    <td colSpan={5} className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <tr className="border-t border-gray-200">
+                    <td colSpan={5} className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
                       {label} total
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-amber-400">{fmtGbp(sectionTotal)}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-green-400">{fmtGbp(sectionProfit)}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-green-400">{sectionPct.toFixed(1)}%</td>
+                    <td className="px-4 py-3 text-right font-semibold text-orange-500">{fmtGbp(sectionTotal)}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-green-600">{fmtGbp(sectionProfit)}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-green-600">{sectionPct.toFixed(1)}%</td>
                   </tr>
                 </tfoot>
               </table>
@@ -167,26 +167,26 @@ export default async function OrderDetailPage({ params }: Props) {
 
       {/* Grand total */}
       {order.lines.length > 0 && (
-        <div className="mb-6 flex items-center justify-end gap-8 rounded-2xl border border-slate-800 bg-slate-900 px-6 py-4">
+        <div className="mb-6 flex items-center justify-end gap-8 rounded-2xl border border-gray-200 bg-white shadow-sm px-6 py-4">
           <div className="text-right">
-            <p className="text-xs text-slate-500">Order total</p>
-            <p className="text-xl font-bold text-amber-400">{fmtGbp(grandTotal)}</p>
+            <p className="text-xs text-gray-500">Order total</p>
+            <p className="text-xl font-bold text-orange-500">{fmtGbp(grandTotal)}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-500">Total margin</p>
-            <p className="text-xl font-bold text-green-400">{fmtGbp(grandProfit)}</p>
+            <p className="text-xs text-gray-500">Total margin</p>
+            <p className="text-xl font-bold text-green-600">{fmtGbp(grandProfit)}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-500">Margin %</p>
-            <p className="text-xl font-bold text-green-400">{grandMarginPct.toFixed(1)}%</p>
+            <p className="text-xs text-gray-500">Margin %</p>
+            <p className="text-xl font-bold text-green-600">{grandMarginPct.toFixed(1)}%</p>
           </div>
         </div>
       )}
 
       {/* Invoice */}
       {order.status !== "cancelled" && (
-        <div className="mb-4 rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Invoice</p>
+        <div className="mb-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Invoice</p>
           <SendInvoiceButton
             orderId={order.id}
             stripeInvoiceId={order.stripeInvoiceId ?? null}
@@ -194,10 +194,10 @@ export default async function OrderDetailPage({ params }: Props) {
             contactEmail={order.contactEmail}
           />
           {!order.stripeInvoiceId && (
-            <p className="mt-2 text-xs text-slate-500">Payment due in 14 days after sending.</p>
+            <p className="mt-2 text-xs text-gray-400">Payment due in 14 days after sending.</p>
           )}
           {order.paidAt && (
-            <p className="mt-2 text-xs text-green-400">
+            <p className="mt-2 text-xs text-green-600">
               Paid {order.paidAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
             </p>
           )}
@@ -205,14 +205,14 @@ export default async function OrderDetailPage({ params }: Props) {
       )}
 
       {/* Status update */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Update Status</p>
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Update Status</p>
         <UpdateStatusButton orderId={order.id} currentStatus={order.status} />
       </div>
 
       {/* Delete */}
-      <div className="mt-4 rounded-2xl border border-red-900/30 bg-red-950/10 p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-red-700">Danger Zone</p>
+      <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-red-600">Danger Zone</p>
         <DeleteOrderButton
           orderId={order.id}
           groupType={order.groupType}

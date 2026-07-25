@@ -6,7 +6,7 @@ function getCampaignStatusBadge(status: string) {
   if (status === "sent") {
     return {
       label: "Sent",
-      className: "bg-green-500/10 text-green-400",
+      className: "bg-green-500/10 text-green-600",
     };
   }
 
@@ -18,7 +18,7 @@ function getCampaignStatusBadge(status: string) {
     return { label: "Scheduled", className: "bg-sky-500/10 text-sky-400" };
   }
 
-  return { label: "Draft", className: "bg-slate-500/10 text-slate-300" };
+  return { label: "Draft", className: "bg-gray-100 text-gray-600" };
 }
 
 export default async function CampaignsPage() {
@@ -35,29 +35,29 @@ export default async function CampaignsPage() {
     <AppShell active="campaigns">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Marketing</p>
+          <p className="text-sm text-gray-500">Marketing</p>
           <h2 className="text-3xl font-bold">Campaigns</h2>
         </div>
 
         <Link
           href="/campaigns/new"
-          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
         >
           New Campaign
         </Link>
       </header>
 
       {campaigns.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 p-8">
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-500 p-8">
           <h3 className="text-xl font-semibold">No campaigns yet</h3>
-          <p className="mt-3 max-w-2xl text-slate-400">
+          <p className="mt-3 max-w-2xl text-gray-500">
             Create your first draft campaign to start building your email flow.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
           <table className="min-w-full text-sm">
-            <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
+            <thead className="border-b border-gray-200 bg-gray-50/50 text-left text-gray-500">
               <tr>
                 <th className="px-6 py-4 font-medium">Name</th>
                 <th className="px-6 py-4 font-medium">Subject</th>
@@ -69,7 +69,7 @@ export default async function CampaignsPage() {
             </thead>
             <tbody>
               {campaigns.map((campaign) => (
-                <tr key={campaign.id} className="border-t border-slate-800">
+                <tr key={campaign.id} className="border-t border-gray-200">
                   <td className="px-6 py-4">
                     <Link
                       href={`/campaigns/${campaign.id}`}
@@ -93,7 +93,7 @@ export default async function CampaignsPage() {
                       );
                     })()}
                   </td>
-                  <td className="px-6 py-4 text-slate-400">
+                  <td className="px-6 py-4 text-gray-500">
                     {campaign.scheduledAt
                       ? new Date(campaign.scheduledAt).toLocaleString()
                       : "—"}

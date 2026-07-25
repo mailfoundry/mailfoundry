@@ -36,8 +36,8 @@ function fromLabel(referer: string): string {
 
 function siteLabel(hostname: string): { label: string; colour: string } {
   if (hostname.startsWith("ibsa"))
-    return { label: "IBSA", colour: "text-indigo-400" };
-  return { label: "Xylo", colour: "text-orange-400" };
+    return { label: "IBSA", colour: "text-indigo-600" };
+  return { label: "Xylo", colour: "text-orange-500" };
 }
 
 export default async function ToolsPage() {
@@ -61,7 +61,7 @@ export default async function ToolsPage() {
   const total = await prisma.pageView.count();
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-white">
+    <div className="flex min-h-screen bg-gray-50 text-gray-900">
       <Sidebar active="ibsa-tools" isMainUser />
 
       <main className="flex-1 overflow-auto p-8">
@@ -70,8 +70,8 @@ export default async function ToolsPage() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 mb-2">
             Tools
           </p>
-          <h1 className="text-2xl font-black tracking-tight">Site Analytics</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <h1 className="text-2xl font-black tracking-tight text-gray-900">Site Analytics</h1>
+          <p className="mt-1 text-sm text-gray-500">
             Server-side page view tracking — both sites, no cookies.
           </p>
         </div>
@@ -85,14 +85,14 @@ export default async function ToolsPage() {
 
         {/* Table */}
         {views.length === 0 ? (
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center text-slate-500 text-sm">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-12 text-center text-gray-400 text-sm">
             No page views recorded yet.
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-800 overflow-hidden">
+          <div className="rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-900">
+                <tr className="border-b border-gray-200 bg-gray-50">
                   <Th>Time</Th>
                   <Th>Site</Th>
                   <Th>Page</Th>
@@ -114,10 +114,10 @@ export default async function ToolsPage() {
                   return (
                     <tr
                       key={v.id}
-                      className="border-b border-slate-800 bg-slate-950 hover:bg-slate-900 transition-colors"
+                      className="border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors"
                     >
                       <Td>
-                        <span className="tabular-nums text-slate-400 text-xs whitespace-nowrap">
+                        <span className="tabular-nums text-gray-400 text-xs whitespace-nowrap">
                           {time}
                         </span>
                       </Td>
@@ -127,22 +127,22 @@ export default async function ToolsPage() {
                         </span>
                       </Td>
                       <Td>
-                        <span className="font-mono text-xs text-slate-300">
+                        <span className="font-mono text-xs text-gray-700">
                           {v.pathname}
                         </span>
                       </Td>
                       <Td>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-gray-500">
                           {parseDevice(v.userAgent)} · {parseBrowser(v.userAgent)}
                         </span>
                       </Td>
                       <Td>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-gray-500">
                           {fromLabel(v.referer)}
                         </span>
                       </Td>
                       <Td>
-                        <span className="font-mono text-xs text-slate-500">
+                        <span className="font-mono text-xs text-gray-400">
                           {v.ip}
                         </span>
                       </Td>
@@ -155,7 +155,7 @@ export default async function ToolsPage() {
         )}
 
         {views.length === 300 && (
-          <p className="mt-3 text-xs text-slate-600 text-center">
+          <p className="mt-3 text-xs text-gray-400 text-center">
             Showing most recent 300 views
           </p>
         )}
@@ -166,16 +166,16 @@ export default async function ToolsPage() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 px-5 py-4">
-      <p className="text-2xl font-black tabular-nums">{value.toLocaleString()}</p>
-      <p className="mt-1 text-xs text-slate-500">{label}</p>
+    <div className="rounded-xl border border-gray-200 bg-white shadow-sm px-5 py-4">
+      <p className="text-2xl font-black tabular-nums text-gray-900">{value.toLocaleString()}</p>
+      <p className="mt-1 text-xs text-gray-500">{label}</p>
     </div>
   );
 }
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
       {children}
     </th>
   );

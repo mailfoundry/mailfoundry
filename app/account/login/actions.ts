@@ -34,13 +34,13 @@ export async function requestLoginLink(formData: FormData) {
       subject: "Your Xylo account login link",
       text: `Hi ${account.contactName},\n\nClick the link below to access your Xylo account (${account.groupName}):\n\n${loginUrl}\n\nThis link expires in 7 days. If you didn't request this, you can ignore this email.\n\nIBSA · Xylo (UK) Ltd`,
       html: `
-        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">
-          <div style="background:#0f172a;padding:32px;border-radius:12px;">
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#ffffff;padding:8px;">
+          <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
             <p style="color:#f97316;font-size:14px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>
-            <h1 style="color:#fff;font-size:20px;margin:0 0 8px;">Your login link</h1>
-            <p style="color:#94a3b8;font-size:14px;margin:0 0 24px;">Hi ${account.contactName}, click below to access your account for <strong style="color:#f1f5f9;">${account.groupName}</strong>.</p>
+            <h1 style="color:#0f172a;font-size:20px;margin:0 0 8px;">Your login link</h1>
+            <p style="color:#64748b;font-size:14px;margin:0 0 24px;">Hi ${account.contactName}, click below to access your account for <strong style="color:#1e293b;">${account.groupName}</strong>.</p>
             <a href="${loginUrl}" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;">Access your account →</a>
-            <p style="color:#475569;font-size:11px;margin:16px 0 0;">Link valid for 7 days. If you didn't request this, ignore this email.</p>
+            <p style="color:#94a3b8;font-size:11px;margin:16px 0 0;">Link valid for 7 days. If you didn't request this, ignore this email.</p>
           </div>
         </div>`,
     });

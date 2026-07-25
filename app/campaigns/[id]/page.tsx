@@ -13,7 +13,7 @@ type CampaignPageProps = {
 
 function getSendStatusClassName(status: string) {
   if (status === "sent") {
-    return "rounded-full bg-green-500/10 px-2 py-1 text-xs font-semibold text-green-400";
+    return "rounded-full bg-green-500/10 px-2 py-1 text-xs font-semibold text-green-600";
   }
 
   if (status === "skipped_unsubscribed") {
@@ -21,7 +21,7 @@ function getSendStatusClassName(status: string) {
   }
 
   if (status === "skipped_archived") {
-    return "rounded-full bg-slate-500/10 px-2 py-1 text-xs font-semibold text-slate-300";
+    return "rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600";
   }
 
   if (status === "skipped_bounced") {
@@ -29,14 +29,14 @@ function getSendStatusClassName(status: string) {
   }
 
   if (status === "skipped_complained") {
-    return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-400";
+    return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-500";
   }
 
   if (status === "skipped_unknown") {
-    return "rounded-full bg-slate-500/10 px-2 py-1 text-xs font-semibold text-slate-400";
+    return "rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-500";
   }
 
-  return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-400";
+  return "rounded-full bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-500";
 }
 
 function getFriendlySendError(error: string | null) {
@@ -155,9 +155,9 @@ export default async function CampaignDetailPage({
     <AppShell active="campaigns">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Marketing</p>
+          <p className="text-sm text-gray-500">Marketing</p>
           <h2 className="text-3xl font-bold">{campaign.name}</h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-gray-500">
             Status: <span className="capitalize">{campaign.status}</span>
           </p>
         </div>
@@ -165,21 +165,21 @@ export default async function CampaignDetailPage({
         <div className="flex gap-3">
           <Link
             href={`/campaigns/${campaign.id}/preview`}
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
           >
             Preview
           </Link>
 
           <Link
             href={`/campaigns/${campaign.id}/edit`}
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
           >
             Edit Campaign
           </Link>
 
           <Link
             href="/campaigns"
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
           >
             Back to Campaigns
           </Link>
@@ -187,78 +187,78 @@ export default async function CampaignDetailPage({
       </header>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Subject Line</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Subject Line</p>
           <p className="mt-3 text-lg font-semibold">{campaign.subject}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Target List</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Target List</p>
           <p className="mt-3 text-lg font-semibold">{campaign.list.name}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Created</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Created</p>
           <p className="mt-3 text-lg font-semibold">
             {new Date(campaign.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
         <div className="mb-4">
           <h3 className="text-lg font-semibold">Send Eligibility</h3>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-gray-500">
             Current status of contacts in the selected target list.
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-7">
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Total Contacts</p>
-            <p className="mt-2 text-2xl font-bold text-white">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Total Contacts</p>
+            <p className="mt-2 text-2xl font-bold text-gray-900">
               {listContacts.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Eligible to Send</p>
-            <p className="mt-2 text-2xl font-bold text-green-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Eligible to Send</p>
+            <p className="mt-2 text-2xl font-bold text-green-600">
               {eligibleContacts.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Unsubscribed</p>
-            <p className="mt-2 text-2xl font-bold text-red-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Unsubscribed</p>
+            <p className="mt-2 text-2xl font-bold text-red-500">
               {unsubscribedContacts.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Archived</p>
-            <p className="mt-2 text-2xl font-bold text-slate-300">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Archived</p>
+            <p className="mt-2 text-2xl font-bold text-gray-600">
               {archivedContacts.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Bounced</p>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Bounced</p>
             <p className="mt-2 text-2xl font-bold text-orange-400">
               {bouncedContacts.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Complained</p>
-            <p className="mt-2 text-2xl font-bold text-red-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Complained</p>
+            <p className="mt-2 text-2xl font-bold text-red-500">
               {complainedContacts.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Unknown</p>
-            <p className="mt-2 text-2xl font-bold text-slate-300">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Unknown</p>
+            <p className="mt-2 text-2xl font-bold text-gray-600">
               {unknownStatusContacts.length}
             </p>
           </div>
@@ -275,89 +275,89 @@ export default async function CampaignDetailPage({
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
         <div className="mb-4">
           <h3 className="text-lg font-semibold">Campaign Send Summary</h3>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-gray-500">
             All recorded send outcomes for this campaign.
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-7">
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Sent</p>
-            <p className="mt-2 text-2xl font-bold text-green-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Sent</p>
+            <p className="mt-2 text-2xl font-bold text-green-600">
               {sentSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Opened</p>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Opened</p>
             <p className="mt-2 text-2xl font-bold text-sky-400">
               {openedSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Open Rate</p>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Open Rate</p>
             <p className="mt-2 text-2xl font-bold text-sky-400">
               {openRate}%
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Failed</p>
-            <p className="mt-2 text-2xl font-bold text-red-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Failed</p>
+            <p className="mt-2 text-2xl font-bold text-red-500">
               {failedSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Skipped Unsubscribed</p>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Skipped Unsubscribed</p>
             <p className="mt-2 text-2xl font-bold text-yellow-400">
               {skippedUnsubscribedSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Skipped Archived</p>
-            <p className="mt-2 text-2xl font-bold text-slate-300">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Skipped Archived</p>
+            <p className="mt-2 text-2xl font-bold text-gray-600">
               {skippedArchivedSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Skipped Bounced</p>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Skipped Bounced</p>
             <p className="mt-2 text-2xl font-bold text-orange-400">
               {skippedBouncedSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Skipped Complained</p>
-            <p className="mt-2 text-2xl font-bold text-red-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Skipped Complained</p>
+            <p className="mt-2 text-2xl font-bold text-red-500">
               {skippedComplainedSends.length}
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="text-sm text-slate-400">Skipped Unknown</p>
-            <p className="mt-2 text-2xl font-bold text-slate-300">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Skipped Unknown</p>
+            <p className="mt-2 text-2xl font-bold text-gray-600">
               {skippedUnknownSends.length}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <h3 className="text-xl font-semibold">Recent Sends</h3>
 
         {campaign.sends.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-500">No send history yet.</p>
+          <p className="mt-4 text-sm text-gray-400">No send history yet.</p>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-800">
+          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950 text-slate-400">
+              <thead className="bg-gray-50 text-gray-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">Email</th>
                   <th className="px-4 py-3 font-medium">Status</th>
@@ -366,24 +366,24 @@ export default async function CampaignDetailPage({
                   <th className="px-4 py-3 font-medium">Error</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-gray-100">
                 {campaign.sends.slice(0, 10).map((send) => (
                   <tr key={send.id}>
-                    <td className="px-4 py-3 text-slate-300">{send.email}</td>
+                    <td className="px-4 py-3 text-gray-600">{send.email}</td>
                     <td className="px-4 py-3">
                       <span className={getSendStatusClassName(send.status)}>
                         {send.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 text-gray-500">
                       {new Date(send.sentAt).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 text-gray-500">
                       {send.openedAt
                         ? new Date(send.openedAt).toLocaleString()
                         : "—"}
                     </td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 text-gray-400">
                       {getFriendlySendError(send.error)}
                     </td>
                   </tr>
@@ -394,10 +394,10 @@ export default async function CampaignDetailPage({
         )}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <div className="mb-4">
           <h3 className="text-xl font-semibold">Email Preview</h3>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-gray-500">
             {campaign.html
               ? "Showing the HTML version of this campaign."
               : "No HTML version found, showing the plain text body."}
@@ -405,7 +405,7 @@ export default async function CampaignDetailPage({
         </div>
 
         {campaign.html ? (
-          <div className="overflow-hidden rounded-xl border border-slate-700 bg-white">
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
             <iframe
               title="Email preview"
               srcDoc={campaign.html}
@@ -413,8 +413,8 @@ export default async function CampaignDetailPage({
             />
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-            <p className="whitespace-pre-wrap text-sm text-slate-300">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p className="whitespace-pre-wrap text-sm text-gray-600">
               {campaign.body}
             </p>
           </div>

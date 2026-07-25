@@ -98,8 +98,8 @@ export default function SuppliersClient({
   const productsByCategory = groupProductsByCategory(ibsaProducts);
 
   const inputCls =
-    "w-full rounded border border-slate-600 bg-slate-800 px-2 py-1 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none";
-  const th = "px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-400 whitespace-nowrap";
+    "w-full rounded border border-gray-200 bg-gray-100 px-2 py-1 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none";
+  const th = "px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap";
   const td = "px-3 py-2 text-sm align-top";
 
   function ProductSelect({
@@ -184,15 +184,15 @@ export default function SuppliersClient({
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Suppliers</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <h1 className="text-2xl font-bold text-gray-900">Suppliers</h1>
+          <p className="mt-1 text-sm text-gray-500">
             {rsProducts.length} rows across {supplierNames.length} supplier
             {supplierNames.length !== 1 ? "s" : ""}
           </p>
         </div>
         <button
           onClick={() => openAddForm()}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-indigo-700"
         >
           + Add product
         </button>
@@ -200,13 +200,13 @@ export default function SuppliersClient({
 
       {/* Add form panel */}
       {showAddForm && (
-        <div className="rounded-xl border border-indigo-500/30 bg-slate-900 p-6">
-          <h2 className="mb-4 text-base font-semibold text-white">
+        <div className="rounded-xl border border-indigo-500/30 bg-white p-6">
+          <h2 className="mb-4 text-base font-semibold text-gray-900">
             Add supplier row
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-gray-500">
                 Supplier *
               </label>
               <input
@@ -225,7 +225,7 @@ export default function SuppliersClient({
               </datalist>
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-gray-500">
                 Xylo Product
               </label>
               <ProductSelect
@@ -236,7 +236,7 @@ export default function SuppliersClient({
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-gray-500">
                 Supplier Code
               </label>
               <input
@@ -249,7 +249,7 @@ export default function SuppliersClient({
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-gray-500">
                 Description
               </label>
               <input
@@ -262,7 +262,7 @@ export default function SuppliersClient({
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-gray-500">
                 Variant
               </label>
               <input
@@ -276,7 +276,7 @@ export default function SuppliersClient({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-xs text-slate-400">
+                <label className="mb-1 block text-xs text-gray-500">
                   Carton size
                 </label>
                 <input
@@ -291,7 +291,7 @@ export default function SuppliersClient({
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-400">
+                <label className="mb-1 block text-xs text-gray-500">
                   £/Carton
                 </label>
                 <input
@@ -308,7 +308,7 @@ export default function SuppliersClient({
               </div>
             </div>
             <div className="col-span-2">
-              <label className="mb-1 block text-xs text-slate-400">Notes</label>
+              <label className="mb-1 block text-xs text-gray-500">Notes</label>
               <input
                 value={addDraft.notes}
                 onChange={(e) =>
@@ -323,13 +323,13 @@ export default function SuppliersClient({
             <button
               onClick={handleAdd}
               disabled={!addDraft.supplier || isPending}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-indigo-700 disabled:opacity-50"
             >
               {isPending ? "Saving…" : "Save"}
             </button>
             <button
               onClick={() => setShowAddForm(false)}
-              className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-400 hover:text-white"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:text-gray-900"
             >
               Cancel
             </button>
@@ -344,12 +344,12 @@ export default function SuppliersClient({
         return (
           <section key={supplier}>
             <div className="mb-3 flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-white">{supplier}</h2>
-              <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs text-slate-400">
+              <h2 className="text-lg font-semibold text-gray-900">{supplier}</h2>
+              <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500">
                 {rows.length}
               </span>
               {pendingCount > 0 && (
-                <span className="rounded-full bg-amber-900/40 px-2.5 py-0.5 text-xs text-amber-400">
+                <span className="rounded-full bg-amber-900/40 px-2.5 py-0.5 text-xs text-amber-600">
                   {pendingCount} without catalog data
                 </span>
               )}
@@ -361,7 +361,7 @@ export default function SuppliersClient({
               </button>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-800">
+            <div className="overflow-hidden rounded-xl border border-gray-200">
               <table className="w-full table-fixed text-sm">
                 <colgroup>
                   <col style={{ width: "22%" }} />
@@ -373,7 +373,7 @@ export default function SuppliersClient({
                   <col style={{ width: "17%" }} />
                   <col style={{ width: "8%" }} />
                 </colgroup>
-                <thead className="border-b border-slate-800 bg-slate-900">
+                <thead className="border-b border-gray-200 bg-white shadow-sm">
                   <tr>
                     <th className={th}>Xylo Product</th>
                     <th className={th}>Code</th>
@@ -385,12 +385,12 @@ export default function SuppliersClient({
                     <th className={th}></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-gray-100">
                   {rows.map((row) => {
                     // ── Edit row ──────────────────────────────────────────────
                     if (editingId === row.id) {
                       return (
-                        <tr key={row.id} className="bg-slate-900/80">
+                        <tr key={row.id} className="bg-white/80">
                           <td className={td}>
                             <ProductSelect
                               value={editDraft.ibsaProductId}
@@ -502,13 +502,13 @@ export default function SuppliersClient({
                               <button
                                 onClick={() => handleSave(row.id)}
                                 disabled={isPending}
-                                className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                                className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-gray-900 hover:bg-indigo-700 disabled:opacity-50"
                               >
                                 {isPending ? "…" : "Save"}
                               </button>
                               <button
                                 onClick={() => setEditingId(null)}
-                                className="rounded border border-slate-700 px-2 py-1 text-xs text-slate-400 hover:text-white"
+                                className="rounded border border-gray-200 px-2 py-1 text-xs text-gray-500 hover:text-gray-900"
                               >
                                 Cancel
                               </button>
@@ -523,61 +523,61 @@ export default function SuppliersClient({
                     return (
                       <tr
                         key={row.id}
-                        className={`group hover:bg-slate-900/40 ${!hasCatalog ? "opacity-70" : ""}`}
+                        className={`group hover:bg-white/40 ${!hasCatalog ? "opacity-70" : ""}`}
                       >
-                        <td className={`${td} font-medium text-white`}>
+                        <td className={`${td} font-medium text-gray-900`}>
                           {row.ibsaProduct ? (
                             <>
                               {row.ibsaProduct.name}
                               {row.ibsaProduct.variant && (
-                                <span className="ml-1 text-xs text-slate-400">
+                                <span className="ml-1 text-xs text-gray-500">
                                   ({row.ibsaProduct.variant})
                                 </span>
                               )}
-                              <div className="text-xs text-slate-500">
+                              <div className="text-xs text-gray-400">
                                 {row.ibsaProduct.code}
                               </div>
                             </>
                           ) : (
-                            <span className="italic text-slate-500">
+                            <span className="italic text-gray-400">
                               Unlinked
                             </span>
                           )}
                         </td>
-                        <td className={`${td} font-mono text-slate-300`}>
+                        <td className={`${td} font-mono text-gray-600`}>
                           {row.rsCode ?? (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-gray-300">—</span>
                           )}
                         </td>
-                        <td className={`${td} text-slate-300`}>
+                        <td className={`${td} text-gray-600`}>
                           <span className="line-clamp-2">
                             {row.rsDescription ?? (
-                              <span className="text-slate-600">—</span>
+                              <span className="text-gray-300">—</span>
                             )}
                           </span>
                         </td>
                         <td className={td}>
                           {row.rsVariant ? (
-                            <span className="rounded bg-slate-700 px-1.5 py-0.5 text-xs">
+                            <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs">
                               {row.rsVariant}
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-gray-300">—</span>
                           )}
                         </td>
                         <td className={`${td} text-right font-mono`}>
                           {row.cartonSize ?? (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-gray-300">—</span>
                           )}
                         </td>
                         <td className={`${td} text-right font-mono`}>
                           {row.cartonPrice != null ? (
                             `£${row.cartonPrice.toFixed(2)}`
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-gray-300">—</span>
                           )}
                         </td>
-                        <td className={`${td} text-xs text-slate-400`}>
+                        <td className={`${td} text-xs text-gray-500`}>
                           <span className="line-clamp-2">{row.notes ?? ""}</span>
                         </td>
                         <td className={`${td} text-right`}>
@@ -590,7 +590,7 @@ export default function SuppliersClient({
                             </button>
                             <button
                               onClick={() => handleDelete(row.id)}
-                              className="rounded px-2 py-1 text-xs text-red-500 hover:text-red-400"
+                              className="rounded px-2 py-1 text-xs text-red-500 hover:text-red-500"
                             >
                               Del
                             </button>
@@ -607,7 +607,7 @@ export default function SuppliersClient({
       })}
 
       {rsProducts.length === 0 && (
-        <div className="rounded-xl border border-slate-800 p-12 text-center text-slate-500">
+        <div className="rounded-xl border border-gray-200 p-12 text-center text-gray-400">
           No supplier rows yet. Click &ldquo;Add product&rdquo; to get started.
         </div>
       )}

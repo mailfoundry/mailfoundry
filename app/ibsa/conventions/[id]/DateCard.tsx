@@ -28,23 +28,23 @@ export default function DateCard({ label, field, conventionId, initialValue }: P
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-      <p className="mb-2 text-xs text-slate-500">{label}</p>
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+      <p className="mb-2 text-xs text-gray-500">{label}</p>
       <div className="flex items-center gap-2">
         <input
           type="date"
           value={value}
           onChange={(e) => { setValue(e.target.value); setSaved(false); }}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); save(); } }}
-          className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white outline-none focus:border-orange-500"
+          className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-orange-500"
         />
         <button
           onClick={save}
           disabled={isPending}
           className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
             saved
-              ? "bg-green-700 text-white"
-              : "border border-slate-700 text-slate-300 hover:bg-slate-800"
+              ? "bg-green-600 text-white"
+              : "border border-gray-200 text-gray-600 hover:bg-gray-100"
           }`}
         >
           {isPending ? "…" : saved ? "✓" : "Save"}

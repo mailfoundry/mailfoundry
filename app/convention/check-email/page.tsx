@@ -4,7 +4,7 @@ export default async function ConventionCheckEmailPage({ searchParams }: Props) 
   const { email } = await searchParams;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-sm text-center">
         <div className="mb-6 flex justify-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-500/20">
@@ -15,16 +15,16 @@ export default async function ConventionCheckEmailPage({ searchParams }: Props) 
         </div>
 
         <p className="text-lg font-bold text-orange-500">IBSA · Xylo (UK) Ltd</p>
-        <h1 className="mt-2 text-2xl font-bold text-white">Check your email</h1>
-        <p className="mt-3 text-sm text-slate-400">
+        <h1 className="mt-2 text-2xl font-bold text-gray-900">Check your email</h1>
+        <p className="mt-3 text-sm text-gray-500">
           We've sent a sign-in link to{" "}
-          <span className="font-medium text-white">{email ?? "your email address"}</span>.
+          <span className="font-medium text-gray-900">{email ?? "your email address"}</span>.
         </p>
-        <p className="mt-2 text-sm text-slate-500">The link expires in 24 hours.</p>
+        <p className="mt-2 text-sm text-gray-400">The link expires in 24 hours.</p>
 
         <a
           href="/convention"
-          className="mt-8 inline-block text-sm text-slate-500 hover:text-slate-300"
+          className="mt-8 inline-block text-sm text-gray-400 hover:text-gray-600"
         >
           ← Try a different email
         </a>

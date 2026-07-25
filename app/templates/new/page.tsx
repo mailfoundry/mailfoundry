@@ -8,72 +8,72 @@ export default function NewTemplatePage() {
     <AppShell active="templates">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Content</p>
+          <p className="text-sm text-gray-500">Content</p>
           <h2 className="text-3xl font-bold">New Template</h2>
         </div>
         <Link
           href="/templates"
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
         >
           Back to Templates
         </Link>
       </header>
 
-      <div className="max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <form action={createTemplate} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Template Name
             </label>
             <input
               type="text"
               name="name"
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none focus:border-orange-500"
               placeholder="Monthly newsletter"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Default Subject Line
             </label>
             <input
               type="text"
               name="subject"
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none focus:border-orange-500"
               placeholder="Your subject line here"
             />
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               This can be overridden when creating a campaign from this template.
             </p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Plain Text Body
             </label>
             <textarea
               name="body"
               required
               rows={8}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none focus:border-orange-500"
               placeholder="Write your email content here..."
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               HTML Email
             </label>
             <textarea
               name="html"
               rows={14}
               placeholder="Paste your full HTML email here..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 font-mono text-sm text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 font-mono text-sm text-gray-900 outline-none focus:border-orange-500"
             />
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Optional. If blank, plain text body will be used.
             </p>
           </div>

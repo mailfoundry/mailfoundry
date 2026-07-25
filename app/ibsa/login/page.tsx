@@ -15,25 +15,25 @@ export default async function IbsaLoginPage({ searchParams }: Props) {
       : null;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 text-gray-900">
       <div className="w-full max-w-sm px-6">
         <div className="mb-8 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-orange-500">
             Xylo (UK) Ltd
           </p>
-          <h1 className="mt-2 text-2xl font-bold">IBSA Convention Portal</h1>
-          <p className="mt-1 text-sm text-slate-400">Sign in to manage orders</p>
+          <h1 className="mt-2 text-2xl font-bold text-gray-900">IBSA Convention Portal</h1>
+          <p className="mt-1 text-sm text-gray-500">Sign in to manage orders</p>
         </div>
 
         {errorMessage && (
-          <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+          <div className="mb-6 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-600">
             {errorMessage}
           </div>
         )}
 
         <form action={ibsaLogin} className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               Email address
             </label>
             <input
@@ -42,13 +42,13 @@ export default async function IbsaLoginPage({ searchParams }: Props) {
               required
               autoFocus
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
               placeholder="you@xylouk.co.uk"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
@@ -56,7 +56,7 @@ export default async function IbsaLoginPage({ searchParams }: Props) {
               name="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
               placeholder="Enter your password"
             />
           </div>
@@ -69,7 +69,7 @@ export default async function IbsaLoginPage({ searchParams }: Props) {
           </button>
         </form>
 
-        <p className="mt-8 text-center text-xs text-slate-700">
+        <p className="mt-8 text-center text-xs text-gray-400">
           MailFoundry · Xylo (UK) Ltd
         </p>
       </div>

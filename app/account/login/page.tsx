@@ -11,45 +11,45 @@ export default async function AccountLoginPage({ searchParams }: Props) {
   const error = params.error;
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <Logo height={36} />
         </div>
 
         {sent ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-            <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-8 text-center">
+            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 0 0 1.183 1.981l6.478 3.488m8.839 2.51-4.66-2.51m0 0-1.023-.55a2.25 2.25 0 0 0-2.134 0l-1.022.55m0 0-4.661 2.51m16.5 1.615a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V8.844a2.25 2.25 0 0 1 1.183-1.981l7.5-4.04a2.25 2.25 0 0 1 2.134 0l7.5 4.04a2.25 2.25 0 0 1 1.183 1.98V19.5Z" />
               </svg>
             </div>
-            <h1 className="text-lg font-bold text-white mb-2">Check your email</h1>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h1 className="text-lg font-bold text-gray-900 mb-2">Check your email</h1>
+            <p className="text-sm text-gray-500 leading-relaxed">
               If that address has an account, we&apos;ve sent a login link. It&apos;s valid for 7 days.
             </p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
-            <h1 className="text-lg font-bold text-white mb-1">Sign in to your account</h1>
-            <p className="text-sm text-slate-400 mb-6">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
+            <h1 className="text-lg font-bold text-gray-900 mb-1">Sign in to your account</h1>
+            <p className="text-sm text-gray-500 mb-6">
               Enter your email and we&apos;ll send you a login link — no password needed.
             </p>
 
             {error === "missing-email" && (
-              <div className="mb-4 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-400">
+              <div className="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-600">
                 Please enter your email address.
               </div>
             )}
             {error === "invalid-token" && (
-              <div className="mb-4 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-400">
+              <div className="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-600">
                 That link has expired or already been used. Request a new one below.
               </div>
             )}
 
             <form action={requestLoginLink} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Email address
                 </label>
                 <input
@@ -58,7 +58,7 @@ export default async function AccountLoginPage({ searchParams }: Props) {
                   required
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-colors"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-colors"
                 />
               </div>
               <button
@@ -71,9 +71,9 @@ export default async function AccountLoginPage({ searchParams }: Props) {
           </div>
         )}
 
-        <p className="mt-6 text-center text-xs text-slate-600">
+        <p className="mt-6 text-center text-xs text-gray-400">
           Xylo (UK) Ltd &nbsp;·&nbsp;{" "}
-          <a href="https://www.xylouk.co.uk" className="hover:text-slate-400 transition-colors">
+          <a href="https://www.xylouk.co.uk" className="hover:text-gray-600 transition-colors">
             xylouk.co.uk
           </a>
         </p>

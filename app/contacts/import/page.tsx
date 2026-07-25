@@ -85,12 +85,12 @@ export default function ImportContactsPage() {
     <AppShell active="contacts">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Audience</p>
+          <p className="text-sm text-gray-500">Audience</p>
           <h2 className="text-3xl font-bold">Import Contacts</h2>
         </div>
         <Link
           href="/contacts"
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
         >
           Back to Contacts
         </Link>
@@ -99,27 +99,27 @@ export default function ImportContactsPage() {
       {status !== "done" && (
         <div className="space-y-6">
           {/* CSV format hint */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
             <h3 className="text-lg font-semibold">CSV Format</h3>
-            <p className="mt-2 text-sm text-slate-400">
-              Your file must have an <span className="font-medium text-white">email</span> column.
-              Optional columns: <span className="text-white">firstName</span>,{" "}
-              <span className="text-white">lastName</span>,{" "}
-              <span className="text-white">source</span>.
+            <p className="mt-2 text-sm text-gray-500">
+              Your file must have an <span className="font-medium text-gray-900">email</span> column.
+              Optional columns: <span className="text-gray-900">firstName</span>,{" "}
+              <span className="text-gray-900">lastName</span>,{" "}
+              <span className="text-gray-900">source</span>.
             </p>
-            <pre className="mt-4 rounded-lg bg-slate-950 px-4 py-3 text-xs text-slate-300">
+            <pre className="mt-4 rounded-lg bg-gray-50 px-4 py-3 text-xs text-gray-600">
               {`email,firstName,lastName\njane@example.com,Jane,Smith\njohn@example.com,John,`}
             </pre>
           </div>
 
           {/* File upload */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
             <h3 className="mb-4 text-lg font-semibold">Select File</h3>
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-700 bg-slate-950 p-8 hover:border-slate-500">
-              <svg className="mb-3 h-8 w-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-8 hover:border-gray-200">
+              <svg className="mb-3 h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
-              <span className="text-sm text-slate-400">
+              <span className="text-sm text-gray-500">
                 {fileName ? fileName : "Click to choose a CSV file"}
               </span>
               <input
@@ -133,15 +133,15 @@ export default function ImportContactsPage() {
           </div>
 
           {/* Options */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
             <h3 className="mb-4 text-lg font-semibold">Options</h3>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm text-slate-400">Add to list (optional)</label>
+                <label className="mb-1 block text-sm text-gray-500">Add to list (optional)</label>
                 <select
                   value={listId}
                   onChange={(e) => setListId(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-white outline-none focus:border-orange-500"
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
                 >
                   <option value="">— Don&apos;t add to a list —</option>
                   {lists.map((l) => (
@@ -155,22 +155,22 @@ export default function ImportContactsPage() {
                   type="checkbox"
                   checked={markSubscribed}
                   onChange={(e) => setMarkSubscribed(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 accent-orange-500"
+                  className="h-4 w-4 rounded border-gray-200 bg-gray-50 accent-orange-500"
                 />
-                <span className="text-sm text-slate-300">Mark new contacts as subscribed</span>
+                <span className="text-sm text-gray-600">Mark new contacts as subscribed</span>
               </label>
             </div>
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</p>
+            <p className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-500">{error}</p>
           )}
 
           <button
             type="button"
             onClick={handleImport}
             disabled={status === "importing" || !csvText}
-            className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-gray-900 hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === "importing" ? "Importing…" : "Import Contacts"}
           </button>
@@ -181,55 +181,55 @@ export default function ImportContactsPage() {
         <div className="space-y-6">
           {/* Summary stats */}
           <div className="grid gap-4 sm:grid-cols-4">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-sm text-slate-400">Total Rows</p>
-              <p className="mt-2 text-2xl font-bold text-white">{summary.total}</p>
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-sm text-gray-500">Total Rows</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">{summary.total}</p>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-sm text-slate-400">Created</p>
-              <p className="mt-2 text-2xl font-bold text-green-400">{summary.created}</p>
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-sm text-gray-500">Created</p>
+              <p className="mt-2 text-2xl font-bold text-green-600">{summary.created}</p>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-sm text-slate-400">Updated</p>
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-sm text-gray-500">Updated</p>
               <p className="mt-2 text-2xl font-bold text-sky-400">{summary.updated}</p>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-sm text-slate-400">Skipped</p>
-              <p className="mt-2 text-2xl font-bold text-slate-400">{summary.skipped}</p>
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+              <p className="text-sm text-gray-500">Skipped</p>
+              <p className="mt-2 text-2xl font-bold text-gray-500">{summary.skipped}</p>
             </div>
           </div>
 
           {/* Row-level results */}
           {summary.results.length > 0 && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
               <h3 className="mb-4 text-lg font-semibold">Results</h3>
-              <div className="overflow-hidden rounded-xl border border-slate-800">
+              <div className="overflow-hidden rounded-xl border border-gray-200">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-950 text-slate-400">
+                  <thead className="bg-gray-50 text-gray-500">
                     <tr>
                       <th className="px-4 py-3 font-medium">Email</th>
                       <th className="px-4 py-3 font-medium">Result</th>
                       <th className="px-4 py-3 font-medium">Note</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-gray-100">
                     {summary.results.map((r, i) => (
                       <tr key={i}>
-                        <td className="px-4 py-3 text-slate-300">{r.email}</td>
+                        <td className="px-4 py-3 text-gray-600">{r.email}</td>
                         <td className="px-4 py-3">
                           <span
                             className={`rounded-full px-2 py-1 text-xs font-semibold ${
                               r.status === "created"
-                                ? "bg-green-500/10 text-green-400"
+                                ? "bg-green-500/10 text-green-600"
                                 : r.status === "updated"
                                   ? "bg-sky-500/10 text-sky-400"
-                                  : "bg-slate-500/10 text-slate-400"
+                                  : "bg-gray-100 text-gray-500"
                             }`}
                           >
                             {r.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-slate-500">{r.reason ?? "—"}</td>
+                        <td className="px-4 py-3 text-gray-400">{r.reason ?? "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -242,13 +242,13 @@ export default function ImportContactsPage() {
             <button
               type="button"
               onClick={handleReset}
-              className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
             >
               Import Another File
             </button>
             <Link
               href="/contacts"
-              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
             >
               View Contacts
             </Link>

@@ -67,48 +67,48 @@ export default async function NewCampaignPage({
     <AppShell active="campaigns">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Marketing</p>
+          <p className="text-sm text-gray-500">Marketing</p>
           <h2 className="text-3xl font-bold">New Campaign</h2>
         </div>
 
         <Link
           href="/campaigns"
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
         >
           Back to Campaigns
         </Link>
       </header>
 
-      <div className="max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <form action={createCampaign} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Campaign Name
             </label>
             <input
               type="text"
               name="name"
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
               placeholder="May Charcoal Promo"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Subject Line
             </label>
             <input
               type="text"
               name="subject"
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
               placeholder="Serious heat for your next BBQ"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Target List
             </label>
 
@@ -124,7 +124,7 @@ export default async function NewCampaignPage({
               name="listId"
               required
               defaultValue={selectedList?.id ?? ""}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             >
               <option value="" disabled>
                 Select a list
@@ -138,51 +138,51 @@ export default async function NewCampaignPage({
               ))}
             </select>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Only subscribed contacts with no unsubscribe, archive, bounce or
               complaint status will be eligible to receive campaigns.
             </p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Email Body
             </label>
             <textarea
               name="body"
               required
               rows={10}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
               placeholder="Write your email here..."
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               HTML Email
             </label>
             <textarea
               name="html"
               rows={12}
               placeholder="Paste your full HTML email here..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 font-mono text-sm text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 font-mono text-sm text-gray-900 outline-none"
             />
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Optional. If left blank, MailFoundry will create basic HTML from
               the plain text body.
             </p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Schedule Send <span className="text-slate-500">(optional)</span>
+            <label className="mb-2 block text-sm font-medium text-gray-600">
+              Schedule Send <span className="text-gray-400">(optional)</span>
             </label>
             <input
               type="datetime-local"
               name="scheduledAt"
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none focus:border-orange-500"
             />
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Leave blank to save as a draft and send manually. Set a time to schedule automatic sending.
             </p>
           </div>

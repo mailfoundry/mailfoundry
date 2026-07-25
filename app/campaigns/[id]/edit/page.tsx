@@ -82,22 +82,22 @@ export default async function EditCampaignPage({
     <AppShell active="campaigns">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Marketing</p>
+          <p className="text-sm text-gray-500">Marketing</p>
           <h2 className="text-3xl font-bold">Edit Campaign</h2>
         </div>
 
         <Link
           href={`/campaigns/${campaign.id}`}
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
         >
           Back to Campaign
         </Link>
       </header>
 
-      <div className="max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <form action={updateCampaignAction} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Campaign Name
             </label>
             <input
@@ -105,12 +105,12 @@ export default async function EditCampaignPage({
               name="name"
               defaultValue={campaign.name}
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Subject Line
             </label>
             <input
@@ -118,12 +118,12 @@ export default async function EditCampaignPage({
               name="subject"
               defaultValue={campaign.subject}
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Target List
             </label>
 
@@ -144,7 +144,7 @@ export default async function EditCampaignPage({
               name="listId"
               defaultValue={campaign.listId}
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             >
               <option value="">Select a list</option>
 
@@ -156,14 +156,14 @@ export default async function EditCampaignPage({
               ))}
             </select>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Only subscribed contacts with no unsubscribe, archive, bounce or
               complaint status will be eligible to receive campaigns.
             </p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Email Body
             </label>
             <textarea
@@ -171,12 +171,12 @@ export default async function EditCampaignPage({
               defaultValue={campaign.body}
               required
               rows={10}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               HTML Email
             </label>
             <textarea
@@ -184,9 +184,9 @@ export default async function EditCampaignPage({
               defaultValue={campaign.html || ""}
               rows={12}
               placeholder="Paste your full HTML email here..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 font-mono text-sm text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 font-mono text-sm text-gray-900 outline-none"
             />
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-gray-400">
               Optional. If left blank, MailFoundry will create basic HTML from
               the plain text body.
             </p>
@@ -194,7 +194,7 @@ export default async function EditCampaignPage({
 
           <button
             type="submit"
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
           >
             Save Changes
           </button>

@@ -21,14 +21,14 @@ function getContactStatus(contact: {
   if (contact.unsubscribedAt) {
     return {
       label: "Unsubscribed",
-      className: "bg-red-500/10 text-red-400",
+      className: "bg-red-500/10 text-red-500",
     };
   }
 
   if (contact.archivedAt) {
     return {
       label: "Archived",
-      className: "bg-slate-500/10 text-slate-300",
+      className: "bg-gray-100 text-gray-600",
     };
   }
 
@@ -42,20 +42,20 @@ function getContactStatus(contact: {
   if (contact.complainedAt) {
     return {
       label: "Complained",
-      className: "bg-red-500/10 text-red-400",
+      className: "bg-red-500/10 text-red-500",
     };
   }
 
   if (contact.subscribedAt) {
     return {
       label: "Subscribed",
-      className: "bg-green-500/10 text-green-400",
+      className: "bg-green-500/10 text-green-600",
     };
   }
 
   return {
     label: "Unknown",
-    className: "bg-slate-500/10 text-slate-400",
+    className: "bg-gray-100 text-gray-500",
   };
 }
 
@@ -147,9 +147,9 @@ export default async function ListDetailPage({ params }: ListPageProps) {
       <header className="mb-10 flex items-center justify-between">
         <div className="flex w-full items-start justify-between gap-6">
           <div>
-            <p className="text-sm text-slate-400">Audience</p>
-            <h1 className="text-3xl font-bold text-white">{list.name}</h1>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="text-sm text-gray-500">Audience</p>
+            <h1 className="text-3xl font-bold text-gray-900">{list.name}</h1>
+            <p className="mt-2 text-sm text-gray-500">
               {eligibleContacts} eligible of {totalContacts} contacts in this
               list
             </p>
@@ -158,14 +158,14 @@ export default async function ListDetailPage({ params }: ListPageProps) {
           <div className="ml-auto flex shrink-0 items-center gap-3">
             <Link
               href={`/campaigns/new?listId=${list.id}`}
-              className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+              className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100"
             >
               Create Campaign
             </Link>
 
             <Link
               href="/lists"
-              className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
             >
               Back to Lists
             </Link>
@@ -173,18 +173,18 @@ export default async function ListDetailPage({ params }: ListPageProps) {
         </div>
       </header>
 
-      <div className="mb-8 max-w-2xl rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="mb-8 max-w-2xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
         <h3 className="mb-4 text-xl font-semibold">Add Contact to List</h3>
 
         <form action={addContactAction} className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Choose Contact
             </label>
             <select
               name="contactId"
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             >
               <option value="">
                 {availableContacts.length === 0
@@ -205,7 +205,7 @@ export default async function ListDetailPage({ params }: ListPageProps) {
           <button
             type="submit"
             disabled={availableContacts.length === 0}
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Add to List
           </button>
@@ -213,67 +213,67 @@ export default async function ListDetailPage({ params }: ListPageProps) {
       </div>
 
       <div className="mb-8 grid gap-4 md:grid-cols-3 xl:grid-cols-7">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Total Contacts</p>
-          <p className="mt-2 text-2xl font-bold text-white">{totalContacts}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Total Contacts</p>
+          <p className="mt-2 text-2xl font-bold text-gray-900">{totalContacts}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Eligible</p>
-          <p className="mt-2 text-2xl font-bold text-green-400">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Eligible</p>
+          <p className="mt-2 text-2xl font-bold text-green-600">
             {eligibleContacts}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Unsubscribed</p>
-          <p className="mt-2 text-2xl font-bold text-red-400">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Unsubscribed</p>
+          <p className="mt-2 text-2xl font-bold text-red-500">
             {unsubscribedContacts}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Archived</p>
-          <p className="mt-2 text-2xl font-bold text-slate-300">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Archived</p>
+          <p className="mt-2 text-2xl font-bold text-gray-600">
             {archivedContacts}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Bounced</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Bounced</p>
           <p className="mt-2 text-2xl font-bold text-orange-400">
             {bouncedContacts}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Complained</p>
-          <p className="mt-2 text-2xl font-bold text-red-400">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Complained</p>
+          <p className="mt-2 text-2xl font-bold text-red-500">
             {complainedContacts}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-400">Unknown</p>
-          <p className="mt-2 text-2xl font-bold text-slate-400">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+          <p className="text-sm text-gray-500">Unknown</p>
+          <p className="mt-2 text-2xl font-bold text-gray-500">
             {unknownContacts}
           </p>
         </div>
       </div>
 
       {list.contacts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 p-8">
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-500 p-8">
           <h3 className="text-xl font-semibold">
             No contacts in this list yet
           </h3>
-          <p className="mt-3 max-w-2xl text-slate-400">
+          <p className="mt-3 max-w-2xl text-gray-500">
             Add an existing contact above to start building this audience.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
           <table className="min-w-full text-sm">
-            <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
+            <thead className="border-b border-gray-200 bg-gray-50/50 text-left text-gray-500">
               <tr>
                 <th className="px-6 py-4 font-medium">Email</th>
                 <th className="px-6 py-4 font-medium">First Name</th>
@@ -288,7 +288,7 @@ export default async function ListDetailPage({ params }: ListPageProps) {
                 const status = getContactStatus(entry.contact);
 
                 return (
-                  <tr key={entry.id} className="border-t border-slate-800">
+                  <tr key={entry.id} className="border-t border-gray-200">
                     <td className="px-6 py-4">
                       <Link
                         href={`/contacts/${entry.contact.id}`}
@@ -310,7 +310,7 @@ export default async function ListDetailPage({ params }: ListPageProps) {
                         {status.label}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-400">
+                    <td className="px-6 py-4 text-gray-500">
                       {entry.contact.source || "—"}
                     </td>
                     <td className="px-6 py-4">

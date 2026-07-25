@@ -29,12 +29,12 @@ export default function ShippingCostCard({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-      <p className="mb-2 text-xs text-slate-500">
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
+      <p className="mb-2 text-xs text-gray-500">
         {field === "fa" ? "FA Shipping Cost" : "Shipping Cost"}
       </p>
       <div className="flex items-center gap-1">
-        <span className="text-sm text-slate-400">£</span>
+        <span className="text-sm text-gray-400">£</span>
         <input
           type="number"
           min="0"
@@ -44,10 +44,10 @@ export default function ShippingCostCard({
           onChange={(e) => { setValue(e.target.value); setSaved(false); }}
           onBlur={save}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); save(); } }}
-          className="w-full bg-transparent text-sm text-white outline-none"
+          className="w-full bg-transparent text-sm text-gray-900 outline-none"
           disabled={isPending}
         />
-        {saved && <span className="text-xs text-green-400">✓</span>}
+        {saved && <span className="text-xs text-green-600">✓</span>}
       </div>
     </div>
   );

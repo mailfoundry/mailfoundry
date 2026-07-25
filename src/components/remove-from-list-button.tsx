@@ -21,7 +21,7 @@ export default function RemoveFromListButton({
 
           <button
             type="submit"
-            className="rounded-lg bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-500"
+            className="rounded-lg bg-red-600 px-3 py-1 text-xs font-semibold text-gray-900 hover:bg-red-500"
           >
             Yes, remove
           </button>
@@ -30,7 +30,7 @@ export default function RemoveFromListButton({
         <button
           type="button"
           onClick={() => setIsConfirming(false)}
-          className="rounded-lg border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100"
         >
           Cancel
         </button>
@@ -42,7 +42,7 @@ export default function RemoveFromListButton({
     <button
       type="button"
       onClick={() => setIsConfirming(true)}
-      className="rounded-lg border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+      className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100"
     >
       Remove
     </button>

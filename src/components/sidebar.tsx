@@ -38,8 +38,8 @@ const ibsaActive = new Set([
 ]);
 
 export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, orderCounts }: SidebarProps) {
-  const base        = "block rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors";
-  const activeClass = "block rounded-lg bg-slate-800 px-3 py-2 text-white font-semibold";
+  const base        = "block rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors";
+  const activeClass = "block rounded-lg bg-gray-100 px-3 py-2 text-gray-900 font-semibold";
   const inIbsa      = ibsaActive.has(active);
 
   const badge = (n: number) =>
@@ -56,7 +56,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
   /* ── IBSA sidebar ──────────────────────────────────────────────── */
   if (inIbsa || ibsaOnly) {
     return (
-      <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-slate-800 bg-slate-900 p-6">
+      <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-white p-6">
         <div className="mb-8">
           <Link href="/ibsa?type=regional">
             <Logo height={26} variant="icon" />
@@ -67,7 +67,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
         {isMainUser && (
           <Link
             href="/dashboard"
-            className="mb-6 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-800 hover:text-slate-300 transition-colors"
+            className="mb-6 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
           >
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -76,7 +76,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
           </Link>
         )}
 
-        <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
           Xylo (UK) Ltd
         </p>
 
@@ -91,14 +91,14 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
             <span>Congregations</span>{badge(orderCounts?.congregation ?? 0)}
           </Link>
 
-          <div className="my-3 border-t border-slate-800" />
+          <div className="my-3 border-t border-gray-200" />
 
           <Link href={productsHref} className={active === "ibsa-products" ? activeClass : base}>Products</Link>
           <Link href="/ibsa/purchasing" className={active === "ibsa-purchasing" ? activeClass : base}>Purchasing</Link>
           <Link href="/ibsa/suppliers" className={active === "ibsa-suppliers" ? activeClass : base}>Suppliers</Link>
           <Link href="/ibsa/contacts" className={active === "ibsa-contacts" ? activeClass : base}>Contacts</Link>
 
-          <div className="my-3 border-t border-slate-800" />
+          <div className="my-3 border-t border-gray-200" />
 
           <Link href="/ibsa/tools" className={active === "ibsa-tools" ? activeClass : base}>Tools</Link>
         </nav>
@@ -106,7 +106,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
         {/* Footer: logout for IBSA-only users; nothing for main user (they use ← MailFoundry) */}
         {ibsaOnly && (
           <form action={ibsaLogout} className="mt-6">
-            <button type="submit" className="w-full rounded-lg border border-slate-700 px-3 py-2 text-left text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
+            <button type="submit" className="w-full rounded-lg border border-gray-200 px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900">
               Log out
             </button>
           </form>
@@ -117,7 +117,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
 
   /* ── MailFoundry sidebar ───────────────────────────────────────── */
   return (
-    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-slate-800 bg-slate-900 p-6">
+    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-white p-6">
       <div className="mb-10">
         <Link href="/dashboard">
           <Logo height={26} variant="icon" />
@@ -133,14 +133,14 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
         <Link href="/reports"    className={active === "reports"    ? activeClass : base}>Reports</Link>
         <Link href="/settings"   className={active === "settings"   ? activeClass : base}>Settings</Link>
 
-        <div className="my-3 border-t border-slate-800" />
+        <div className="my-3 border-t border-gray-200" />
 
         <Link
           href="/ibsa?type=regional"
-          className="flex items-center justify-between rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors text-sm"
+          className="flex items-center justify-between rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors text-sm"
         >
           <span>Xylo Ordering</span>
-          <svg className="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-3.5 w-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </Link>
@@ -148,7 +148,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
       </nav>
 
       <form action={logout} className="mt-6">
-        <button type="submit" className="w-full rounded-lg border border-slate-700 px-3 py-2 text-left text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
+        <button type="submit" className="w-full rounded-lg border border-gray-200 px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900">
           Log out
         </button>
       </form>

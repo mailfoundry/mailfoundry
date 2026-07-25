@@ -36,7 +36,6 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
   const [parseError, setParseError] = useState<string | null>(null);
   const [result, setResult] = useState<ParseResult | null>(null);
 
-  // Editable fields
   const [groupName, setGroupName] = useState("");
   const [groupType, setGroupType] = useState("regional");
   const [contactName, setContactName] = useState("");
@@ -104,24 +103,26 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
     0
   ) ?? 0;
 
+  const inputCls = "w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="flex w-full max-w-2xl flex-col rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="flex w-full max-w-2xl flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl"
            style={{ maxHeight: "90vh" }}>
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
-          <h2 className="text-base font-bold text-white">Import Order from Spreadsheet</h2>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-300 text-xl leading-none">×</button>
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <h2 className="text-base font-bold text-gray-900">Import Order from Spreadsheet</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none transition-colors">×</button>
         </div>
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
 
-          {/* ── STEP: UPLOAD ── */}
+          {/* UPLOAD */}
           {step === "upload" && (
             <div>
-              <p className="mb-4 text-sm text-slate-400">
+              <p className="mb-4 text-sm text-gray-500">
                 Upload the IBSA cleaning supplies order spreadsheet (.xlsx). The import reads
                 the internal product codes and quantities automatically.
               </p>
@@ -129,16 +130,16 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileRef.current?.click()}
-                className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-700 bg-slate-800/40 px-6 py-12 text-center transition-colors hover:border-slate-500 hover:bg-slate-800/60"
+                className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center transition-colors hover:border-gray-300 hover:bg-gray-100"
               >
-                <svg className="h-8 w-8 text-slate-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                 </svg>
                 <div>
-                  <p className="text-sm font-semibold text-white">Drop your .xlsx here</p>
-                  <p className="mt-0.5 text-xs text-slate-500">or click to browse</p>
+                  <p className="text-sm font-semibold text-gray-700">Drop your .xlsx here</p>
+                  <p className="mt-0.5 text-xs text-gray-400">or click to browse</p>
                 </div>
-                {isParsing && <p className="text-xs text-blue-400">Reading spreadsheet…</p>}
+                {isParsing && <p className="text-xs text-blue-500">Reading spreadsheet…</p>}
               </div>
               <input
                 ref={fileRef}
@@ -147,49 +148,43 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
                 className="hidden"
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
               />
-              {parseError && <p className="mt-3 text-sm text-red-400">{parseError}</p>}
+              {parseError && <p className="mt-3 text-sm text-red-500">{parseError}</p>}
             </div>
           )}
 
-          {/* ── STEP: PREVIEW ── */}
+          {/* PREVIEW */}
           {step === "preview" && result && (
             <div className="space-y-5">
 
               {/* Contact fields */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs text-slate-500">Group name</label>
-                  <input value={groupName} onChange={(e) => setGroupName(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none" />
+                  <label className="mb-1 block text-xs text-gray-500">Group name</label>
+                  <input value={groupName} onChange={(e) => setGroupName(e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-500">Group type</label>
-                  <select value={groupType} onChange={(e) => setGroupType(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none">
+                  <label className="mb-1 block text-xs text-gray-500">Group type</label>
+                  <select value={groupType} onChange={(e) => setGroupType(e.target.value)} className={inputCls}>
                     <option value="congregation">Congregation</option>
                     <option value="circuit">Circuit</option>
                     <option value="regional">Regional</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-500">Contact name</label>
-                  <input value={contactName} onChange={(e) => setContactName(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none" />
+                  <label className="mb-1 block text-xs text-gray-500">Contact name</label>
+                  <input value={contactName} onChange={(e) => setContactName(e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-500">Contact email</label>
-                  <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none" />
+                  <label className="mb-1 block text-xs text-gray-500">Contact email</label>
+                  <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-500">Contact mobile</label>
-                  <input value={contactMobile} onChange={(e) => setContactMobile(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none" />
+                  <label className="mb-1 block text-xs text-gray-500">Contact mobile</label>
+                  <input value={contactMobile} onChange={(e) => setContactMobile(e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-slate-500">Department</label>
-                  <select value={dept} onChange={(e) => setDept(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none">
+                  <label className="mb-1 block text-xs text-gray-500">Department</label>
+                  <select value={dept} onChange={(e) => setDept(e.target.value)} className={inputCls}>
                     <option value="CS">CS — Cleaning Supplies</option>
                     <option value="FA">FA — First Aid</option>
                   </select>
@@ -198,35 +193,35 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
 
               {/* Matched lines */}
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                   {result.matched.length} line{result.matched.length !== 1 ? "s" : ""} matched
                 </p>
-                <div className="overflow-hidden rounded-xl border border-slate-800">
+                <div className="overflow-hidden rounded-xl border border-gray-200">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-800 bg-slate-800/60 text-xs text-slate-500">
+                      <tr className="border-b border-gray-200 bg-gray-50 text-xs text-gray-500">
                         <th className="px-4 py-2 text-left font-semibold uppercase tracking-wider">Product</th>
                         <th className="px-4 py-2 text-right font-semibold uppercase tracking-wider">Qty</th>
                         <th className="px-4 py-2 text-right font-semibold uppercase tracking-wider">Unit cost</th>
                         <th className="px-4 py-2 text-right font-semibold uppercase tracking-wider">Line total</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-slate-900">
+                    <tbody className="bg-white">
                       {result.matched.map((l) => (
-                        <tr key={l.code} className="border-t border-slate-800">
+                        <tr key={l.code} className="border-t border-gray-100">
                           <td className="px-4 py-2.5">
-                            <p className="font-medium text-white">{l.product.name}</p>
-                            {l.product.variant && <p className="text-xs text-slate-500">{l.product.variant}</p>}
-                            <p className="font-mono text-xs text-slate-600">{l.code}</p>
+                            <p className="font-medium text-gray-900">{l.product.name}</p>
+                            {l.product.variant && <p className="text-xs text-gray-400">{l.product.variant}</p>}
+                            <p className="font-mono text-xs text-gray-300">{l.code}</p>
                           </td>
-                          <td className="px-4 py-2.5 text-right tabular-nums text-slate-300">{l.qty}</td>
-                          <td className="px-4 py-2.5 text-right tabular-nums text-slate-400">{fmtGbp(l.product.unitCost)}</td>
-                          <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-white">{fmtGbp(l.qty * l.product.unitCost)}</td>
+                          <td className="px-4 py-2.5 text-right tabular-nums text-gray-700">{l.qty}</td>
+                          <td className="px-4 py-2.5 text-right tabular-nums text-gray-400">{fmtGbp(l.product.unitCost)}</td>
+                          <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-gray-900">{fmtGbp(l.qty * l.product.unitCost)}</td>
                         </tr>
                       ))}
-                      <tr className="border-t border-slate-700 bg-slate-900/80">
-                        <td colSpan={3} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Total</td>
-                        <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-400">{fmtGbp(totalCost)}</td>
+                      <tr className="border-t border-gray-200 bg-gray-50">
+                        <td colSpan={3} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">Total</td>
+                        <td className="px-4 py-2 text-right tabular-nums font-bold text-orange-500">{fmtGbp(totalCost)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -235,13 +230,13 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
 
               {/* Unmatched codes */}
               {result.unmatched.length > 0 && (
-                <div className="rounded-xl border border-amber-700/40 bg-amber-950/20 px-4 py-3">
-                  <p className="text-sm font-semibold text-amber-300">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-amber-700">
                     {result.unmatched.length} code{result.unmatched.length !== 1 ? "s" : ""} not found in product catalogue — not imported:
                   </p>
                   <ul className="mt-1 space-y-0.5">
                     {result.unmatched.map((c) => (
-                      <li key={c} className="font-mono text-xs text-amber-500">{c}</li>
+                      <li key={c} className="font-mono text-xs text-amber-600">{c}</li>
                     ))}
                   </ul>
                 </div>
@@ -249,12 +244,12 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
             </div>
           )}
 
-          {/* ── STEP: DONE ── */}
+          {/* DONE */}
           {step === "done" && (
             <div className="py-8 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-900/40 text-green-400 text-2xl">✓</div>
-              <p className="text-base font-semibold text-white">Order imported</p>
-              <p className="mt-1 text-sm text-slate-400">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">✓</div>
+              <p className="text-base font-semibold text-gray-900">Order imported</p>
+              <p className="mt-1 text-sm text-gray-500">
                 {groupName} — {result?.matched.length} line{result?.matched.length !== 1 ? "s" : ""} added to group orders.
               </p>
             </div>
@@ -262,23 +257,23 @@ export default function ImportOrderModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-slate-800 px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
           {step === "done" ? (
             <button onClick={onClose}
-              className="rounded-lg bg-slate-700 px-5 py-2 text-sm font-semibold text-white hover:bg-slate-600">
+              className="rounded-lg bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-gray-700 transition-colors">
               Close
             </button>
           ) : (
             <>
               <button onClick={onClose}
-                className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800">
+                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors">
                 Cancel
               </button>
               {step === "preview" && result && (
                 <button
                   onClick={submit}
                   disabled={isSubmitting || result.matched.length === 0}
-                  className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50 transition-colors"
                 >
                   {isSubmitting ? "Importing…" : `Import ${result.matched.length} line${result.matched.length !== 1 ? "s" : ""}`}
                 </button>

@@ -32,8 +32,8 @@ export default function UpdateStatusButton({ orderId, currentStatus }: { orderId
           onClick={() => handleChange(s)}
           className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed ${
             s === currentStatus
-              ? "bg-white text-slate-900"
-              : "border border-slate-700 text-slate-400 hover:bg-slate-800 disabled:opacity-40"
+              ? "bg-gray-900 text-white"
+              : "border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-40"
           }`}
         >
           {LABELS[s]}

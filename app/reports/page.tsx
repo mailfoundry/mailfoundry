@@ -41,21 +41,21 @@ export default async function ReportsPage() {
   return (
     <AppShell active="reports">
       <header className="mb-10">
-        <p className="text-sm text-slate-400">Analytics</p>
+        <p className="text-sm text-gray-500">Analytics</p>
         <h2 className="text-3xl font-bold">Reports</h2>
       </header>
 
       {/* Top-level stats */}
       <div className="mb-10 grid gap-4 md:grid-cols-3 xl:grid-cols-5">
         {[
-          { label: "Campaigns", value: totalCampaigns, color: "text-white" },
-          { label: "Emails Sent", value: totalSent, color: "text-green-400" },
+          { label: "Campaigns", value: totalCampaigns, color: "text-gray-900" },
+          { label: "Emails Sent", value: totalSent, color: "text-green-600" },
           { label: "Total Opens", value: totalOpens, color: "text-sky-400" },
           { label: "Total Clicks", value: totalClicks, color: "text-orange-400" },
-          { label: "Failed Sends", value: totalFailed, color: "text-red-400" },
+          { label: "Failed Sends", value: totalFailed, color: "text-red-500" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <p className="text-sm text-slate-400">{s.label}</p>
+          <div key={s.label} className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+            <p className="text-sm text-gray-500">{s.label}</p>
             <p className={`mt-3 text-3xl font-bold ${s.color}`}>{s.value}</p>
           </div>
         ))}
@@ -63,34 +63,34 @@ export default async function ReportsPage() {
 
       {/* Overall rates */}
       <div className="mb-10 grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Overall Open Rate</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Overall Open Rate</p>
           <p className="mt-3 text-4xl font-bold text-sky-400">{overallOpenRate}%</p>
-          <div className="mt-4 h-2 w-full rounded-full bg-slate-800">
+          <div className="mt-4 h-2 w-full rounded-full bg-gray-100">
             <div className="h-2 rounded-full bg-sky-500" style={{ width: `${overallOpenRate}%` }} />
           </div>
-          <p className="mt-2 text-xs text-slate-500">{totalOpens} opens from {totalSent} sent</p>
+          <p className="mt-2 text-xs text-gray-400">{totalOpens} opens from {totalSent} sent</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <p className="text-sm text-slate-400">Overall Click Rate</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Overall Click Rate</p>
           <p className="mt-3 text-4xl font-bold text-orange-400">{overallClickRate}%</p>
-          <div className="mt-4 h-2 w-full rounded-full bg-slate-800">
+          <div className="mt-4 h-2 w-full rounded-full bg-gray-100">
             <div className="h-2 rounded-full bg-orange-500" style={{ width: `${overallClickRate}%` }} />
           </div>
-          <p className="mt-2 text-xs text-slate-500">{totalClicks} clicks from {totalSent} sent</p>
+          <p className="mt-2 text-xs text-gray-400">{totalClicks} clicks from {totalSent} sent</p>
         </div>
       </div>
 
       {/* Per-campaign table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900">
-        <div className="border-b border-slate-800 px-6 py-4">
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 px-6 py-4">
           <h3 className="text-lg font-semibold">Campaign Breakdown</h3>
         </div>
         {campaignRows.length === 0 ? (
-          <p className="px-6 py-8 text-sm text-slate-500">No campaigns yet.</p>
+          <p className="px-6 py-8 text-sm text-gray-400">No campaigns yet.</p>
         ) : (
           <table className="min-w-full text-sm">
-            <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
+            <thead className="border-b border-gray-200 bg-gray-50/50 text-left text-gray-500">
               <tr>
                 <th className="px-6 py-4 font-medium">Campaign</th>
                 <th className="px-6 py-4 font-medium">List</th>
@@ -104,24 +104,24 @@ export default async function ReportsPage() {
             </thead>
             <tbody>
               {campaignRows.map((c) => (
-                <tr key={c.id} className="border-t border-slate-800 hover:bg-slate-950/30">
+                <tr key={c.id} className="border-t border-gray-200 hover:bg-gray-50/30">
                   <td className="px-6 py-4">
                     <Link href={`/campaigns/${c.id}`} className="hover:underline">{c.name}</Link>
                   </td>
-                  <td className="px-6 py-4 text-slate-400">{c.list.name}</td>
-                  <td className="px-6 py-4 text-green-400 font-semibold">{c.sent}</td>
+                  <td className="px-6 py-4 text-gray-500">{c.list.name}</td>
+                  <td className="px-6 py-4 text-green-600 font-semibold">{c.sent}</td>
                   <td className="px-6 py-4 text-sky-400">{c.opens}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-16 rounded-full bg-slate-800">
+                      <div className="h-1.5 w-16 rounded-full bg-gray-100">
                         <div className="h-1.5 rounded-full bg-sky-500" style={{ width: `${c.openRate}%` }} />
                       </div>
-                      <span className="text-slate-300">{c.openRate}%</span>
+                      <span className="text-gray-600">{c.openRate}%</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-400">{c.skipped}</td>
-                  <td className="px-6 py-4 text-red-400">{c.failed || "—"}</td>
-                  <td className="px-6 py-4 text-slate-400">{new Date(c.createdAt).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 text-gray-500">{c.skipped}</td>
+                  <td className="px-6 py-4 text-red-500">{c.failed || "—"}</td>
+                  <td className="px-6 py-4 text-gray-500">{new Date(c.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

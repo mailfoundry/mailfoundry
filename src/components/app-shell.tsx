@@ -26,7 +26,7 @@ type AppShellProps = {
 
 export default function AppShell({ active, children, ibsaOnly = false, isMainUser = false, orderCounts }: AppShellProps) {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen bg-gray-50 text-gray-900">
       <div className="flex min-h-screen">
         <Sidebar active={active} ibsaOnly={ibsaOnly} isMainUser={isMainUser} orderCounts={orderCounts} />
         <section className="flex-1 p-10">{children}</section>

@@ -20,29 +20,29 @@ export default async function ListsPage() {
     <AppShell active="lists">
       <header className="mb-10 flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-400">Audience</p>
+          <p className="text-sm text-gray-500">Audience</p>
           <h2 className="text-3xl font-bold">Lists</h2>
         </div>
 
         <Link
           href="/lists/new"
-          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900"
+          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
         >
           Add List
         </Link>
       </header>
 
       {lists.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 p-8">
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-500 p-8">
           <h3 className="text-xl font-semibold">No lists yet</h3>
-          <p className="mt-3 max-w-2xl text-slate-400">
+          <p className="mt-3 max-w-2xl text-gray-500">
             Create your first list to start organising contacts for campaigns.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
           <table className="min-w-full text-sm">
-            <thead className="border-b border-slate-800 bg-slate-950/50 text-left text-slate-400">
+            <thead className="border-b border-gray-200 bg-gray-50/50 text-left text-gray-500">
               <tr>
                 <th className="px-6 py-4 font-medium">Name</th>
                 <th className="px-6 py-4 font-medium">Contacts</th>
@@ -107,7 +107,7 @@ export default async function ListsPage() {
                 ).length;
 
                 return (
-                  <tr key={list.id} className="border-t border-slate-800">
+                  <tr key={list.id} className="border-t border-gray-200">
                     <td className="px-6 py-4">
                       <Link
                         href={`/lists/${list.id}`}
@@ -117,24 +117,24 @@ export default async function ListsPage() {
                       </Link>
                     </td>
 
-                    <td className="px-6 py-4 text-slate-300">
+                    <td className="px-6 py-4 text-gray-600">
                       {totalContacts}
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-green-400">
+                      <span className="font-semibold text-green-600">
                         {eligibleContacts}
                       </span>
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-red-400">
+                      <span className="font-semibold text-red-500">
                         {unsubscribedContacts}
                       </span>
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-slate-300">
+                      <span className="font-semibold text-gray-600">
                         {archivedContacts}
                       </span>
                     </td>
@@ -146,13 +146,13 @@ export default async function ListsPage() {
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-red-400">
+                      <span className="font-semibold text-red-500">
                         {complainedContacts}
                       </span>
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-slate-400">
+                      <span className="font-semibold text-gray-500">
                         {unknownContacts}
                       </span>
                     </td>
