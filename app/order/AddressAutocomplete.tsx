@@ -30,7 +30,8 @@ type Props = {
 };
 
 export default function AddressAutocomplete({ name = "deliveryAddress", placeholder, className }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef  = useRef<HTMLInputElement>(null);
+  const hiddenRef = useRef<HTMLInputElement>(null);
   const initialised = useRef(false);
 
   useEffect(() => {
@@ -40,19 +41,21 @@ export default function AddressAutocomplete({ name = "deliveryAddress", placehol
     function attach() {
       if (!inputRef.current || !window.google?.maps?.places || initialised.current) return;
       initialised.current = true;
+
       const ac = new window.google.maps.places.Autocomplete(inputRef.current, {
         componentRestrictions: { country: "gb" },
         fields: ["formatted_address"],
       });
+
       ac.addListener("place_changed", () => {
         const place = ac.getPlace();
-        if (place?.formatted_address && inputRef.current) {
-          inputRef.current.value = place.formatted_address;
+        if (place?.formatted_address) {
+          if (inputRef.current)  inputRef.current.value  = place.formatted_address;
+          if (hiddenRef.current) hiddenRef.current.value = place.formatted_address;
         }
       });
     }
 
-    // Poll until the Places library is ready (avoids callback timing issues)
     const poll = setInterval(() => {
       if (window.google?.maps?.places) {
         clearInterval(poll);
@@ -60,7 +63,6 @@ export default function AddressAutocomplete({ name = "deliveryAddress", placehol
       }
     }, 100);
 
-    // Load the script if not already present
     if (!document.querySelector('script[data-places="1"]')) {
       const script = document.createElement("script");
       script.setAttribute("data-places", "1");
@@ -76,14 +78,22 @@ export default function AddressAutocomplete({ name = "deliveryAddress", placehol
   return (
     <>
       <style>{`.pac-container { z-index: 9999 !important; }`}</style>
+
+      {/* Visible input — neutral name so Safari doesn't trigger its address autofill */}
       <input
         ref={inputRef}
         type="text"
-        name={name}
+        name="address-search"
+        autoComplete="new-password"
         placeholder={placeholder ?? "Start typing an address or postcode…"}
         className={className}
-        autoComplete="off"
+        onChange={(e) => {
+          if (hiddenRef.current) hiddenRef.current.value = e.target.value;
+        }}
       />
+
+      {/* Hidden input carries the value in FormData */}
+      <input ref={hiddenRef} type="hidden" name={name} />
     </>
   );
 }
