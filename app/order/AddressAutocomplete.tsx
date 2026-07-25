@@ -83,11 +83,7 @@ export default function AddressAutocomplete({
     svcRef.current.getPlacePredictions(
       { input, componentRestrictions: { country: "gb" } },
       (preds, status) => {
-        setSuggestions(
-          status === window.google?.maps?.places?.PlacesServiceStatus.OK && preds
-            ? preds.map((p) => p.description)
-            : []
-        );
+        setSuggestions(status === "OK" && preds ? preds.map((p) => p.description) : []);
       }
     );
   }, []);
