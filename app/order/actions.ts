@@ -164,10 +164,15 @@ export async function submitGroupOrder(formData: FormData) {
         ${grandTotalHtml}
 
         <div style="margin:24px 0 0;padding:20px;background:#1e293b;border-radius:10px;border-left:3px solid #f97316;">
-          <p style="color:#f97316;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;margin:0 0 6px;">Your account</p>
-          <p style="color:#94a3b8;font-size:13px;margin:0 0 16px;">View your order history and re-order with one click — no password needed.</p>
+          <p style="color:#f97316;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;margin:0 0 8px;">Your Xylo account</p>
+          <p style="color:#cbd5e1;font-size:13px;margin:0 0 12px;">We've saved your order to your Xylo account. From there you can:</p>
+          <table style="margin:0 0 16px;border-collapse:collapse;">
+            <tr><td style="padding:2px 8px 2px 0;color:#f97316;font-size:12px;">✓</td><td style="color:#94a3b8;font-size:13px;padding:2px 0;">View your order details and current status</td></tr>
+            <tr><td style="padding:2px 8px 2px 0;color:#f97316;font-size:12px;">✓</td><td style="color:#94a3b8;font-size:13px;padding:2px 0;">Re-order previous items with a single click</td></tr>
+            <tr><td style="padding:2px 8px 2px 0;color:#f97316;font-size:12px;">✓</td><td style="color:#94a3b8;font-size:13px;padding:2px 0;">See your full order history across all events</td></tr>
+          </table>
           <a href="${accountUrl}" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">Access your account →</a>
-          <p style="color:#475569;font-size:11px;margin:12px 0 0;">Link valid for 7 days. <a href="${BASE_URL}/account/login" style="color:#64748b;">Request a new link</a> any time.</p>
+          <p style="color:#475569;font-size:11px;margin:12px 0 0;">🔒 <strong style="color:#64748b;">No password needed, and nothing to guess.</strong> Your link is unique to you, expires in 7 days, and works only once — so your account stays private even if this email is ever forwarded. <a href="${BASE_URL}/account/login" style="color:#64748b;">Request a new link</a> any time.</p>
         </div>
 
         <p style="color:#94a3b8;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
