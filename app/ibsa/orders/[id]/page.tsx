@@ -24,6 +24,9 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled:  "bg-slate-800 text-slate-500",
 };
 
+const fmtGbp = (n: number) =>
+  n.toLocaleString("en-GB", { style: "currency", currency: "GBP" });
+
 export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
 
@@ -43,12 +46,16 @@ export default async function OrderDetailPage({ params }: Props) {
   const csLines = order.lines.filter((l) => l.dept === "CS");
   const faLines = order.lines.filter((l) => l.dept === "FA");
 
+  const grandTotal    = order.lines.reduce((s, l) => s + l.product.unitCost * l.qty, 0);
+  const grandProfit   = order.lines.reduce((s, l) => s + (l.product.unitCost - (l.product.xyloCost ?? l.product.unitCost)) * l.qty, 0);
+  const grandMarginPct = grandTotal > 0 ? (grandProfit / grandTotal) * 100 : 0;
+
   const fmtDate = (d: Date) =>
     d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   return (
     <IbsaAppShell active="ibsa-orders">
-    <div className="p-6 max-w-3xl">
+    <div className="p-6">
       <div className="mb-6 flex items-center gap-3">
         <Link href="/ibsa/orders" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
           ← Orders
@@ -93,23 +100,87 @@ export default async function OrderDetailPage({ params }: Props) {
       </div>
 
       {/* Order lines */}
-      {[{ label: "Cleaning Supplies", lines: csLines }, { label: "First Aid", lines: faLines }].map(({ label, lines }) =>
-        lines.length === 0 ? null : (
+      {[{ label: "Cleaning Supplies", lines: csLines }, { label: "First Aid", lines: faLines }].map(({ label, lines }) => {
+        if (lines.length === 0) return null;
+        const sectionTotal  = lines.reduce((s, l) => s + l.product.unitCost * l.qty, 0);
+        const sectionProfit = lines.reduce((s, l) => s + (l.product.unitCost - (l.product.xyloCost ?? l.product.unitCost)) * l.qty, 0);
+        const sectionPct    = sectionTotal > 0 ? (sectionProfit / sectionTotal) * 100 : 0;
+        return (
           <div key={label} className="mb-6">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</p>
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-              {lines.map((l, i) => (
-                <div key={l.id} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-slate-800" : ""}`}>
-                  <div>
-                    <p className="font-medium text-white">{l.product.name}{l.product.variant ? ` — ${l.product.variant}` : ""}</p>
-                    <p className="text-xs text-slate-500">{l.product.code}</p>
-                  </div>
-                  <span className="rounded-lg bg-slate-800 px-3 py-1 text-sm font-bold text-white">×{l.qty}</span>
-                </div>
-              ))}
+            <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800">
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Code</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Product</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Sale</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Cost</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Qty</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Line Sale</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Margin £</th>
+                    <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Margin %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lines.map((l, i) => {
+                    const sale      = l.product.unitCost;
+                    const cost      = l.product.xyloCost ?? l.product.unitCost;
+                    const lineTotal = sale * l.qty;
+                    const lineCost  = cost * l.qty;
+                    const margin    = lineTotal - lineCost;
+                    const marginPct = lineTotal > 0 ? (margin / lineTotal) * 100 : 0;
+                    return (
+                      <tr key={l.id} className={i > 0 ? "border-t border-slate-800/60" : ""}>
+                        <td className="px-4 py-3 font-mono text-xs text-slate-500">{l.product.code}</td>
+                        <td className="px-4 py-3 text-white">
+                          {l.product.name}
+                          {l.product.variant && (
+                            <span className="ml-1.5 text-xs text-slate-400">{l.product.variant}</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-right text-slate-300">{fmtGbp(sale)}</td>
+                        <td className="px-4 py-3 text-right text-slate-500">{fmtGbp(cost)}</td>
+                        <td className="px-4 py-3 text-right font-bold text-white">{l.qty}</td>
+                        <td className="px-4 py-3 text-right text-slate-300">{fmtGbp(lineTotal)}</td>
+                        <td className="px-4 py-3 text-right text-green-400">{fmtGbp(margin)}</td>
+                        <td className="px-4 py-3 text-right text-green-400">{marginPct.toFixed(1)}%</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-slate-700">
+                    <td colSpan={5} className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      {label} total
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-amber-400">{fmtGbp(sectionTotal)}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-green-400">{fmtGbp(sectionProfit)}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-green-400">{sectionPct.toFixed(1)}%</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
-        )
+        );
+      })}
+
+      {/* Grand total */}
+      {order.lines.length > 0 && (
+        <div className="mb-6 flex items-center justify-end gap-8 rounded-2xl border border-slate-800 bg-slate-900 px-6 py-4">
+          <div className="text-right">
+            <p className="text-xs text-slate-500">Order total</p>
+            <p className="text-xl font-bold text-amber-400">{fmtGbp(grandTotal)}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-slate-500">Total margin</p>
+            <p className="text-xl font-bold text-green-400">{fmtGbp(grandProfit)}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-slate-500">Margin %</p>
+            <p className="text-xl font-bold text-green-400">{grandMarginPct.toFixed(1)}%</p>
+          </div>
+        </div>
       )}
 
       {/* Invoice */}
