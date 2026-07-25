@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import Logo from "../src/components/logo";
+import ProductMarquee from "./ProductMarquee";
 
 export default async function HomePage() {
   const cookieStore = await cookies();
@@ -49,6 +50,9 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* Product marquee */}
+      <ProductMarquee />
 
       {/* Features */}
       <section className="border-t border-gray-200 bg-gray-50">
