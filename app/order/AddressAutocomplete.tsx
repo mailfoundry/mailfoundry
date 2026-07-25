@@ -7,6 +7,23 @@ declare global {
     _placesReady?: boolean;
     _placesCallbacks?: (() => void)[];
     initPlacesAutocomplete?: () => void;
+    google?: {
+      maps?: {
+        places?: {
+          Autocomplete: new (
+            input: HTMLInputElement,
+            opts?: {
+              componentRestrictions?: { country: string };
+              fields?: string[];
+              types?: string[];
+            }
+          ) => {
+            addListener: (event: string, cb: () => void) => void;
+            getPlace: () => { formatted_address?: string };
+          };
+        };
+      };
+    };
   }
 }
 
