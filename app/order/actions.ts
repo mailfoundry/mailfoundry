@@ -86,7 +86,6 @@ export async function submitGroupOrder(formData: FormData) {
   const fmtHtmlLines = (ls: typeof csLines) => ls.map((l) => {
     const lineTotal = l.qty * l.product.unitCost;
     return `<tr>
-      <td style="padding:7px 8px;color:#94a3b8;font-size:11px;border-bottom:1px solid #0f172a;font-family:monospace;">${l.product.code}</td>
       <td style="padding:7px 8px;color:#f1f5f9;font-size:13px;border-bottom:1px solid #0f172a;">${l.product.name}${l.product.variant ? `<br><span style="color:#64748b;font-size:11px;">${l.product.variant}</span>` : ""}</td>
       <td style="padding:7px 8px;color:#f1f5f9;font-size:13px;text-align:center;border-bottom:1px solid #0f172a;font-weight:bold;">${l.qty}</td>
       <td style="padding:7px 8px;color:#94a3b8;font-size:12px;text-align:right;border-bottom:1px solid #0f172a;">${fmtGbp(l.product.unitCost)}</td>
@@ -100,7 +99,6 @@ export async function submitGroupOrder(formData: FormData) {
     <p style="color:#cbd5e1;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 6px;">${label}</p>
     <table style="width:100%;border-collapse:collapse;background:#1e293b;border-radius:8px;overflow:hidden;margin-bottom:4px;">
       <thead><tr style="background:#0f172a;">
-        <th style="padding:6px 8px;color:#475569;font-size:10px;text-align:left;text-transform:uppercase;letter-spacing:.05em;width:72px;">Code</th>
         <th style="padding:6px 8px;color:#475569;font-size:10px;text-align:left;text-transform:uppercase;letter-spacing:.05em;">Product</th>
         <th style="padding:6px 8px;color:#475569;font-size:10px;text-align:center;text-transform:uppercase;letter-spacing:.05em;width:36px;">Qty</th>
         <th style="padding:6px 8px;color:#475569;font-size:10px;text-align:right;text-transform:uppercase;letter-spacing:.05em;width:64px;">Unit</th>
@@ -108,7 +106,7 @@ export async function submitGroupOrder(formData: FormData) {
       </tr></thead>
       <tbody>${fmtHtmlLines(ls)}</tbody>
       <tfoot><tr>
-        <td colspan="4" style="padding:7px 8px;color:#64748b;font-size:12px;text-align:right;border-top:1px solid #0f172a;">Section total</td>
+        <td colspan="3" style="padding:7px 8px;color:#64748b;font-size:12px;text-align:right;border-top:1px solid #0f172a;">Section total</td>
         <td style="padding:7px 8px;color:#f97316;font-size:13px;text-align:right;font-weight:700;border-top:1px solid #0f172a;">${fmtGbp(sectionTotal(ls))}</td>
       </tr></tfoot>
     </table>`;
