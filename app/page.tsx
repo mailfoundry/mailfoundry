@@ -13,7 +13,7 @@ export default async function HomePage() {
     <main className="min-h-screen bg-white text-gray-900">
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-6">
-        <Logo height={38} />
+        <Logo height={52} />
         <Link
           href={isLoggedIn ? dashHref : "/login"}
           className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
@@ -45,7 +45,7 @@ export default async function HomePage() {
             href="/order"
             className="rounded-xl bg-orange-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
           >
-            Place a group order
+            Start Your Order Here
           </Link>
         </div>
       </section>
