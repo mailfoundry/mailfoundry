@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { submitGroupOrder } from "./actions";
 import { getImageSrc } from "../../src/lib/image-utils";
+import AddressAutocomplete from "./AddressAutocomplete";
 
 type Product = {
   id: string;
@@ -84,7 +85,6 @@ export default function OrderFormClient({
   const [contactName, setContactName]         = useState("");
   const [contactEmail, setContactEmail]       = useState("");
   const [contactMobile, setContactMobile]     = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [requiredByDate, setRequiredByDate]   = useState("");
   const [notes, setNotes]                     = useState("");
 
@@ -371,9 +371,9 @@ export default function OrderFormClient({
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Delivery address (optional)</label>
-                <textarea name="deliveryAddress" rows={3} value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)}
-                  placeholder={"Hall / Venue name\nStreet address\nCity, Postcode"}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 resize-none" />
+                <AddressAutocomplete
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
+                />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs text-gray-500">Additional notes (optional)</label>
