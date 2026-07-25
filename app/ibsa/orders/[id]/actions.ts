@@ -1,5 +1,6 @@
 "use server";
 
+import Stripe from "stripe"; // class only — no client instantiated here
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../src/lib/prisma";
@@ -67,7 +68,7 @@ export async function sendStripeInvoice(orderId: string) {
       customer: stripeCustomerId,
       invoice: invoice.id,
       description,
-      unit_amount_decimal: String(Math.round(unitPrice * 100)), // per-unit in pence; Stripe multiplies by quantity
+      unit_amount_decimal: Stripe.Decimal.from(Math.round(unitPrice * 100)), // per-unit in pence; Stripe multiplies by quantity
       quantity: line.qty,
       currency: "gbp",
     });
