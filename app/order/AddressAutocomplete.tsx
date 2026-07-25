@@ -74,13 +74,16 @@ export default function AddressAutocomplete({ name = "deliveryAddress", placehol
   }, []);
 
   return (
-    <input
-      ref={inputRef}
-      type="text"
-      name={name}
-      placeholder={placeholder ?? "Start typing an address or postcode…"}
-      className={className}
-      autoComplete="off"
-    />
+    <>
+      <style>{`.pac-container { z-index: 9999 !important; }`}</style>
+      <input
+        ref={inputRef}
+        type="text"
+        name={name}
+        placeholder={placeholder ?? "Start typing an address or postcode…"}
+        className={className}
+        autoComplete="off"
+      />
+    </>
   );
 }
