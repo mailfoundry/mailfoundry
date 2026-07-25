@@ -6,6 +6,7 @@ import IbsaAppShell from "../../src/components/ibsa-app-shell";
 import { archiveConvention } from "./actions";
 import NewConventionButton from "./NewConventionButton";
 import OverviewCompleteButton from "./OverviewCompleteButton";
+import ConventionCarousel from "./ConventionCarousel";
 
 const fmtDate = (d: Date, opts?: Intl.DateTimeFormatOptions) =>
   d.toLocaleDateString("en-GB", opts ?? { day: "numeric", month: "short" });
@@ -356,6 +357,9 @@ export default async function IbsaPage({ searchParams }: Props) {
           </div>
         </section>
       )}
+
+      {/* Gallery carousel */}
+      <ConventionCarousel />
 
       {/* Past conventions */}
       {pastConventions.length > 0 && (
