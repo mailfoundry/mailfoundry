@@ -587,130 +587,141 @@ export default function OrderFormClient({
             </div>
           </div>
 
-          {/* Product tabs — CS / FA */}
-          <div className="mb-3 flex gap-2">
-            {(["CS", ...(hasFa ? ["FA"] : [])] as ("CS" | "FA")[]).map((tab) => {
-              const count = tab === "CS" ? csLines : faLines;
-              return (
-                <button key={tab} type="button" onClick={() => { setActiveTab(tab); setCategoryFilter("all"); }}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "border border-gray-300 text-gray-500 hover:bg-gray-100"}`}>
-                  {tab === "CS" ? "Cleaning Supplies" : "First Aid"}
-                  {count > 0 && (
-                    <span className={`rounded-full px-1.5 py-0.5 text-xs font-bold ${activeTab === tab ? "bg-white text-gray-900" : "bg-gray-200 text-gray-600"}`}>{count}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          {/* Two-column layout: product browser left, sticky basket right */}
+          <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-6 lg:items-start">
 
-          {/* Category filter tabs */}
-          {(() => {
-            const activeProducts = activeTab === "CS" ? csProducts : faProducts;
-            const cats = [...new Set(activeProducts.map(p => p.category))];
-            if (cats.length <= 1) return null;
-            return (
-              <>
-                <div className="mb-1 flex flex-wrap gap-2">
-                  <button type="button" onClick={() => setCategoryFilter("all")}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === "all" ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
-                    All
-                  </button>
-                  {cats.map(cat => {
-                    const catCount = activeProducts.filter(p => p.category === cat && (qty[p.id] ?? 0) > 0).length;
-                    return (
-                      <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
-                        className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
-                        {CATEGORY_LABELS[cat] ?? cat}
-                        {catCount > 0 && (
-                          <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
-                        )}
+            {/* ── Left: product browsing ── */}
+            <div>
+              {/* Product tabs — CS / FA */}
+              <div className="mb-3 flex gap-2">
+                {(["CS", ...(hasFa ? ["FA"] : [])] as ("CS" | "FA")[]).map((tab) => {
+                  const count = tab === "CS" ? csLines : faLines;
+                  return (
+                    <button key={tab} type="button" onClick={() => { setActiveTab(tab); setCategoryFilter("all"); }}
+                      className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "border border-gray-300 text-gray-500 hover:bg-gray-100"}`}>
+                      {tab === "CS" ? "Cleaning Supplies" : "First Aid"}
+                      {count > 0 && (
+                        <span className={`rounded-full px-1.5 py-0.5 text-xs font-bold ${activeTab === tab ? "bg-white text-gray-900" : "bg-gray-200 text-gray-600"}`}>{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Category filter tabs */}
+              {(() => {
+                const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+                const cats = [...new Set(activeProducts.map(p => p.category))];
+                if (cats.length <= 1) return null;
+                return (
+                  <>
+                    <div className="mb-1 flex flex-wrap gap-2">
+                      <button type="button" onClick={() => setCategoryFilter("all")}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === "all" ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                        All
                       </button>
-                    );
-                  })}
-                </div>
-                <p className="mb-3 text-[11px] text-gray-400">
-                  Pick a category to narrow the list, or search below to find a specific item.
-                </p>
-              </>
-            );
-          })()}
+                      {cats.map(cat => {
+                        const catCount = activeProducts.filter(p => p.category === cat && (qty[p.id] ?? 0) > 0).length;
+                        return (
+                          <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                            {CATEGORY_LABELS[cat] ?? cat}
+                            {catCount > 0 && (
+                              <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="mb-3 text-[11px] text-gray-400">
+                      Pick a category to narrow the list, or search below to find a specific item.
+                    </p>
+                  </>
+                );
+              })()}
 
-          {/* Product image carousel — images swap with selected category */}
-          {(() => {
-            let imgs: CarouselImage[] = [];
-            if (categoryFilter !== "all") {
-              const activeProducts = activeTab === "CS" ? csProducts : faProducts;
-              const filtered = activeProducts.filter((p) => p.category === categoryFilter);
-              const seen = new Set<string>();
-              for (const p of filtered) {
-                const src = p.imageUrl ? getImageSrc(p.imageUrl) : null;
-                if (src && !seen.has(src)) { seen.add(src); imgs.push({ src, alt: p.name }); }
-                const gsrc = p.groupImageUrl ? getImageSrc(p.groupImageUrl) : null;
-                if (gsrc && !seen.has(gsrc)) { seen.add(gsrc); imgs.push({ src: gsrc, alt: p.name }); }
-              }
-            }
-            // "all" (or no category images found) → use the curated default mix
-            return <ProductCarousel images={imgs} animKey={`${activeTab}_${categoryFilter}`} />;
-          })()}
+              {/* Product image carousel */}
+              {(() => {
+                let imgs: CarouselImage[] = [];
+                if (categoryFilter !== "all") {
+                  const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+                  const filtered = activeProducts.filter((p) => p.category === categoryFilter);
+                  const seen = new Set<string>();
+                  for (const p of filtered) {
+                    const src = p.imageUrl ? getImageSrc(p.imageUrl) : null;
+                    if (src && !seen.has(src)) { seen.add(src); imgs.push({ src, alt: p.name }); }
+                    const gsrc = p.groupImageUrl ? getImageSrc(p.groupImageUrl) : null;
+                    if (gsrc && !seen.has(gsrc)) { seen.add(gsrc); imgs.push({ src: gsrc, alt: p.name }); }
+                  }
+                }
+                return <ProductCarousel images={imgs} animKey={`${activeTab}_${categoryFilter}`} />;
+              })()}
 
-          {/* Search */}
-          <div className="mb-5 relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-            </svg>
-            <input type="search" placeholder="Search products…" value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none" />
-          </div>
+              {/* Search */}
+              <div className="mb-5 relative">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+                <input type="search" placeholder="Search products…" value={search} onChange={(e) => setSearch(e.target.value)}
+                  className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none" />
+              </div>
 
-          {/* Products */}
-          {renderProducts(activeTab === "CS" ? csProducts : faProducts)}
-
-          {/* Order Summary Invoice */}
-          <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">Order Summary</h2>
-              {totalLines > 0 && <span className="text-xs text-gray-400">{totalLines} item{totalLines !== 1 ? "s" : ""}</span>}
+              {/* Products */}
+              {renderProducts(activeTab === "CS" ? csProducts : faProducts)}
             </div>
 
-            {totalLines === 0 ? (
-              <p className="px-4 py-5 text-sm text-gray-400">No items added yet — select products above.</p>
-            ) : (
-              <div className="divide-y divide-gray-100">
-                {renderInvoiceSection("Cleaning Supplies", csOrderItems, csValue, "text-orange-400")}
-                {renderInvoiceSection("First Aid", faOrderItems, faValue, "text-blue-400")}
+            {/* ── Right: sticky basket ── */}
+            <div className="mt-8 lg:mt-0 lg:sticky lg:top-[72px]">
+              <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">Order Summary</h2>
+                  {totalLines > 0 && <span className="text-xs text-gray-400">{totalLines} item{totalLines !== 1 ? "s" : ""}</span>}
+                </div>
 
-                {/* VAT breakdown */}
-                <div className="px-4 py-3 bg-gray-50 space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-xs text-gray-500">Subtotal (ex VAT)</span>
-                    <span className="text-xs text-gray-700 tabular-nums">{fmtGbp(grandValue)}</span>
+                {totalLines === 0 ? (
+                  <p className="px-4 py-5 text-sm text-gray-400">No items added yet — select products to the left.</p>
+                ) : (
+                  <div className="divide-y divide-gray-100 max-h-[55vh] overflow-y-auto">
+                    {renderInvoiceSection("Cleaning Supplies", csOrderItems, csValue, "text-orange-400")}
+                    {renderInvoiceSection("First Aid", faOrderItems, faValue, "text-blue-400")}
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-xs text-gray-500">VAT (20%)</span>
-                    <span className="text-xs text-gray-700 tabular-nums">{fmtGbp(grandValue * 0.2)}</span>
+                )}
+
+                {/* VAT breakdown — always visible */}
+                {totalLines > 0 && (
+                  <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-500">Subtotal (ex VAT)</span>
+                      <span className="text-xs text-gray-700 tabular-nums">{fmtGbp(grandValue)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-500">VAT (20%)</span>
+                      <span className="text-xs text-gray-700 tabular-nums">{fmtGbp(grandValue * 0.2)}</span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t border-gray-200">
+                      <span className="text-sm font-bold text-gray-900">Total (inc VAT)</span>
+                      <span className="text-sm font-bold text-orange-500 tabular-nums">{fmtGbp(grandValue * 1.2)}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-gray-200">
-                    <span className="text-sm font-bold text-gray-900">Total (inc VAT)</span>
-                    <span className="text-sm font-bold text-orange-500 tabular-nums">{fmtGbp(grandValue * 1.2)}</span>
-                  </div>
+                )}
+
+                <div className="px-4 py-4 border-t border-gray-100">
+                  {!canSubmit && totalLines === 0 && (
+                    <p className="mb-3 text-xs text-gray-400">Fill in your details and add items to continue.</p>
+                  )}
+                  <button type="submit" disabled={!canSubmit || isPending}
+                    className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    {isPending ? "Submitting…" : "Submit order"}
+                  </button>
                 </div>
               </div>
-            )}
 
-            <div className="px-4 py-4 border-t border-gray-100">
-              {!canSubmit && totalLines === 0 && (
-                <p className="mb-3 text-xs text-gray-400">Fill in your details and add items to continue.</p>
-              )}
-              <button type="submit" disabled={!canSubmit || isPending}
-                className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                {isPending ? "Submitting…" : "Submit order"}
-              </button>
+              <p className="mt-3 text-center text-xs text-gray-400">
+                You&apos;ll receive a confirmation email once your order is submitted.
+              </p>
             </div>
-          </div>
 
-          <p className="mt-4 text-center text-xs text-gray-400">
-            You&apos;ll receive a confirmation email once your order is submitted.
-          </p>
+          </div>{/* end two-column grid */}
         </div>
       </form>
 
