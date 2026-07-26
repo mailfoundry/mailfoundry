@@ -406,7 +406,9 @@ export default function OrderFormClient({
 
           {/* Header */}
           <div className="mb-8">
-            <p className="text-sm font-semibold text-orange-500">IBSA · Xylo (UK) Ltd</p>
+            <div className="mb-4">
+              <Image src="/logo-horizontal.svg" alt="Xylo (UK) Ltd" width={160} height={40} priority />
+            </div>
             <h1 className="mt-1 text-2xl font-bold text-gray-900">Supply Order Form</h1>
             <p className="mt-1 text-sm text-gray-500">Select the products you need and submit your order. We&apos;ll be in touch to confirm.</p>
           </div>
@@ -604,6 +606,18 @@ export default function OrderFormClient({
           </p>
         </div>
       </form>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-white mt-8">
+        <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+          <Image src="/logo-horizontal.svg" alt="Xylo (UK) Ltd" width={100} height={25} />
+          <p className="text-center text-xs text-gray-400 leading-relaxed sm:text-right">
+            Xylo (UK) Ltd · R08 Regent Works Studio, Regent Works, Lawley Street, Longton, Staffs. ST3 1LZ
+            <span className="mx-1.5 text-gray-300">|</span>Co. Reg: GB:073 23863
+            <span className="mx-1.5 text-gray-300">|</span>VAT Reg No: 442 8892 61
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }
