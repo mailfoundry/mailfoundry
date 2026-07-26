@@ -3,10 +3,16 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
 // ── type shims for the new Places API ────────────────────────────────────────
+interface AddressComponent { longText: string; shortText: string; types: string[]; }
 interface PlacePrediction {
   text: { toString(): string };
   toPlace(): {
-    fetchFields(o: { fields: string[] }): Promise<{ place: { formattedAddress?: string } }>;
+    fetchFields(o: { fields: string[] }): Promise<{
+      place: {
+        formattedAddress?: string;
+        addressComponents?: AddressComponent[];
+      };
+    }>;
   };
 }
 interface Suggestion { placePrediction: PlacePrediction; }
@@ -116,8 +122,21 @@ export default function AddressAutocomplete({
     setResolving(true);
     try {
       const place = item.prediction.toPlace();
-      const { place: detail } = await place.fetchFields({ fields: ["formattedAddress"] });
-      const full = detail.formattedAddress ?? item.label;
+      const { place: detail } = await place.fetchFields({
+        fields: ["formattedAddress", "addressComponents"],
+      });
+      const postcode = detail.addressComponents?.find(
+        (c) => c.types.includes("postal_code")
+      )?.longText;
+      let full = detail.formattedAddress ?? item.label;
+      // formattedAddress often omits the postcode for UK addresses — add it if missing
+      if (postcode && !full.includes(postcode)) {
+        full = full.replace(/, UK$/, "");
+        full = `${full}, ${postcode}`;
+      } else {
+        // Strip trailing ", UK" — implied for a GB-only form
+        full = full.replace(/, UK$/, "");
+      }
       setQuery(full);
       if (hiddenRef.current) hiddenRef.current.value = full;
     } catch {
