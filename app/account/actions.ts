@@ -63,56 +63,96 @@ export async function reorder(orderId: string, formData: FormData) {
     include: { lines: { include: { product: true } } },
   });
 
-  // Notify IBSA
+  // ── Shared helpers ────────────────────────────────────────────────────────────
   const csLines = newOrder.lines.filter((l) => l.dept === "CS");
   const faLines = newOrder.lines.filter((l) => l.dept === "FA");
+  const grandTotal = newOrder.lines.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
+  const fmtGbp = (n: number) => "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const fmtHtmlLines = (ls: typeof csLines) => ls.map((l) => `
+    <tr>
+      <td style="padding:7px 8px;color:#1e293b;font-size:13px;border-bottom:1px solid #f1f5f9;">${l.product.name}${l.product.variant ? `<br><span style="color:#94a3b8;font-size:11px;">${l.product.variant}</span>` : ""}</td>
+      <td style="padding:7px 8px;color:#1e293b;font-size:13px;text-align:center;border-bottom:1px solid #f1f5f9;font-weight:bold;">${l.qty}</td>
+      <td style="padding:7px 8px;color:#64748b;font-size:12px;text-align:right;border-bottom:1px solid #f1f5f9;">${fmtGbp(l.product.unitCost)}</td>
+      <td style="padding:7px 8px;color:#1e293b;font-size:13px;text-align:right;border-bottom:1px solid #f1f5f9;font-weight:600;">${fmtGbp(l.qty * l.product.unitCost)}</td>
+    </tr>`).join("");
+
+  const sectionTotal = (ls: typeof csLines) => ls.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
+
+  const sectionHtml = (label: string, ls: typeof csLines) => ls.length === 0 ? "" : `
+    <p style="color:#64748b;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 6px;">${label}</p>
+    <table style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:8px;overflow:hidden;margin-bottom:4px;border:1px solid #e2e8f0;">
+      <thead><tr style="background:#f8fafc;">
+        <th style="padding:6px 8px;color:#94a3b8;font-size:10px;text-align:left;text-transform:uppercase;letter-spacing:.05em;">Product</th>
+        <th style="padding:6px 8px;color:#94a3b8;font-size:10px;text-align:center;text-transform:uppercase;letter-spacing:.05em;width:36px;">Qty</th>
+        <th style="padding:6px 8px;color:#94a3b8;font-size:10px;text-align:right;text-transform:uppercase;letter-spacing:.05em;width:64px;">Unit</th>
+        <th style="padding:6px 8px;color:#94a3b8;font-size:10px;text-align:right;text-transform:uppercase;letter-spacing:.05em;width:72px;">Total</th>
+      </tr></thead>
+      <tbody>${fmtHtmlLines(ls)}</tbody>
+      <tfoot><tr>
+        <td colspan="3" style="padding:7px 8px;color:#94a3b8;font-size:12px;text-align:right;border-top:1px solid #f1f5f9;">Section total</td>
+        <td style="padding:7px 8px;color:#f97316;font-size:13px;text-align:right;font-weight:700;border-top:1px solid #f1f5f9;">${fmtGbp(sectionTotal(ls))}</td>
+      </tr></tfoot>
+    </table>`;
+
+  const grandTotalHtml = `
+    <table style="width:100%;border-collapse:collapse;margin-top:4px;">
+      <tr>
+        <td style="padding:10px 8px;color:#94a3b8;font-size:13px;text-align:right;border-top:1px solid #e2e8f0;">Order total</td>
+        <td style="padding:10px 8px;color:#f97316;font-size:15px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;width:80px;">${fmtGbp(grandTotal)}</td>
+      </tr>
+    </table>`;
+
+  const baseHtml = `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;padding:8px;">
+      <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
+        <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>`;
 
   const lineText = [...csLines, ...faLines]
     .map((l) => `  ${l.product.name}${l.product.variant ? ` (${l.product.variant})` : ""}: ${l.qty}`)
     .join("\n");
 
+  const paymentLabel: Record<string, string> = { bacs: "BACS Transfer", card: "Credit / Debit Card", po: "Purchase Order" };
+
+  // ── Notify IBSA ───────────────────────────────────────────────────────────────
   await sendEmail({
     to: IBSA_NOTIFY_EMAIL,
     subject: `Re-order — ${original.groupName}`,
-    text: `Re-order from ${original.groupName}\nContact: ${original.contactName} <${original.contactEmail}>\n\nItems:\n${lineText}\n\nOrder ID: ${newOrder.id}`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">
-        <div style="background:#0f172a;padding:28px;border-radius:12px;">
-          <p style="color:#f97316;font-size:14px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>
-          <h1 style="color:#fff;font-size:18px;margin:0 0 16px;">Re-order received</h1>
-          <p style="color:#94a3b8;font-size:13px;margin:0 0 4px;"><strong style="color:#cbd5e1;">${original.groupName}</strong></p>
-          <p style="color:#64748b;font-size:12px;margin:0 0 16px;">${original.contactName} · ${original.contactEmail}</p>
-          <table style="width:100%;border-collapse:collapse;background:#1e293b;border-radius:8px;overflow:hidden;">
-            ${newOrder.lines.map((l) => `<tr><td style="padding:6px 8px;color:#f1f5f9;font-size:13px;border-bottom:1px solid #0f172a;">${l.product.name}${l.product.variant ? ` (${l.product.variant})` : ""}</td><td style="padding:6px 8px;color:#f1f5f9;font-size:13px;text-align:right;border-bottom:1px solid #0f172a;font-weight:bold;">${l.qty}</td></tr>`).join("")}
-          </table>
-          <p style="color:#475569;font-size:11px;margin:16px 0 0;">Order ID: ${newOrder.id}</p>
+    text: `Re-order from ${original.groupName}\nContact: ${original.contactName} <${original.contactEmail}>${contactMobile ? `\nMobile: ${contactMobile}` : ""}${requiredBy ? `\nRequired by: ${requiredBy}` : ""}${deliveryAddress ? `\nDelivery: ${deliveryAddress}` : ""}${paymentMethod ? `\nPayment: ${paymentLabel[paymentMethod] ?? paymentMethod}` : ""}${notes ? `\nNotes: ${notes}` : ""}\n\nItems:\n${lineText}\n\nTotal: ${fmtGbp(grandTotal)}\nOrder ID: ${newOrder.id}`,
+    html: `${baseHtml}
+        <h1 style="color:#0f172a;font-size:20px;margin:0 0 20px;">Re-order received</h1>
+        <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:4px;border:1px solid #e2e8f0;">
+          <p style="color:#0f172a;font-size:16px;font-weight:bold;margin:0 0 10px;">${original.groupName}</p>
+          <p style="color:#64748b;font-size:13px;margin:0 0 3px;"><strong style="color:#1e293b;">Contact:</strong> ${original.contactName} · ${original.contactEmail}${contactMobile ? ` · ${contactMobile}` : ""}</p>
+          ${requiredBy ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Required by:</strong> ${requiredBy}</p>` : ""}
+          ${deliveryAddress ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Delivery:</strong> ${String(deliveryAddress).replace(/\n/g, ", ")}</p>` : ""}
+          ${paymentMethod ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Payment:</strong> ${paymentLabel[paymentMethod] ?? paymentMethod}</p>` : ""}
+          ${notes ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Notes:</strong> ${notes}</p>` : ""}
         </div>
-      </div>`,
+        ${sectionHtml("Cleaning Supplies", csLines)}
+        ${sectionHtml("First Aid", faLines)}
+        ${grandTotalHtml}
+        <p style="color:#94a3b8;font-size:11px;margin:20px 0 0;">Order ID: ${newOrder.id}</p>
+      </div>
+    </div>`,
   });
 
-  // Confirmation to customer
-  const grandTotal = newOrder.lines.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
-  const fmtGbp = (n: number) => "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
+  // ── Confirmation to customer ───────────────────────────────────────────────────
   await sendEmail({
     to: original.contactEmail,
     subject: `Re-order received — Xylo (UK) Ltd`,
     text: `Hi ${original.contactName},\n\nThank you — we've received your re-order for ${original.groupName}. We'll be in touch to confirm delivery details.${requiredBy ? `\n\nRequired by: ${requiredBy}` : ""}${deliveryAddress ? `\nDelivery: ${deliveryAddress}` : ""}\n\nOrder total: ${fmtGbp(grandTotal)}\n\nQuestions? Email ${IBSA_NOTIFY_EMAIL}.\n\nIBSA · Xylo (UK) Ltd`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">
-        <div style="background:#0f172a;padding:28px;border-radius:12px;">
-          <p style="color:#f97316;font-size:14px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>
-          <h1 style="color:#fff;font-size:18px;margin:0 0 8px;">Re-order received ✓</h1>
-          <p style="color:#94a3b8;font-size:13px;margin:0 0 4px;">Hi ${original.contactName}, we've received your re-order for <strong style="color:#f1f5f9;">${original.groupName}</strong> and will be in touch to confirm delivery details.</p>
-          ${requiredBy ? `<p style="color:#64748b;font-size:12px;margin:6px 0 0;"><strong style="color:#94a3b8;">Required by:</strong> ${requiredBy}</p>` : ""}
-          ${deliveryAddress ? `<p style="color:#64748b;font-size:12px;margin:3px 0 0;"><strong style="color:#94a3b8;">Delivery:</strong> ${deliveryAddress}</p>` : ""}
-          <table style="width:100%;border-collapse:collapse;background:#1e293b;border-radius:8px;overflow:hidden;margin-top:16px;">
-            ${newOrder.lines.map((l) => `<tr><td style="padding:6px 8px;color:#f1f5f9;font-size:13px;border-bottom:1px solid #0f172a;">${l.product.name}${l.product.variant ? ` (${l.product.variant})` : ""}</td><td style="padding:6px 8px;color:#f1f5f9;font-size:13px;text-align:right;border-bottom:1px solid #0f172a;">×${l.qty}</td><td style="padding:6px 8px;color:#f97316;font-size:13px;text-align:right;border-bottom:1px solid #0f172a;font-weight:bold;">${fmtGbp(l.qty * l.product.unitCost)}</td></tr>`).join("")}
-            <tr><td colspan="2" style="padding:8px;color:#64748b;font-size:12px;text-align:right;">Order total</td><td style="padding:8px;color:#f97316;font-size:14px;text-align:right;font-weight:bold;">${fmtGbp(grandTotal)}</td></tr>
-          </table>
-          <p style="color:#475569;font-size:11px;margin:16px 0 0;">Questions? Reply to this email or contact ${IBSA_NOTIFY_EMAIL}</p>
-        </div>
-      </div>`,
+    html: `${baseHtml}
+        <h1 style="color:#0f172a;font-size:20px;margin:0 0 4px;">Re-order received ✓</h1>
+        <p style="color:#64748b;font-size:14px;margin:0 0 6px;">Hi ${original.contactName}, thank you — we've received your re-order for <strong style="color:#1e293b;">${original.groupName}</strong> and will be in touch to confirm delivery details.</p>
+        ${requiredBy ? `<p style="color:#94a3b8;font-size:12px;margin:0 0 4px;"><strong style="color:#64748b;">Required by:</strong> ${requiredBy}</p>` : ""}
+        ${deliveryAddress ? `<p style="color:#94a3b8;font-size:12px;margin:0 0 16px;"><strong style="color:#64748b;">Delivery:</strong> ${String(deliveryAddress).replace(/\n/g, ", ")}</p>` : `<p style="margin:0 0 16px;"></p>`}
+        ${sectionHtml("Cleaning Supplies", csLines)}
+        ${sectionHtml("First Aid", faLines)}
+        ${grandTotalHtml}
+        <p style="color:#64748b;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
+      </div>
+    </div>`,
   });
 
   redirect("/account?reordered=1");
