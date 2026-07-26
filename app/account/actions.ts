@@ -135,6 +135,13 @@ export async function reorder(orderId: string, formData: FormData) {
       <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
         <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>`;
 
+  const emailFooterHtml = `
+    <div style="margin-top:28px;padding-top:16px;border-top:1px solid #f1f5f9;text-align:center;">
+      <p style="color:#f97316;font-size:13px;font-weight:bold;margin:0 0 4px;">Xylo (UK) Ltd</p>
+      <p style="color:#94a3b8;font-size:11px;margin:0 0 2px;line-height:1.6;">R08 Regent Works Studio, Regent Works, Lawley Street, Longton, Staffs. ST3 1LZ</p>
+      <p style="color:#94a3b8;font-size:11px;margin:0;line-height:1.6;">Co. Reg: GB:073 23863 &nbsp;&middot;&nbsp; VAT Reg No: 442 8892 61</p>
+    </div>`;
+
   const lineText = [...csLines, ...faLines]
     .map((l) => `  ${l.product.name}${l.product.variant ? ` (${l.product.variant})` : ""}: ${l.qty}`)
     .join("\n");
@@ -160,6 +167,7 @@ export async function reorder(orderId: string, formData: FormData) {
         ${sectionHtml("First Aid", faLines)}
         ${grandTotalHtml}
         <p style="color:#94a3b8;font-size:11px;margin:20px 0 0;">Order ID: ${newOrder.id}</p>
+        ${emailFooterHtml}
       </div>
     </div>`,
   });
@@ -191,6 +199,7 @@ export async function reorder(orderId: string, formData: FormData) {
           <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">Access your account →</a>
           <p style="color:#94a3b8;font-size:11px;margin:12px 0 0;">🔒 <strong style="color:#64748b;">No password needed, and nothing to guess.</strong> Your link is unique to you, expires in 7 days, and works only once — so your account stays private even if this email is ever forwarded. <a href="${BASE_URL}/account/login" style="color:#64748b;">Request a new link</a> any time.</p>
         </div>
+        ${emailFooterHtml}
       </div>
     </div>`,
   });

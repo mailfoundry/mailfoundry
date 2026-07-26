@@ -136,6 +136,13 @@ export async function submitGroupOrder(formData: FormData) {
       <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
         <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>`;
 
+  const emailFooterHtml = `
+    <div style="margin-top:28px;padding-top:16px;border-top:1px solid #f1f5f9;text-align:center;">
+      <p style="color:#f97316;font-size:13px;font-weight:bold;margin:0 0 4px;">Xylo (UK) Ltd</p>
+      <p style="color:#94a3b8;font-size:11px;margin:0 0 2px;line-height:1.6;">R08 Regent Works Studio, Regent Works, Lawley Street, Longton, Staffs. ST3 1LZ</p>
+      <p style="color:#94a3b8;font-size:11px;margin:0;line-height:1.6;">Co. Reg: GB:073 23863 &nbsp;&middot;&nbsp; VAT Reg No: 442 8892 61</p>
+    </div>`;
+
   const grandTotal = [...csLines, ...faLines].reduce((s, l) => s + l.qty * l.product.unitCost, 0);
 
   const vat = grandTotal * 0.2;
@@ -175,6 +182,7 @@ export async function submitGroupOrder(formData: FormData) {
         ${sectionHtml("First Aid", faLines)}
         ${grandTotalHtml}
         <p style="color:#94a3b8;font-size:11px;margin:20px 0 0;">Order ID: ${order.id}</p>
+        ${emailFooterHtml}
       </div>
     </div>`,
   });
@@ -206,6 +214,7 @@ export async function submitGroupOrder(formData: FormData) {
         </div>
 
         <p style="color:#64748b;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
+        ${emailFooterHtml}
       </div>
     </div>`,
   });

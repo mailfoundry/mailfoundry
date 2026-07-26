@@ -633,13 +633,16 @@ export default function OrderFormClient({
 
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white mt-8">
-        <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-          <Image src="/logo-horizontal.svg" alt="Xylo (UK) Ltd" width={100} height={25} />
-          <p className="text-center text-xs text-gray-400 leading-relaxed sm:text-right">
-            Xylo (UK) Ltd · R08 Regent Works Studio, Regent Works, Lawley Street, Longton, Staffs. ST3 1LZ
-            <span className="mx-1.5 text-gray-300">|</span>Co. Reg: GB:073 23863
-            <span className="mx-1.5 text-gray-300">|</span>VAT Reg No: 442 8892 61
-          </p>
+        <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-between sm:items-start">
+          <Image src="/logo-horizontal.svg" alt="Xylo (UK) Ltd" width={120} height={30} />
+          <div className="text-center sm:text-right">
+            <p className="text-xs text-gray-500 leading-relaxed">
+              R08 Regent Works Studio, Regent Works, Lawley Street, Longton, Staffs. ST3 1LZ
+            </p>
+            <p className="mt-1 text-xs text-gray-400">
+              Co. Reg: GB:073 23863 &nbsp;&middot;&nbsp; VAT Reg No: 442 8892 61
+            </p>
+          </div>
         </div>
       </footer>
     </main>

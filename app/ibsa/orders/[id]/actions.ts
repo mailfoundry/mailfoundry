@@ -9,6 +9,13 @@ import { sendEmail } from "../../../../src/lib/sendEmail";
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
+const emailFooterHtml = `
+  <div style="margin-top:28px;padding-top:16px;border-top:1px solid #f1f5f9;text-align:center;">
+    <p style="color:#f97316;font-size:13px;font-weight:bold;margin:0 0 4px;">Xylo (UK) Ltd</p>
+    <p style="color:#94a3b8;font-size:11px;margin:0 0 2px;line-height:1.6;">R08 Regent Works Studio, Regent Works, Lawley Street, Longton, Staffs. ST3 1LZ</p>
+    <p style="color:#94a3b8;font-size:11px;margin:0;line-height:1.6;">Co. Reg: GB:073 23863 &nbsp;&middot;&nbsp; VAT Reg No: 442 8892 61</p>
+  </div>`;
+
 export async function sendStripeInvoice(orderId: string) {
   // Lazy import — keeps stripe.ts from running at module load time,
   // which would crash the page if STRIPE_SECRET_KEY isn't set.
@@ -169,6 +176,7 @@ export async function updateOrderStatus(formData: FormData) {
         <p style="color:#64748b;font-size:14px;margin:0 0 20px;">We'll be in touch with tracking details once it's on its way.</p>
         <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">View your order →</a>
         <p style="color:#64748b;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
+        ${emailFooterHtml}
       </div>
     </div>`,
     });
@@ -185,6 +193,7 @@ export async function updateOrderStatus(formData: FormData) {
         <p style="color:#64748b;font-size:14px;margin:0 0 20px;">If you need to order again in future, your account keeps everything on file for a quick re-order.</p>
         <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">View your account →</a>
         <p style="color:#64748b;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
+        ${emailFooterHtml}
       </div>
     </div>`,
     });
@@ -221,6 +230,7 @@ export async function saveTrackingRef(formData: FormData) {
           </div>
           <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">View your order →</a>
           <p style="color:#64748b;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
+          ${emailFooterHtml}
         </div>
       </div>`,
     });
@@ -373,6 +383,7 @@ export async function amendOrder(formData: FormData) {
         <p style="color:#64748b;font-size:14px;margin:0 0 20px;">The order for <strong style="color:#1e293b;">${before.groupName}</strong> (${before.contactName}) has been amended.</p>
         ${changeSummaryHtml}
         <p style="color:#94a3b8;font-size:11px;margin:20px 0 0;">Order ID: ${orderId}</p>
+        ${emailFooterHtml}
       </div>
     </div>`,
   });
@@ -388,6 +399,7 @@ export async function amendOrder(formData: FormData) {
         ${changeSummaryHtml}
         <p style="color:#64748b;font-size:13px;margin:0 0 20px;">If you have any questions please email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a>.</p>
         <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">View your order →</a>
+        ${emailFooterHtml}
       </div>
     </div>`,
   });
