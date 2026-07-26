@@ -33,6 +33,7 @@ export type Convention = {
   faStatus: string;
   faCollectionDate: string | null;
   requiredBy?: string | null;
+  submittedAt?: string | null;
 };
 
 export type OrderItemFlat = {
@@ -476,8 +477,16 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                       }`}>{c.dept}</span>
                     </span>
                     <span className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-                      <span className="text-gray-300">{c.collectionDate ? "Collection:" : c.requiredBy ? "Required by:" : "Convention:"}</span>
-                      {c.requiredBy && !c.collectionDate ? c.requiredBy : fmtDate(displayDate)}
+                      <span className="text-gray-300">
+                        {c.collectionDate ? "Collection:" : c.requiredBy ? "Required by:" : c.submittedAt ? "Submitted:" : "Convention:"}
+                      </span>
+                      {c.collectionDate
+                        ? fmtDate(c.collectionDate)
+                        : c.requiredBy
+                        ? c.requiredBy
+                        : c.submittedAt
+                        ? fmtDate(c.submittedAt)
+                        : fmtDate(c.conventionDate)}
                       {soon && (
                         <span className="rounded-full bg-amber-900/50 border border-amber-200 px-1.5 py-0 text-amber-600">
                           {days === 0 ? "today" : `${days}d`}
