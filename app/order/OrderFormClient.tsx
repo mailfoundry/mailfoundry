@@ -582,18 +582,19 @@ export default function OrderFormClient({
 
           {/* Product image carousel — images swap with selected category */}
           {(() => {
-            const activeProducts = activeTab === "CS" ? csProducts : faProducts;
-            const filtered = categoryFilter === "all"
-              ? activeProducts
-              : activeProducts.filter((p) => p.category === categoryFilter);
-            const seen = new Set<string>();
-            const imgs: CarouselImage[] = [];
-            for (const p of filtered) {
-              const src = p.imageUrl ? getImageSrc(p.imageUrl) : null;
-              if (src && !seen.has(src)) { seen.add(src); imgs.push({ src, alt: p.name }); }
-              const gsrc = p.groupImageUrl ? getImageSrc(p.groupImageUrl) : null;
-              if (gsrc && !seen.has(gsrc)) { seen.add(gsrc); imgs.push({ src: gsrc, alt: p.name }); }
+            let imgs: CarouselImage[] = [];
+            if (categoryFilter !== "all") {
+              const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+              const filtered = activeProducts.filter((p) => p.category === categoryFilter);
+              const seen = new Set<string>();
+              for (const p of filtered) {
+                const src = p.imageUrl ? getImageSrc(p.imageUrl) : null;
+                if (src && !seen.has(src)) { seen.add(src); imgs.push({ src, alt: p.name }); }
+                const gsrc = p.groupImageUrl ? getImageSrc(p.groupImageUrl) : null;
+                if (gsrc && !seen.has(gsrc)) { seen.add(gsrc); imgs.push({ src: gsrc, alt: p.name }); }
+              }
             }
+            // "all" (or no category images found) → use the curated default mix
             return <ProductCarousel images={imgs} animKey={`${activeTab}_${categoryFilter}`} />;
           })()}
 
