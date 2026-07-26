@@ -33,6 +33,9 @@ export default function ReorderForm({
   const [open, setOpen]             = useState(false);
   const [mobile, setMobile]         = useState(defaultMobile);
   const [paymentMethod, setPayment] = useState<"bacs" | "card" | "po" | "">("");
+  const [requiredByDate, setDate]   = useState("");
+
+  const canSubmit = requiredByDate && paymentMethod;
 
   if (!open) {
     return (
@@ -58,7 +61,10 @@ export default function ReorderForm({
           <input
             type="date"
             name="requiredByDate"
+            value={requiredByDate}
+            onChange={(e) => setDate(e.target.value)}
             min={new Date().toISOString().split("T")[0]}
+            required
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
           />
         </div>
@@ -110,20 +116,30 @@ export default function ReorderForm({
           ))}
         </div>
       </div>
-      <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="rounded-lg border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="rounded-lg bg-orange-500 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-600 transition-colors"
-        >
-          Confirm re-order
-        </button>
+      <div className="flex items-center justify-between gap-2">
+        {!canSubmit && (
+          <p className="text-xs text-gray-400">
+            {!requiredByDate && !paymentMethod ? "Select a date and payment method to continue" :
+             !requiredByDate ? "Select a required-by date to continue" :
+             "Select a payment method to continue"}
+          </p>
+        )}
+        <div className="ml-auto flex gap-2">
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="rounded-lg bg-orange-500 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Confirm re-order
+          </button>
+        </div>
       </div>
     </form>
   );
