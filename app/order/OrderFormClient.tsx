@@ -26,7 +26,58 @@ const CATEGORY_LABELS: Record<string, string> = {
   chemicals:   "Cleaning Chemicals",
   special:     "Special Order",
   firstaid:    "First Aid",
+  gloves:      "Gloves",
+  hivis:       "Hi Vis",
 };
+
+// ── Product carousel ───────────────────────────────────────────────────────────
+const CAROUSEL_IMAGES = [
+  { src: "/product-images/cs_HI_VIS_YELLOW_S.png",               alt: "Hi Vis" },
+  { src: "/product-images/fa_GLOVES_VINYL_CLEAR_SML.jpg",         alt: "Gloves" },
+  { src: "/product-images/fa_FACEMASK_BLUE_50PACK.png",           alt: "Face Masks" },
+  { src: "/product-images/fa_FIRSTAID_KIT_LARGE_188P.png",        alt: "First Aid Kit" },
+  { src: "/product-images/cs_CLOVER_DETAK_750ML.png",             alt: "Cleaning Chemical" },
+  { src: "/product-images/cs_CLOTH_MFIBRE_BLUE_10PK.jpg",         alt: "Cloths" },
+  { src: "/product-images/cs_HI_VIS_ORANGE_S.jpg",                alt: "Hi Vis Orange" },
+  { src: "/product-images/cs_GLOVES_NITRILE-POLY_FOAM_S_10PACK.png", alt: "Nitrile Gloves" },
+  { src: "/product-images/fa_SPILL_KITS_MAINTENANCE_20L.jpg",     alt: "Spill Kit" },
+  { src: "/product-images/cs_BARRIER_TAPE_NON_ADHESIVE_RED_WHITE.png", alt: "Barrier Tape" },
+  { src: "/product-images/fa_APRONS_FLTPACK_100PK.jpg",           alt: "Aprons" },
+  { src: "/product-images/cs_SQUEEGEE_METAL_55CM.png",            alt: "Squeegee" },
+];
+
+function ProductCarousel() {
+  // Duplicate for seamless loop
+  const all = [...CAROUSEL_IMAGES, ...CAROUSEL_IMAGES];
+  return (
+    <div className="relative overflow-hidden rounded-xl bg-gray-50 border border-gray-100 py-2 mb-4">
+      <style>{`
+        @keyframes carousel-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .carousel-track { animation: carousel-scroll 28s linear infinite; }
+        .carousel-track:hover { animation-play-state: paused; }
+      `}</style>
+      <div className="carousel-track flex gap-3 w-max px-2">
+        {all.map((img, i) => (
+          <div
+            key={i}
+            className="h-14 w-14 shrink-0 rounded-lg bg-white border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={img.src}
+              alt={img.alt}
+              className="h-12 w-12 object-contain"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const GROUP_TYPES = [
   { value: "congregation",  label: "Congregation" },
@@ -490,26 +541,34 @@ export default function OrderFormClient({
             const cats = [...new Set(activeProducts.map(p => p.category))];
             if (cats.length <= 1) return null;
             return (
-              <div className="mb-4 flex flex-wrap gap-2">
-                <button type="button" onClick={() => setCategoryFilter("all")}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === "all" ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
-                  All
-                </button>
-                {cats.map(cat => {
-                  const catCount = activeProducts.filter(p => p.category === cat && (qty[p.id] ?? 0) > 0).length;
-                  return (
-                    <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
-                      {CATEGORY_LABELS[cat] ?? cat}
-                      {catCount > 0 && (
-                        <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              <>
+                <div className="mb-1 flex flex-wrap gap-2">
+                  <button type="button" onClick={() => setCategoryFilter("all")}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === "all" ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                    All
+                  </button>
+                  {cats.map(cat => {
+                    const catCount = activeProducts.filter(p => p.category === cat && (qty[p.id] ?? 0) > 0).length;
+                    return (
+                      <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
+                        className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                        {CATEGORY_LABELS[cat] ?? cat}
+                        {catCount > 0 && (
+                          <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mb-3 text-[11px] text-gray-400">
+                  Pick a category to narrow the list, or search below to find a specific item.
+                </p>
+              </>
             );
           })()}
+
+          {/* Product image carousel */}
+          <ProductCarousel />
 
           {/* Search */}
           <div className="mb-5 relative">
