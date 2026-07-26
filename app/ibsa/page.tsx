@@ -85,7 +85,7 @@ export default async function IbsaPage({ searchParams }: Props) {
    prisma.ibsaGroupOrder.findMany({
     where: { groupType: eventType },
     orderBy: { submittedAt: "desc" },
-    include: { lines: true },
+    include: { lines: { include: { product: true } } },
    }),
   ]);
 
@@ -169,17 +169,18 @@ export default async function IbsaPage({ searchParams }: Props) {
     (c) => c.conventionDate < now || c.status === "complete" || c.faStatus === "complete"
   );
 
-  const totalCsValue = conventions.reduce(
+  // Convention-level order items
+  const convCsValue = conventions.reduce(
     (sum, c) =>
       sum + c.orderItems.filter((i) => i.dept !== "FA").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
     0
   );
-  const totalFaValue = conventions.reduce(
+  const convFaValue = conventions.reduce(
     (sum, c) =>
       sum + c.orderItems.filter((i) => i.dept === "FA").reduce((s, i) => s + i.qty * i.product.unitCost, 0),
     0
   );
-  const totalProfit = conventions.reduce(
+  const convProfit = conventions.reduce(
     (sum, c) =>
       sum +
       c.orderItems.reduce(
@@ -188,6 +189,31 @@ export default async function IbsaPage({ searchParams }: Props) {
       ),
     0
   );
+
+  // Incoming group orders
+  const orderCsValue = incomingOrders.reduce(
+    (sum, o) =>
+      sum + o.lines.filter((l) => l.dept === "CS").reduce((s, l) => s + l.qty * l.product.unitCost, 0),
+    0
+  );
+  const orderFaValue = incomingOrders.reduce(
+    (sum, o) =>
+      sum + o.lines.filter((l) => l.dept === "FA").reduce((s, l) => s + l.qty * l.product.unitCost, 0),
+    0
+  );
+  const orderProfit = incomingOrders.reduce(
+    (sum, o) =>
+      sum +
+      o.lines.reduce(
+        (s, l) => s + l.qty * (l.product.unitCost - (l.product.xyloCost ?? l.product.unitCost)),
+        0
+      ),
+    0
+  );
+
+  const totalCsValue = convCsValue + orderCsValue;
+  const totalFaValue = convFaValue + orderFaValue;
+  const totalProfit  = convProfit  + orderProfit;
   const upcomingCount = conventions.filter((c) => c.conventionDate >= now).length;
 
   return (
