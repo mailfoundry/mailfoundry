@@ -6,6 +6,7 @@ import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
 
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 export async function accountLogout() {
   const jar = await cookies();
@@ -151,6 +152,19 @@ export async function reorder(orderId: string, formData: FormData) {
         ${sectionHtml("First Aid", faLines)}
         ${grandTotalHtml}
         <p style="color:#64748b;font-size:13px;margin:20px 0 0;">Questions? Email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a></p>
+
+        <!-- Account banner -->
+        <div style="margin-top:24px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;padding:20px 20px 16px;">
+          <p style="color:#0f172a;font-size:14px;font-weight:bold;margin:0 0 4px;">Your Xylo account</p>
+          <p style="color:#64748b;font-size:13px;margin:0 0 12px;">We've saved your order to your Xylo account. From there you can:</p>
+          <table style="border-collapse:collapse;width:100%;margin-bottom:14px;">
+            <tr><td style="padding:2px 0;color:#0f172a;font-size:13px;vertical-align:top;width:20px;">✓</td><td style="padding:2px 0;color:#1e293b;font-size:13px;">View your order details and current status</td></tr>
+            <tr><td style="padding:2px 0;color:#0f172a;font-size:13px;vertical-align:top;">✓</td><td style="padding:2px 0;color:#1e293b;font-size:13px;">Re-order previous items with a single click</td></tr>
+            <tr><td style="padding:2px 0;color:#0f172a;font-size:13px;vertical-align:top;">✓</td><td style="padding:2px 0;color:#1e293b;font-size:13px;">See your full order history across all events</td></tr>
+          </table>
+          <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#ffffff;font-size:13px;font-weight:bold;text-decoration:none;padding:9px 18px;border-radius:7px;">Access your account →</a>
+          <p style="color:#94a3b8;font-size:11px;margin:14px 0 0;">🔒 No password needed, and nothing to guess. Your link is unique to you, expires in 7 days, and works only once — so your account stays private even if this email is ever forwarded. Request a new link any time.</p>
+        </div>
       </div>
     </div>`,
   });
