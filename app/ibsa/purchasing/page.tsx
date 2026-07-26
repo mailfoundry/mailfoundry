@@ -161,6 +161,7 @@ export default async function PurchasingPage() {
     collectionDate: null,
     faStatus: statusMap[o.status] ?? "pending",
     faCollectionDate: null,
+    requiredBy: o.requiredBy ?? null,
   }));
 
   const groupOrderItems: OrderItemFlat[] = groupOrders.flatMap(o =>
