@@ -28,6 +28,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   firstaid:    "First Aid",
   gloves:      "Gloves",
   hivis:       "Hi Vis",
+  brushes:     "Brushes",
+  mops:        "Mops",
 };
 
 // ── Product carousel ───────────────────────────────────────────────────────────
