@@ -359,9 +359,10 @@ export default function OrderFormClient({
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-gray-500">Mobile (optional)</label>
+                <label className="mb-1 block text-xs text-gray-500">Mobile *</label>
                 <input type="tel" name="contactMobile" value={contactMobile} onChange={(e) => setContactMobile(e.target.value)}
                   placeholder="+44 7700 000000"
+                  required
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
@@ -371,8 +372,9 @@ export default function OrderFormClient({
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-gray-500">Delivery address (optional)</label>
+                <label className="mb-1 block text-xs text-gray-500">Delivery address *</label>
                 <AddressAutocomplete
+                  required
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 />
               </div>

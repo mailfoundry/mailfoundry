@@ -23,7 +23,7 @@ export async function submitGroupOrder(formData: FormData) {
     ? new Date(requiredByDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
     : null;
 
-  if (!groupType || !groupName || !contactName || !contactEmail) {
+  if (!groupType || !groupName || !contactName || !contactEmail || !contactMobile || !deliveryAddress) {
     redirect("/order?error=missing-fields");
   }
 

@@ -35,12 +35,13 @@ declare global {
 }
 
 // ── component ─────────────────────────────────────────────────────────────────
-type Props = { name?: string; placeholder?: string; className?: string };
+type Props = { name?: string; placeholder?: string; className?: string; required?: boolean };
 
 export default function AddressAutocomplete({
   name = "deliveryAddress",
   placeholder = "Start typing an address…",
   className,
+  required,
 }: Props) {
   type SuggestionItem = { label: string; prediction: PlacePrediction };
 
@@ -158,7 +159,7 @@ export default function AddressAutocomplete({
         disabled={resolving}
         className={className}
       />
-      <input ref={hiddenRef} type="hidden" name={name} />
+      <input ref={hiddenRef} type="hidden" name={name} required={required} />
 
       {open && suggestions.length > 0 && (
         <ul style={{
