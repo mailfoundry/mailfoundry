@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { reorder } from "./actions";
+import AddressAutocomplete from "../order/AddressAutocomplete";
 
 export default function ReorderForm({
   orderId,
@@ -10,9 +11,8 @@ export default function ReorderForm({
   orderId: string;
   defaultAddress: string;
 }) {
-  const [open, setOpen]               = useState(false);
-  const [address, setAddress]         = useState(defaultAddress);
-  const [paymentMethod, setPayment]   = useState<"bacs" | "card" | "po" | "">("");
+  const [open, setOpen]             = useState(false);
+  const [paymentMethod, setPayment] = useState<"bacs" | "card" | "po" | "">("");
 
   if (!open) {
     return (
@@ -44,12 +44,9 @@ export default function ReorderForm({
         </div>
         <div>
           <label className="mb-1 block text-xs text-gray-500">Delivery address</label>
-          <input
-            type="text"
-            name="deliveryAddress"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
+          <AddressAutocomplete
+            defaultValue={defaultAddress}
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
           />
         </div>
       </div>

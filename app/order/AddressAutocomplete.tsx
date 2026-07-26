@@ -35,17 +35,18 @@ declare global {
 }
 
 // ── component ─────────────────────────────────────────────────────────────────
-type Props = { name?: string; placeholder?: string; className?: string; required?: boolean };
+type Props = { name?: string; placeholder?: string; className?: string; required?: boolean; defaultValue?: string };
 
 export default function AddressAutocomplete({
   name = "deliveryAddress",
   placeholder = "Start typing an address…",
   className,
   required,
+  defaultValue = "",
 }: Props) {
   type SuggestionItem = { label: string; prediction: PlacePrediction };
 
-  const [query,       setQuery]       = useState("");
+  const [query,       setQuery]       = useState(defaultValue);
   const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [open,        setOpen]        = useState(false);
   const [resolving,   setResolving]   = useState(false);
@@ -54,6 +55,11 @@ export default function AddressAutocomplete({
   const hiddenRef  = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const ready      = useRef(false);
+
+  // Seed hidden input with defaultValue on mount
+  useEffect(() => {
+    if (hiddenRef.current && defaultValue) hiddenRef.current.value = defaultValue;
+  }, [defaultValue]);
 
   // Load Maps script ───────────────────────────────────────────────────────────
   useEffect(() => {
