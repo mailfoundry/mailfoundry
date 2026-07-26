@@ -107,6 +107,7 @@ export default function OrderFormClient({
   const [requiredByDate, setRequiredByDate]   = useState("");
   const [notes, setNotes]                     = useState("");
   const [paymentMethod, setPaymentMethod]     = useState<"bacs" | "card" | "po" | "">("");
+  const [emailTouched, setEmailTouched]       = useState(false);
 
   const csLines = csProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
   const faLines = faProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
@@ -377,12 +378,15 @@ export default function OrderFormClient({
                   {contactEmail && emailRegex.test(contactEmail) && (
                     <span className="text-green-500 font-medium">✓</span>
                   )}
+                  {emailTouched && contactEmail && !emailRegex.test(contactEmail) && (
+                    <span className="text-red-500 font-medium">Invalid email</span>
+                  )}
                 </label>
                 <input type="email" name="contactEmail" value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value.toLowerCase())}
-                  onBlur={(e) => setContactEmail(e.target.value.trim().toLowerCase())}
+                  onBlur={(e) => { setContactEmail(e.target.value.trim().toLowerCase()); setEmailTouched(true); }}
                   placeholder="you@example.com" required
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
+                  className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 ${emailTouched && contactEmail && !emailRegex.test(contactEmail) ? "border-red-400" : "border-gray-300"}`} />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Mobile *</label>
