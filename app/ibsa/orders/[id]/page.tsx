@@ -91,6 +91,14 @@ export default async function OrderDetailPage({ params }: Props) {
             <p className="whitespace-pre-line text-sm text-gray-700">{order.deliveryAddress}</p>
           </div>
         )}
+        {order.paymentMethod && (
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Payment Preference</p>
+            <p className="text-sm text-gray-700">
+              {{ bacs: "BACS Transfer", card: "Credit / Debit Card", po: "Purchase Order" }[order.paymentMethod] ?? order.paymentMethod}
+            </p>
+          </div>
+        )}
         {order.notes && (
           <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 sm:col-span-2">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Notes</p>

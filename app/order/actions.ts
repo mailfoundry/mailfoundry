@@ -17,6 +17,7 @@ export async function submitGroupOrder(formData: FormData) {
   const deliveryAddress = (formData.get("deliveryAddress") as string | null)?.trim() || null;
   const requiredByDate  = (formData.get("requiredByDate")  as string | null)?.trim() || null;
   const notes           = (formData.get("notes")           as string | null)?.trim() || null;
+  const paymentMethod   = (formData.get("paymentMethod")   as string | null)?.trim() || null;
 
   const requiredBy = requiredByDate
     ? new Date(requiredByDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
@@ -66,6 +67,7 @@ export async function submitGroupOrder(formData: FormData) {
       deliveryAddress: deliveryAddress ?? undefined,
       requiredBy: requiredBy ?? undefined,
       notes: notes ?? undefined,
+      paymentMethod: paymentMethod ?? undefined,
       groupAccountId: account.id,
       lines: { create: lines },
     },
@@ -139,6 +141,7 @@ export async function submitGroupOrder(formData: FormData) {
           <p style="color:#64748b;font-size:13px;margin:0 0 3px;"><strong style="color:#1e293b;">Contact:</strong> ${contactName} · ${contactEmail}${contactMobile ? ` · ${contactMobile}` : ""}</p>
           ${requiredBy ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Required by:</strong> ${requiredBy}</p>` : ""}
           ${deliveryAddress ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Delivery:</strong> ${deliveryAddress.replace(/\n/g, ", ")}</p>` : ""}
+          ${paymentMethod ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Payment:</strong> ${{ bacs: "BACS Transfer", card: "Credit / Debit Card", po: "Purchase Order" }[paymentMethod] ?? paymentMethod}</p>` : ""}
           ${notes ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Notes:</strong> ${notes}</p>` : ""}
         </div>
         ${sectionHtml("Cleaning Supplies", csLines)}

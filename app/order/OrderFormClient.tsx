@@ -87,6 +87,7 @@ export default function OrderFormClient({
   const [contactMobile, setContactMobile]     = useState("");
   const [requiredByDate, setRequiredByDate]   = useState("");
   const [notes, setNotes]                     = useState("");
+  const [paymentMethod, setPaymentMethod]     = useState<"bacs" | "card" | "po" | "">("");
 
   const csLines = csProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
   const faLines = faProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
@@ -381,6 +382,29 @@ export default function OrderFormClient({
                   placeholder="e.g. preferred delivery time, access instructions…"
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 resize-none" />
               </div>
+            </div>
+          </div>
+
+          {/* Payment preference */}
+          <div className="mb-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-400">Payment Preference</h2>
+            <p className="mb-4 text-sm text-gray-500">How do you intend to pay? No payment is taken now — we&apos;ll follow up with the relevant details after confirming your order.</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {([
+                { value: "bacs",  label: "BACS Transfer",        desc: "Pay by bank transfer using our account details" },
+                { value: "card",  label: "Credit / Debit Card",  desc: "We'll send a secure Stripe payment link" },
+                { value: "po",    label: "Purchase Order",        desc: "Raise a PO and we'll invoice your organisation" },
+              ] as const).map(({ value, label, desc }) => (
+                <label key={value}
+                  className={`flex cursor-pointer flex-col gap-1 rounded-xl border p-4 transition-colors ${paymentMethod === value ? "border-orange-400 bg-orange-50" : "border-gray-200 hover:border-gray-300"}`}>
+                  <input type="radio" name="paymentMethod" value={value}
+                    checked={paymentMethod === value}
+                    onChange={() => setPaymentMethod(value)}
+                    className="sr-only" />
+                  <span className="text-sm font-semibold text-gray-900">{label}</span>
+                  <span className="text-xs text-gray-500">{desc}</span>
+                </label>
+              ))}
             </div>
           </div>
 

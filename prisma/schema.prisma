@@ -344,6 +344,9 @@ model IbsaGroupOrder {
   groupAccountId  String?
   groupAccount    GroupAccount? @relation(fields: [groupAccountId], references: [id], onDelete: SetNull)
 
+  /// bacs | card | po
+  paymentMethod   String?
+
   stripeInvoiceId String?
   invoicedAt      DateTime?
   paidAt          DateTime?
