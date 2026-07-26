@@ -591,7 +591,7 @@ export default function OrderFormClient({
           <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-6 lg:items-start">
 
             {/* ── Left: product browsing ── */}
-            <div>
+            <div className="min-w-0">
               {/* Product tabs — CS / FA */}
               <div className="mb-3 flex gap-2">
                 {(["CS", ...(hasFa ? ["FA"] : [])] as ("CS" | "FA")[]).map((tab) => {
