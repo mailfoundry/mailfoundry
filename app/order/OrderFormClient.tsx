@@ -452,7 +452,7 @@ export default function OrderFormClient({
       {/* Sticky summary bar */}
       {totalLines > 0 && (
         <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200">
-          <div className="mx-auto max-w-4xl px-4 py-2.5 flex items-center justify-between gap-4">
+          <div className="mx-auto max-w-6xl px-6 py-2.5 flex items-center justify-between gap-4">
             <p className="text-xs font-bold text-gray-900">
               {totalLines} item{totalLines !== 1 ? "s" : ""}
               {csLines > 0 && faLines > 0 && <span className="font-normal text-gray-500"> · CS {csLines} · FA {faLines}</span>}
@@ -466,7 +466,7 @@ export default function OrderFormClient({
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="mx-auto max-w-4xl px-4 py-8">
+        <div className="mx-auto max-w-6xl px-6 py-8">
 
           {/* Header */}
           <div className="mb-8">
@@ -588,7 +588,7 @@ export default function OrderFormClient({
           </div>
 
           {/* Two-column layout: product browser left, sticky basket right */}
-          <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-6 lg:items-start">
+          <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 lg:items-start">
 
             {/* ── Left: product browsing ── */}
             <div className="min-w-0">
@@ -727,7 +727,7 @@ export default function OrderFormClient({
 
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white mt-8">
-        <div className="mx-auto max-w-4xl px-4 py-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-between sm:items-start">
+        <div className="mx-auto max-w-6xl px-6 py-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-between sm:items-start">
           <Image src="/logo-horizontal.svg" alt="Xylo (UK) Ltd" width={120} height={30} />
           <div className="text-center sm:text-right">
             <p className="text-xs text-gray-500 leading-relaxed">
