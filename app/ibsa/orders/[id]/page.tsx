@@ -9,6 +9,7 @@ import UpdateStatusButton from "./UpdateStatusButton";
 import SendInvoiceButton from "./SendInvoiceButton";
 import DeleteOrderButton from "./DeleteOrderButton";
 import { saveTrackingRef, saveAdminNotes } from "./actions";
+import AmendOrderForm from "./AmendOrderForm";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -31,16 +32,23 @@ const fmtGbp = (n: number) =>
 export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
 
-  const order = await prisma.ibsaGroupOrder.findUnique({
-    where: { id },
-    include: {
-      lines: {
-        include: { product: true },
-        orderBy: [{ dept: "asc" }],
+  const [order, allProducts] = await Promise.all([
+    prisma.ibsaGroupOrder.findUnique({
+      where: { id },
+      include: {
+        lines: {
+          include: { product: true },
+          orderBy: [{ dept: "asc" }],
+        },
+        groupAccount: true,
       },
-      groupAccount: true,
-    },
-  });
+    }),
+    prisma.ibsaProduct.findMany({
+      where: { visibleInOrderForm: true },
+      orderBy: [{ type: "asc" }, { category: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, variant: true, code: true, type: true },
+    }),
+  ]);
 
   if (!order) notFound();
 
@@ -191,6 +199,34 @@ export default async function OrderDetailPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {/* Amend order */}
+      <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 shadow-sm p-4">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-amber-700">Amend Order</p>
+        <p className="mb-4 text-xs text-amber-600">Adjust quantities, remove items, or add missed products. The customer will receive an email summary of all changes.</p>
+        <AmendOrderForm
+          orderId={order.id}
+          lines={order.lines.map((l) => ({
+            id: l.id,
+            dept: l.dept,
+            qty: l.qty,
+            product: {
+              id: l.product.id,
+              name: l.product.name,
+              variant: l.product.variant,
+              code: l.product.code,
+              unitCost: l.product.unitCost,
+            },
+          }))}
+          availableProducts={allProducts.map((p) => ({
+            id: p.id,
+            name: p.name,
+            variant: p.variant,
+            code: p.code,
+            dept: p.type, // CS | FA
+          }))}
+        />
+      </div>
 
       {/* Invoice */}
       {order.status !== "cancelled" && (

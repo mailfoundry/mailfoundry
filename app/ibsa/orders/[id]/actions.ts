@@ -199,6 +199,160 @@ export async function saveAdminNotes(formData: FormData) {
   revalidatePath(`/ibsa/orders/${orderId}`);
 }
 
+export async function amendOrder(formData: FormData) {
+  const orderId = (formData.get("orderId") as string).trim();
+  if (!orderId) return;
+
+  // Fetch current order for comparison + email context
+  const before = await prisma.ibsaGroupOrder.findUnique({
+    where: { id: orderId },
+    include: { lines: { include: { product: true } } },
+  });
+  if (!before) return;
+
+  const changes: { type: "changed" | "removed" | "added"; name: string; variant?: string | null; oldQty?: number; newQty?: number }[] = [];
+
+  // ── 1. Update / remove existing lines ────────────────────────────────────
+  for (const line of before.lines) {
+    const raw = formData.get(`line_${line.id}`);
+    if (raw === null) continue;
+    const newQty = Math.max(0, parseInt(raw as string, 10) || 0);
+
+    if (newQty === 0) {
+      await prisma.ibsaGroupOrderLine.delete({ where: { id: line.id } });
+      changes.push({ type: "removed", name: line.product.name, variant: line.product.variant, oldQty: line.qty });
+    } else if (newQty !== line.qty) {
+      await prisma.ibsaGroupOrderLine.update({ where: { id: line.id }, data: { qty: newQty } });
+      changes.push({ type: "changed", name: line.product.name, variant: line.product.variant, oldQty: line.qty, newQty });
+    }
+  }
+
+  // ── 2. Add new lines ───────────────────────────────────────────────────────
+  for (const [key, value] of formData.entries()) {
+    if (!key.startsWith("new_")) continue;
+    const qty = Math.max(0, parseInt(value as string, 10) || 0);
+    if (qty === 0) continue;
+
+    // key format: new_<productId>_<dept>
+    const parts = key.slice(4).split("_");
+    const dept      = parts.pop()!;           // last segment
+    const productId = parts.join("_");         // everything before
+
+    // If a line already exists for this product + dept, bump it
+    const existing = before.lines.find((l) => l.productId === productId && l.dept === dept);
+    if (existing) {
+      const merged = existing.qty + qty;
+      await prisma.ibsaGroupOrderLine.update({ where: { id: existing.id }, data: { qty: merged } });
+      // If we already logged a "changed" for this line, update it; otherwise add
+      const prev = changes.find((c) => c.type === "changed" && c.name === existing.product.name && c.variant === existing.product.variant);
+      if (prev) { prev.newQty = merged; } else {
+        changes.push({ type: "changed", name: existing.product.name, variant: existing.product.variant, oldQty: existing.qty, newQty: merged });
+      }
+    } else {
+      const product = await prisma.ibsaProduct.findUnique({ where: { id: productId } });
+      if (!product) continue;
+      await prisma.ibsaGroupOrderLine.create({ data: { orderId, productId, dept, qty } });
+      changes.push({ type: "added", name: product.name, variant: product.variant, newQty: qty });
+    }
+  }
+
+  if (changes.length === 0) {
+    revalidatePath(`/ibsa/orders/${orderId}`);
+    return;
+  }
+
+  // ── 3. Reload for new totals ───────────────────────────────────────────────
+  const after = await prisma.ibsaGroupOrder.findUnique({
+    where: { id: orderId },
+    include: { lines: { include: { product: true } } },
+  });
+  if (!after) return;
+
+  const fmtGbp    = (n: number) => "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const newTotal  = after.lines.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
+
+  // ── 4. Build change summary HTML ──────────────────────────────────────────
+  const changeRows = changes.map((c) => {
+    const productLabel = `${c.name}${c.variant ? ` <span style="color:#94a3b8;font-size:11px;">(${c.variant})</span>` : ""}`;
+    if (c.type === "removed") {
+      return `<tr>
+        <td style="padding:6px 8px;color:#ef4444;font-size:13px;">✕</td>
+        <td style="padding:6px 8px;color:#ef4444;font-size:13px;text-decoration:line-through;">${productLabel}</td>
+        <td style="padding:6px 8px;color:#ef4444;font-size:13px;text-align:right;">Removed</td>
+      </tr>`;
+    }
+    if (c.type === "added") {
+      return `<tr>
+        <td style="padding:6px 8px;color:#22c55e;font-size:13px;">+</td>
+        <td style="padding:6px 8px;color:#1e293b;font-size:13px;">${productLabel}</td>
+        <td style="padding:6px 8px;color:#22c55e;font-size:13px;text-align:right;">Added × ${c.newQty}</td>
+      </tr>`;
+    }
+    const dir = (c.newQty ?? 0) > (c.oldQty ?? 0) ? "↑" : "↓";
+    const col = dir === "↑" ? "#22c55e" : "#f97316";
+    return `<tr>
+      <td style="padding:6px 8px;color:${col};font-size:13px;">${dir}</td>
+      <td style="padding:6px 8px;color:#1e293b;font-size:13px;">${productLabel}</td>
+      <td style="padding:6px 8px;color:${col};font-size:13px;text-align:right;">${c.oldQty} → ${c.newQty}</td>
+    </tr>`;
+  }).join("");
+
+  const changeSummaryHtml = `
+    <p style="color:#64748b;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 6px;">Changes</p>
+    <table style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:16px;">
+      <tbody>${changeRows}</tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="padding:8px;color:#94a3b8;font-size:12px;text-align:right;border-top:1px solid #e2e8f0;">New order total</td>
+          <td style="padding:8px;color:#f97316;font-size:14px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;">${fmtGbp(newTotal)}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  const baseHtml = `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;padding:8px;">
+      <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
+        <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 4px;">IBSA · Xylo (UK) Ltd</p>`;
+
+  const changeText = changes.map((c) => {
+    if (c.type === "removed") return `  Removed: ${c.name}${c.variant ? ` (${c.variant})` : ""}`;
+    if (c.type === "added")   return `  Added: ${c.name}${c.variant ? ` (${c.variant})` : ""} × ${c.newQty}`;
+    return `  Changed: ${c.name}${c.variant ? ` (${c.variant})` : ""} — ${c.oldQty} → ${c.newQty}`;
+  }).join("\n");
+
+  // ── 5. Notify IBSA ────────────────────────────────────────────────────────
+  await sendEmail({
+    to: IBSA_NOTIFY_EMAIL,
+    subject: `Order amended — ${before.groupName}`,
+    text: `Order for ${before.groupName} has been amended.\n\nChanges:\n${changeText}\n\nNew total: ${fmtGbp(newTotal)}\nOrder ID: ${orderId}`,
+    html: `${baseHtml}
+        <h1 style="color:#0f172a;font-size:20px;margin:0 0 4px;">Order amended</h1>
+        <p style="color:#64748b;font-size:14px;margin:0 0 20px;">The order for <strong style="color:#1e293b;">${before.groupName}</strong> (${before.contactName}) has been amended.</p>
+        ${changeSummaryHtml}
+        <p style="color:#94a3b8;font-size:11px;margin:20px 0 0;">Order ID: ${orderId}</p>
+      </div>
+    </div>`,
+  });
+
+  // ── 6. Notify customer ────────────────────────────────────────────────────
+  await sendEmail({
+    to: before.contactEmail,
+    subject: `Your order has been updated — Xylo (UK) Ltd`,
+    text: `Hi ${before.contactName},\n\nYour order for ${before.groupName} has been updated by IBSA. Here's a summary of the changes:\n\n${changeText}\n\nNew total: ${fmtGbp(newTotal)}\n\nIf you have any questions please email ${IBSA_NOTIFY_EMAIL}.\n\nIBSA · Xylo (UK) Ltd`,
+    html: `${baseHtml}
+        <h1 style="color:#0f172a;font-size:20px;margin:0 0 4px;">Your order has been updated</h1>
+        <p style="color:#64748b;font-size:14px;margin:0 0 20px;">Hi ${before.contactName}, your order for <strong style="color:#1e293b;">${before.groupName}</strong> has been updated. Here's what changed:</p>
+        ${changeSummaryHtml}
+        <p style="color:#64748b;font-size:13px;margin:0 0 20px;">If you have any questions please email <a href="mailto:${IBSA_NOTIFY_EMAIL}" style="color:#f97316;">${IBSA_NOTIFY_EMAIL}</a>.</p>
+        <a href="${BASE_URL}/account" style="display:inline-block;background:#f97316;color:#fff;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;text-decoration:none;">View your order →</a>
+      </div>
+    </div>`,
+  });
+
+  revalidatePath(`/ibsa/orders/${orderId}`);
+  revalidatePath("/ibsa/orders");
+}
+
 export async function deleteOrder(formData: FormData) {
   const orderId   = (formData.get("orderId")   as string).trim();
   const groupType = (formData.get("groupType") as string).trim();
