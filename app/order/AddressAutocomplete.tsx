@@ -39,7 +39,7 @@ type Props = { name?: string; placeholder?: string; className?: string };
 
 export default function AddressAutocomplete({
   name = "deliveryAddress",
-  placeholder = "Start typing an address or postcode…",
+  placeholder = "Start typing an address…",
   className,
 }: Props) {
   type SuggestionItem = { label: string; prediction: PlacePrediction };
