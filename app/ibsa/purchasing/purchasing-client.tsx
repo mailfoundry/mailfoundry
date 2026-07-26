@@ -578,11 +578,29 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           {categoryLabel[cat] ?? cat}
                         </td>
                       </tr>
-                      {catRows.map(r => (
-                        <tr key={r.productId} className="border-t border-gray-200 hover:bg-gray-50">
+                      {catRows.map(r => {
+                        const totalAvailable = r.inStock + r.git;
+                        const outOfStock = totalAvailable === 0;
+                        const criticallyLow = !outOfStock && totalAvailable < (r.csOrdered + r.faOrdered) / 2;
+                        return (
+                        <tr key={r.productId} className={`border-t border-gray-200 ${outOfStock ? "bg-red-50/60" : criticallyLow ? "bg-amber-50/60" : "hover:bg-gray-50"}`}>
                           <td className="px-4 py-3">
-                            <p className="font-medium text-gray-900">{r.name}</p>
-                            {r.variant && <p className="text-xs text-gray-400">{r.variant}</p>}
+                            <div className="flex items-center gap-2">
+                              <div>
+                                <p className="font-medium text-gray-900">{r.name}</p>
+                                {r.variant && <p className="text-xs text-gray-400">{r.variant}</p>}
+                              </div>
+                              {outOfStock && (
+                                <span className="shrink-0 rounded-full bg-red-100 border border-red-300 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-600">
+                                  Out of stock
+                                </span>
+                              )}
+                              {criticallyLow && (
+                                <span className="shrink-0 rounded-full bg-amber-100 border border-amber-300 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                                  Low stock
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-right tabular-nums text-gray-600">
                             {r.csOrdered > 0 ? r.csOrdered : <span className="text-gray-300">—</span>}
@@ -590,7 +608,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           <td className="px-4 py-3 text-right tabular-nums text-gray-600">
                             {r.faOrdered > 0 ? r.faOrdered : <span className="text-gray-300">—</span>}
                           </td>
-                          <td className="px-4 py-3 text-right tabular-nums text-gray-600">{r.inStock}</td>
+                          <td className={`px-4 py-3 text-right tabular-nums ${outOfStock ? "font-bold text-red-500" : "text-gray-600"}`}>{r.inStock}</td>
                           <td className="px-4 py-3 text-right tabular-nums text-gray-600">
                             {r.git > 0 ? r.git : <span className="text-gray-300">—</span>}
                           </td>
@@ -604,7 +622,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                             {fmtGbp(r.deficit * (r.xyloCost ?? r.unitCost))}
                           </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                       <tr key={`sub-${cat}`} className="border-t border-gray-200 bg-white/80">
                         <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
                           Subtotal

@@ -351,6 +351,9 @@ model IbsaGroupOrder {
   invoicedAt      DateTime?
   paidAt          DateTime?
 
+  trackingRef     String?
+  adminNotes      String?
+
   lines IbsaGroupOrderLine[]
 
   @@index([status])

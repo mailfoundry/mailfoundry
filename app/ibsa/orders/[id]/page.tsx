@@ -8,6 +8,7 @@ import IbsaAppShell from "../../../../src/components/ibsa-app-shell";
 import UpdateStatusButton from "./UpdateStatusButton";
 import SendInvoiceButton from "./SendInvoiceButton";
 import DeleteOrderButton from "./DeleteOrderButton";
+import { saveTrackingRef, saveAdminNotes } from "./actions";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -211,6 +212,53 @@ export default async function OrderDetailPage({ params }: Props) {
           )}
         </div>
       )}
+
+      {/* Dispatch tracking */}
+      <div className="mb-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Dispatch & Tracking</p>
+        <form action={saveTrackingRef} className="flex items-center gap-3">
+          <input type="hidden" name="orderId" value={order.id} />
+          <input
+            type="text"
+            name="trackingRef"
+            defaultValue={order.trackingRef ?? ""}
+            placeholder="e.g. 1Z999AA10123456784"
+            className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
+          />
+          <button
+            type="submit"
+            className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
+          >
+            {order.trackingRef ? "Update" : "Save & notify customer"}
+          </button>
+        </form>
+        {order.trackingRef && (
+          <p className="mt-2 text-xs text-gray-400">
+            Current: <span className="font-mono text-gray-600">{order.trackingRef}</span> — customer has been notified.
+          </p>
+        )}
+      </div>
+
+      {/* Admin notes */}
+      <div className="mb-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Internal Notes</p>
+        <form action={saveAdminNotes} className="space-y-2">
+          <input type="hidden" name="orderId" value={order.id} />
+          <textarea
+            name="adminNotes"
+            defaultValue={order.adminNotes ?? ""}
+            rows={3}
+            placeholder="e.g. spoke to contact on 26 Jul, confirmed delivery for Wednesday…"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 resize-none"
+          />
+          <button
+            type="submit"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+          >
+            Save notes
+          </button>
+        </form>
+      </div>
 
       {/* Status update */}
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
