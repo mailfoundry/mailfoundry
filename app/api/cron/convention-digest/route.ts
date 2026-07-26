@@ -5,6 +5,7 @@ import { sendEmail } from "../../../../src/lib/sendEmail";
 export const dynamic = "force-dynamic";
 
 const RECIPIENTS = ["paulwridge@gmail.com", "ridgejason@me.com", "carol@xylouk.co.uk"];
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 export async function GET(request: NextRequest) {
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
       eventType: "regional",
       archivedAt: null,
       status: { not: "complete" },
+      conventionDate: { gte: today }, // only future/today conventions
     },
   });
 
@@ -107,7 +109,7 @@ export async function GET(request: NextRequest) {
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;background:#ffffff;padding:8px;">
     <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
-      <p style="color:#f97316;font-size:16px;font-weight:bold;margin:0 0 4px;">Xylo (UK) Ltd · IBSA</p>
+      <img src="${BASE_URL}/logo-horizontal.svg" alt="Xylo (UK) Ltd" width="140" height="35" style="display:block;margin-bottom:16px;" />
       <h1 style="color:#0f172a;font-size:20px;margin:0 0 4px;">Regional Convention Digest</h1>
       <p style="color:#94a3b8;font-size:13px;margin:0 0 4px;">${todayLabel}</p>
       <p style="color:#64748b;font-size:13px;margin:0 0 24px;">
