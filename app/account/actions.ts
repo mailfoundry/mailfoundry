@@ -70,6 +70,12 @@ export async function reorder(orderId: string, formData: FormData) {
   const grandTotal = newOrder.lines.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
   const fmtGbp = (n: number) => "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const EMAIL_CATEGORY_LABELS: Record<string, string> = {
+    safety_ppe: "Safety & PPE", janitorial: "Janitorial", chemicals: "Cleaning Chemicals",
+    special: "Special Order", firstaid: "First Aid", gloves: "Gloves",
+    hivis: "Hi Vis", brushes: "Brushes", mops: "Mops",
+  };
+
   const fmtHtmlLines = (ls: typeof csLines) => ls.map((l) => `
     <tr>
       <td style="padding:7px 8px;color:#1e293b;font-size:13px;border-bottom:1px solid #f1f5f9;">${l.product.name}${l.product.variant ? `<br><span style="color:#94a3b8;font-size:11px;">${l.product.variant}</span>` : ""}</td>
@@ -80,7 +86,17 @@ export async function reorder(orderId: string, formData: FormData) {
 
   const sectionTotal = (ls: typeof csLines) => ls.reduce((s, l) => s + l.qty * l.product.unitCost, 0);
 
-  const sectionHtml = (label: string, ls: typeof csLines) => ls.length === 0 ? "" : `
+  const sectionHtml = (label: string, ls: typeof csLines) => {
+    if (ls.length === 0) return "";
+    const byCat = new Map<string, typeof csLines>();
+    for (const l of ls) { const c = l.product.category; if (!byCat.has(c)) byCat.set(c, []); byCat.get(c)!.push(l); }
+    const sorted = [...byCat.entries()].sort(([a], [b]) => (EMAIL_CATEGORY_LABELS[a] ?? a).localeCompare(EMAIL_CATEGORY_LABELS[b] ?? b));
+    const multiCat = sorted.length > 1;
+    const bodyRows = sorted.map(([cat, catLines]) => {
+      const catHeader = multiCat ? `<tr><td colspan="4" style="padding:5px 8px;background:#f8fafc;color:#94a3b8;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #f1f5f9;">${EMAIL_CATEGORY_LABELS[cat] ?? cat}</td></tr>` : "";
+      return catHeader + fmtHtmlLines(catLines);
+    }).join("");
+    return `
     <p style="color:#64748b;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 6px;">${label}</p>
     <table style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:8px;overflow:hidden;margin-bottom:4px;border:1px solid #e2e8f0;">
       <thead><tr style="background:#f8fafc;">
@@ -89,12 +105,13 @@ export async function reorder(orderId: string, formData: FormData) {
         <th style="padding:6px 8px;color:#94a3b8;font-size:10px;text-align:right;text-transform:uppercase;letter-spacing:.05em;width:64px;">Unit</th>
         <th style="padding:6px 8px;color:#94a3b8;font-size:10px;text-align:right;text-transform:uppercase;letter-spacing:.05em;width:72px;">Total</th>
       </tr></thead>
-      <tbody>${fmtHtmlLines(ls)}</tbody>
+      <tbody>${bodyRows}</tbody>
       <tfoot><tr>
         <td colspan="3" style="padding:7px 8px;color:#94a3b8;font-size:12px;text-align:right;border-top:1px solid #f1f5f9;">Section total</td>
         <td style="padding:7px 8px;color:#f97316;font-size:13px;text-align:right;font-weight:700;border-top:1px solid #f1f5f9;">${fmtGbp(sectionTotal(ls))}</td>
       </tr></tfoot>
     </table>`;
+  };
 
   const vat = grandTotal * 0.2;
   const grandTotalHtml = `

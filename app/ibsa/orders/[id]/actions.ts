@@ -57,9 +57,52 @@ export async function sendStripeInvoice(orderId: string) {
     ],
   });
 
-  // ── Add line items ────────────────────────────────────────────────────────
-  for (const line of order.lines) {
-    // xyloCost is the customer-facing price; unitCost is the buy price fallback
+  // ── Add line items grouped by category ───────────────────────────────────
+  const CATEGORY_LABELS: Record<string, string> = {
+    safety_ppe: "Safety & PPE",
+    janitorial:  "Janitorial",
+    chemicals:   "Cleaning Chemicals",
+    special:     "Special Order",
+    firstaid:    "First Aid",
+    gloves:      "Gloves",
+    hivis:       "Hi Vis",
+    brushes:     "Brushes",
+    mops:        "Mops",
+  };
+
+  // Sort lines: CS before FA, then by category label, then by product name
+  const sorted = [...order.lines].sort((a, b) => {
+    if (a.dept !== b.dept) return a.dept === "CS" ? -1 : 1;
+    const catA = CATEGORY_LABELS[a.product.category] ?? a.product.category;
+    const catB = CATEGORY_LABELS[b.product.category] ?? b.product.category;
+    if (catA !== catB) return catA.localeCompare(catB);
+    return a.product.name.localeCompare(b.product.name);
+  });
+
+  let lastSectionKey = "";
+
+  for (const line of sorted) {
+    const sectionKey = `${line.dept}__${line.product.category}`;
+
+    // Insert a zero-amount section header when the category changes
+    if (sectionKey !== lastSectionKey) {
+      lastSectionKey = sectionKey;
+      const deptLabel = line.dept === "CS" ? "Cleaning Supplies" : "First Aid";
+      const catLabel  = CATEGORY_LABELS[line.product.category] ?? line.product.category;
+      const header    = line.dept === "CS" && catLabel !== "Cleaning Supplies"
+        ? `— ${catLabel} —`
+        : `— ${deptLabel}: ${catLabel} —`;
+
+      await stripe.invoiceItems.create({
+        customer: stripeCustomerId,
+        invoice: invoice.id,
+        description: header,
+        unit_amount_decimal: Stripe.Decimal.from(0),
+        quantity: 1,
+        currency: "gbp",
+      });
+    }
+
     const unitPrice = line.product.unitCost;
     const description = [
       line.product.name,
@@ -72,7 +115,7 @@ export async function sendStripeInvoice(orderId: string) {
       customer: stripeCustomerId,
       invoice: invoice.id,
       description,
-      unit_amount_decimal: Stripe.Decimal.from(Math.round(unitPrice * 100)), // per-unit in pence; Stripe multiplies by quantity
+      unit_amount_decimal: Stripe.Decimal.from(Math.round(unitPrice * 100)),
       quantity: line.qty,
       currency: "gbp",
     });
