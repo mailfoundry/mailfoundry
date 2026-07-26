@@ -33,33 +33,47 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 // ── Product carousel ───────────────────────────────────────────────────────────
-const CAROUSEL_IMAGES = [
-  { src: "/product-images/cs_HI_VIS_YELLOW_S.png",               alt: "Hi Vis" },
-  { src: "/product-images/fa_GLOVES_VINYL_CLEAR_SML.jpg",         alt: "Gloves" },
-  { src: "/product-images/fa_FACEMASK_BLUE_50PACK.png",           alt: "Face Masks" },
-  { src: "/product-images/fa_FIRSTAID_KIT_LARGE_188P.png",        alt: "First Aid Kit" },
-  { src: "/product-images/cs_CLOVER_DETAK_750ML.png",             alt: "Cleaning Chemical" },
-  { src: "/product-images/cs_CLOTH_MFIBRE_BLUE_10PK.jpg",         alt: "Cloths" },
-  { src: "/product-images/cs_HI_VIS_ORANGE_S.jpg",                alt: "Hi Vis Orange" },
+const DEFAULT_CAROUSEL_IMAGES = [
+  { src: "/product-images/cs_HI_VIS_YELLOW_S.png",                  alt: "Hi Vis" },
+  { src: "/product-images/fa_GLOVES_VINYL_CLEAR_SML.jpg",            alt: "Gloves" },
+  { src: "/product-images/fa_FACEMASK_BLUE_50PACK.png",              alt: "Face Masks" },
+  { src: "/product-images/fa_FIRSTAID_KIT_LARGE_188P.png",           alt: "First Aid Kit" },
+  { src: "/product-images/cs_CLOVER_DETAK_750ML.png",                alt: "Cleaning Chemical" },
+  { src: "/product-images/cs_CLOTH_MFIBRE_BLUE_10PK.jpg",            alt: "Cloths" },
+  { src: "/product-images/cs_HI_VIS_ORANGE_S.jpg",                   alt: "Hi Vis Orange" },
   { src: "/product-images/cs_GLOVES_NITRILE-POLY_FOAM_S_10PACK.png", alt: "Nitrile Gloves" },
-  { src: "/product-images/fa_SPILL_KITS_MAINTENANCE_20L.jpg",     alt: "Spill Kit" },
+  { src: "/product-images/fa_SPILL_KITS_MAINTENANCE_20L.jpg",        alt: "Spill Kit" },
   { src: "/product-images/cs_BARRIER_TAPE_NON_ADHESIVE_RED_WHITE.png", alt: "Barrier Tape" },
-  { src: "/product-images/fa_APRONS_FLTPACK_100PK.jpg",           alt: "Aprons" },
-  { src: "/product-images/cs_SQUEEGEE_METAL_55CM.png",            alt: "Squeegee" },
+  { src: "/product-images/fa_APRONS_FLTPACK_100PK.jpg",              alt: "Aprons" },
+  { src: "/product-images/cs_SQUEEGEE_METAL_55CM.png",               alt: "Squeegee" },
 ];
 
-function ProductCarousel() {
-  // Duplicate for seamless loop
-  const all = [...CAROUSEL_IMAGES, ...CAROUSEL_IMAGES];
+type CarouselImage = { src: string; alt: string };
+
+function ProductCarousel({ images, animKey }: { images: CarouselImage[]; animKey: string }) {
+  // Pad short lists so the scroll looks natural, then duplicate for seamless loop
+  const base = images.length >= 4 ? images : DEFAULT_CAROUSEL_IMAGES;
+  const needed = Math.max(12, base.length);
+  const padded: CarouselImage[] = [];
+  while (padded.length < needed) padded.push(...base);
+  const all = [...padded, ...padded];
+
+  const duration = Math.max(14, padded.length * 2.2);
+
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gray-50 border border-gray-100 py-2 mb-4">
+    <div key={animKey} className="relative overflow-hidden rounded-xl bg-gray-50 border border-gray-100 py-2 mb-4 carousel-wrap">
       <style>{`
         @keyframes carousel-scroll {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        .carousel-track { animation: carousel-scroll 28s linear infinite; }
+        @keyframes carousel-fade-in {
+          from { opacity: 0; transform: translateY(4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .carousel-track { animation: carousel-scroll ${duration}s linear infinite; }
         .carousel-track:hover { animation-play-state: paused; }
+        .carousel-wrap { animation: carousel-fade-in 0.35s ease both; }
       `}</style>
       <div className="carousel-track flex gap-3 w-max px-2">
         {all.map((img, i) => (
@@ -68,12 +82,7 @@ function ProductCarousel() {
             className="h-14 w-14 shrink-0 rounded-lg bg-white border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={img.src}
-              alt={img.alt}
-              className="h-12 w-12 object-contain"
-              loading="lazy"
-            />
+            <img src={img.src} alt={img.alt} className="h-12 w-12 object-contain" loading="lazy" />
           </div>
         ))}
       </div>
@@ -571,8 +580,22 @@ export default function OrderFormClient({
             );
           })()}
 
-          {/* Product image carousel */}
-          <ProductCarousel />
+          {/* Product image carousel — images swap with selected category */}
+          {(() => {
+            const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+            const filtered = categoryFilter === "all"
+              ? activeProducts
+              : activeProducts.filter((p) => p.category === categoryFilter);
+            const seen = new Set<string>();
+            const imgs: CarouselImage[] = [];
+            for (const p of filtered) {
+              const src = p.imageUrl ? getImageSrc(p.imageUrl) : null;
+              if (src && !seen.has(src)) { seen.add(src); imgs.push({ src, alt: p.name }); }
+              const gsrc = p.groupImageUrl ? getImageSrc(p.groupImageUrl) : null;
+              if (gsrc && !seen.has(gsrc)) { seen.add(gsrc); imgs.push({ src: gsrc, alt: p.name }); }
+            }
+            return <ProductCarousel images={imgs} animKey={`${activeTab}_${categoryFilter}`} />;
+          })()}
 
           {/* Search */}
           <div className="mb-5 relative">
