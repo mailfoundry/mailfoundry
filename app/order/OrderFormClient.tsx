@@ -342,7 +342,7 @@ export default function OrderFormClient({
                   {groupType === "congregation" ? "Congregation name *" : groupType === "circuit" ? "Circuit name *" : "Regional name *"}
                 </label>
                 <input type="text" name="groupName" value={groupName} onChange={(e) => setGroupName(e.target.value)}
-                  placeholder={groupType === "congregation" ? "e.g. London Bethnal Green" : groupType === "circuit" ? "e.g. North West 10B" : "e.g. Northern Regional"}
+                  placeholder={groupType === "congregation" ? "e.g. London Bethnal Green" : groupType === "circuit" ? "e.g. North West 10B" : "e.g. Regional Name / Venue"}
                   required className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
