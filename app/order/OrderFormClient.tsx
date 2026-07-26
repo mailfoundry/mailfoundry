@@ -57,6 +57,25 @@ function ColourDot({ colors }: { colors: string[] }) {
   return <span className="inline-block h-4 w-4 shrink-0 rounded-full border border-black/10 shadow-sm" style={style} />;
 }
 
+function formatUKMobile(raw: string): string {
+  const isIntl = raw.replace(/\s/g, "").startsWith("+") ||
+    (raw.replace(/\D/g, "").startsWith("44") && !raw.replace(/\D/g, "").startsWith("0"));
+  const digits = raw.replace(/\D/g, "");
+  if (isIntl) {
+    const nat = digits.startsWith("44") ? digits.slice(2) : digits;
+    const d = nat.slice(0, 10);
+    if (d.length <= 4) return "+44" + (d ? " " + d : "");
+    if (d.length <= 7) return `+44 ${d.slice(0, 4)} ${d.slice(4)}`;
+    return `+44 ${d.slice(0, 4)} ${d.slice(4, 7)} ${d.slice(7)}`;
+  }
+  const d = digits.slice(0, 11);
+  if (d.length <= 5) return d;
+  if (d.length <= 8) return `${d.slice(0, 5)} ${d.slice(5)}`;
+  return `${d.slice(0, 5)} ${d.slice(5, 8)} ${d.slice(8)}`;
+}
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const SIZE_ORDER: Record<string, number> = {
   small: 0, s: 0, medium: 1, m: 1, large: 2, l: 2,
   "x-large": 3, xlarge: 3, xl: 3, "xx-large": 4, xxlarge: 4, xxl: 4,
@@ -353,15 +372,23 @@ export default function OrderFormClient({
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-gray-500">Email address *</label>
-                <input type="email" name="contactEmail" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
+                <label className="mb-1 flex items-center justify-between text-xs text-gray-500">
+                  <span>Email address *</span>
+                  {contactEmail && emailRegex.test(contactEmail) && (
+                    <span className="text-green-500 font-medium">✓</span>
+                  )}
+                </label>
+                <input type="email" name="contactEmail" value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value.toLowerCase())}
+                  onBlur={(e) => setContactEmail(e.target.value.trim().toLowerCase())}
                   placeholder="you@example.com" required
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Mobile *</label>
-                <input type="tel" name="contactMobile" value={contactMobile} onChange={(e) => setContactMobile(e.target.value)}
-                  placeholder="+44 7700 000000"
+                <input type="tel" name="contactMobile" value={contactMobile}
+                  onChange={(e) => setContactMobile(formatUKMobile(e.target.value))}
+                  placeholder="07700 123 456"
                   required
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
