@@ -32,6 +32,7 @@ export async function reorder(orderId: string, formData: FormData) {
   // Form fields
   const requiredByDate  = formData.get("requiredByDate") as string | null;
   const deliveryAddress = (formData.get("deliveryAddress") as string | null)?.trim() || original.deliveryAddress;
+  const paymentMethod   = (formData.get("paymentMethod") as string | null)?.trim() || null;
   const requiredBy = requiredByDate
     ? new Date(requiredByDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
     : null;
@@ -46,6 +47,7 @@ export async function reorder(orderId: string, formData: FormData) {
       contactMobile: original.contactMobile ?? undefined,
       deliveryAddress: deliveryAddress ?? undefined,
       requiredBy: requiredBy ?? undefined,
+      paymentMethod: paymentMethod ?? undefined,
       groupAccountId,
       lines: {
         create: original.lines.map((l) => ({

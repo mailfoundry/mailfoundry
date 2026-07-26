@@ -10,8 +10,9 @@ export default function ReorderForm({
   orderId: string;
   defaultAddress: string;
 }) {
-  const [open, setOpen]       = useState(false);
-  const [address, setAddress] = useState(defaultAddress);
+  const [open, setOpen]               = useState(false);
+  const [address, setAddress]         = useState(defaultAddress);
+  const [paymentMethod, setPayment]   = useState<"bacs" | "card" | "po" | "">("");
 
   if (!open) {
     return (
@@ -50,6 +51,26 @@ export default function ReorderForm({
             onChange={(e) => setAddress(e.target.value)}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
           />
+        </div>
+      </div>
+      <div>
+        <p className="mb-2 text-xs text-gray-500">Payment preference</p>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {([
+            { value: "bacs", label: "BACS Transfer",       desc: "Pay by bank transfer" },
+            { value: "card", label: "Credit / Debit Card", desc: "We'll send a Stripe link" },
+            { value: "po",   label: "Purchase Order",      desc: "We'll invoice your organisation" },
+          ] as const).map(({ value, label, desc }) => (
+            <label key={value}
+              className={`flex cursor-pointer flex-col gap-0.5 rounded-xl border p-3 transition-colors ${paymentMethod === value ? "border-orange-400 bg-orange-50" : "border-gray-200 hover:border-gray-300"}`}>
+              <input type="radio" name="paymentMethod" value={value}
+                checked={paymentMethod === value}
+                onChange={() => setPayment(value)}
+                className="sr-only" />
+              <span className="text-xs font-semibold text-gray-900">{label}</span>
+              <span className="text-[11px] text-gray-400">{desc}</span>
+            </label>
+          ))}
         </div>
       </div>
       <div className="flex justify-end gap-2">
