@@ -100,6 +100,8 @@ type Card = {
   dept: "CS" | "FA";
   collectionDate: string | null;
   conventionDate: string;
+  requiredBy?: string | null;
+  submittedAt?: string | null;
 };
 
 type Props = {
@@ -145,6 +147,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
           dept: "CS",
           collectionDate: c.collectionDate,
           conventionDate: c.conventionDate,
+          requiredBy: c.requiredBy,
+          submittedAt: c.submittedAt,
         });
       }
       if (depts.has("FA") && c.faStatus !== "complete") {
@@ -155,6 +159,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
           dept: "FA",
           collectionDate: c.faCollectionDate,
           conventionDate: c.conventionDate,
+          requiredBy: c.requiredBy,
+          submittedAt: c.submittedAt,
         });
       }
     }
