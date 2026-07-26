@@ -166,7 +166,7 @@ export default async function AccountPage({ searchParams }: Props) {
                         <p className="text-xs text-gray-400 mt-0.5">Delivery: <span className="text-gray-600">{order.deliveryAddress.split("\n")[0]}</span></p>
                       )}
                     </div>
-                    <ReorderForm orderId={order.id} defaultAddress={order.deliveryAddress ?? ""} />
+                    <ReorderForm orderId={order.id} defaultAddress={order.deliveryAddress ?? ""} defaultMobile={order.contactMobile ?? ""} />
                   </div>
 
                   {/* Line items */}

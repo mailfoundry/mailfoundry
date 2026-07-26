@@ -32,7 +32,9 @@ export async function reorder(orderId: string, formData: FormData) {
   // Form fields
   const requiredByDate  = formData.get("requiredByDate") as string | null;
   const deliveryAddress = (formData.get("deliveryAddress") as string | null)?.trim() || original.deliveryAddress;
-  const paymentMethod   = (formData.get("paymentMethod") as string | null)?.trim() || null;
+  const paymentMethod   = (formData.get("paymentMethod")   as string | null)?.trim() || null;
+  const contactMobile   = (formData.get("contactMobile")   as string | null)?.trim() || original.contactMobile;
+  const notes           = (formData.get("notes")           as string | null)?.trim() || null;
   const requiredBy = requiredByDate
     ? new Date(requiredByDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
     : null;
@@ -44,7 +46,8 @@ export async function reorder(orderId: string, formData: FormData) {
       groupName: original.groupName,
       contactName: original.contactName,
       contactEmail: original.contactEmail,
-      contactMobile: original.contactMobile ?? undefined,
+      contactMobile: contactMobile ?? undefined,
+      notes: notes ?? undefined,
       deliveryAddress: deliveryAddress ?? undefined,
       requiredBy: requiredBy ?? undefined,
       paymentMethod: paymentMethod ?? undefined,

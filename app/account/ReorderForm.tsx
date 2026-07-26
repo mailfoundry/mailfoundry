@@ -4,14 +4,34 @@ import { useState } from "react";
 import { reorder } from "./actions";
 import AddressAutocomplete from "../order/AddressAutocomplete";
 
+function formatUKMobile(raw: string): string {
+  const isIntl = raw.replace(/\s/g, "").startsWith("+") ||
+    (raw.replace(/\D/g, "").startsWith("44") && !raw.replace(/\D/g, "").startsWith("0"));
+  const digits = raw.replace(/\D/g, "");
+  if (isIntl) {
+    const nat = digits.startsWith("44") ? digits.slice(2) : digits;
+    const d = nat.slice(0, 10);
+    if (d.length <= 4) return "+44" + (d ? " " + d : "");
+    if (d.length <= 7) return `+44 ${d.slice(0, 4)} ${d.slice(4)}`;
+    return `+44 ${d.slice(0, 4)} ${d.slice(4, 7)} ${d.slice(7)}`;
+  }
+  const d = digits.slice(0, 11);
+  if (d.length <= 5) return d;
+  if (d.length <= 8) return `${d.slice(0, 5)} ${d.slice(5)}`;
+  return `${d.slice(0, 5)} ${d.slice(5, 8)} ${d.slice(8)}`;
+}
+
 export default function ReorderForm({
   orderId,
   defaultAddress,
+  defaultMobile,
 }: {
   orderId: string;
   defaultAddress: string;
+  defaultMobile: string;
 }) {
   const [open, setOpen]             = useState(false);
+  const [mobile, setMobile]         = useState(defaultMobile);
   const [paymentMethod, setPayment] = useState<"bacs" | "card" | "po" | "">("");
 
   if (!open) {
@@ -47,6 +67,26 @@ export default function ReorderForm({
           <AddressAutocomplete
             defaultValue={defaultAddress}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-gray-500">Mobile</label>
+          <input
+            type="tel"
+            name="contactMobile"
+            value={mobile}
+            onChange={(e) => setMobile(formatUKMobile(e.target.value))}
+            placeholder="07700 123 456"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-xs text-gray-500">Additional notes (optional)</label>
+          <textarea
+            name="notes"
+            rows={2}
+            placeholder="e.g. preferred delivery time, access instructions…"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 resize-none"
           />
         </div>
       </div>
