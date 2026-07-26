@@ -83,14 +83,21 @@ const SIZE_ORDER: Record<string, number> = {
 const getSize = (v: string | null) => { const k = (v ?? "").toLowerCase().trim(); return SIZE_ORDER[k] ?? 99; };
 const getWeight = (v: string | null) => { const m = (v ?? "").match(/(\d+)\s*g/i); return m ? parseInt(m[1]) : 0; };
 
+type Prefill = {
+  groupType: string; groupName: string; contactName: string;
+  contactEmail: string; contactMobile: string; deliveryAddress: string;
+} | null;
+
 export default function OrderFormClient({
   csProducts,
   faProducts,
   error,
+  prefill,
 }: {
   csProducts: Product[];
   faProducts: Product[];
   error?: string;
+  prefill?: Prefill;
 }) {
   const hasFa = faProducts.length > 0;
   const [activeTab, setActiveTab] = useState<"CS" | "FA">("CS");
@@ -98,12 +105,13 @@ export default function OrderFormClient({
   const [bumped, setBumped] = useState<Record<string, boolean>>({});
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  const [groupType, setGroupType]             = useState("congregation");
-  const [groupName, setGroupName]             = useState("");
-  const [contactName, setContactName]         = useState("");
-  const [contactEmail, setContactEmail]       = useState("");
-  const [contactMobile, setContactMobile]     = useState("");
+  const [groupType, setGroupType]             = useState(prefill?.groupType ?? "congregation");
+  const [groupName, setGroupName]             = useState(prefill?.groupName ?? "");
+  const [contactName, setContactName]         = useState(prefill?.contactName ?? "");
+  const [contactEmail, setContactEmail]       = useState(prefill?.contactEmail ?? "");
+  const [contactMobile, setContactMobile]     = useState(prefill?.contactMobile ?? "");
   const [requiredByDate, setRequiredByDate]   = useState("");
   const [notes, setNotes]                     = useState("");
   const [paymentMethod, setPaymentMethod]     = useState<"bacs" | "card" | "po" | "">("");
@@ -147,9 +155,22 @@ export default function OrderFormClient({
         <button type="button" onClick={() => adjust(p.id, -1)} disabled={q === 0}
           className="flex h-10 w-10 items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-200 active:bg-gray-300 disabled:opacity-25"
           aria-label="Decrease">−</button>
-        <div className={`flex h-10 min-w-[2.75rem] items-center justify-center border-x border-gray-300 px-1 text-base font-bold tabular-nums ${q > 0 ? "text-gray-900" : "text-gray-400"}`}>
-          {q}
-        </div>
+        <input
+          type="number"
+          min={0}
+          value={q === 0 ? "" : q}
+          placeholder="0"
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            const next = isNaN(val) ? 0 : Math.max(0, val);
+            setQty((prev) => ({ ...prev, [p.id]: next }));
+            if (next > (qty[p.id] ?? 0)) {
+              setBumped((prev) => ({ ...prev, [p.id]: true }));
+              setTimeout(() => setBumped((prev) => ({ ...prev, [p.id]: false })), 400);
+            }
+          }}
+          className="h-10 w-14 border-x border-gray-300 text-center text-base font-bold tabular-nums text-gray-900 placeholder:text-gray-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none bg-white"
+        />
         <button type="button" onClick={() => adjust(p.id, 1)}
           className="flex h-10 w-10 items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600"
           aria-label="Increase">+</button>
@@ -158,12 +179,13 @@ export default function OrderFormClient({
   }
 
   function renderProducts(products: Product[]) {
-    const filtered = search.trim()
-      ? products.filter((p) => {
-          const q = search.toLowerCase();
-          return p.name.toLowerCase().includes(q) || (p.variant ?? "").toLowerCase().includes(q);
-        })
-      : products;
+    const filtered = products
+      .filter((p) => categoryFilter === "all" || p.category === categoryFilter)
+      .filter((p) => {
+        if (!search.trim()) return true;
+        const q = search.toLowerCase();
+        return p.name.toLowerCase().includes(q) || (p.variant ?? "").toLowerCase().includes(q);
+      });
 
     const byCat = filtered.reduce<Record<string, Product[]>>((acc, p) => {
       (acc[p.category] ??= []).push(p);
@@ -217,7 +239,7 @@ export default function OrderFormClient({
                             </div>
                             {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
                             {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
-                            <p className="mt-1 text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
+                            <p className="mt-1 text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
                           </div>
                           <div className="shrink-0 flex items-center gap-2">
                             {renderStepper(p)}
@@ -281,7 +303,7 @@ export default function OrderFormClient({
                               {swatchColors.length > 0 ? <ColourDot colors={swatchColors} /> : <span className="w-4 shrink-0" />}
                               <div className="min-w-0 flex-1">
                                 <p className="text-sm text-gray-700">{variantLabel || p.name}</p>
-                                <p className="text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
+                                <p className="text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 {renderStepper(p)}
@@ -410,6 +432,7 @@ export default function OrderFormClient({
                 <label className="mb-1 block text-xs text-gray-500">Delivery address *</label>
                 <AddressAutocomplete
                   required
+                  defaultValue={prefill?.deliveryAddress ?? ""}
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 />
               </div>
@@ -445,12 +468,12 @@ export default function OrderFormClient({
             </div>
           </div>
 
-          {/* Product tabs */}
-          <div className="mb-5 flex gap-2">
+          {/* Product tabs — CS / FA */}
+          <div className="mb-3 flex gap-2">
             {(["CS", ...(hasFa ? ["FA"] : [])] as ("CS" | "FA")[]).map((tab) => {
               const count = tab === "CS" ? csLines : faLines;
               return (
-                <button key={tab} type="button" onClick={() => setActiveTab(tab)}
+                <button key={tab} type="button" onClick={() => { setActiveTab(tab); setCategoryFilter("all"); }}
                   className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "border border-gray-300 text-gray-500 hover:bg-gray-100"}`}>
                   {tab === "CS" ? "Cleaning Supplies" : "First Aid"}
                   {count > 0 && (
@@ -460,6 +483,33 @@ export default function OrderFormClient({
               );
             })}
           </div>
+
+          {/* Category filter tabs */}
+          {(() => {
+            const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+            const cats = [...new Set(activeProducts.map(p => p.category))];
+            if (cats.length <= 1) return null;
+            return (
+              <div className="mb-4 flex flex-wrap gap-2">
+                <button type="button" onClick={() => setCategoryFilter("all")}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === "all" ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                  All
+                </button>
+                {cats.map(cat => {
+                  const catCount = activeProducts.filter(p => p.category === cat && (qty[p.id] ?? 0) > 0).length;
+                  return (
+                    <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                      {CATEGORY_LABELS[cat] ?? cat}
+                      {catCount > 0 && (
+                        <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
 
           {/* Search */}
           <div className="mb-5 relative">

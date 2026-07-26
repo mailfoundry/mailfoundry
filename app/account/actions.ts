@@ -96,11 +96,20 @@ export async function reorder(orderId: string, formData: FormData) {
       </tr></tfoot>
     </table>`;
 
+  const vat = grandTotal * 0.2;
   const grandTotalHtml = `
     <table style="width:100%;border-collapse:collapse;margin-top:4px;">
       <tr>
-        <td style="padding:10px 8px;color:#94a3b8;font-size:13px;text-align:right;border-top:1px solid #e2e8f0;">Order total</td>
-        <td style="padding:10px 8px;color:#f97316;font-size:15px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;width:80px;">${fmtGbp(grandTotal)}</td>
+        <td style="padding:7px 8px;color:#94a3b8;font-size:12px;text-align:right;border-top:1px solid #e2e8f0;">Subtotal (ex VAT)</td>
+        <td style="padding:7px 8px;color:#64748b;font-size:12px;text-align:right;border-top:1px solid #e2e8f0;width:80px;">${fmtGbp(grandTotal)}</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 8px;color:#94a3b8;font-size:12px;text-align:right;">VAT (20%)</td>
+        <td style="padding:7px 8px;color:#64748b;font-size:12px;text-align:right;">${fmtGbp(vat)}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 8px;color:#94a3b8;font-size:13px;text-align:right;border-top:1px solid #e2e8f0;font-weight:600;">Total (inc VAT)</td>
+        <td style="padding:10px 8px;color:#f97316;font-size:15px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;">${fmtGbp(grandTotal + vat)}</td>
       </tr>
     </table>`;
 
