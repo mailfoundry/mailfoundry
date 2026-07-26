@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Logo from "../../src/components/logo";
 import { prisma } from "../../src/lib/prisma";
-import { accountLogout, reorder } from "./actions";
+import { accountLogout } from "./actions";
+import ReorderForm from "./ReorderForm";
 
 export const metadata = { title: "My Account — Xylo (UK) Ltd" };
 export const dynamic = "force-dynamic";
@@ -165,14 +166,7 @@ export default async function AccountPage({ searchParams }: Props) {
                         <p className="text-xs text-gray-400 mt-0.5">Delivery: <span className="text-gray-600">{order.deliveryAddress.split("\n")[0]}</span></p>
                       )}
                     </div>
-                    <form action={reorder.bind(null, order.id)}>
-                      <button
-                        type="submit"
-                        className="shrink-0 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                      >
-                        Re-order
-                      </button>
-                    </form>
+                    <ReorderForm orderId={order.id} defaultAddress={order.deliveryAddress ?? ""} />
                   </div>
 
                   {/* Line items */}
