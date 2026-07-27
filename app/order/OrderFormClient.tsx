@@ -29,7 +29,17 @@ const CATEGORY_LABELS: Record<string, string> = {
   gloves:      "Gloves",
   hivis:       "Hi Vis",
   brushes:     "Brushes",
+  handles:     "Handles",
   mops:        "Mops",
+};
+
+// Categories that roll up into a parent for tab + section display
+const CATEGORY_PARENT: Record<string, string> = {
+  handles: "brushes",
+};
+// Label to use for the merged group tab/section heading
+const CATEGORY_GROUP_LABEL: Record<string, string> = {
+  brushes: "Brushes & Handles",
 };
 
 // ── Product carousel ───────────────────────────────────────────────────────────
@@ -294,7 +304,7 @@ export default function OrderFormClient({
 
   function renderProducts(products: Product[]) {
     const filtered = products
-      .filter((p) => categoryFilter === "all" || p.category === categoryFilter)
+      .filter((p) => categoryFilter === "all" || (CATEGORY_PARENT[p.category] ?? p.category) === categoryFilter)
       .filter((p) => {
         if (!search.trim()) return true;
         const q = search.toLowerCase();
@@ -302,7 +312,8 @@ export default function OrderFormClient({
       });
 
     const byCat = filtered.reduce<Record<string, Product[]>>((acc, p) => {
-      (acc[p.category] ??= []).push(p);
+      const key = CATEGORY_PARENT[p.category] ?? p.category;
+      (acc[key] ??= []).push(p);
       return acc;
     }, {});
 
@@ -317,7 +328,7 @@ export default function OrderFormClient({
           return (
             <div key={cat}>
               <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-gray-400">
-                {CATEGORY_LABELS[cat] ?? cat}
+                {CATEGORY_GROUP_LABEL[cat] ?? CATEGORY_LABELS[cat] ?? cat}
               </p>
               <div className="space-y-3">
                 {Array.from(familyMap.values()).map((group) => {
@@ -611,7 +622,7 @@ export default function OrderFormClient({
               {/* Category filter tabs */}
               {(() => {
                 const activeProducts = activeTab === "CS" ? csProducts : faProducts;
-                const cats = [...new Set(activeProducts.map(p => p.category))];
+                const cats = [...new Set(activeProducts.map(p => CATEGORY_PARENT[p.category] ?? p.category))];
                 if (cats.length <= 1) return null;
                 return (
                   <>
@@ -621,11 +632,11 @@ export default function OrderFormClient({
                         All
                       </button>
                       {cats.map(cat => {
-                        const catCount = activeProducts.filter(p => p.category === cat && (qty[p.id] ?? 0) > 0).length;
+                        const catCount = activeProducts.filter(p => (CATEGORY_PARENT[p.category] ?? p.category) === cat && (qty[p.id] ?? 0) > 0).length;
                         return (
                           <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
                             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
-                            {CATEGORY_LABELS[cat] ?? cat}
+                            {CATEGORY_GROUP_LABEL[cat] ?? CATEGORY_LABELS[cat] ?? cat}
                             {catCount > 0 && (
                               <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
                             )}
