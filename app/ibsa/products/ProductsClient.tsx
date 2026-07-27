@@ -463,7 +463,7 @@ export default function ProductsClient({ products, activeType }: Props) {
             </p>
             <div className="space-y-2">
               {items.map((p) => {
-                const isBom = p.bomAsComposite.length > 0;
+                const isBom = p.bomAsComposite.length > 0 || p.code.includes("+");
                 const currentInStock = getInStock(p);
                 const changed = stockTakeMode && !isBom && (draft[p.id] ?? p.inStock) !== p.inStock;
                 const total = currentInStock + p.git;
