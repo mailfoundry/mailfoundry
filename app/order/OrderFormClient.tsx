@@ -689,6 +689,23 @@ export default function OrderFormClient({
                   {totalLines > 0 && <span className="text-xs text-gray-400">{totalLines} item{totalLines !== 1 ? "s" : ""}</span>}
                 </div>
 
+                {/* CS / FA tab switcher — mirrors the left column tabs */}
+                <div className="px-4 pt-3 pb-2 flex gap-2 border-b border-gray-100">
+                  {(["CS", ...(hasFa ? ["FA"] : [])] as ("CS" | "FA")[]).map((tab) => {
+                    const count = tab === "CS" ? csLines : faLines;
+                    return (
+                      <button key={tab} type="button"
+                        onClick={() => { setActiveTab(tab); setCategoryFilter("all"); }}
+                        className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
+                        {tab === "CS" ? "Cleaning" : "First Aid"}
+                        {count > 0 && (
+                          <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${activeTab === tab ? "bg-white text-gray-900" : "bg-gray-200 text-gray-600"}`}>{count}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 {totalLines === 0 ? (
                   <p className="px-4 py-5 text-sm text-gray-400">No items added yet — select products to the left.</p>
                 ) : (
