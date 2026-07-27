@@ -463,8 +463,9 @@ export default function ProductsClient({ products, activeType }: Props) {
             </p>
             <div className="space-y-2">
               {items.map((p) => {
+                const isBom = p.bomAsComposite.length > 0;
                 const currentInStock = getInStock(p);
-                const changed = stockTakeMode && (draft[p.id] ?? p.inStock) !== p.inStock;
+                const changed = stockTakeMode && !isBom && (draft[p.id] ?? p.inStock) !== p.inStock;
                 const total = currentInStock + p.git;
 
                 return (
@@ -523,7 +524,14 @@ export default function ProductsClient({ products, activeType }: Props) {
                     </div>
 
                     {/* Stock controls */}
-                    {stockTakeMode ? (
+                    {isBom ? (
+                      /* BOM composite — stock lives on components */
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400">BOM</span>
+                        <span className="text-xs text-gray-400">Stock managed on components</span>
+                        <div className="ml-auto text-xs text-gray-400">£{p.unitCost.toFixed(2)}</div>
+                      </div>
+                    ) : stockTakeMode ? (
                       <div className="mt-3 flex items-center justify-between gap-3">
                         {/* GIT note */}
                         <div className="text-xs text-gray-400">

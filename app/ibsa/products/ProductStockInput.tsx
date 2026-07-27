@@ -7,9 +7,10 @@ type Props = {
   productId: string;
   inStock: number;
   git: number;
+  isBom?: boolean;
 };
 
-export default function ProductStockInput({ productId, inStock, git }: Props) {
+export default function ProductStockInput({ productId, inStock, git, isBom = false }: Props) {
   const inStockRef = useRef<HTMLInputElement>(null);
   const gitRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -23,6 +24,23 @@ export default function ProductStockInput({ productId, inStock, git }: Props) {
     formData.append("git", String(newGit));
     startTransition(() => updateProductStock(formData));
   };
+
+  if (isBom) {
+    return (
+      <>
+        <td className="px-5 py-3">
+          <div className="flex justify-center">
+            <span className="w-20 rounded border border-gray-100 bg-gray-50 px-2 py-1 text-right text-xs text-gray-400 block" title="Stock managed on components">—</span>
+          </div>
+        </td>
+        <td className="px-5 py-3">
+          <div className="flex justify-center">
+            <span className="w-20 rounded border border-gray-100 bg-gray-50 px-2 py-1 text-right text-xs text-gray-400 block" title="Stock managed on components">—</span>
+          </div>
+        </td>
+      </>
+    );
+  }
 
   return (
     <>
