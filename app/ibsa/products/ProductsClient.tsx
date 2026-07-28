@@ -633,9 +633,10 @@ export default function ProductsClient({ products, activeType }: Props) {
                   </td>
                 </tr>
                 {items.map((p) => {
+                  const isBomRow = p.bomAsComposite.length > 0 || p.code.includes("+");
                   const currentInStock = getInStock(p);
                   const total   = currentInStock + p.git;
-                  const changed = stockTakeMode && (draft[p.id] ?? p.inStock) !== p.inStock;
+                  const changed = stockTakeMode && !isBomRow && (draft[p.id] ?? p.inStock) !== p.inStock;
 
                   return (
                     <tr
@@ -682,7 +683,9 @@ export default function ProductsClient({ products, activeType }: Props) {
 
                       <td className="px-5 py-3">
                         <div className="flex justify-center">
-                          {stockTakeMode ? (
+                          {isBomRow ? (
+                            <span className="inline-block w-20 rounded border border-gray-100 bg-gray-50 px-2 py-1 text-right text-xs text-gray-400" title="Stock managed on components">—</span>
+                          ) : stockTakeMode ? (
                             <input
                               type="number"
                               min="0"
@@ -709,7 +712,9 @@ export default function ProductsClient({ products, activeType }: Props) {
 
                       <td className="px-5 py-3">
                         <div className="flex justify-center">
-                          {stockTakeMode ? (
+                          {isBomRow ? (
+                            <span className="inline-block w-20 rounded border border-gray-100 bg-gray-50 px-2 py-1 text-right text-xs text-gray-400" title="Stock managed on components">—</span>
+                          ) : stockTakeMode ? (
                             <span className="inline-block w-20 px-2 py-1 text-right text-gray-500">{p.git}</span>
                           ) : (
                             <input
