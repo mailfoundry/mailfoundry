@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, updateRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -10,6 +10,8 @@ export type RsProductLink = {
   rsCode: string | null;
   rsVariant: string | null;
   rsDescription: string | null;
+  cartonSize: number | null;
+  cartonPrice: number | null;
 };
 
 export type BomLine = {
@@ -107,6 +109,12 @@ export default function ProductsClient({ products, activeType }: Props) {
     supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "",
   });
   const [isSavingLink, startSavingLink] = useTransition();
+
+  // Edit supplier link state
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
+  const [editLinkDraft, setEditLinkDraft] = useState({
+    supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "",
+  });
 
   // BOM form state
   const [showAddBom, setShowAddBom] = useState(false);
@@ -1113,42 +1121,145 @@ export default function ProductsClient({ products, activeType }: Props) {
                 {editingProduct && editingProduct.rsProducts.length > 0 && (
                   <div className="mb-2 space-y-2">
                     {editingProduct.rsProducts.map((rp) => (
-                      <div key={rp.id} className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white/60 p-2.5">
-                        <input
-                          type="text"
-                          list="supplier-names"
-                          value={supplierDrafts.get(rp.id) ?? rp.supplier}
-                          onChange={(e) =>
-                            setSupplierDrafts((prev) => new Map(prev).set(rp.id, e.target.value))
-                          }
-                          className="min-w-0 flex-1 rounded border border-gray-200 bg-gray-100 px-2 py-1 text-sm text-gray-900 outline-none focus:border-blue-500"
-                        />
-                        <div className="flex shrink-0 items-center gap-1.5">
-                          {rp.rsCode ? (
-                            <span className="font-mono text-xs text-gray-500">{rp.rsCode}</span>
-                          ) : (
-                            <span className="text-xs text-gray-300">no code</span>
-                          )}
-                          {rp.rsVariant && (
-                            <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600">
-                              {rp.rsVariant}
-                            </span>
-                          )}
-                        </div>
-                        {supplierDrafts.get(rp.id) !== rp.supplier && (
-                          <span className="text-xs text-amber-600">✎</span>
+                      <div key={rp.id}>
+                        {editingLinkId === rp.id ? (
+                          /* ── Expanded edit form ── */
+                          <div className="space-y-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
+                            <p className="text-xs font-semibold text-amber-700">Edit supplier link</p>
+                            <input
+                              type="text"
+                              list="supplier-names"
+                              placeholder="Supplier name *"
+                              value={editLinkDraft.supplier}
+                              onChange={(e) => setEditLinkDraft((p) => ({ ...p, supplier: e.target.value }))}
+                              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 outline-none focus:border-amber-500 placeholder:text-gray-300"
+                            />
+                            <div className="grid grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Supplier code"
+                                value={editLinkDraft.rsCode}
+                                onChange={(e) => setEditLinkDraft((p) => ({ ...p, rsCode: e.target.value }))}
+                                className="rounded border border-gray-200 bg-white px-2 py-1.5 font-mono text-xs text-gray-900 outline-none focus:border-amber-500 placeholder:text-gray-300"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Variant (e.g. BLUE)"
+                                value={editLinkDraft.rsVariant}
+                                onChange={(e) => setEditLinkDraft((p) => ({ ...p, rsVariant: e.target.value }))}
+                                className="rounded border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-amber-500 placeholder:text-gray-300"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              placeholder="Description (overrides product name on PO)"
+                              value={editLinkDraft.rsDescription}
+                              onChange={(e) => setEditLinkDraft((p) => ({ ...p, rsDescription: e.target.value }))}
+                              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-amber-500 placeholder:text-gray-300"
+                            />
+                            <div className="grid grid-cols-2 gap-2">
+                              <input
+                                type="number"
+                                placeholder="Carton size (units)"
+                                value={editLinkDraft.cartonSize}
+                                onChange={(e) => setEditLinkDraft((p) => ({ ...p, cartonSize: e.target.value }))}
+                                className="rounded border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-amber-500 placeholder:text-gray-300"
+                              />
+                              <input
+                                type="number"
+                                step="0.01"
+                                placeholder="Price per carton (£)"
+                                value={editLinkDraft.cartonPrice}
+                                onChange={(e) => setEditLinkDraft((p) => ({ ...p, cartonPrice: e.target.value }))}
+                                className="rounded border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-amber-500 placeholder:text-gray-300"
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setEditingLinkId(null)}
+                                className="rounded border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-50"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isSavingLink || !editLinkDraft.supplier.trim()}
+                                onClick={() => {
+                                  const fd = new FormData();
+                                  fd.set("id", rp.id);
+                                  fd.set("supplier", editLinkDraft.supplier);
+                                  fd.set("rsCode", editLinkDraft.rsCode);
+                                  fd.set("rsVariant", editLinkDraft.rsVariant);
+                                  fd.set("rsDescription", editLinkDraft.rsDescription);
+                                  fd.set("cartonSize", editLinkDraft.cartonSize);
+                                  fd.set("cartonPrice", editLinkDraft.cartonPrice);
+                                  startSavingLink(async () => {
+                                    await updateRsProductLink(fd);
+                                    setEditingLinkId(null);
+                                  });
+                                }}
+                                className="rounded border border-amber-500 bg-amber-500 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-400 disabled:opacity-40"
+                              >
+                                {isSavingLink ? "Saving…" : "Save changes"}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          /* ── Collapsed row ── */
+                          <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white/60 p-2.5">
+                            <span className="min-w-0 flex-1 text-sm font-medium text-gray-900 truncate">{rp.supplier}</span>
+                            <div className="flex shrink-0 items-center gap-1.5">
+                              {rp.rsCode ? (
+                                <span className="font-mono text-xs text-gray-500">{rp.rsCode}</span>
+                              ) : (
+                                <span className="text-xs text-gray-300">no code</span>
+                              )}
+                              {rp.rsVariant && (
+                                <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600">
+                                  {rp.rsVariant}
+                                </span>
+                              )}
+                              {rp.cartonSize && (
+                                <span className="text-xs text-gray-400">{rp.cartonSize}u</span>
+                              )}
+                              {rp.cartonPrice && (
+                                <span className="text-xs text-gray-400">£{rp.cartonPrice}</span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingLinkId(rp.id);
+                                setEditLinkDraft({
+                                  supplier: rp.supplier,
+                                  rsCode: rp.rsCode ?? "",
+                                  rsVariant: rp.rsVariant ?? "",
+                                  rsDescription: rp.rsDescription ?? "",
+                                  cartonSize: rp.cartonSize != null ? String(rp.cartonSize) : "",
+                                  cartonPrice: rp.cartonPrice != null ? String(rp.cartonPrice) : "",
+                                });
+                              }}
+                              title="Edit link"
+                              className="shrink-0 text-gray-300 hover:text-amber-500 transition-colors"
+                            >
+                              <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => submitDeleteLink(rp.id)}
+                              disabled={isSavingLink}
+                              title="Remove link"
+                              className="shrink-0 text-gray-300 hover:text-red-500 disabled:opacity-40"
+                            >
+                              <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
                         )}
-                        <button
-                          type="button"
-                          onClick={() => submitDeleteLink(rp.id)}
-                          disabled={isSavingLink}
-                          title="Remove link"
-                          className="shrink-0 text-gray-300 hover:text-red-500 disabled:opacity-40"
-                        >
-                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        </button>
                       </div>
                     ))}
                   </div>

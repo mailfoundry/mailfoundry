@@ -110,6 +110,28 @@ export async function createRsProductLink(formData: FormData) {
   revalidatePath("/ibsa/suppliers");
 }
 
+/** Update an existing RS product link */
+export async function updateRsProductLink(formData: FormData) {
+  const id = (formData.get("id") as string).trim();
+  if (!id) return;
+
+  await prisma.rsProduct.update({
+    where: { id },
+    data: {
+      supplier:      (formData.get("supplier") as string)?.trim() || undefined,
+      rsCode:        (formData.get("rsCode") as string)?.trim() || null,
+      rsVariant:     (formData.get("rsVariant") as string)?.trim() || null,
+      rsDescription: (formData.get("rsDescription") as string)?.trim() || null,
+      cartonSize:    parseInt(formData.get("cartonSize") as string) || null,
+      cartonPrice:   parseFloat(formData.get("cartonPrice") as string) || null,
+    },
+  });
+
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+  revalidatePath("/ibsa/suppliers");
+}
+
 /** Delete an RS product link */
 export async function deleteRsProductLink(formData: FormData) {
   const id = (formData.get("id") as string).trim();

@@ -32,7 +32,7 @@ export default async function IbsaProductsPage({
       inStock: true,
       git: true,
       rsProducts: {
-        select: { id: true, supplier: true, rsCode: true, rsVariant: true, rsDescription: true },
+        select: { id: true, supplier: true, rsCode: true, rsVariant: true, rsDescription: true, cartonSize: true, cartonPrice: true },
         orderBy: { supplier: "asc" as const },
       },
       bomAsComposite: {
