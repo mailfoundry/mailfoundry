@@ -32,7 +32,7 @@ export default async function ContactPage({ searchParams }: Props) {
           <h1 className="text-4xl font-black leading-tight tracking-tight mb-4">
             Get in touch
           </h1>
-          <p className="text-lg text-gray-300 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed">
             Trade accounts, bulk orders, stock queries — we&apos;re happy to help.
           </p>
         </div>
@@ -46,7 +46,7 @@ export default async function ContactPage({ searchParams }: Props) {
               </svg>
             </div>
             <h2 className="text-lg font-bold text-gray-900 mb-2">Message sent</h2>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-600">
               Thanks for getting in touch — we&apos;ll come back to you as soon as possible.
             </p>
             <a
@@ -69,7 +69,7 @@ export default async function ContactPage({ searchParams }: Props) {
             <form action={submitContactForm} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Name <span className="text-orange-500">*</span>
                   </label>
                   <input
@@ -82,7 +82,7 @@ export default async function ContactPage({ searchParams }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Email <span className="text-orange-500">*</span>
                   </label>
                   <input
@@ -98,7 +98,7 @@ export default async function ContactPage({ searchParams }: Props) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Company / Organisation
                   </label>
                   <input
@@ -110,7 +110,7 @@ export default async function ContactPage({ searchParams }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-200 mb-1.5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Phone
                   </label>
                   <input
@@ -124,7 +124,7 @@ export default async function ContactPage({ searchParams }: Props) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-200 mb-1.5">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Message <span className="text-orange-500">*</span>
                 </label>
                 <textarea
@@ -158,19 +158,19 @@ export default async function ContactPage({ searchParams }: Props) {
         <div className="mt-14 pt-10 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-1">Email</p>
-            <a href="mailto:hello@xylouk.co.uk" className="text-sm text-gray-200 hover:text-orange-600 transition-colors">
+            <a href="mailto:hello@xylouk.co.uk" className="text-sm text-gray-700 hover:text-orange-600 transition-colors">
               hello@xylouk.co.uk
             </a>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-1">Phone</p>
-            <a href="tel:+447714747777" className="text-sm text-gray-200 hover:text-orange-600 transition-colors">
+            <a href="tel:+447714747777" className="text-sm text-gray-700 hover:text-orange-600 transition-colors">
               07714 747777
             </a>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-orange-400 mb-1">Address</p>
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-sm text-gray-700 leading-relaxed">
               R08 Regent Works Studio<br />
               Lawley Street, Longton<br />
               Staffordshire ST3 1LZ

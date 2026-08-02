@@ -11,11 +11,11 @@ export default function PrivacyPage() {
           Legal
         </p>
         <h1 className="text-3xl font-black tracking-tight mb-4">Privacy Policy</h1>
-        <p className="text-xs text-gray-300 mb-12">
+        <p className="text-xs text-gray-600 mb-12">
           Last updated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
         </p>
 
-        <div className="space-y-8 text-sm text-gray-300 leading-relaxed">
+        <div className="space-y-8 text-sm text-gray-600 leading-relaxed">
           <div>
             <h2 className="text-gray-900 font-bold mb-2">1. Who We Are</h2>
             <p>
