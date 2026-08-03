@@ -15,6 +15,7 @@ type AppShellProps = {
     | "ibsa-congregations"
     | "ibsa-products"
     | "ibsa-purchasing"
+    | "ibsa-pos"
     | "ibsa-suppliers"
     | "ibsa-orders"
     | "ibsa-contacts";

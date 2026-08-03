@@ -20,6 +20,7 @@ type SidebarProps = {
     | "ibsa-congregations"
     | "ibsa-products"
     | "ibsa-purchasing"
+    | "ibsa-pos"
     | "ibsa-suppliers"
     | "ibsa-orders"
     | "ibsa-contacts"
@@ -33,7 +34,7 @@ type SidebarProps = {
 
 const ibsaActive = new Set([
   "ibsa", "ibsa-circuits", "ibsa-congregations",
-  "ibsa-products", "ibsa-purchasing", "ibsa-suppliers",
+  "ibsa-products", "ibsa-purchasing", "ibsa-pos", "ibsa-suppliers",
   "ibsa-orders", "ibsa-contacts", "ibsa-tools",
 ]);
 
@@ -95,6 +96,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
 
           <Link href={productsHref} className={active === "ibsa-products" ? activeClass : base}>Products</Link>
           <Link href="/ibsa/purchasing" className={active === "ibsa-purchasing" ? activeClass : base}>Purchasing</Link>
+          <Link href="/ibsa/pos" className={active === "ibsa-pos" ? activeClass : base}>Purchase Orders</Link>
           <Link href="/ibsa/suppliers" className={active === "ibsa-suppliers" ? activeClass : base}>Suppliers</Link>
           <Link href="/ibsa/contacts" className={active === "ibsa-contacts" ? activeClass : base}>Contacts</Link>
 
