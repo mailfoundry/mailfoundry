@@ -30,6 +30,7 @@ export default async function PosPage() {
       variant: l.variant ?? null,
       cartonSize: l.cartonSize ?? null,
       cartonsOrdered: l.cartonsOrdered,
+      cartonsReceived: l.cartonsReceived,
       pricePerCarton: l.pricePerCarton ?? null,
       totalCost: l.totalCost ?? null,
     })),
