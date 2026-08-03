@@ -55,7 +55,18 @@ export default async function ConventionDetailPage({
 
   if (!convention) notFound();
 
-  const SIZE_RANK: Record<string, number> = { Small: 1, Medium: 2, Large: 3, XLarge: 4, XXLarge: 5, XXXLarge: 6 };
+  // Normalise variant string → size rank. Strips punctuation/spaces and lowercases
+  // so "Extra Large", "XLarge", "X-Large", and "XL" all map to rank 4.
+  function sizeRank(v: string | null): number {
+    if (!v) return 99;
+    const k = v.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return (
+      { s: 1, small: 1, m: 2, medium: 2, med: 2, l: 3, large: 3,
+        xl: 4, xlarge: 4, extralarge: 4,
+        xxl: 5, xxlarge: 5, extraextralarge: 5,
+        xxxl: 6, xxxlarge: 6 } as Record<string, number>
+    )[k] ?? 99;
+  }
 
   const allProducts = (await prisma.ibsaProduct.findMany({
     orderBy: [{ type: "asc" }, { category: "asc" }, { name: "asc" }],
@@ -63,7 +74,7 @@ export default async function ConventionDetailPage({
     if (a.type !== b.type) return a.type.localeCompare(b.type);
     if (a.category !== b.category) return a.category.localeCompare(b.category);
     if (a.name !== b.name) return a.name.localeCompare(b.name);
-    return (SIZE_RANK[a.variant ?? ""] ?? 99) - (SIZE_RANK[b.variant ?? ""] ?? 99);
+    return sizeRank(a.variant) - sizeRank(b.variant);
   });
 
   const csQtyMap: Record<string, number> = {};

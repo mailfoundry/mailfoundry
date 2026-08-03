@@ -50,6 +50,18 @@ export function downloadPickList({
   const vat = subtotal * 0.2;
   const total = subtotal + vat + shippingCost;
 
+  // Normalise variant → size rank so rows sort S → M → L → XL → XXL
+  function sizeRank(v: string | null): number {
+    if (!v) return 99;
+    const k = v.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return (
+      { s: 1, small: 1, m: 2, medium: 2, med: 2, l: 3, large: 3,
+        xl: 4, xlarge: 4, extralarge: 4,
+        xxl: 5, xxlarge: 5, extraextralarge: 5,
+        xxxl: 6, xxxlarge: 6 } as Record<string, number>
+    )[k] ?? 99;
+  }
+
   // Group lines by category, preserving order
   const grouped = new Map<string, PickListLine[]>();
   for (const l of lines) {
@@ -60,7 +72,12 @@ export function downloadPickList({
   const bodyRows = Array.from(grouped.entries())
     .map(([cat, catLines]) => {
       const catLabel = CATEGORY_LABELS[cat] ?? cat.toUpperCase();
-      const productRows = catLines
+      // Sort within each category: by product name first, then by size variant
+      const sorted = [...catLines].sort((a, b) => {
+        if (a.name !== b.name) return a.name.localeCompare(b.name);
+        return sizeRank(a.variant) - sizeRank(b.variant);
+      });
+      const productRows = sorted
         .map(
           (l) => `
         <tr>
