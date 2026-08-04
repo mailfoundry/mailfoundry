@@ -82,6 +82,7 @@ type ProductContribution = {
   ibsaProductId: string;
   name: string;
   units: number;
+  inStock: number;
 };
 
 type RsOrderLine = RsProductLine & {
@@ -90,6 +91,7 @@ type RsOrderLine = RsProductLine & {
   cartonsNeeded: number | null;
   totalCost: number | null;
   productBreakdown: ProductContribution[];
+  lineInStock: number;
 };
 
 // A selectable card = one (convention, dept) pair
@@ -282,17 +284,37 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
     return map;
   }, [rsProducts]);
 
+  const UNKNOWN_SUPPLIER = "Unknown Supplier";
+
   const rsOrderBySupplier = useMemo(() => {
     const lineMap = new Map<string, RsOrderLine>();
-    const unlinkedProducts: string[] = [];
+    // Unlinked products go into a synthetic "Unknown Supplier" group so they're never missed
+    const unknownLines: RsOrderLine[] = [];
 
     for (const row of rows) {
       const linked = rsProductsByIbsaId.get(row.productId) ?? [];
+      const productLabel = row.name + (row.variant ? ` (${row.variant})` : "");
+
       if (linked.length === 0) {
-        unlinkedProducts.push(row.name + (row.variant ? ` (${row.variant})` : ""));
+        unknownLines.push({
+          id: `unlinked_${row.productId}`,
+          supplier: UNKNOWN_SUPPLIER,
+          rsCode: null,
+          rsVariant: row.variant,
+          rsDescription: null,
+          cartonSize: null,
+          cartonPrice: null,
+          ibsaProductId: row.productId,
+          displayLabel: productLabel,
+          unitsNeeded: row.deficit,
+          cartonsNeeded: null,
+          totalCost: null,
+          productBreakdown: [{ ibsaProductId: row.productId, name: productLabel, units: row.deficit, inStock: row.inStock }],
+          lineInStock: row.inStock,
+        });
         continue;
       }
-      const productLabel = row.name + (row.variant ? ` (${row.variant})` : "");
+
       for (const rp of linked) {
         // Lines with a catalog code aggregate by (supplier, rsCode, rsVariant);
         // supplier-only links are unique per ibsaProduct (no merging across products)
@@ -307,13 +329,16 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
             cartonsNeeded: null,
             totalCost: null,
             productBreakdown: [],
+            lineInStock: 0,
           });
         }
         lineMap.get(key)!.unitsNeeded += row.deficit;
+        lineMap.get(key)!.lineInStock += row.inStock;
         lineMap.get(key)!.productBreakdown.push({
           ibsaProductId: row.productId,
           name: productLabel,
           units: row.deficit,
+          inStock: row.inStock,
         });
       }
     }
@@ -338,9 +363,11 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
         return (a.rsCode ?? a.displayLabel).localeCompare(b.rsCode ?? b.displayLabel);
       });
     }
-    // Sort supplier groups: those with any catalog data first, then alpha
+    // Sort supplier groups: those with any catalog data first, then alpha; Unknown Supplier always last
     const sortedSuppliers = new Map(
       [...bySupplier.entries()].sort(([aName, aLines], [bName, bLines]) => {
+        if (aName === UNKNOWN_SUPPLIER) return 1;
+        if (bName === UNKNOWN_SUPPLIER) return -1;
         const aHas = aLines.some(l => l.rsCode);
         const bHas = bLines.some(l => l.rsCode);
         if (aHas !== bHas) return aHas ? -1 : 1;
@@ -348,7 +375,12 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
       })
     );
 
-    return { bySupplier: sortedSuppliers, unlinkedProducts };
+    // Append Unknown Supplier group if there are any unlinked lines
+    if (unknownLines.length > 0) {
+      sortedSuppliers.set(UNKNOWN_SUPPLIER, unknownLines);
+    }
+
+    return { bySupplier: sortedSuppliers };
   }, [rows, rsProductsByIbsaId]);
 
   const rsOrderTotalCost = useMemo(() => {
@@ -655,45 +687,38 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                 <p className="text-sm font-semibold text-amber-600">{fmtGbp(rsOrderTotalCost)} total (ex VAT)</p>
               </div>
 
-              {/* Warning: deficit products with no supplier link */}
-              {rsOrderBySupplier.unlinkedProducts.length > 0 && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
-                  <p className="text-sm font-semibold text-amber-700">
-                    {rsOrderBySupplier.unlinkedProducts.length} product{rsOrderBySupplier.unlinkedProducts.length !== 1 ? "s" : ""} not linked to a supplier — not included in order:
-                  </p>
-                  <p className="mt-1 text-xs text-amber-500">
-                    {rsOrderBySupplier.unlinkedProducts.join(", ")}
-                  </p>
-                </div>
-              )}
 
               {/* One table per supplier */}
               {Array.from(rsOrderBySupplier.bySupplier.entries()).map(([supplier, lines]) => {
+                const isUnknownSupplier = supplier === UNKNOWN_SUPPLIER;
                 const supplierTotal = lines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
                 const pendingCount = lines.filter(l => l.cartonSize == null).length;
                 return (
-                  <div key={supplier} className="overflow-hidden rounded-xl border border-gray-200">
-                    <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100/80 px-4 py-3">
+                  <div key={supplier} className={`overflow-hidden rounded-xl border ${isUnknownSupplier ? "border-amber-200" : "border-gray-200"}`}>
+                    <div className={`flex items-center justify-between border-b px-4 py-3 ${isUnknownSupplier ? "border-amber-200 bg-amber-50" : "border-gray-200 bg-gray-100/80"}`}>
                       <div className="flex items-center gap-3">
-                        <p className="font-semibold text-gray-900">{supplier}</p>
-                        {pendingCount > 0 && (
-                          <span className="rounded border border-amber-200 bg-amber-950/30 px-2 py-0.5 text-xs text-amber-600">
-                            {pendingCount} without catalog data
-                          </span>
-                        )}
+                        <p className={`font-semibold ${isUnknownSupplier ? "text-amber-700" : "text-gray-900"}`}>{supplier}</p>
+                        {isUnknownSupplier
+                          ? <span className="rounded border border-amber-300 bg-amber-100 px-2 py-0.5 text-xs text-amber-700">Add supplier links on the Products page to order these</span>
+                          : pendingCount > 0 && (
+                            <span className="rounded border border-amber-200 bg-amber-950/30 px-2 py-0.5 text-xs text-amber-600">
+                              {pendingCount} without catalog data
+                            </span>
+                          )
+                        }
                       </div>
                       <div className="flex items-center gap-3">
-                        {supplierTotal > 0
+                        {!isUnknownSupplier && (supplierTotal > 0
                           ? <p className="text-sm font-semibold text-amber-600">{fmtGbp(supplierTotal)}</p>
                           : <p className="text-xs text-gray-400">cost unknown</p>
-                        }
-                        <button
+                        )}
+                        {!isUnknownSupplier && <button
                           onClick={() => handleDownloadPO(supplier, lines)}
                           className="rounded border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-900"
                         >
                           ↓ Download PO
-                        </button>
-                        {(() => {
+                        </button>}
+                        {!isUnknownSupplier && (() => {
                           const state = orderStates.get(supplier) ?? "idle";
                           if (state === "done") {
                             return (
@@ -714,13 +739,25 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                         })()}
                       </div>
                     </div>
-                    <table className="w-full text-sm">
+                    <table className="w-full table-fixed text-sm">
+                      <colgroup>
+                        <col style={{ width: "7rem" }} />   {/* Code */}
+                        <col />                              {/* Description — flex */}
+                        <col style={{ width: "6rem" }} />   {/* Variant */}
+                        <col style={{ width: "5rem" }} />   {/* Carton */}
+                        <col style={{ width: "5.5rem" }} /> {/* In Stock */}
+                        <col style={{ width: "5.5rem" }} /> {/* Shortfall */}
+                        <col style={{ width: "5.5rem" }} /> {/* Cartons */}
+                        <col style={{ width: "7rem" }} />   {/* Price/carton */}
+                        <col style={{ width: "6rem" }} />   {/* Total */}
+                      </colgroup>
                       <thead>
                         <tr className="border-b border-gray-200 bg-white shadow-sm/60 text-xs text-gray-400">
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Code</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Carton</th>
+                          <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Shortfall</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Cartons</th>
                           <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Price/carton</th>
@@ -730,13 +767,19 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                       <tbody className="bg-white">
                         {lines.map(line => {
                           const hasCatalog = line.cartonSize != null;
+                          const isUnknown = supplier === UNKNOWN_SUPPLIER;
                           return (
-                            <tr key={line.id} className={`border-t border-gray-200 ${hasCatalog ? "hover:bg-gray-50" : "opacity-70 hover:opacity-100"}`}>
-                              <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                            <tr key={line.id} className={`border-t border-gray-200 ${isUnknown ? "bg-amber-50/40 opacity-80 hover:opacity-100" : hasCatalog ? "hover:bg-gray-50" : "opacity-70 hover:opacity-100"}`}>
+                              <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate">
                                 {line.rsCode ?? <span className="text-gray-200">—</span>}
                               </td>
-                              <td className="px-4 py-3 text-gray-900">{line.displayLabel}</td>
-                              <td className="px-4 py-3">
+                              <td className="px-4 py-3 text-gray-900 truncate" title={line.displayLabel}>
+                                {isUnknown
+                                  ? <span className="flex items-center gap-1.5">{line.displayLabel} <span className="shrink-0 rounded border border-amber-200 bg-amber-100 px-1 py-0 text-[10px] font-semibold text-amber-700 uppercase tracking-wide">No supplier</span></span>
+                                  : line.displayLabel
+                                }
+                              </td>
+                              <td className="px-4 py-3 truncate">
                                 {line.rsVariant
                                   ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{line.rsVariant}</span>
                                   : <span className="text-gray-300">—</span>
@@ -744,6 +787,9 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                               </td>
                               <td className="px-4 py-3 text-right tabular-nums text-gray-500">
                                 {line.cartonSize ?? <span className="text-gray-300">—</span>}
+                              </td>
+                              <td className={`px-4 py-3 text-right tabular-nums font-medium ${line.lineInStock === 0 ? "text-red-400" : "text-gray-600"}`}>
+                                {line.lineInStock}
                               </td>
                               <td className="px-4 py-3 text-right tabular-nums text-gray-600">{line.unitsNeeded}</td>
                               <td className="px-4 py-3 text-right">
@@ -764,7 +810,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           );
                         })}
                         <tr className="border-t border-gray-200 bg-white/80">
-                          <td colSpan={7} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
+                          <td colSpan={8} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
                             {pendingCount > 0 ? `Subtotal (excl. ${pendingCount} pending)` : "Subtotal"}
                           </td>
                           <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-600">
