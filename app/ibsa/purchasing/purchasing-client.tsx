@@ -128,8 +128,13 @@ function makePONumber(supplier: string) {
   return `PO-${dateCode}-${supplierCode}`;
 }
 
+type ViewMode = "deficit" | "rsOrder" | "buyingPower";
+
+const FREE_SHIPPING_THRESHOLD = 85; // ex-VAT
+
 export default function PurchasingClient({ conventions, orderItems, rsProducts, bomByComposite }: Props) {
-  const [showRsOrder, setShowRsOrder] = useState(false);
+  const [view, setView] = useState<ViewMode>("deficit");
+  const [bpSupplier, setBpSupplier] = useState<string | null>(null);
   const [orderStates, setOrderStates] = useState<Map<string, OrderState>>(() => new Map());
   const [confirmSupplier, setConfirmSupplier] = useState<{ supplier: string; poNumber: string; lines: RsOrderLine[] } | null>(null);
   const [, startTransition] = useTransition();
@@ -277,6 +282,12 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
 
   const totalCost  = rows.reduce((s, r) => s + r.deficit * (r.xyloCost ?? r.unitCost), 0);
   const totalUnits = rows.reduce((s, r) => s + r.deficit, 0);
+
+  // ── Supplier list (for buying power picker) ──────────────────────────────
+  const supplierNames = useMemo(
+    () => [...new Set(rsProducts.map(r => r.supplier))].sort(),
+    [rsProducts]
+  );
 
   // ── RS Order calculation ─────────────────────────────────────────────────
   const rsProductsByIbsaId = useMemo(() => {
@@ -571,28 +582,26 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
             </div>
           </div>
 
-          {/* Deficit / RS Order toggle */}
+          {/* View toggle */}
           <div className="mb-6 flex items-center gap-2">
-            <button
-              onClick={() => setShowRsOrder(false)}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                !showRsOrder ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900"
-              }`}
-            >
-              Deficit
-            </button>
-            <button
-              onClick={() => setShowRsOrder(true)}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                showRsOrder ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900"
-              }`}
-            >
-              Supplier Order
-            </button>
+            {(["deficit", "rsOrder", "buyingPower"] as ViewMode[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => {
+                  setView(v);
+                  if (v === "buyingPower") selectAll();
+                }}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                  view === v ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                {v === "deficit" ? "Deficit" : v === "rsOrder" ? "Supplier Order" : "Buying Power"}
+              </button>
+            ))}
           </div>
 
           {/* ── DEFICIT VIEW ─────────────────────────────────────────────── */}
-          {!showRsOrder && (
+          {view === "deficit" && (
             <div className="overflow-hidden rounded-xl border border-gray-200">
               <table className="w-full text-sm">
                 <thead>
@@ -677,7 +686,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
           )}
 
           {/* ── RS ORDER VIEW ────────────────────────────────────────────── */}
-          {showRsOrder && (
+          {view === "rsOrder" && (
             <div className="space-y-6">
               {/* Summary bar */}
               <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white shadow-sm px-5 py-4">
@@ -829,6 +838,184 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
               })}
             </div>
           )}
+
+          {/* ── BUYING POWER VIEW ────────────────────────────────────────── */}
+          {view === "buyingPower" && (() => {
+            const bpLines = bpSupplier
+              ? rsOrderBySupplier.bySupplier.get(bpSupplier) ?? []
+              : null;
+            const bpTotal = bpLines
+              ? bpLines.reduce((s, l) => s + (l.totalCost ?? 0), 0)
+              : 0;
+            const toFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - bpTotal);
+            const pct = Math.min(100, (bpTotal / FREE_SHIPPING_THRESHOLD) * 100);
+            const pendingCount = bpLines ? bpLines.filter(l => l.cartonSize == null).length : 0;
+
+            return (
+              <div className="space-y-5">
+                {/* Supplier picker */}
+                <div className="rounded-xl border border-gray-200 bg-white shadow-sm px-5 py-4">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Select supplier</p>
+                  <div className="flex flex-wrap gap-2">
+                    {supplierNames.filter(s => s !== UNKNOWN_SUPPLIER).map(s => (
+                      <button
+                        key={s}
+                        onClick={() => setBpSupplier(s === bpSupplier ? null : s)}
+                        className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+                          bpSupplier === s
+                            ? "border-blue-600 bg-blue-50 text-blue-700"
+                            : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {!bpSupplier ? (
+                  <div className="rounded-xl border border-gray-100 bg-gray-50 p-10 text-center">
+                    <p className="text-sm text-gray-400">Pick a supplier above to see your combined buying power across all selected conventions.</p>
+                  </div>
+                ) : !bpLines || bpLines.length === 0 ? (
+                  <div className="rounded-xl border border-gray-100 bg-gray-50 p-10 text-center">
+                    <p className="text-sm text-gray-400">No items needed from <strong>{bpSupplier}</strong> across the selected conventions.</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Free shipping meter */}
+                    <div className="rounded-xl border border-gray-200 bg-white shadow-sm px-5 py-4">
+                      <div className="flex items-end justify-between mb-2">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Order total ({bpSupplier})</p>
+                          <p className="mt-1 text-2xl font-bold text-gray-900">{fmtGbp(bpTotal)} <span className="text-sm font-normal text-gray-400">ex VAT</span></p>
+                        </div>
+                        {toFreeShipping > 0 ? (
+                          <p className="text-sm text-amber-600 font-semibold">{fmtGbp(toFreeShipping)} to free shipping</p>
+                        ) : (
+                          <p className="text-sm text-green-600 font-semibold">✓ Qualifies for free shipping</p>
+                        )}
+                      </div>
+                      <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                        <div
+                          className={`h-2 rounded-full transition-all ${pct >= 100 ? "bg-green-500" : "bg-blue-500"}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <p className="mt-1 text-[10px] text-gray-400">Free shipping threshold: {fmtGbp(FREE_SHIPPING_THRESHOLD)} ex VAT</p>
+                    </div>
+
+                    {/* Order lines */}
+                    <div className="overflow-hidden rounded-xl border border-gray-200">
+                      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100/80 px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <p className="font-semibold text-gray-900">{bpSupplier}</p>
+                          {pendingCount > 0 && (
+                            <span className="rounded border border-amber-200 bg-amber-950/30 px-2 py-0.5 text-xs text-amber-600">
+                              {pendingCount} without catalog data
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {bpTotal > 0
+                            ? <p className="text-sm font-semibold text-amber-600">{fmtGbp(bpTotal)}</p>
+                            : <p className="text-xs text-gray-400">cost unknown</p>
+                          }
+                          <button
+                            onClick={() => handleDownloadPO(bpSupplier, bpLines)}
+                            className="rounded border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-200"
+                          >
+                            ↓ Download PO
+                          </button>
+                          {(() => {
+                            const state = orderStates.get(bpSupplier) ?? "idle";
+                            if (state === "done") return (
+                              <span className="rounded border border-green-700/60 bg-green-950/40 px-3 py-1 text-xs font-semibold text-green-600">✓ Ordered</span>
+                            );
+                            return (
+                              <button
+                                onClick={() => openConfirmOrder(bpSupplier, bpLines)}
+                                disabled={state === "submitting" || bpLines.filter(l => l.cartonsNeeded != null).length === 0}
+                                className="rounded border border-blue-700/60 bg-blue-950/40 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-900/50 hover:text-blue-200 disabled:cursor-not-allowed disabled:opacity-40"
+                              >
+                                {state === "submitting" ? "Saving…" : "✓ Mark as Ordered"}
+                              </button>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                      <table className="w-full table-fixed text-sm">
+                        <colgroup>
+                          <col style={{ width: "7rem" }} />
+                          <col />
+                          <col style={{ width: "6rem" }} />
+                          <col style={{ width: "5rem" }} />
+                          <col style={{ width: "5.5rem" }} />
+                          <col style={{ width: "5.5rem" }} />
+                          <col style={{ width: "5.5rem" }} />
+                          <col style={{ width: "7rem" }} />
+                          <col style={{ width: "6rem" }} />
+                        </colgroup>
+                        <thead>
+                          <tr className="border-b border-gray-200 bg-white text-xs text-gray-400">
+                            <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Code</th>
+                            <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
+                            <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
+                            <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Carton</th>
+                            <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">In Stock</th>
+                            <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Shortfall</th>
+                            <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Cartons</th>
+                            <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Price/carton</th>
+                            <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white">
+                          {bpLines.map(line => (
+                            <tr key={line.id} className={`border-t border-gray-200 ${line.cartonSize != null ? "hover:bg-gray-50" : "opacity-70"}`}>
+                              <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate">{line.rsCode ?? <span className="text-gray-200">—</span>}</td>
+                              <td className="px-4 py-3 text-gray-900 truncate" title={line.displayLabel}>{line.displayLabel}</td>
+                              <td className="px-4 py-3 truncate">
+                                {line.rsVariant
+                                  ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{line.rsVariant}</span>
+                                  : <span className="text-gray-300">—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums text-gray-500">{line.cartonSize ?? <span className="text-gray-300">—</span>}</td>
+                              <td className={`px-4 py-3 text-right tabular-nums font-medium ${line.lineInStock === 0 ? "text-red-400" : "text-gray-600"}`}>{line.lineInStock}</td>
+                              <td className="px-4 py-3 text-right tabular-nums text-gray-600">{line.unitsNeeded}</td>
+                              <td className="px-4 py-3 text-right">
+                                {line.cartonsNeeded != null
+                                  ? <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-700">{line.cartonsNeeded}</span>
+                                  : <span className="text-gray-300">—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-right tabular-nums text-gray-500">{line.cartonPrice != null ? fmtGbp(line.cartonPrice) : <span className="text-gray-300">—</span>}</td>
+                              <td className="px-4 py-3 text-right tabular-nums font-semibold text-gray-900">{line.totalCost != null ? fmtGbp(line.totalCost) : <span className="font-normal text-gray-300">—</span>}</td>
+                            </tr>
+                          ))}
+                          <tr className="border-t border-gray-200 bg-white/80">
+                            <td colSpan={8} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
+                              {pendingCount > 0 ? `Subtotal (excl. ${pendingCount} pending)` : "Subtotal"}
+                            </td>
+                            <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-600">
+                              {bpTotal > 0 ? fmtGbp(bpTotal) : <span className="text-gray-300">—</span>}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {/* Convention breakdown */}
+                      <div className="border-t border-gray-100 bg-gray-50 px-4 py-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Across conventions</p>
+                        <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
+                          {cards.filter(c => selected.has(c.key)).map(c => (
+                            <span key={c.key}>{c.name} <span className={`font-semibold ${c.dept === "CS" ? "text-blue-600" : "text-green-600"}`}>{c.dept}</span></span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })()}
         </>
       )}
       {/* Mark-as-Ordered confirm dialog */}
