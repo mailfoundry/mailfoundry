@@ -604,8 +604,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
           {view === "deficit" && (
             <div className="overflow-hidden rounded-xl border border-gray-200">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200 bg-white shadow-sm/80 text-xs text-gray-400">
+                <thead className="sticky top-0 z-10">
+                  <tr className="border-b border-gray-200 bg-white shadow-sm text-xs text-gray-400">
                     <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Product</th>
                     <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">CS</th>
                     <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider">FA</th>
