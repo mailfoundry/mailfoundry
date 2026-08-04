@@ -49,16 +49,26 @@ export type ProductRow = {
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
+  mops:       "Mops",
   janitorial: "Janitorial",
   chemicals:  "Cleaning Chemicals",
+  gloves:     "Gloves",
+  hivis:      "Hi Vis",
+  brushes:    "Brushes",
+  handles:    "Handles",
   special:    "Special Order",
   firstaid:   "First Aid",
 };
 
 const CATEGORIES = [
   { value: "safety_ppe", label: "Safety & PPE" },
+  { value: "mops",       label: "Mops" },
   { value: "janitorial", label: "Janitorial" },
   { value: "chemicals",  label: "Cleaning Chemicals" },
+  { value: "gloves",     label: "Gloves" },
+  { value: "hivis",      label: "Hi Vis" },
+  { value: "brushes",    label: "Brushes" },
+  { value: "handles",    label: "Handles" },
   { value: "special",    label: "Special Order" },
   { value: "firstaid",   label: "First Aid" },
 ];

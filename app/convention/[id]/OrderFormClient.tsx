@@ -49,6 +49,7 @@ type Props = {
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
+  mops:        "Mops",
   janitorial:  "Janitorial",
   chemicals:   "Cleaning Chemicals",
   special:     "Special Order",

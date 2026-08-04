@@ -18,10 +18,15 @@ const daysFromNow = (iso: string) => {
 
 const categoryLabel: Record<string, string> = {
   safety_ppe: "Safety & PPE",
-  firstaid:   "First Aid",
-  chemicals:  "Chemicals",
+  mops:       "Mops",
   janitorial: "Janitorial",
-  special:    "Special",
+  chemicals:  "Cleaning Chemicals",
+  gloves:     "Gloves",
+  hivis:      "Hi Vis",
+  brushes:    "Brushes",
+  handles:    "Handles",
+  firstaid:   "First Aid",
+  special:    "Special Order",
 };
 
 export type Convention = {

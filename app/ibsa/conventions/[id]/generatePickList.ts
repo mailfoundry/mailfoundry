@@ -8,7 +8,12 @@
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
+  mops:       "Mops",
   janitorial: "Janitorial",
+  gloves:     "Gloves",
+  hivis:      "Hi Vis",
+  brushes:    "Brushes & Handles",
+  handles:    "Brushes & Handles",
   chemicals: "Cleaning Chemicals",
   firstaid: "First Aid",
   special: "Special Order",
