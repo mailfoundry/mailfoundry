@@ -3,13 +3,13 @@ import { notFound } from "next/navigation";
 import AppShell from "../../../src/components/app-shell";
 import { prisma } from "../../../src/lib/prisma";
 import {
-
-export const dynamic = "force-dynamic";
   addContactToList,
   archiveContact,
   removeContactFromList,
   restoreContact,
 } from "./actions";
+
+export const dynamic = "force-dynamic";
 
 type ContactDetailPageProps = {
   params: Promise<{
