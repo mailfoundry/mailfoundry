@@ -56,15 +56,25 @@ export function downloadPickList({
   const total = subtotal + vat + shippingCost;
 
   // Normalise variant → size rank so rows sort S → M → L → XL → XXL
+  // Handles compound variants like "Blue / Large" by scanning each token
   function sizeRank(v: string | null): number {
     if (!v) return 99;
-    const k = v.toLowerCase().replace(/[^a-z0-9]/g, "");
-    return (
-      { s: 1, small: 1, m: 2, medium: 2, med: 2, l: 3, large: 3,
-        xl: 4, xlarge: 4, extralarge: 4,
-        xxl: 5, xxlarge: 5, extraextralarge: 5,
-        xxxl: 6, xxxlarge: 6 } as Record<string, number>
-    )[k] ?? 99;
+    const sizeMap: Record<string, number> = {
+      s: 1, small: 1,
+      m: 2, medium: 2, med: 2,
+      l: 3, large: 3,
+      xl: 4, xlarge: 4, extralarge: 4,
+      xxl: 5, xxlarge: 5, extraextralarge: 5,
+      xxxl: 6, xxxlarge: 6,
+    };
+    // Split on any non-alphanumeric run so "Blue / Large" → ["blue","large"]
+    const tokens = v.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    let best = 99;
+    for (const token of tokens) {
+      const r = sizeMap[token];
+      if (r !== undefined && r < best) best = r;
+    }
+    return best;
   }
 
   // Group lines by category, preserving order
