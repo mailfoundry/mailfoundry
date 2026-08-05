@@ -3,6 +3,8 @@ import Logo from "../../../src/components/logo";
 import { prisma } from "../../../src/lib/prisma";
 import { confirmVerify } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 type VerifyPageProps = {
   searchParams: Promise<{ token?: string }>;
 };

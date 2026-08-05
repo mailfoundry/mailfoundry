@@ -4,6 +4,8 @@ import AppShell from "../../../../src/components/app-shell";
 import { prisma } from "../../../../src/lib/prisma";
 import { updateContact } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 type EditContactPageProps = {
   params: Promise<{
     id: string;

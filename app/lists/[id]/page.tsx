@@ -5,6 +5,8 @@ import { addContactToList, removeContactFromList } from "./actions";
 import AppShell from "../../../src/components/app-shell";
 import RemoveFromListButton from "../../../src/components/remove-from-list-button";
 
+export const dynamic = "force-dynamic";
+
 type ListPageProps = {
   params: Promise<{
     id: string;

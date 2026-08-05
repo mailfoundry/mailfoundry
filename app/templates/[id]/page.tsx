@@ -5,6 +5,8 @@ import SubmitButton from "../../../src/components/submit-button";
 import { prisma } from "../../../src/lib/prisma";
 import { updateTemplate, deleteTemplate } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 export default async function EditTemplatePage({ params }: Props) {

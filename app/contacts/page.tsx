@@ -3,6 +3,8 @@ import { prisma } from "../../src/lib/prisma";
 import AppShell from "../../src/components/app-shell";
 import { Prisma } from "../../src/generated/prisma/client";
 
+export const dynamic = "force-dynamic";
+
 type ContactsPageProps = {
   searchParams: Promise<{ filter?: string; q?: string; list?: string }>;
 };

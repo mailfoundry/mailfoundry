@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import AppShell from "../../../../src/components/app-shell";
 import { updateCampaign } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 type EditCampaignPageProps = {
   params: Promise<{
     id: string;

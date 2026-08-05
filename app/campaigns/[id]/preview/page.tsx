@@ -5,6 +5,8 @@ import AppShell from "../../../../src/components/app-shell";
 import SendTestEmailForm from "../../../../src/components/send-test-email-form";
 import { addEmailFooter } from "../../../../src/lib/emailFooter";
 
+export const dynamic = "force-dynamic";
+
 type PreviewCampaignPageProps = {
   params: Promise<{
     id: string;

@@ -2,6 +2,8 @@ import Link from "next/link";
 import AppShell from "../../src/components/app-shell";
 import { prisma } from "../../src/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function ReportsPage() {
   const [totals, campaigns] = await Promise.all([
     Promise.all([

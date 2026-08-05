@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
 import AppShell from "../../src/components/app-shell";
 
+export const dynamic = "force-dynamic";
+
 export default async function TemplatesPage() {
   const templates = await prisma.template.findMany({
     orderBy: { createdAt: "desc" },

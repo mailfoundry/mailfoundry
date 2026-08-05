@@ -4,6 +4,8 @@ import AppShell from "../../../src/components/app-shell";
 import { createCampaign } from "./actions";
 import SubmitButton from "../../../src/components/submit-button";
 
+export const dynamic = "force-dynamic";
+
 function getEligibleContactCount(
   contacts: {
     contact: {

@@ -5,6 +5,8 @@ import SendCampaignButton from "../../../src/components/send-campaign-button";
 import SendTestEmailForm from "../../../src/components/send-test-email-form";
 import { prisma } from "../../../src/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 type CampaignPageProps = {
   params: Promise<{
     id: string;
