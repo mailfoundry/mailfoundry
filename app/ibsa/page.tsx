@@ -218,30 +218,32 @@ export default async function IbsaPage({ searchParams }: Props) {
 
   return (
     <IbsaAppShell active={config.active}>
-      <header className="mb-8 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-500">IBSA · Xylo Supplies</p>
-          <h2 className="text-3xl font-bold text-gray-900">{config.heading} 2026</h2>
-        </div>
-        <div className="flex items-center gap-3">
-          <NewConventionButton eventType={eventType} />
-          <Link
-            href="/ibsa/orders"
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            Orders →
-          </Link>
-          <Link
-            href="/ibsa/products"
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            Products →
-          </Link>
+      <header className="mb-8">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm text-gray-500">IBSA · Xylo Supplies</p>
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">{config.heading} 2026</h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <NewConventionButton eventType={eventType} />
+            <Link
+              href="/ibsa/orders"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              Orders →
+            </Link>
+            <Link
+              href="/ibsa/products"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              Products →
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* Summary stats */}
-      <div className="mb-8 grid grid-cols-4 gap-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
           <p className="text-xs text-gray-500">Upcoming</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">{upcomingCount}</p>
@@ -287,60 +289,62 @@ export default async function IbsaPage({ searchParams }: Props) {
               return (
                 <div
                   key={`${card.convention.id}-${card.dept}`}
-                  className={`flex rounded-2xl border border-gray-200 border-l-4 ${leftBorder} bg-white shadow-sm transition-colors hover:border-gray-300 hover:shadow-md`}
+                  className={`rounded-2xl border border-gray-200 border-l-4 ${leftBorder} bg-white shadow-sm transition-colors hover:border-gray-300 hover:shadow-md`}
                 >
                   {/* Main clickable area */}
-                  <Link href={`/ibsa/conventions/${card.convention.id}`} className="flex flex-1 items-center gap-4 p-5">
-                    {/* Left: name, badges, dates */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-base font-bold text-gray-900">{card.convention.name}</span>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                          card.dept === "FA"
-                            ? "bg-blue-100 text-blue-700 border border-blue-200"
-                            : "bg-orange-100 text-orange-700 border border-orange-200"
-                        }`}>
-                          {card.dept === "FA" ? "First Aid" : "Cleaning Supplies"}
-                        </span>
-                        <StatusBadge status={card.status} />
-                        <PaymentBadge paidAt={card.paidAt} paymentDueDate={card.paymentDueDate} />
-                      </div>
-                      {card.convention.venue && (
-                        <p className="mt-0.5 text-xs text-gray-400">{card.convention.venue}</p>
-                      )}
-                      <div className="mt-3 flex flex-wrap gap-5 text-xs text-gray-400">
-                        <span>
-                          <span className="text-gray-400">Convention</span>{" "}
-                          <span className="font-medium text-gray-700">
-                            {fmtDate(card.convention.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
-                          </span>
-                        </span>
-                        {card.deliveryDate && (
-                          <span>
-                            <span className="text-gray-400">Delivery</span>{" "}
-                            <span className="font-medium text-gray-700">{fmtDate(card.deliveryDate)}</span>
-                          </span>
-                        )}
-                        {card.collectionDate && (
-                          <span>
-                            <span className="text-gray-400">Collection</span>{" "}
-                            <span className="font-medium text-gray-700">{fmtDate(card.collectionDate)}</span>
-                          </span>
-                        )}
-                      </div>
+                  <Link href={`/ibsa/conventions/${card.convention.id}`} className="block p-4 sm:p-5">
+                    {/* Top row: name + badges */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-base font-bold text-gray-900">{card.convention.name}</span>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        card.dept === "FA"
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-orange-100 text-orange-700 border border-orange-200"
+                      }`}>
+                        {card.dept === "FA" ? "First Aid" : "Cleaning Supplies"}
+                      </span>
+                      <StatusBadge status={card.status} />
+                      <PaymentBadge paidAt={card.paidAt} paymentDueDate={card.paymentDueDate} />
                     </div>
 
-                    {/* Right: value + countdowns */}
-                    <div className="flex shrink-0 items-center gap-6">
-                      {value > 0 ? (
-                        <div className="text-right">
-                          <p className="text-base font-bold text-gray-900">£{fmtGbp(value)}</p>
-                          <p className="text-xs text-green-600">£{fmtGbp(profit)} profit</p>
-                          <p className="text-xs text-gray-400">{itemCount} lines</p>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-gray-400">No order yet</p>
+                    {card.convention.venue && (
+                      <p className="mt-0.5 text-xs text-gray-400">{card.convention.venue}</p>
+                    )}
+
+                    {/* Dates row */}
+                    <div className="mt-2 flex flex-wrap gap-4 text-xs text-gray-400">
+                      <span>
+                        <span>Conv</span>{" "}
+                        <span className="font-medium text-gray-700">
+                          {fmtDate(card.convention.conventionDate, { day: "numeric", month: "short", year: "numeric" })}
+                        </span>
+                      </span>
+                      {card.deliveryDate && (
+                        <span>
+                          <span>Del</span>{" "}
+                          <span className="font-medium text-gray-700">{fmtDate(card.deliveryDate)}</span>
+                        </span>
                       )}
+                      {card.collectionDate && (
+                        <span>
+                          <span>Collect</span>{" "}
+                          <span className="font-medium text-gray-700">{fmtDate(card.collectionDate)}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Bottom row: value + countdowns */}
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        {value > 0 ? (
+                          <>
+                            <p className="text-base font-bold text-gray-900">£{fmtGbp(value)}</p>
+                            <p className="text-xs text-green-600">£{fmtGbp(profit)} profit · {itemCount} lines</p>
+                          </>
+                        ) : (
+                          <p className="text-xs text-gray-400">No order yet</p>
+                        )}
+                      </div>
                       <div className="flex gap-3">
                         {daysToCollection !== null && (
                           <div className="text-center">
@@ -356,8 +360,8 @@ export default async function IbsaPage({ searchParams }: Props) {
                     </div>
                   </Link>
 
-                  {/* Actions column — outside the link so clicks don't navigate */}
-                  <div className="flex shrink-0 flex-col items-end justify-center gap-2 border-l border-gray-200 px-4">
+                  {/* Actions row — outside the link */}
+                  <div className="flex items-center gap-3 border-t border-gray-100 px-4 py-2.5">
                     <OverviewCompleteButton
                       conventionId={card.convention.id}
                       conventionName={card.convention.name}
@@ -389,7 +393,7 @@ export default async function IbsaPage({ searchParams }: Props) {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
             Past / Complete
           </h3>
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm opacity-70">
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm opacity-70">
             <table className="min-w-full text-sm">
               <thead className="border-b border-gray-200 text-left text-xs text-gray-500">
                 <tr>
@@ -443,8 +447,8 @@ export default async function IbsaPage({ searchParams }: Props) {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500">
             Incoming Orders
           </h3>
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Group</th>

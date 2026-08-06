@@ -47,7 +47,7 @@ export default async function OrdersPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="mb-8 grid grid-cols-4 gap-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
           <p className="text-xs text-gray-500">New</p>
           <p className={`mt-1 text-2xl font-bold ${submittedCount > 0 ? "text-orange-500" : "text-gray-900"}`}>{submittedCount}</p>

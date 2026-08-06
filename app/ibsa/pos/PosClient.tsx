@@ -118,7 +118,7 @@ function PoRow({ po }: { po: Po }) {
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className={`rounded-xl border bg-white overflow-hidden transition-opacity ${
+    <div className={`rounded-xl border bg-white overflow-x-auto transition-opacity ${
       pending ? "opacity-60 pointer-events-none" : ""
     } ${po.status === "cancelled" ? "border-gray-100" : "border-gray-200"}`}>
 

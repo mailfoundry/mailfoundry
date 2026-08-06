@@ -602,7 +602,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
 
           {/* ── DEFICIT VIEW ─────────────────────────────────────────────── */}
           {view === "deficit" && (
-            <div className="overflow-hidden rounded-xl border border-gray-200">
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
               <table className="w-full text-sm">
                 <thead className="sticky top-0 z-10">
                   <tr className="border-b border-gray-200 bg-white shadow-sm text-xs text-gray-400">
@@ -708,7 +708,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                 const supplierTotal = lines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
                 const pendingCount = lines.filter(l => l.cartonSize == null).length;
                 return (
-                  <div key={supplier} className={`overflow-hidden rounded-xl border ${isUnknownSupplier ? "border-amber-200" : "border-gray-200"}`}>
+                  <div key={supplier} className={`overflow-x-auto rounded-xl border ${isUnknownSupplier ? "border-amber-200" : "border-gray-200"}`}>
                     <div className={`flex items-center justify-between border-b px-4 py-3 ${isUnknownSupplier ? "border-amber-200 bg-amber-50" : "border-gray-200 bg-gray-100/80"}`}>
                       <div className="flex items-center gap-3">
                         <p className={`font-semibold ${isUnknownSupplier ? "text-amber-700" : "text-gray-900"}`}>{supplier}</p>
@@ -906,7 +906,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                     </div>
 
                     {/* Order lines */}
-                    <div className="overflow-hidden rounded-xl border border-gray-200">
+                    <div className="overflow-x-auto rounded-xl border border-gray-200">
                       <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100/80 px-4 py-3">
                         <div className="flex items-center gap-3">
                           <p className="font-semibold text-gray-900">{bpSupplier}</p>

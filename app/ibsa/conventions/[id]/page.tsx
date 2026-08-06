@@ -55,17 +55,25 @@ export default async function ConventionDetailPage({
 
   if (!convention) notFound();
 
-  // Normalise variant string → size rank. Strips punctuation/spaces and lowercases
-  // so "Extra Large", "XLarge", "X-Large", and "XL" all map to rank 4.
+  // Normalise variant string → size rank. Handles compound variants like "Blue / Large"
+  // by scanning each token so "Blue / Large" → ["blue","large"] → rank 3.
   function sizeRank(v: string | null): number {
     if (!v) return 99;
-    const k = v.toLowerCase().replace(/[^a-z0-9]/g, "");
-    return (
-      { s: 1, small: 1, m: 2, medium: 2, med: 2, l: 3, large: 3,
-        xl: 4, xlarge: 4, extralarge: 4,
-        xxl: 5, xxlarge: 5, extraextralarge: 5,
-        xxxl: 6, xxxlarge: 6 } as Record<string, number>
-    )[k] ?? 99;
+    const sizeMap: Record<string, number> = {
+      s: 1, small: 1,
+      m: 2, medium: 2, med: 2,
+      l: 3, large: 3,
+      xl: 4, xlarge: 4, extralarge: 4,
+      xxl: 5, xxlarge: 5, extraextralarge: 5,
+      xxxl: 6, xxxlarge: 6,
+    };
+    const tokens = v.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    let best = 99;
+    for (const t of tokens) {
+      const r = sizeMap[t];
+      if (r !== undefined && r < best) best = r;
+    }
+    return best;
   }
 
   const allProducts = (await prisma.ibsaProduct.findMany({
@@ -140,7 +148,7 @@ export default async function ConventionDetailPage({
   return (
     <IbsaAppShell active="ibsa">
       {/* Header */}
-      <header className="mb-8 flex items-start justify-between gap-6">
+      <header className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
         <div className="min-w-0 flex-1">
           <Link href="/ibsa" className="mb-1 block text-sm text-gray-500 hover:text-gray-900 transition-colors">
             ← All Conventions
@@ -169,7 +177,7 @@ export default async function ConventionDetailPage({
             </button>
           </form>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-2">
+        <div className="flex shrink-0 flex-col items-start gap-2 lg:items-end">
           <ConventionImportButton conventionId={convention.id} />
           <DeleteConventionButton conventionId={convention.id} conventionName={convention.name} />
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">CS Status</p>
@@ -202,7 +210,7 @@ export default async function ConventionDetailPage({
       </header>
 
       {/* ── Row 1: Order summary stats ──────────────────────────────── */}
-      <div className="mb-4 grid grid-cols-4 gap-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5">
           <p className="text-xs text-gray-500">Order Lines</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">{itemsWithQty}</p>
@@ -262,7 +270,7 @@ export default async function ConventionDetailPage({
       </div>
 
       {/* ── Row 2: Countdown + key dates ───────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         {/* Countdown to collection */}
         {convention.collectionDate ? (
           <CountdownBadge
@@ -305,7 +313,7 @@ export default async function ConventionDetailPage({
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500">
           Logistics
         </h3>
-        <form action={updateLogistics} className="grid grid-cols-3 gap-x-6 gap-y-4">
+        <form action={updateLogistics} className="grid grid-cols-1 gap-y-4 sm:grid-cols-3 sm:gap-x-6">
           <input type="hidden" name="conventionId" value={convention.id} />
 
           <div>
@@ -380,7 +388,7 @@ export default async function ConventionDetailPage({
 
           <div className="col-span-3 border-t border-gray-100 pt-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Cleaning Overseer</p>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Name</label>
                 <input type="text" name="cleaningOverseerName" defaultValue={convention.cleaningOverseerName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
@@ -398,7 +406,7 @@ export default async function ConventionDetailPage({
 
           <div className="col-span-3 border-t border-gray-100 pt-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Delivery Contact</p>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Name</label>
                 <input type="text" name="deliveryContactName" defaultValue={convention.deliveryContactName ?? ""} placeholder="Full name" className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-300 focus:border-orange-500" />
@@ -507,7 +515,7 @@ export default async function ConventionDetailPage({
           </div>
         )}
 
-        <form action={updateFaLogistics} className="grid grid-cols-3 gap-x-6 gap-y-4">
+        <form action={updateFaLogistics} className="grid grid-cols-1 gap-y-4 sm:grid-cols-3 sm:gap-x-6">
           <input type="hidden" name="conventionId" value={convention.id} />
           <div>
             <label className="mb-1 block text-xs text-gray-500">FA Collection Date</label>

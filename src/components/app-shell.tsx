@@ -30,7 +30,7 @@ export default function AppShell({ active, children, ibsaOnly = false, isMainUse
     <main className="min-h-screen bg-gray-50 text-gray-900">
       <div className="flex min-h-screen">
         <Sidebar active={active} ibsaOnly={ibsaOnly} isMainUser={isMainUser} orderCounts={orderCounts} />
-        <section className="flex-1 p-10">{children}</section>
+        <section className="flex-1 overflow-x-hidden p-4 pt-[72px] sm:p-6 sm:pt-[72px] lg:p-10 lg:pt-10">{children}</section>
       </div>
     </main>
   );

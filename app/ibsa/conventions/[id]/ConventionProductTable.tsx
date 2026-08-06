@@ -121,8 +121,8 @@ export default function ConventionProductTable({ products, qtyMap, overrideMap, 
       {Object.keys(grouped).length === 0 ? (
         <p className="text-sm text-gray-400">No products ordered yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <table className="min-w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table className="min-w-[700px] w-full text-sm">
             <thead className="border-b border-gray-200 bg-gray-50 text-gray-500">
               <tr>
                 <th className="px-4 py-3 text-left font-semibold">Code</th>
