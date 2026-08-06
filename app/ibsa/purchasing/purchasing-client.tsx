@@ -139,6 +139,36 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
   const [confirmSupplier, setConfirmSupplier] = useState<{ supplier: string; poNumber: string; lines: RsOrderLine[] } | null>(null);
   const [, startTransition] = useTransition();
 
+  // Line-level selection: supplier → Set of selected RsProduct IDs.
+  // If a supplier has NO entry here, ALL its lines are considered selected (default-all behaviour).
+  const [lineSelections, setLineSelections] = useState<Map<string, Set<string>>>(new Map());
+
+  function getSelectedIds(supplier: string, lines: RsOrderLine[]): Set<string> {
+    return lineSelections.get(supplier) ?? new Set(lines.map(l => l.id));
+  }
+
+  function toggleLine(supplier: string, lineId: string, allLines: RsOrderLine[]) {
+    setLineSelections(prev => {
+      const next = new Map(prev);
+      const current = getSelectedIds(supplier, allLines);
+      const updated = new Set(current);
+      if (updated.has(lineId)) updated.delete(lineId);
+      else updated.add(lineId);
+      next.set(supplier, updated);
+      return next;
+    });
+  }
+
+  function toggleAllLines(supplier: string, lines: RsOrderLine[]) {
+    setLineSelections(prev => {
+      const next = new Map(prev);
+      const current = getSelectedIds(supplier, lines);
+      const allSelected = current.size === lines.length;
+      next.set(supplier, allSelected ? new Set() : new Set(lines.map(l => l.id)));
+      return next;
+    });
+  }
+
   // ── Convention cards ─────────────────────────────────────────────────────
   const cards = useMemo<Card[]>(() => {
     const deptsByConvention = new Map<string, Set<string>>();
@@ -705,7 +735,10 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
               {/* One table per supplier */}
               {Array.from(rsOrderBySupplier.bySupplier.entries()).map(([supplier, lines]) => {
                 const isUnknownSupplier = supplier === UNKNOWN_SUPPLIER;
-                const supplierTotal = lines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
+                const selectedIds = getSelectedIds(supplier, lines);
+                const selectedLines = lines.filter(l => selectedIds.has(l.id));
+                const supplierTotal = selectedLines.reduce((s, l) => s + (l.totalCost ?? 0), 0);
+                const allSelected = selectedIds.size === lines.length;
                 const pendingCount = lines.filter(l => l.cartonSize == null).length;
                 return (
                   <div key={supplier} className={`overflow-x-auto rounded-xl border ${isUnknownSupplier ? "border-amber-200" : "border-gray-200"}`}>
@@ -720,6 +753,11 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                             </span>
                           )
                         }
+                        {!isUnknownSupplier && selectedIds.size < lines.length && (
+                          <span className="rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs text-blue-600">
+                            {selectedIds.size} of {lines.length} lines selected
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-3">
                         {!isUnknownSupplier && (supplierTotal > 0
@@ -727,7 +765,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           : <p className="text-xs text-gray-400">cost unknown</p>
                         )}
                         {!isUnknownSupplier && <button
-                          onClick={() => handleDownloadPO(supplier, lines)}
+                          onClick={() => handleDownloadPO(supplier, selectedLines)}
                           className="rounded border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-900"
                         >
                           ↓ Download PO
@@ -743,8 +781,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           }
                           return (
                             <button
-                              onClick={() => openConfirmOrder(supplier, lines)}
-                              disabled={state === "submitting" || lines.filter(l => l.cartonsNeeded != null).length === 0}
+                              onClick={() => openConfirmOrder(supplier, selectedLines)}
+                              disabled={state === "submitting" || selectedLines.filter(l => l.cartonsNeeded != null).length === 0}
                               className="rounded border border-blue-700/60 bg-blue-950/40 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-900/50 hover:text-blue-200 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                               {state === "submitting" ? "Saving…" : "✓ Mark as Ordered"}
@@ -755,6 +793,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                     </div>
                     <table className="w-full table-fixed text-sm">
                       <colgroup>
+                        <col style={{ width: "2.5rem" }} />  {/* Checkbox */}
                         <col style={{ width: "7rem" }} />   {/* Code */}
                         <col />                              {/* Description — flex */}
                         <col style={{ width: "6rem" }} />   {/* Variant */}
@@ -767,6 +806,15 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                       </colgroup>
                       <thead>
                         <tr className="border-b border-gray-200 bg-white shadow-sm/60 text-xs text-gray-400">
+                          <th className="px-3 py-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={allSelected}
+                              onChange={() => toggleAllLines(supplier, lines)}
+                              className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600"
+                              title={allSelected ? "Deselect all" : "Select all"}
+                            />
+                          </th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Code</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
                           <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
@@ -782,8 +830,27 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                         {lines.map(line => {
                           const hasCatalog = line.cartonSize != null;
                           const isUnknown = supplier === UNKNOWN_SUPPLIER;
+                          const isChecked = selectedIds.has(line.id);
                           return (
-                            <tr key={line.id} className={`border-t border-gray-200 ${isUnknown ? "bg-amber-50/40 opacity-80 hover:opacity-100" : hasCatalog ? "hover:bg-gray-50" : "opacity-70 hover:opacity-100"}`}>
+                            <tr
+                              key={line.id}
+                              onClick={() => !isUnknown && toggleLine(supplier, line.id, lines)}
+                              className={`border-t border-gray-200 cursor-pointer select-none ${
+                                isUnknown ? "bg-amber-50/40 opacity-80" :
+                                !isChecked ? "bg-gray-50 opacity-40 hover:opacity-70" :
+                                hasCatalog ? "hover:bg-blue-50/30" : "opacity-70 hover:opacity-100"
+                              }`}
+                            >
+                              <td className="px-3 py-3 text-center" onClick={e => e.stopPropagation()}>
+                                {!isUnknown && (
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => toggleLine(supplier, line.id, lines)}
+                                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600"
+                                  />
+                                )}
+                              </td>
                               <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate">
                                 {line.rsCode ?? <span className="text-gray-200">—</span>}
                               </td>
@@ -824,8 +891,9 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           );
                         })}
                         <tr className="border-t border-gray-200 bg-white/80">
-                          <td colSpan={8} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
+                          <td colSpan={9} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
                             {pendingCount > 0 ? `Subtotal (excl. ${pendingCount} pending)` : "Subtotal"}
+                            {selectedIds.size < lines.length && ` · ${selectedIds.size} lines selected`}
                           </td>
                           <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-600">
                             {supplierTotal > 0 ? fmtGbp(supplierTotal) : <span className="text-gray-300">—</span>}
@@ -841,9 +909,12 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
 
           {/* ── BUYING POWER VIEW ────────────────────────────────────────── */}
           {view === "buyingPower" && (() => {
-            const bpLines = bpSupplier
+            const bpAllLines = bpSupplier
               ? rsOrderBySupplier.bySupplier.get(bpSupplier) ?? []
               : null;
+            const bpSelectedIds = bpSupplier && bpAllLines ? getSelectedIds(bpSupplier, bpAllLines) : new Set<string>();
+            const bpAllSelected = bpAllLines ? bpSelectedIds.size === bpAllLines.length : true;
+            const bpLines = bpAllLines ? bpAllLines.filter(l => bpSelectedIds.has(l.id)) : null;
             const bpTotal = bpLines
               ? bpLines.reduce((s, l) => s + (l.totalCost ?? 0), 0)
               : 0;
@@ -915,6 +986,11 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                               {pendingCount} without catalog data
                             </span>
                           )}
+                          {bpAllLines && bpSelectedIds.size < bpAllLines.length && (
+                            <span className="rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs text-blue-600">
+                              {bpSelectedIds.size} of {bpAllLines.length} lines selected
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-3">
                           {bpTotal > 0
@@ -922,7 +998,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                             : <p className="text-xs text-gray-400">cost unknown</p>
                           }
                           <button
-                            onClick={() => handleDownloadPO(bpSupplier, bpLines)}
+                            onClick={() => bpLines && handleDownloadPO(bpSupplier, bpLines)}
                             className="rounded border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-200"
                           >
                             ↓ Download PO
@@ -934,8 +1010,8 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                             );
                             return (
                               <button
-                                onClick={() => openConfirmOrder(bpSupplier, bpLines)}
-                                disabled={state === "submitting" || bpLines.filter(l => l.cartonsNeeded != null).length === 0}
+                                onClick={() => bpLines && openConfirmOrder(bpSupplier, bpLines)}
+                                disabled={state === "submitting" || !bpLines || bpLines.filter(l => l.cartonsNeeded != null).length === 0}
                                 className="rounded border border-blue-700/60 bg-blue-950/40 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-900/50 hover:text-blue-200 disabled:cursor-not-allowed disabled:opacity-40"
                               >
                                 {state === "submitting" ? "Saving…" : "✓ Mark as Ordered"}
@@ -946,6 +1022,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                       </div>
                       <table className="w-full table-fixed text-sm">
                         <colgroup>
+                          <col style={{ width: "2.5rem" }} />  {/* Checkbox */}
                           <col style={{ width: "7rem" }} />
                           <col />
                           <col style={{ width: "6rem" }} />
@@ -958,6 +1035,15 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                         </colgroup>
                         <thead>
                           <tr className="border-b border-gray-200 bg-white text-xs text-gray-400">
+                            <th className="px-3 py-3 text-center">
+                              <input
+                                type="checkbox"
+                                checked={bpAllSelected}
+                                onChange={() => bpAllLines && toggleAllLines(bpSupplier, bpAllLines)}
+                                className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600"
+                                title={bpAllSelected ? "Deselect all" : "Select all"}
+                              />
+                            </th>
                             <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Code</th>
                             <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Description</th>
                             <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider">Variant</th>
@@ -970,30 +1056,49 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                           </tr>
                         </thead>
                         <tbody className="bg-white">
-                          {bpLines.map(line => (
-                            <tr key={line.id} className={`border-t border-gray-200 ${line.cartonSize != null ? "hover:bg-gray-50" : "opacity-70"}`}>
-                              <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate">{line.rsCode ?? <span className="text-gray-200">—</span>}</td>
-                              <td className="px-4 py-3 text-gray-900 truncate" title={line.displayLabel}>{line.displayLabel}</td>
-                              <td className="px-4 py-3 truncate">
-                                {line.rsVariant
-                                  ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{line.rsVariant}</span>
-                                  : <span className="text-gray-300">—</span>}
-                              </td>
-                              <td className="px-4 py-3 text-right tabular-nums text-gray-500">{line.cartonSize ?? <span className="text-gray-300">—</span>}</td>
-                              <td className={`px-4 py-3 text-right tabular-nums font-medium ${line.lineInStock === 0 ? "text-red-400" : "text-gray-600"}`}>{line.lineInStock}</td>
-                              <td className="px-4 py-3 text-right tabular-nums text-gray-600">{line.unitsNeeded}</td>
-                              <td className="px-4 py-3 text-right">
-                                {line.cartonsNeeded != null
-                                  ? <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-700">{line.cartonsNeeded}</span>
-                                  : <span className="text-gray-300">—</span>}
-                              </td>
-                              <td className="px-4 py-3 text-right tabular-nums text-gray-500">{line.cartonPrice != null ? fmtGbp(line.cartonPrice) : <span className="text-gray-300">—</span>}</td>
-                              <td className="px-4 py-3 text-right tabular-nums font-semibold text-gray-900">{line.totalCost != null ? fmtGbp(line.totalCost) : <span className="font-normal text-gray-300">—</span>}</td>
-                            </tr>
-                          ))}
+                          {bpAllLines && bpAllLines.map(line => {
+                            const isChecked = bpSelectedIds.has(line.id);
+                            return (
+                              <tr
+                                key={line.id}
+                                onClick={() => toggleLine(bpSupplier, line.id, bpAllLines)}
+                                className={`border-t border-gray-200 cursor-pointer select-none ${
+                                  !isChecked ? "bg-gray-50 opacity-40 hover:opacity-70" :
+                                  line.cartonSize != null ? "hover:bg-blue-50/30" : "opacity-70 hover:opacity-100"
+                                }`}
+                              >
+                                <td className="px-3 py-3 text-center" onClick={e => e.stopPropagation()}>
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => toggleLine(bpSupplier, line.id, bpAllLines)}
+                                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600"
+                                  />
+                                </td>
+                                <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate">{line.rsCode ?? <span className="text-gray-200">—</span>}</td>
+                                <td className="px-4 py-3 text-gray-900 truncate" title={line.displayLabel}>{line.displayLabel}</td>
+                                <td className="px-4 py-3 truncate">
+                                  {line.rsVariant
+                                    ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{line.rsVariant}</span>
+                                    : <span className="text-gray-300">—</span>}
+                                </td>
+                                <td className="px-4 py-3 text-right tabular-nums text-gray-500">{line.cartonSize ?? <span className="text-gray-300">—</span>}</td>
+                                <td className={`px-4 py-3 text-right tabular-nums font-medium ${line.lineInStock === 0 ? "text-red-400" : "text-gray-600"}`}>{line.lineInStock}</td>
+                                <td className="px-4 py-3 text-right tabular-nums text-gray-600">{line.unitsNeeded}</td>
+                                <td className="px-4 py-3 text-right">
+                                  {line.cartonsNeeded != null
+                                    ? <span className="inline-block rounded-full border border-blue-800/40 bg-blue-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-blue-700">{line.cartonsNeeded}</span>
+                                    : <span className="text-gray-300">—</span>}
+                                </td>
+                                <td className="px-4 py-3 text-right tabular-nums text-gray-500">{line.cartonPrice != null ? fmtGbp(line.cartonPrice) : <span className="text-gray-300">—</span>}</td>
+                                <td className="px-4 py-3 text-right tabular-nums font-semibold text-gray-900">{line.totalCost != null ? fmtGbp(line.totalCost) : <span className="font-normal text-gray-300">—</span>}</td>
+                              </tr>
+                            );
+                          })}
                           <tr className="border-t border-gray-200 bg-white/80">
-                            <td colSpan={8} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
+                            <td colSpan={9} className="px-4 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">
                               {pendingCount > 0 ? `Subtotal (excl. ${pendingCount} pending)` : "Subtotal"}
+                              {bpAllLines && bpSelectedIds.size < bpAllLines.length && ` · ${bpSelectedIds.size} of ${bpAllLines.length} lines`}
                             </td>
                             <td className="px-4 py-2 text-right tabular-nums font-bold text-amber-600">
                               {bpTotal > 0 ? fmtGbp(bpTotal) : <span className="text-gray-300">—</span>}
