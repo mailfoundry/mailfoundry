@@ -49,7 +49,7 @@ export async function updateCampaign(campaignId: string, formData: FormData) {
       body,
       html: html || null,
       listId,
-      status: "draft",
+      status: campaign.status,
     },
   });
 
