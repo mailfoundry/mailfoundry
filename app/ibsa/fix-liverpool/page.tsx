@@ -87,7 +87,7 @@ export default async function FixLiverpoolPage() {
   });
 
   return (
-    <IbsaAppShell active="ibsa-conventions">
+    <IbsaAppShell active="ibsa">
       <div className="p-6 max-w-2xl">
         <h1 className="text-xl font-bold text-gray-900 mb-1">Liverpool — Missing Items Fix</h1>
         <p className="text-sm text-gray-500 mb-6">Convention: {CONVENTION_ID}</p>
