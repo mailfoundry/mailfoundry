@@ -1,8 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useActionState } from "react";
 import { createContact } from "./actions";
 import AppShell from "../../../src/components/app-shell";
+import SubmitButton from "../../../src/components/submit-button";
 
 export default function NewContactPage() {
+  const [state, action] = useActionState(createContact, null);
+
   return (
     <AppShell active="contacts">
       <header className="mb-10 flex items-center justify-between">
@@ -20,7 +26,13 @@ export default function NewContactPage() {
       </header>
 
       <div className="max-w-2xl rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
-        <form action={createContact} className="space-y-6">
+        {state?.error && (
+          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {state.error}
+          </div>
+        )}
+
+        <form action={action} className="space-y-6">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Email
@@ -76,12 +88,7 @@ export default function NewContactPage() {
             </p>
           </div>
 
-          <button
-            type="submit"
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
-          >
-            Save Contact
-          </button>
+          <SubmitButton pendingText="Saving...">Save Contact</SubmitButton>
         </form>
       </div>
     </AppShell>

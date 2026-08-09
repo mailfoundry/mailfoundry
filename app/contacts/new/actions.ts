@@ -3,24 +3,25 @@
 import { prisma } from "../../../src/lib/prisma";
 import { redirect } from "next/navigation";
 
-export async function createContact(formData: FormData) {
+export async function createContact(
+  _prevState: { error: string } | null,
+  formData: FormData
+): Promise<{ error: string }> {
   const email = formData.get("email")?.toString().trim().toLowerCase() || "";
   const firstName = formData.get("firstName")?.toString().trim() || "";
   const lastName = formData.get("lastName")?.toString().trim() || "";
   const contactStatus = formData.get("contactStatus")?.toString() || "unknown";
 
   if (!email) {
-    throw new Error("Email is required");
+    return { error: "Email is required." };
   }
 
   const existingContact = await prisma.contact.findUnique({
-    where: {
-      email,
-    },
+    where: { email },
   });
 
   if (existingContact) {
-    throw new Error("A contact with this email address already exists");
+    return { error: "A contact with this email address already exists." };
   }
 
   await prisma.contact.create({
