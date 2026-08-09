@@ -70,6 +70,7 @@ model Campaign {
   id          String    @id @default(cuid())
   name        String
   subject     String
+  fromEmail   String?
   body        String
   html        String?
   status      String    @default("draft")

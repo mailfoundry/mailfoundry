@@ -111,6 +111,21 @@ export default async function NewCampaignPage({
 
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
+              From Name &amp; Email
+            </label>
+            <input
+              type="text"
+              name="fromEmail"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
+              placeholder="Staffordshire Wood Fuels <noreply@staffordshirewoodfuels.co.uk>"
+            />
+            <p className="mt-2 text-sm text-gray-400">
+              Format: Display Name &lt;email@domain.com&gt;. Must be a verified Resend domain.
+            </p>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Target List
             </label>
 

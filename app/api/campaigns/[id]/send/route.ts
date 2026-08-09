@@ -234,6 +234,7 @@ export async function POST(
           : `${htmlWithClicks}${pixelTag}`;
 
         await sendEmail({
+          from: campaign.fromEmail ?? undefined,
           to: contact.email,
           subject: campaign.subject,
           text: campaign.body,

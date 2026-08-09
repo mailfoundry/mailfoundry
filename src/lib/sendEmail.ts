@@ -1,13 +1,17 @@
 type SendEmailInput = {
+  from?: string;
   to: string | string[];
   subject: string;
   text: string;
   html?: string;
 };
 
-export async function sendEmail({ to, subject, text, html }: SendEmailInput) {
+export async function sendEmail({ from, to, subject, text, html }: SendEmailInput) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY is not set");
+
+  const fromAddress =
+    from ?? process.env.EMAIL_FROM ?? "IBSA · Xylo Supplies <noreply@xylouk.co.uk>";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -16,7 +20,7 @@ export async function sendEmail({ to, subject, text, html }: SendEmailInput) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "IBSA · Xylo Supplies <noreply@xylouk.co.uk>",
+      from: fromAddress,
       to,
       subject,
       text,

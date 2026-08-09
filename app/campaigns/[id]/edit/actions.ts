@@ -4,11 +4,12 @@ import { prisma } from "../../../../src/lib/prisma";
 import { redirect } from "next/navigation";
 
 export async function updateCampaign(campaignId: string, formData: FormData) {
-  const name = formData.get("name")?.toString().trim() || "";
-  const subject = formData.get("subject")?.toString().trim() || "";
-  const body = formData.get("body")?.toString().trim() || "";
-  const html = formData.get("html")?.toString().trim() || "";
-  const listId = formData.get("listId")?.toString().trim() || "";
+  const name      = formData.get("name")?.toString().trim() || "";
+  const subject   = formData.get("subject")?.toString().trim() || "";
+  const fromEmail = formData.get("fromEmail")?.toString().trim() || "";
+  const body      = formData.get("body")?.toString().trim() || "";
+  const html      = formData.get("html")?.toString().trim() || "";
+  const listId    = formData.get("listId")?.toString().trim() || "";
 
   if (!name || !subject || !body || !listId) {
     throw new Error(
@@ -44,6 +45,7 @@ export async function updateCampaign(campaignId: string, formData: FormData) {
     data: {
       name,
       subject,
+      fromEmail: fromEmail || null,
       body,
       html: html || null,
       listId,
