@@ -40,6 +40,7 @@ export async function POST(
         `;
 
     await sendEmail({
+      from: campaign.fromEmail ?? undefined,
       to: testEmail,
       subject: campaign.subject,
       text: campaign.body,
