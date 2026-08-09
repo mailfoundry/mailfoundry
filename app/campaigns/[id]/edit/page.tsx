@@ -210,6 +210,27 @@ export default async function EditCampaignPage({
             </p>
           </div>
 
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600">
+              Schedule Send <span className="text-gray-400">(optional)</span>
+            </label>
+            <input
+              type="datetime-local"
+              name="scheduledAt"
+              defaultValue={
+                campaign.scheduledAt
+                  ? new Date(campaign.scheduledAt.getTime() - campaign.scheduledAt.getTimezoneOffset() * 60000)
+                      .toISOString()
+                      .slice(0, 16)
+                  : ""
+              }
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
+            />
+            <p className="mt-2 text-sm text-gray-400">
+              Set a time to schedule, or leave blank to keep the current status ({campaign.status}).
+            </p>
+          </div>
+
           <button
             type="submit"
             className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
