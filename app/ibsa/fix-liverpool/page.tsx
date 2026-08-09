@@ -63,8 +63,7 @@ async function applyFix() {
 
   revalidatePath(`/ibsa/conventions/${CONVENTION_ID}`);
   revalidatePath("/ibsa/purchasing");
-
-  return results;
+  revalidatePath("/ibsa/fix-liverpool");
 }
 
 export default async function FixLiverpoolPage() {
