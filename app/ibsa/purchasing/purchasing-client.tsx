@@ -796,7 +796,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                         <col style={{ width: "2.5rem" }} />  {/* Checkbox */}
                         <col style={{ width: "7rem" }} />   {/* Code */}
                         <col />                              {/* Description — flex */}
-                        <col style={{ width: "6rem" }} />   {/* Variant */}
+                        <col style={{ width: "9rem" }} />   {/* Variant */}
                         <col style={{ width: "5rem" }} />   {/* Carton */}
                         <col style={{ width: "5.5rem" }} /> {/* In Stock */}
                         <col style={{ width: "5.5rem" }} /> {/* Shortfall */}
@@ -860,9 +860,9 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                                   : line.displayLabel
                                 }
                               </td>
-                              <td className="px-4 py-3 truncate">
+                              <td className="px-4 py-3">
                                 {line.rsVariant
-                                  ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{line.rsVariant}</span>
+                                  ? <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 break-words">{line.rsVariant}</span>
                                   : <span className="text-gray-300">—</span>
                                 }
                               </td>
