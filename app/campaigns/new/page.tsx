@@ -1,3 +1,5 @@
+export const metadata = { title: "New Campaign" };
+
 import Link from "next/link";
 import { prisma } from "../../../src/lib/prisma";
 import AppShell from "../../../src/components/app-shell";
@@ -196,9 +198,11 @@ export default async function NewCampaignPage({
             </label>
             <input
               type="datetime-local"
+              id="scheduledAtLocal"
               name="scheduledAt"
               className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none focus:border-orange-500"
             />
+            <input type="hidden" name="scheduledAtUtc" id="scheduledAtUtc" />
             <p className="mt-2 text-sm text-gray-400">
               Leave blank to save as a draft and send manually. Set a time to schedule automatic sending.
             </p>
@@ -206,6 +210,12 @@ export default async function NewCampaignPage({
 
           <SubmitButton pendingText="Saving...">Save Campaign</SubmitButton>
         </form>
+        <script dangerouslySetInnerHTML={{ __html: `
+          document.querySelector('form').addEventListener('submit', function() {
+            var local = document.getElementById('scheduledAtLocal').value;
+            if (local) document.getElementById('scheduledAtUtc').value = new Date(local).toISOString();
+          });
+        `}} />
       </div>
     </AppShell>
   );

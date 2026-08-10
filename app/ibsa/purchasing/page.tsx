@@ -1,3 +1,5 @@
+export const metadata = { title: "Purchasing" };
+
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 import PurchasingClient, { type BomComponentLine, type Convention, type OrderItemFlat, type RsProductLine } from "./purchasing-client";

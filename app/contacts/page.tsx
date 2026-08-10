@@ -1,3 +1,5 @@
+export const metadata = { title: "Contacts" };
+
 import Link from "next/link";
 import { prisma } from "../../src/lib/prisma";
 import AppShell from "../../src/components/app-shell";

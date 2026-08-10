@@ -1,3 +1,5 @@
+export const metadata = { title: "Login" };
+
 import { ibsaLogin } from "./actions";
 
 type Props = {

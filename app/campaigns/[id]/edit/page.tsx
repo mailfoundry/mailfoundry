@@ -1,3 +1,5 @@
+export const metadata = { title: "Edit Campaign" };
+
 import Link from "next/link";
 import { prisma } from "../../../../src/lib/prisma";
 import { notFound } from "next/navigation";
@@ -216,6 +218,7 @@ export default async function EditCampaignPage({
             </label>
             <input
               type="datetime-local"
+              id="scheduledAtLocal"
               name="scheduledAt"
               defaultValue={
                 campaign.scheduledAt
@@ -226,6 +229,7 @@ export default async function EditCampaignPage({
               }
               className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             />
+            <input type="hidden" name="scheduledAtUtc" id="scheduledAtUtc" />
             <p className="mt-2 text-sm text-gray-400">
               Set a time to schedule, or leave blank to keep the current status ({campaign.status}).
             </p>
@@ -238,6 +242,12 @@ export default async function EditCampaignPage({
             Save Changes
           </button>
         </form>
+        <script dangerouslySetInnerHTML={{ __html: `
+          document.querySelector('form').addEventListener('submit', function() {
+            var local = document.getElementById('scheduledAtLocal').value;
+            if (local) document.getElementById('scheduledAtUtc').value = new Date(local).toISOString();
+          });
+        `}} />
       </div>
     </AppShell>
   );

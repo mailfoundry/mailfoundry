@@ -1,3 +1,5 @@
+export const metadata = { title: "Suppliers" };
+
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 import SuppliersClient, {

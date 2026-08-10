@@ -1,3 +1,5 @@
+export const metadata = { title: "Campaign" };
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AppShell from "../../../src/components/app-shell";

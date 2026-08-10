@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IBSA Portal",
+  title: {
+    template: "%s | IBSA Portal",
+    default:  "IBSA Portal",
+  },
   description: "Convention & congregation supply ordering by Xylo (UK) Ltd.",
   icons: {
     icon: [

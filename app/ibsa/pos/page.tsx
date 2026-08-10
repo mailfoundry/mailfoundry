@@ -1,3 +1,5 @@
+export const metadata = { title: "Point of Sale" };
+
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
 import PosClient, { type Po } from "./PosClient";

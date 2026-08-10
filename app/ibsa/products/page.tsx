@@ -1,3 +1,5 @@
+export const metadata = { title: "Products" };
+
 import Link from "next/link";
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";

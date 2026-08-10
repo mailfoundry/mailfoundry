@@ -1,3 +1,5 @@
+export const metadata = { title: "Convention" };
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";

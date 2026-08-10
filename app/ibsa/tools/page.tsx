@@ -1,3 +1,5 @@
+export const metadata = { title: "Tools" };
+
 import { prisma } from "../../../src/lib/prisma";
 import Sidebar from "../../../src/components/sidebar";
 

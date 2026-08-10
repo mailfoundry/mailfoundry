@@ -1,3 +1,5 @@
+export const metadata = { title: "Cost Audit" };
+
 import { prisma } from "../../../src/lib/prisma";
 
 export const dynamic = "force-dynamic";

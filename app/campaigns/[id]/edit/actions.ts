@@ -10,7 +10,10 @@ export async function updateCampaign(campaignId: string, formData: FormData) {
   const body           = formData.get("body")?.toString().trim() || "";
   const html           = formData.get("html")?.toString().trim() || "";
   const listId         = formData.get("listId")?.toString().trim() || "";
-  const scheduledAtRaw = formData.get("scheduledAt")?.toString().trim() || "";
+  const scheduledAtRaw    = formData.get("scheduledAt")?.toString().trim() || "";
+  const scheduledAtUtcRaw = formData.get("scheduledAtUtc")?.toString().trim() || "";
+  // Prefer the UTC ISO string populated by client JS; fall back to raw only if JS disabled.
+  const scheduledAtStr = scheduledAtUtcRaw || scheduledAtRaw;
 
   if (!name || !subject || !body || !listId) {
     throw new Error(
@@ -50,8 +53,8 @@ export async function updateCampaign(campaignId: string, formData: FormData) {
       body,
       html: html || null,
       listId,
-      scheduledAt: scheduledAtRaw ? new Date(scheduledAtRaw) : campaign.scheduledAt,
-      status: scheduledAtRaw ? "scheduled" : campaign.status,
+      scheduledAt: scheduledAtStr ? new Date(scheduledAtStr) : campaign.scheduledAt,
+      status: scheduledAtStr ? "scheduled" : campaign.status,
     },
   });
 
