@@ -1,9 +1,7 @@
-export const metadata = { title: "Tools" };
-
 import { prisma } from "../../../src/lib/prisma";
 import Sidebar from "../../../src/components/sidebar";
 
-export const metadata = { title: "Tools — IBSA Portal" };
+export const metadata = { title: "Tools" };
 export const dynamic = "force-dynamic";
 
 function parseBrowser(ua: string): string {
