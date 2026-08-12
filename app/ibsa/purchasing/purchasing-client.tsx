@@ -689,7 +689,7 @@ export default function PurchasingClient({ conventions, orderItems, rsProducts, 
                             {r.git > 0 ? r.git : <span className="text-gray-300">—</span>}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className="inline-block rounded-full border border-red-200/40 bg-red-950/50 px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-500">
+                            <span className="inline-block rounded-full border border-red-500 bg-white px-2.5 py-0.5 text-xs font-bold tabular-nums text-red-800">
                               {r.deficit}
                             </span>
                           </td>
