@@ -84,6 +84,7 @@ export function downloadPickList({
               <span class="box"></span>
               <span class="box"></span>
               <span class="box"></span>
+              <span class="box"></span>
             </td>
             <td class="code">${l.code}</td>
             <td class="qty">${l.qty}</td>
@@ -136,7 +137,7 @@ export function downloadPickList({
     td { padding: 9px 0; border-bottom: 1px solid #ddd; vertical-align: middle; }
     tr:last-child td { border-bottom: 1px solid #ddd; }
 
-    .checks { width: 56px; display: flex; gap: 7px; align-items: center; }
+    .checks { width: 77px; display: flex; gap: 7px; align-items: center; }
     .box { display: inline-block; width: 14px; height: 14px; border: 1.3px solid #1a1a1a; flex-shrink: 0; }
 
     .legend { display: flex; gap: 20px; margin-bottom: 16px; font-size: 9pt; color: #444; }
@@ -182,6 +183,7 @@ export function downloadPickList({
     <div class="stats"><strong>${totalLines}</strong> line${totalLines !== 1 ? "s" : ""} &middot; <strong>${totalUnits}</strong> unit${totalUnits !== 1 ? "s" : ""} to pick</div>
 
     <div class="legend">
+      <span class="leg-item"><span class="legbox"></span> Ordered</span>
       <span class="leg-item"><span class="legbox"></span> Picked</span>
       <span class="leg-item"><span class="legbox"></span> Palletised</span>
       <span class="leg-item"><span class="legbox"></span> Checked</span>
