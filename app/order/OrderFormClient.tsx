@@ -101,7 +101,6 @@ function ProductCarousel({ images, animKey }: { images: CarouselImage[]; animKey
 }
 
 const GROUP_TYPES = [
-  { value: "congregation",  label: "Congregation" },
   { value: "circuit",       label: "Circuit Assembly" },
   { value: "regional",      label: "Regional" },
 ];
@@ -184,14 +183,14 @@ export default function OrderFormClient({
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  const [groupType, setGroupType]             = useState(prefill?.groupType ?? "congregation");
+  const [groupType, setGroupType]             = useState(prefill?.groupType ?? "circuit");
   const [groupName, setGroupName]             = useState(prefill?.groupName ?? "");
   const [contactName, setContactName]         = useState(prefill?.contactName ?? "");
   const [contactEmail, setContactEmail]       = useState(prefill?.contactEmail ?? "");
   const [contactMobile, setContactMobile]     = useState(prefill?.contactMobile ?? "");
   const [requiredByDate, setRequiredByDate]   = useState("");
   const [notes, setNotes]                     = useState("");
-  const [paymentMethod, setPaymentMethod]     = useState<"bacs" | "card" | "po" | "">("");
+  const paymentMethod = "po";
   const [emailTouched, setEmailTouched]       = useState(false);
 
   const csLines = csProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
@@ -517,10 +516,10 @@ export default function OrderFormClient({
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">
-                  {groupType === "congregation" ? "Congregation name *" : groupType === "circuit" ? "Circuit name *" : "Regional name *"}
+                  {groupType === "circuit" ? "Circuit name *" : "Regional name *"}
                 </label>
                 <input type="text" name="groupName" value={groupName} onChange={(e) => setGroupName(e.target.value)}
-                  placeholder={groupType === "congregation" ? "e.g. London Bethnal Green" : groupType === "circuit" ? "e.g. North West 10B" : "e.g. Regional Name / Venue"}
+                  placeholder={groupType === "circuit" ? "e.g. North West 10B" : "e.g. Regional Name / Venue"}
                   required className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
@@ -562,6 +561,7 @@ export default function OrderFormClient({
                 <input type="date" name="requiredByDate" value={requiredByDate} onChange={(e) => setRequiredByDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500" />
+                <p className="mt-1 text-xs text-gray-400">Please place orders at least two weeks before the required date.</p>
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Delivery address *</label>
@@ -580,27 +580,19 @@ export default function OrderFormClient({
             </div>
           </div>
 
-          {/* Payment preference */}
+          {/* Payment preference — Pay on Invoice only */}
           <div className="mb-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-400">Payment Preference</h2>
-            <p className="mb-4 text-sm text-gray-500">How do you intend to pay? No payment is taken now — we&apos;ll follow up with the relevant details after confirming your order.</p>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {([
-                { value: "bacs",  label: "BACS Transfer",        desc: "Pay by bank transfer using our account details" },
-                { value: "card",  label: "Credit / Debit Card",  desc: "We'll send a secure Stripe payment link" },
-                { value: "po",    label: "Purchase Order",        desc: "Raise a PO and we'll invoice your organisation" },
-              ] as const).map(({ value, label, desc }) => (
-                <label key={value}
-                  className={`flex cursor-pointer flex-col gap-1 rounded-xl border p-4 transition-colors ${paymentMethod === value ? "border-orange-400 bg-orange-50" : "border-gray-200 hover:border-gray-300"}`}>
-                  <input type="radio" name="paymentMethod" value={value}
-                    checked={paymentMethod === value}
-                    onChange={() => setPaymentMethod(value)}
-                    className="sr-only" />
-                  <span className="text-sm font-semibold text-gray-900">{label}</span>
-                  <span className="text-xs text-gray-500">{desc}</span>
-                </label>
-              ))}
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Payment</h2>
+            <div className="flex items-start gap-3 rounded-xl border border-orange-200 bg-orange-50 p-4">
+              <svg className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Pay on Invoice</p>
+                <p className="mt-0.5 text-xs text-gray-500">An invoice will be raised once your order is confirmed. No payment is taken now.</p>
+              </div>
             </div>
+            <input type="hidden" name="paymentMethod" value="po" />
           </div>
 
           {/* Two-column layout: product browser left, sticky basket right */}
