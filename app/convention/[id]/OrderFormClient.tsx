@@ -401,22 +401,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
 
                       {/* Variant rows — each with its own image */}
                       <div className="border-t border-gray-200 divide-y divide-slate-700/60">
-                        {[...group].sort((a, b) => {
-                          const szRank = (v: string | null) => {
-                            if (!v) return 99;
-                            const k = v.toLowerCase().replace(/[^a-z0-9]/g, "");
-                            return ({ s: 0, small: 0, m: 1, medium: 1, med: 1, l: 2, large: 2,
-                              xl: 3, xlarge: 3, extralarge: 3,
-                              xxl: 4, xxlarge: 4, extraextralarge: 4,
-                              xxxl: 5, xxxlarge: 5 } as Record<string, number>)[k] ?? 99;
-                          };
-                          const getWeight = (v: string | null) => { const m = (v ?? "").match(/(\d+)\s*g/i); return m ? parseInt(m[1]) : 0; };
-                          const sA = szRank(a.variant), sB = szRank(b.variant);
-                          if (sA !== 99 || sB !== 99) return sA - sB;
-                          const wA = getWeight(a.variant), wB = getWeight(b.variant);
-                          if (wA !== wB) return wA - wB;
-                          return (a.variant ?? "").localeCompare(b.variant ?? "");
-                        }).map((p) => {
+                        {group.map((p) => {
                           const variantImgSrc = getImageSrc(p.imageUrl);
                           const variantLabel = p.variant ?? "";
                           const swatchColors = getSwatchColors(variantLabel);
