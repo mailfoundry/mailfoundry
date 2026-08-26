@@ -404,13 +404,7 @@ export default function OrderFormClient({
                         </div>
                       </div>
                       <div className="border-t border-gray-200 divide-y divide-gray-100">
-                        {[...group].sort((a, b) => {
-                          const sA = getSize(a.variant), sB = getSize(b.variant);
-                          if (sA !== 99 || sB !== 99) return sA - sB;
-                          const wA = getWeight(a.variant), wB = getWeight(b.variant);
-                          if (wA !== wB) return wA - wB;
-                          return (a.variant ?? "").localeCompare(b.variant ?? "");
-                        }).map((p) => {
+                        {group.map((p) => {
                           const variantImgSrc = getImageSrc(p.imageUrl);
                           const variantLabel = p.variant ?? "";
                           const swatchColors = getSwatchColors(variantLabel);
