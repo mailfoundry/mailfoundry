@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, updateRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, updateRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility, updateProductSortOrder } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -42,6 +42,7 @@ export type ProductRow = {
   groupDescription: string | null;
   visibleInOrderForm: boolean;
   venueType: string;
+  sortOrder: number;
   inStock: number;
   git: number;
   rsProducts: RsProductLink[];
@@ -133,16 +134,31 @@ export default function ProductsClient({ products, activeType }: Props) {
   const [bomDraft, setBomDraft] = useState<{ componentId: string; qty: string }>({ componentId: "", qty: "1" });
   const [isSavingBom, startSavingBom] = useTransition();
 
+  // ── Sort-order / drag state ─────────────────────────────────────────────
+  // localOrder holds product IDs in the current drag-reordered sequence.
+  // Empty = use server order (products array as-is).
+  const [localOrder, setLocalOrder] = useState<string[]>([]);
+  const [dragSrcId, setDragSrcId] = useState<string | null>(null);   // product ID being dragged
+  const [dragSrcCat, setDragSrcCat] = useState<string | null>(null); // category being dragged
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [dragOverCat, setDragOverCat] = useState<string | null>(null);
+  const [isSavingOrder, startSavingOrder] = useTransition();
+
   // ── Derived ────────────────────────────────────────────────────────────
+  // Apply local reorder override if a drag has been committed
+  const orderedProducts = localOrder.length > 0
+    ? localOrder.map((id) => products.find((p) => p.id === id)).filter((p): p is ProductRow => !!p)
+    : products;
+
   const q = search.trim().toLowerCase();
   const filteredProducts = q
-    ? products.filter(
+    ? orderedProducts.filter(
         (p) =>
           p.code.toLowerCase().includes(q) ||
           p.name.toLowerCase().includes(q) ||
           (p.variant ?? "").toLowerCase().includes(q)
       )
-    : products;
+    : orderedProducts;
 
   const grouped = filteredProducts.reduce<Record<string, ProductRow[]>>((acc, p) => {
     if (!acc[p.category]) acc[p.category] = [];
@@ -212,6 +228,59 @@ export default function ProductsClient({ products, activeType }: Props) {
 
   const adjustDraft = (id: string, delta: number, current: number) =>
     setDraft((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] ?? current) + delta) }));
+
+  // ── Drag-and-drop handlers ──────────────────────────────────────────────
+  function applyNewOrder(newIds: string[]) {
+    setLocalOrder(newIds);
+    setDragSrcId(null);
+    setDragSrcCat(null);
+    setDragOverId(null);
+    setDragOverCat(null);
+    const updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
+    startSavingOrder(async () => { await updateProductSortOrder(updates); });
+  }
+
+  function handleProductDrop(targetProductId: string) {
+    if (!dragSrcId || dragSrcId === targetProductId) {
+      setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null);
+      return;
+    }
+    const base = localOrder.length > 0 ? localOrder : products.map((p) => p.id);
+    const without = base.filter((id) => id !== dragSrcId);
+    const targetIdx = without.indexOf(targetProductId);
+    const newIds = [...without.slice(0, targetIdx), dragSrcId, ...without.slice(targetIdx)];
+    applyNewOrder(newIds);
+  }
+
+  function handleCategoryDrop(targetCat: string) {
+    const base = localOrder.length > 0 ? localOrder : products.map((p) => p.id);
+    if (dragSrcId) {
+      // Product dropped onto category header → move to start of that category
+      const catIds = base.filter((id) => {
+        const p = products.find((pr) => pr.id === id);
+        return p?.category === targetCat && id !== dragSrcId;
+      });
+      if (catIds.length === 0) {
+        setDragSrcId(null); setDragOverId(null); setDragOverCat(null);
+        return;
+      }
+      const firstInCat = catIds[0];
+      const without = base.filter((id) => id !== dragSrcId);
+      const targetIdx = without.indexOf(firstInCat);
+      const newIds = [...without.slice(0, targetIdx), dragSrcId, ...without.slice(targetIdx)];
+      applyNewOrder(newIds);
+    } else if (dragSrcCat && dragSrcCat !== targetCat) {
+      // Category section dragged onto another category
+      const srcIds = base.filter((id) => products.find((p) => p.id === id)?.category === dragSrcCat);
+      const without = base.filter((id) => !srcIds.includes(id));
+      const firstInTarget = without.find((id) => products.find((p) => p.id === id)?.category === targetCat);
+      const targetIdx = firstInTarget != null ? without.indexOf(firstInTarget) : without.length;
+      const newIds = [...without.slice(0, targetIdx), ...srcIds, ...without.slice(targetIdx)];
+      applyNewOrder(newIds);
+    } else {
+      setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null);
+    }
+  }
 
   // ── Edit modal ─────────────────────────────────────────────────────────
   function openNew() {
@@ -382,12 +451,17 @@ export default function ProductsClient({ products, activeType }: Props) {
       >
         + New Product
       </button>
-      <button
-        onClick={enterStockTake}
-        className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
-      >
-        Stock Take
-      </button>
+      <div className="flex items-center gap-3">
+        {isSavingOrder && (
+          <span className="text-xs text-gray-400 animate-pulse">Saving order…</span>
+        )}
+        <button
+          onClick={enterStockTake}
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
+        >
+          Stock Take
+        </button>
+      </div>
     </div>
   );
 
@@ -480,9 +554,26 @@ export default function ProductsClient({ products, activeType }: Props) {
       <div className="block space-y-1 md:hidden">
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category}>
-            <p className="px-1 pb-2 pt-4 text-xs font-semibold uppercase tracking-wider text-gray-500">
-              {CATEGORY_LABELS[category] ?? category}
-            </p>
+            <div
+              className={`flex items-center gap-2 px-1 pb-2 pt-4 transition-colors ${
+                dragOverCat === category && dragSrcCat !== category ? "rounded-lg bg-blue-50 outline outline-2 outline-blue-300" : ""
+              }`}
+              draggable={!stockTakeMode}
+              onDragStart={(e) => { setDragSrcCat(category); setDragSrcId(null); e.dataTransfer.effectAllowed = "move"; }}
+              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverCat(category); setDragOverId(null); }}
+              onDragLeave={() => setDragOverCat(null)}
+              onDrop={(e) => { e.preventDefault(); handleCategoryDrop(category); }}
+              onDragEnd={() => { setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null); }}
+            >
+              {!stockTakeMode && (
+                <span className="cursor-grab text-gray-300 hover:text-gray-400 active:cursor-grabbing select-none">
+                  <svg viewBox="0 0 10 16" className="h-4 w-3 inline-block"><circle cx="2" cy="2" r="1.5" fill="currentColor"/><circle cx="8" cy="2" r="1.5" fill="currentColor"/><circle cx="2" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="2" cy="14" r="1.5" fill="currentColor"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/></svg>
+                </span>
+              )}
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                {CATEGORY_LABELS[category] ?? category}
+              </p>
+            </div>
             <div className="space-y-2">
               {items.map((p) => {
                 const isBom = p.bomAsComposite.length > 0 || p.code.includes("+");
@@ -493,8 +584,18 @@ export default function ProductsClient({ products, activeType }: Props) {
                 return (
                   <div
                     key={p.id}
+                    draggable={!stockTakeMode}
+                    onDragStart={(e) => { setDragSrcId(p.id); setDragSrcCat(null); e.dataTransfer.effectAllowed = "move"; }}
+                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverId(p.id); setDragOverCat(null); }}
+                    onDragLeave={() => setDragOverId(null)}
+                    onDrop={(e) => { e.preventDefault(); handleProductDrop(p.id); }}
+                    onDragEnd={() => { setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null); }}
                     className={`rounded-2xl border p-4 transition-colors ${
-                      changed
+                      dragOverId === p.id && dragSrcId !== p.id
+                        ? "border-blue-300 bg-blue-50 outline outline-2 outline-blue-300"
+                        : dragSrcId === p.id
+                        ? "opacity-40"
+                        : changed
                         ? "border-amber-300 bg-amber-50"
                         : "border-gray-200 bg-white"
                     }`}
@@ -634,6 +735,7 @@ export default function ProductsClient({ products, activeType }: Props) {
         <table className="min-w-full text-sm">
           <thead className="border-b border-gray-200 bg-gray-50 text-left text-gray-700">
             <tr>
+              <th className="w-8 pl-3 py-3"></th>
               <th className="px-5 py-3 font-semibold">Product</th>
               <th className="px-5 py-3 font-semibold">Variant / Size</th>
               <th className="px-5 py-3 font-semibold">Code</th>
@@ -649,7 +751,25 @@ export default function ProductsClient({ products, activeType }: Props) {
           <tbody>
             {Object.entries(grouped).map(([category, items]) => (
               <>
-                <tr key={`cat-${category}`} className="border-t border-gray-100 bg-gray-50">
+                <tr
+                  key={`cat-${category}`}
+                  draggable={!stockTakeMode}
+                  onDragStart={(e) => { e.stopPropagation(); setDragSrcCat(category); setDragSrcId(null); e.dataTransfer.effectAllowed = "move"; }}
+                  onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverCat(category); setDragOverId(null); }}
+                  onDragLeave={() => setDragOverCat(null)}
+                  onDrop={(e) => { e.preventDefault(); handleCategoryDrop(category); }}
+                  onDragEnd={() => { setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null); }}
+                  className={`border-t border-gray-100 transition-colors ${
+                    dragOverCat === category && dragSrcCat !== category ? "bg-blue-50 outline outline-2 outline-blue-300" : "bg-gray-50"
+                  }`}
+                >
+                  <td className="pl-3 py-2">
+                    {!stockTakeMode && (
+                      <span className="cursor-grab text-gray-300 hover:text-gray-500 active:cursor-grabbing select-none" title="Drag to reorder category">
+                        <svg viewBox="0 0 10 16" className="h-4 w-3 inline-block"><circle cx="2" cy="2" r="1.5" fill="currentColor"/><circle cx="8" cy="2" r="1.5" fill="currentColor"/><circle cx="2" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="2" cy="14" r="1.5" fill="currentColor"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/></svg>
+                      </span>
+                    )}
+                  </td>
                   <td colSpan={10} className="px-5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                     {CATEGORY_LABELS[category] ?? category}
                   </td>
@@ -663,10 +783,29 @@ export default function ProductsClient({ products, activeType }: Props) {
                   return (
                     <tr
                       key={p.id}
-                      className={`group border-t border-gray-200 ${
-                        changed ? "bg-amber-50" : "hover:bg-gray-100"
+                      draggable={!stockTakeMode}
+                      onDragStart={(e) => { e.stopPropagation(); setDragSrcId(p.id); setDragSrcCat(null); e.dataTransfer.effectAllowed = "move"; }}
+                      onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverId(p.id); setDragOverCat(null); }}
+                      onDragLeave={() => setDragOverId(null)}
+                      onDrop={(e) => { e.preventDefault(); handleProductDrop(p.id); }}
+                      onDragEnd={() => { setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null); }}
+                      className={`group border-t border-gray-200 transition-colors ${
+                        dragOverId === p.id && dragSrcId !== p.id
+                          ? "bg-blue-50 outline outline-2 outline-blue-300"
+                          : dragSrcId === p.id
+                          ? "opacity-40"
+                          : changed
+                          ? "bg-amber-50"
+                          : "hover:bg-gray-100"
                       }`}
                     >
+                      <td className="pl-3 py-3">
+                        {!stockTakeMode && (
+                          <span className="cursor-grab text-gray-300 hover:text-gray-500 active:cursor-grabbing select-none opacity-0 group-hover:opacity-100 transition-opacity" title="Drag to reorder">
+                            <svg viewBox="0 0 10 16" className="h-4 w-3 inline-block"><circle cx="2" cy="2" r="1.5" fill="currentColor"/><circle cx="8" cy="2" r="1.5" fill="currentColor"/><circle cx="2" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="2" cy="14" r="1.5" fill="currentColor"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/></svg>
+                          </span>
+                        )}
+                      </td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
                           {getImageSrc(p.imageUrl) ? (

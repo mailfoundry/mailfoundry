@@ -218,3 +218,21 @@ export async function bulkUpdateInStock(
 
   revalidatePath("/ibsa/products");
 }
+
+export async function updateProductSortOrder(
+  updates: { id: string; sortOrder: number }[]
+) {
+  if (!updates.length) return;
+
+  await prisma.$transaction(
+    updates.map(({ id, sortOrder }) =>
+      prisma.ibsaProduct.update({
+        where: { id },
+        data: { sortOrder },
+      })
+    )
+  );
+
+  revalidatePath("/ibsa/products");
+  revalidatePath("/convention");
+}

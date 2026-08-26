@@ -146,6 +146,8 @@ model IbsaProduct {
   visibleInOrderForm  Boolean  @default(true)
   /// all | circuit | large  — controls which venue-mode filter this product appears under
   venueType           String   @default("all")
+  /// Display order in admin table and convention order form — lower numbers appear first
+  sortOrder           Int      @default(0)
   inStock   Int      @default(0)
   git       Int      @default(0)
   createdAt DateTime @default(now())

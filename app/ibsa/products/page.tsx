@@ -15,7 +15,7 @@ export default async function IbsaProductsPage({
 
   const products = await prisma.ibsaProduct.findMany({
     where: { type: activeType },
-    orderBy: [{ category: "asc" }, { name: "asc" }],
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     select: {
       id: true,
       name: true,
@@ -32,6 +32,7 @@ export default async function IbsaProductsPage({
       groupDescription: true,
       visibleInOrderForm: true,
       venueType: true,
+      sortOrder: true,
       inStock: true,
       git: true,
       rsProducts: {

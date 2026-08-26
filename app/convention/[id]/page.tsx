@@ -50,7 +50,7 @@ export default async function ConventionOrderPage({ params }: Props) {
 
   const csProducts = await prisma.ibsaProduct.findMany({
     where: { type: "CS", visibleInOrderForm: true },
-    orderBy: [{ category: "asc" }, { name: "asc" }],
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true },
   });
 
@@ -63,7 +63,7 @@ export default async function ConventionOrderPage({ params }: Props) {
         ...(faOrderedIds.length > 0 ? [{ id: { in: faOrderedIds } }] : []),
       ],
     },
-    orderBy: [{ category: "asc" }, { name: "asc" }],
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true },
   });
 
