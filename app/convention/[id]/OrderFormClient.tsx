@@ -711,13 +711,13 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           : "text-gray-400 hover:text-gray-600"
                       }`}
                     >
-                      {mode === "circuit" ? "🏛 Circuit Assembly" : "🏟 Large Venue / Stadium"}
+                      {mode === "circuit" ? "🏛 Circuit Venues" : "🏟 Regional Venues"}
                     </button>
                   ))}
                 </div>
                 {venueMode === "large" && (
                   <p className="mt-2 px-1 text-xs text-gray-400">
-                    Showing products suited to large venues — stadiums, the NEC, and similar. Switch back to <button className="underline" onClick={() => setVenueMode("circuit")}>Circuit Assembly</button> for standard venues.
+                    Showing products suited to regional venues. Switch back to <button className="underline" onClick={() => setVenueMode("circuit")}>Circuit Venues</button> for circuit assembly venues.
                   </p>
                 )}
               </div>

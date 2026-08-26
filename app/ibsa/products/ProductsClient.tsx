@@ -931,9 +931,9 @@ export default function ProductsClient({ products, activeType }: Props) {
                   onChange={set("venueType")}
                   className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500"
                 >
-                  <option value="all">All venues (circuit &amp; large)</option>
-                  <option value="circuit">Circuit Assembly only</option>
-                  <option value="large">Large Venue / Stadium only</option>
+                  <option value="all">Regional &amp; Circuit Venues</option>
+                  <option value="circuit">Circuit Venues Only</option>
+                  <option value="large">Regional Venues Only</option>
                 </select>
                 <p className="mt-1 text-xs text-gray-400">Controls which venue mode this product appears under in the order form.</p>
               </div>
