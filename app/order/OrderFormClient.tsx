@@ -315,27 +315,15 @@ export default function OrderFormClient({
         return p.name.toLowerCase().includes(q) || (p.variant ?? "").toLowerCase().includes(q);
       });
 
-    const byCat = filtered.reduce<Record<string, Product[]>>((acc, p) => {
-      const key = CATEGORY_PARENT[p.category] ?? p.category;
-      (acc[key] ??= []).push(p);
-      return acc;
-    }, {});
+    const familyMap = new Map<string, Product[]>();
+    for (const p of filtered) {
+      const key = p.groupWithVariants ? p.name : p.id;
+      (familyMap.get(key) ?? familyMap.set(key, []).get(key)!).push(p);
+    }
 
     return (
-      <div className="space-y-8">
-        {Object.entries(byCat).map(([cat, items]) => {
-          const familyMap = new Map<string, Product[]>();
-          for (const p of items) {
-            const key = p.groupWithVariants ? p.name : p.id;
-            (familyMap.get(key) ?? familyMap.set(key, []).get(key)!).push(p);
-          }
-          return (
-            <div key={cat}>
-              <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-gray-400">
-                {CATEGORY_GROUP_LABEL[cat] ?? CATEGORY_LABELS[cat] ?? cat}
-              </p>
-              <div className="space-y-3">
-                {Array.from(familyMap.values()).map((group) => {
+      <div className="space-y-3">
+        {Array.from(familyMap.values()).map((group) => {
                   const first = group[0];
                   const groupImgUrl = group.find((p) => p.groupImageUrl)?.groupImageUrl ?? null;
                   const imgSrc = getImageSrc(groupImgUrl ?? first.imageUrl);
@@ -438,10 +426,6 @@ export default function OrderFormClient({
                       </div>
                     </div>
                   );
-                })}
-              </div>
-            </div>
-          );
         })}
       </div>
     );
