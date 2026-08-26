@@ -18,6 +18,7 @@ type Product = {
   imageUrl: string | null;
   groupImageUrl: string | null;
   groupWithVariants: boolean;
+  venueType: string; // all | circuit | large
 };
 
 type Convention = {
@@ -184,6 +185,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
     return "details";
   });
 
+  const [venueMode, setVenueMode] = useState<"circuit" | "large">("circuit");
   const [allDone, setAllDone] = useState(false);
   const [search, setSearch] = useState("");
   const [detailsDraft, setDetailsDraft] = useState({
@@ -344,8 +346,8 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-gray-200"
                         } ${bumped[p.id] ? "card-lift" : ""}`}
                       >
-                        <div className="flex items-center gap-4 p-4">
-                          <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+                          <div className="w-16 h-16 sm:w-24 sm:h-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
                             {imgSrc ? (
                               <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
                             ) : (
@@ -365,7 +367,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                           {/* Right: stepper + running total */}
                           <div className="shrink-0 flex items-center gap-2">
                             {renderStepper(p, dept)}
-                            <span className={`text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
+                            <span className={`hidden sm:block text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -439,7 +441,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 {renderStepper(p, dept)}
-                                <span className={`text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
+                                <span className={`hidden sm:block text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
                               </div>
                             </div>
                           );
@@ -462,7 +464,11 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   const totalLines = (products: Product[]) =>
     products.filter((p) => (qty[p.id] ?? 0) > 0).length;
 
-  const allActiveProducts = activeTab === "CS" ? csProducts : faProducts;
+  // Filter CS products by venue mode (FA products are always shown unfiltered)
+  const filteredCsProducts = csProducts.filter(
+    (p) => p.venueType === "all" || p.venueType === venueMode
+  );
+  const allActiveProducts = activeTab === "CS" ? filteredCsProducts : faProducts;
   const activeProducts = search.trim()
     ? allActiveProducts.filter((p) => {
         const q = search.toLowerCase();
@@ -470,6 +476,7 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
       })
     : allActiveProducts;
 
+  // Totals always count all ordered products (across both venue modes)
   const csLines = totalLines(csProducts);
   const faLines = totalLines(faProducts);
   const csValue = totalValue(csProducts);
@@ -690,6 +697,32 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
           </div>
         ) : (
           <>
+            {/* Venue mode toggle — CS tab only */}
+            {activeTab === "CS" && (
+              <div className="mb-4">
+                <div className="flex items-center rounded-xl border border-gray-200 bg-gray-100 p-1 gap-1">
+                  {(["circuit", "large"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setVenueMode(mode)}
+                      className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                        venueMode === mode
+                          ? "bg-white shadow text-gray-900"
+                          : "text-gray-400 hover:text-gray-600"
+                      }`}
+                    >
+                      {mode === "circuit" ? "🏛 Circuit Assembly" : "🏟 Large Venue / Stadium"}
+                    </button>
+                  ))}
+                </div>
+                {venueMode === "large" && (
+                  <p className="mt-2 px-1 text-xs text-gray-400">
+                    Showing products suited to large venues — stadiums, the NEC, and similar. Switch back to <button className="underline" onClick={() => setVenueMode("circuit")}>Circuit Assembly</button> for standard venues.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Search */}
             <div className="mb-5 relative">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

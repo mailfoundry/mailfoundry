@@ -33,11 +33,12 @@ export async function createProduct(formData: FormData) {
   const imageUrl      = (formData.get("imageUrl") as string | null)?.trim() || null;
   const groupImageUrl = (formData.get("groupImageUrl") as string | null)?.trim() || null;
   const groupWithVariants = formData.get("groupWithVariants") === "true";
+  const venueType = (formData.get("venueType") as string | null)?.trim() || "all";
 
   if (!name || !code || !category || !type) return;
 
   await prisma.ibsaProduct.create({
-    data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants },
+    data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants, venueType },
   });
 
   revalidatePath("/ibsa/products");
@@ -59,6 +60,7 @@ export async function updateProduct(formData: FormData) {
   const imageUrl = (formData.get("imageUrl") as string | null)?.trim() || null;
   const groupImageUrl = (formData.get("groupImageUrl") as string | null)?.trim() || null;
   const groupWithVariants = formData.get("groupWithVariants") === "true";
+  const venueType = (formData.get("venueType") as string | null)?.trim() || "all";
 
   // Supplier changes: [{id: rsProductId, supplier: newName}]
   const supplierChangesRaw = (formData.get("supplierChanges") as string | null) ?? "[]";
@@ -69,7 +71,7 @@ export async function updateProduct(formData: FormData) {
   await prisma.$transaction([
     prisma.ibsaProduct.update({
       where: { id },
-      data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants },
+      data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants, venueType },
     }),
     ...supplierChanges
       .filter((sc) => sc.supplier.trim())

@@ -41,6 +41,7 @@ export type ProductRow = {
   groupWithVariants: boolean;
   groupDescription: string | null;
   visibleInOrderForm: boolean;
+  venueType: string;
   inStock: number;
   git: number;
   rsProducts: RsProductLink[];
@@ -86,6 +87,7 @@ type EditDraft = {
   groupImageUrl: string;
   groupDescription: string;
   groupWithVariants: boolean;
+  venueType: string;
 };
 
 type Props = { products: ProductRow[]; activeType: "CS" | "FA" };
@@ -104,7 +106,7 @@ export default function ProductsClient({ products, activeType }: Props) {
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({
-    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false,
+    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false, venueType: "all",
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
@@ -216,7 +218,7 @@ export default function ProductsClient({ products, activeType }: Props) {
     setConfirmDelete(false);
     setIsCreating(true);
     setEditingProduct(null);
-    setEditDraft({ name: "", variant: "", code: "", category: CATEGORIES[0].value, type: activeType, unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false });
+    setEditDraft({ name: "", variant: "", code: "", category: CATEGORIES[0].value, type: activeType, unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false, venueType: "all" });
     setShowAddLink(false);
     setShowAddBom(false);
   }
@@ -238,6 +240,7 @@ export default function ProductsClient({ products, activeType }: Props) {
       imageUrl: p.imageUrl ?? "",
       groupImageUrl: p.groupImageUrl ?? "",
       groupWithVariants: p.groupWithVariants,
+      venueType: p.venueType ?? "all",
     });
     const m = new Map<string, string>();
     for (const rp of p.rsProducts) m.set(rp.id, rp.supplier);
@@ -309,6 +312,7 @@ export default function ProductsClient({ products, activeType }: Props) {
     fd.set("imageUrl",           editDraft.imageUrl);
     fd.set("groupImageUrl",      editDraft.groupImageUrl);
     fd.set("groupWithVariants",  String(editDraft.groupWithVariants));
+    fd.set("venueType",          editDraft.venueType);
 
     if (isCreating) {
       startSavingEdit(async () => {
@@ -918,6 +922,20 @@ export default function ProductsClient({ products, activeType }: Props) {
                     <option value="FA">FA — First Aid</option>
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-500">Venue Type</label>
+                <select
+                  value={editDraft.venueType}
+                  onChange={set("venueType")}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500"
+                >
+                  <option value="all">All venues (circuit &amp; large)</option>
+                  <option value="circuit">Circuit Assembly only</option>
+                  <option value="large">Large Venue / Stadium only</option>
+                </select>
+                <p className="mt-1 text-xs text-gray-400">Controls which venue mode this product appears under in the order form.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

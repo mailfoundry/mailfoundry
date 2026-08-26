@@ -31,6 +31,7 @@ export default async function IbsaProductsPage({
       groupWithVariants: true,
       groupDescription: true,
       visibleInOrderForm: true,
+      venueType: true,
       inStock: true,
       git: true,
       rsProducts: {

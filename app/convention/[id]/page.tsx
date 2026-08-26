@@ -51,7 +51,7 @@ export default async function ConventionOrderPage({ params }: Props) {
   const csProducts = await prisma.ibsaProduct.findMany({
     where: { type: "CS", visibleInOrderForm: true },
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
+    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true },
   });
 
   // FA tab: native FA-type products + any CS-type products already ordered under FA
@@ -64,7 +64,7 @@ export default async function ConventionOrderPage({ params }: Props) {
       ],
     },
     orderBy: [{ category: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true },
+    select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true },
   });
 
   // Build existing qty map: productId → qty

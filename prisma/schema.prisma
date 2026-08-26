@@ -144,6 +144,8 @@ model IbsaProduct {
   groupWithVariants   Boolean  @default(false)
   groupDescription    String?  // Shared description shown in the group card header
   visibleInOrderForm  Boolean  @default(true)
+  /// all | circuit | large  — controls which venue-mode filter this product appears under
+  venueType           String   @default("all")
   inStock   Int      @default(0)
   git       Int      @default(0)
   createdAt DateTime @default(now())
