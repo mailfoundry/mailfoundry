@@ -305,120 +305,41 @@ export default function OrderFormClient({ convention, csProducts, faProducts, ex
   }
 
   function renderProducts(products: Product[], dept: "CS" | "FA") {
-    // Build family map across ALL products in sortOrder — no category grouping.
-    // Products with groupWithVariants=true share a card by name; others get their own card.
-    const familyMap = new Map<string, Product[]>();
-    for (const p of products) {
-      const key = p.groupWithVariants ? p.name : p.id;
-      (familyMap.get(key) ?? familyMap.set(key, []).get(key)!).push(p);
-    }
-
     return (
       <div className="space-y-3">
-        {Array.from(familyMap.values()).map((group) => {
-          const first = group[0];
-          const groupImgUrl = group.find((p) => p.groupImageUrl)?.groupImageUrl ?? null;
-          const imgSrc = getImageSrc(groupImgUrl ?? first.imageUrl);
-          const isSingle = group.length === 1;
-
-          if (isSingle) {
-            // ── Single-variant card ───────────────────────────────────
-            const p = first;
-            const variantLabel = p.variant ?? "";
-            const swatchColors = getSwatchColors(variantLabel);
-            const ordered = (qty[p.id] ?? 0) > 0;
-            return (
-              <div
-                key={p.id}
-                className={`overflow-hidden rounded-2xl border bg-gray-100 shadow-lg shadow-black/30 transition-colors ${
-                  ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-gray-200"
-                } ${bumped[p.id] ? "card-lift" : ""}`}
-              >
-                <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
-                    {imgSrc ? (
-                      <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
-                    ) : (
-                      <div className="h-full w-full" />
-                    )}
-                  </div>
-                  {/* Centre: name, variant, price */}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-                      <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
-                    </div>
-                    {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
-                    {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
-                    <p className="mt-1 text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
-                  </div>
-                  {/* Right: stepper + running total */}
-                  <div className="shrink-0 flex items-center gap-2">
-                    {renderStepper(p, dept)}
-                    <span className={`hidden sm:block text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-
-          // ── Grouped card (multiple variants) ─────────────────────
-          const anyOrdered = group.some((p) => (qty[p.id] ?? 0) > 0);
-          const anyBumped  = group.some((p) => bumped[p.id]);
+        {products.map((p) => {
+          const imgSrc = getImageSrc(p.imageUrl);
+          const variantLabel = p.variant ?? "";
+          const swatchColors = getSwatchColors(variantLabel);
+          const ordered = (qty[p.id] ?? 0) > 0;
           return (
             <div
-              key={getCodeFamily(first.code)}
+              key={p.id}
               className={`overflow-hidden rounded-2xl border bg-gray-100 shadow-lg shadow-black/30 transition-colors ${
-                anyOrdered ? "border-orange-500/60 shadow-orange-900/20" : "border-gray-200"
-              } ${anyBumped ? "card-lift" : ""}`}
+                ordered ? "border-orange-500/60 shadow-orange-900/20" : "border-gray-200"
+              } ${bumped[p.id] ? "card-lift" : ""}`}
             >
-              {/* Group header — shared image + product name */}
-              <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
-                <div className="w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
                   {imgSrc ? (
-                    <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain" />
+                    <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
                   ) : (
                     <div className="h-full w-full" />
                   )}
                 </div>
-                <div className="min-w-0">
-                  <p className="text-base font-bold leading-snug text-gray-900">{first.name}</p>
-                  {group.find(p => p.groupDescription)?.groupDescription && <p className="mt-0.5 text-xs italic text-gray-500">{group.find(p => p.groupDescription)?.groupDescription}</p>}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
+                    <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
+                  </div>
+                  {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
+                  {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
+                  <p className="mt-1 text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
                 </div>
-              </div>
-
-              {/* Variant rows — each with its own image */}
-              <div className="border-t border-gray-200 divide-y divide-slate-700/60">
-                {group.map((p) => {
-                  const variantImgSrc = getImageSrc(p.imageUrl);
-                  const variantLabel = p.variant ?? "";
-                  const swatchColors = getSwatchColors(variantLabel);
-                  const ordered = (qty[p.id] ?? 0) > 0;
-                  return (
-                    <div key={p.id} className="flex items-center gap-3 px-4 py-3">
-                      {/* Per-variant image */}
-                      <div className="w-14 h-14 shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                        {variantImgSrc ? (
-                          <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain" />
-                        ) : (
-                          <div className="h-full w-full" />
-                        )}
-                      </div>
-                      {swatchColors.length > 0
-                        ? <ColourDot colors={swatchColors} />
-                        : <span className="w-4 shrink-0" />
-                      }
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm text-gray-600">{variantLabel || p.name}</p>
-                        <p className="text-xs text-gray-400">£{p.unitCost.toFixed(2)} each</p>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {renderStepper(p, dept)}
-                        <span className={`hidden sm:block text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="shrink-0 flex items-center gap-2">
+                  {renderStepper(p, dept)}
+                  <span className={`hidden sm:block text-sm font-semibold text-green-500 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= £{((qty[p.id] ?? 0) * p.unitCost).toFixed(2)}</span>
+                </div>
               </div>
             </div>
           );

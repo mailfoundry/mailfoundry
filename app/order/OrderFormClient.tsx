@@ -315,117 +315,44 @@ export default function OrderFormClient({
         return p.name.toLowerCase().includes(q) || (p.variant ?? "").toLowerCase().includes(q);
       });
 
-    const familyMap = new Map<string, Product[]>();
-    for (const p of filtered) {
-      const key = p.groupWithVariants ? p.name : p.id;
-      (familyMap.get(key) ?? familyMap.set(key, []).get(key)!).push(p);
-    }
-
     return (
       <div className="space-y-3">
-        {Array.from(familyMap.values()).map((group) => {
-                  const first = group[0];
-                  const groupImgUrl = group.find((p) => p.groupImageUrl)?.groupImageUrl ?? null;
-                  const imgSrc = getImageSrc(groupImgUrl ?? first.imageUrl);
-                  const isSingle = group.length === 1;
-
-                  if (isSingle) {
-                    const p = first;
-                    const variantLabel = p.variant ?? "";
-                    const swatchColors = getSwatchColors(variantLabel);
-                    const ordered = (qty[p.id] ?? 0) > 0;
-                    return (
-                      <div key={p.id} className={`rounded-2xl border bg-white shadow-sm transition-colors ${ordered ? "border-orange-400 shadow-orange-100" : "border-gray-200"} ${bumped[p.id] ? "card-lift" : ""}`}>
-                        <div className="flex items-center gap-4 p-4">
-                          <div className="relative shrink-0 group cursor-zoom-in">
-                            <div className="w-24 h-24 overflow-hidden rounded-xl bg-gray-50">
-                              {imgSrc
-                                ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
-                                : <div className="h-full w-full" />}
-                            </div>
-                            {imgSrc && (
-                              <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white p-2 shadow-2xl shadow-gray-400/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                                <Image src={imgSrc} alt={p.name} width={208} height={208} className="h-full w-full object-contain" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-                              <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
-                            </div>
-                            {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
-                            {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
-                            <p className="mt-1 text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
-                          </div>
-                          <div className="shrink-0 flex items-center gap-2">
-                            {renderStepper(p)}
-                            <span className={`text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  const anyOrdered = group.some((p) => (qty[p.id] ?? 0) > 0);
-                  const anyBumped  = group.some((p) => bumped[p.id]);
-                  return (
-                    <div key={first.name} className={`rounded-2xl border bg-white shadow-sm transition-colors ${anyOrdered ? "border-orange-400 shadow-orange-100" : "border-gray-200"} ${anyBumped ? "card-lift" : ""}`}>
-                      <div className="flex gap-4 px-4 pt-4 pb-3 items-center">
-                        <div className="relative shrink-0 group cursor-zoom-in">
-                          <div className="w-16 h-16 overflow-hidden rounded-xl bg-gray-50">
-                            {imgSrc
-                              ? <Image src={imgSrc} alt={first.name} width={64} height={64} className="h-full w-full object-contain" />
-                              : <div className="h-full w-full" />}
-                          </div>
-                          {imgSrc && (
-                            <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white p-2 shadow-2xl shadow-gray-400/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                              <Image src={imgSrc} alt={first.name} width={208} height={208} className="h-full w-full object-contain" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-base font-bold leading-snug text-gray-900">{first.name}</p>
-                          {group.find(p => p.groupDescription)?.groupDescription && (
-                            <p className="mt-0.5 text-xs italic text-gray-500">{group.find(p => p.groupDescription)?.groupDescription}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="border-t border-gray-200 divide-y divide-gray-100">
-                        {group.map((p) => {
-                          const variantImgSrc = getImageSrc(p.imageUrl);
-                          const variantLabel = p.variant ?? "";
-                          const swatchColors = getSwatchColors(variantLabel);
-                          const ordered = (qty[p.id] ?? 0) > 0;
-                          return (
-                            <div key={p.id} className="flex items-center gap-3 px-4 py-3">
-                              <div className="relative shrink-0 group cursor-zoom-in">
-                                <div className="w-14 h-14 overflow-hidden rounded-lg bg-gray-50">
-                                  {variantImgSrc
-                                    ? <Image src={variantImgSrc} alt={variantLabel || p.name} width={56} height={56} className="h-full w-full object-contain" />
-                                    : <div className="h-full w-full" />}
-                                </div>
-                                {variantImgSrc && (
-                                  <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-44 w-44 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white p-2 shadow-2xl shadow-gray-400/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                                    <Image src={variantImgSrc} alt={variantLabel || p.name} width={176} height={176} className="h-full w-full object-contain" />
-                                  </div>
-                                )}
-                              </div>
-                              {swatchColors.length > 0 ? <ColourDot colors={swatchColors} /> : <span className="w-4 shrink-0" />}
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm text-gray-700">{variantLabel || p.name}</p>
-                                <p className="text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                {renderStepper(p)}
-                                <span className={`text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+        {filtered.map((p) => {
+          const imgSrc = getImageSrc(p.imageUrl);
+          const variantLabel = p.variant ?? "";
+          const swatchColors = getSwatchColors(variantLabel);
+          const ordered = (qty[p.id] ?? 0) > 0;
+          return (
+            <div key={p.id} className={`rounded-2xl border bg-white shadow-sm transition-colors ${ordered ? "border-orange-400 shadow-orange-100" : "border-gray-200"} ${bumped[p.id] ? "card-lift" : ""}`}>
+              <div className="flex items-center gap-4 p-4">
+                <div className="relative shrink-0 group cursor-zoom-in">
+                  <div className="w-24 h-24 overflow-hidden rounded-xl bg-gray-50">
+                    {imgSrc
+                      ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
+                      : <div className="h-full w-full" />}
+                  </div>
+                  {imgSrc && (
+                    <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white p-2 shadow-2xl shadow-gray-400/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      <Image src={imgSrc} alt={p.name} width={208} height={208} className="h-full w-full object-contain" />
                     </div>
-                  );
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
+                    <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
+                  </div>
+                  {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
+                  {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
+                  <p className="mt-1 text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {renderStepper(p)}
+                  <span className={`text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
+                </div>
+              </div>
+            </div>
+          );
         })}
       </div>
     );
