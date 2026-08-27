@@ -615,9 +615,6 @@ export default function ProductsClient({ products, activeType }: Props) {
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-gray-900 leading-tight">{p.name}</p>
-                            {p.groupWithVariants && (
-                              <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-600">grouped</span>
-                            )}
                           </div>
                           {p.variant && (
                             <p className="text-sm text-gray-500 mt-0.5">{p.variant}</p>
@@ -819,9 +816,6 @@ export default function ProductsClient({ products, activeType }: Props) {
                           )}
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-gray-900">{p.name}</span>
-                            {p.groupWithVariants && (
-                              <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-600">grouped</span>
-                            )}
                           </div>
                         </div>
                       </td>
