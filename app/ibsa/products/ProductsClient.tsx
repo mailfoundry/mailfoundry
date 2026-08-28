@@ -456,6 +456,17 @@ export default function ProductsClient({ products, activeType }: Props) {
           <span className="text-xs text-gray-400 animate-pulse">Saving order…</span>
         )}
         <button
+          onClick={() => {
+            const base = localOrder.length > 0 ? localOrder : products.map((p) => p.id);
+            const visible = base.filter((id) => products.find((p) => p.id === id)?.visibleInOrderForm);
+            const hidden  = base.filter((id) => !products.find((p) => p.id === id)?.visibleInOrderForm);
+            applyNewOrder([...visible, ...hidden]);
+          }}
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
+        >
+          Hidden to bottom
+        </button>
+        <button
           onClick={enterStockTake}
           className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
         >
