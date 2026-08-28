@@ -29,7 +29,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   gloves:      "Gloves",
   hivis:       "Hi Vis",
   brushes_handles: "Brushes & Handles",
-  mops:        "Mops",
+  mops_buckets: "Mops & Buckets",
 };
 
 // Categories that roll up into a parent for filter display

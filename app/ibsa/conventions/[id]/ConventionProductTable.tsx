@@ -7,7 +7,7 @@ import { downloadXeroExport } from "./xeroExport";
 
 const CATEGORY_LABELS: Record<string, string> = {
   safety_ppe: "Safety & PPE",
-  mops:       "Mops",
+  mops_buckets: "Mops & Buckets",
   janitorial: "Janitorial",
   gloves:     "Gloves",
   hivis:      "Hi Vis",

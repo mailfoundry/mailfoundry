@@ -18,7 +18,7 @@ const daysFromNow = (iso: string) => {
 
 const categoryLabel: Record<string, string> = {
   safety_ppe: "Safety & PPE",
-  mops:       "Mops",
+  mops_buckets: "Mops & Buckets",
   janitorial: "Janitorial",
   chemicals:  "Cleaning Chemicals",
   gloves:     "Gloves",
