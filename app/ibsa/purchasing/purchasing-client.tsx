@@ -23,8 +23,7 @@ const categoryLabel: Record<string, string> = {
   chemicals:  "Cleaning Chemicals",
   gloves:     "Gloves",
   hivis:      "Hi Vis",
-  brushes:    "Brushes",
-  handles:    "Handles",
+  brushes_handles: "Brushes & Handles",
   firstaid:   "First Aid",
   special:    "Special Order",
 };

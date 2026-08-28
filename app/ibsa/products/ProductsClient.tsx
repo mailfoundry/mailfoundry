@@ -56,8 +56,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   chemicals:  "Cleaning Chemicals",
   gloves:     "Gloves",
   hivis:      "Hi Vis",
-  brushes:    "Brushes",
-  handles:    "Handles",
+  brushes_handles: "Brushes & Handles",
   special:    "Special Order",
   firstaid:   "First Aid",
 };
@@ -69,8 +68,7 @@ const CATEGORIES = [
   { value: "chemicals",  label: "Cleaning Chemicals" },
   { value: "gloves",     label: "Gloves" },
   { value: "hivis",      label: "Hi Vis" },
-  { value: "brushes",    label: "Brushes" },
-  { value: "handles",    label: "Handles" },
+  { value: "brushes_handles", label: "Brushes & Handles" },
   { value: "special",    label: "Special Order" },
   { value: "firstaid",   label: "First Aid" },
 ];

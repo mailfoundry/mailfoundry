@@ -28,19 +28,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   firstaid:    "First Aid",
   gloves:      "Gloves",
   hivis:       "Hi Vis",
-  brushes:     "Brushes",
-  handles:     "Handles",
+  brushes_handles: "Brushes & Handles",
   mops:        "Mops",
 };
 
-// Categories that roll up into a parent for tab + section display
-const CATEGORY_PARENT: Record<string, string> = {
-  handles: "brushes",
-};
-// Label to use for the merged group tab/section heading
-const CATEGORY_GROUP_LABEL: Record<string, string> = {
-  brushes: "Brushes & Handles",
-};
+// Categories that roll up into a parent for filter display
+const CATEGORY_PARENT: Record<string, string> = {};
 
 // ── Product carousel ───────────────────────────────────────────────────────────
 const DEFAULT_CAROUSEL_IMAGES = [
@@ -538,7 +531,7 @@ export default function OrderFormClient({
                         return (
                           <button key={cat} type="button" onClick={() => setCategoryFilter(cat)}
                             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${categoryFilter === cat ? "bg-orange-500 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
-                            {CATEGORY_GROUP_LABEL[cat] ?? CATEGORY_LABELS[cat] ?? cat}
+                            {CATEGORY_LABELS[cat] ?? cat}
                             {catCount > 0 && (
                               <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryFilter === cat ? "bg-white text-orange-500" : "bg-gray-200 text-gray-600"}`}>{catCount}</span>
                             )}
