@@ -228,13 +228,39 @@ export default function ProductsClient({ products, activeType }: Props) {
     setDraft((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] ?? current) + delta) }));
 
   // ── Drag-and-drop handlers ──────────────────────────────────────────────
-  function applyNewOrder(newIds: string[]) {
+  // movedId: when set, only that product gets a new sortOrder (interpolated between
+  // its new neighbours) so products outside the current filter view are undisturbed.
+  // Omit movedId for bulk operations (e.g. "Hidden to bottom") that intentionally
+  // renumber everything in the visible set.
+  function applyNewOrder(newIds: string[], movedId?: string) {
     setLocalOrder(newIds);
     setDragSrcId(null);
     setDragSrcCat(null);
     setDragOverId(null);
     setDragOverCat(null);
-    const updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
+
+    let updates: { id: string; sortOrder: number }[];
+
+    if (movedId) {
+      // Single-drag: interpolate between neighbours so out-of-view products stay put
+      const idx = newIds.indexOf(movedId);
+      const prevId = idx > 0 ? newIds[idx - 1] : null;
+      const nextId = idx < newIds.length - 1 ? newIds[idx + 1] : null;
+      const getSO = (id: string) => products.find((p) => p.id === id)?.sortOrder ?? 0;
+      const prevSO = prevId ? getSO(prevId) : 0;
+      const nextSO = nextId ? getSO(nextId) : getSO(newIds[newIds.length - 1]) + 20;
+      const mid = Math.round((prevSO + nextSO) / 2);
+      if (mid !== prevSO && mid !== nextSO) {
+        updates = [{ id: movedId, sortOrder: mid }];
+      } else {
+        // No gap — fall back to full renumber of the visible set
+        updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
+      }
+    } else {
+      // Bulk operation — renumber everything in view
+      updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
+    }
+
     startSavingOrder(async () => { await updateProductSortOrder(updates); });
   }
 
@@ -247,7 +273,7 @@ export default function ProductsClient({ products, activeType }: Props) {
     const without = base.filter((id) => id !== dragSrcId);
     const targetIdx = without.indexOf(targetProductId);
     const newIds = [...without.slice(0, targetIdx), dragSrcId, ...without.slice(targetIdx)];
-    applyNewOrder(newIds);
+    applyNewOrder(newIds, dragSrcId);
   }
 
   function handleCategoryDrop(targetCat: string) {
@@ -266,7 +292,7 @@ export default function ProductsClient({ products, activeType }: Props) {
       const without = base.filter((id) => id !== dragSrcId);
       const targetIdx = without.indexOf(firstInCat);
       const newIds = [...without.slice(0, targetIdx), dragSrcId, ...without.slice(targetIdx)];
-      applyNewOrder(newIds);
+      applyNewOrder(newIds, dragSrcId);
     } else if (dragSrcCat && dragSrcCat !== targetCat) {
       // Category section dragged onto another category
       const srcIds = base.filter((id) => products.find((p) => p.id === id)?.category === dragSrcCat);
