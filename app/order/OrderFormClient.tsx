@@ -18,6 +18,7 @@ type Product = {
   imageUrl: string | null;
   groupImageUrl: string | null;
   groupWithVariants: boolean;
+  venueType: string;
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -186,11 +187,18 @@ export default function OrderFormClient({
   const paymentMethod = "po";
   const [emailTouched, setEmailTouched]       = useState(false);
 
-  const csLines = csProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
-  const faLines = faProducts.filter((p) => (qty[p.id] ?? 0) > 0).length;
+  // Filter products by venue type based on the selected group type.
+  // "circuit" groups see "all" + "circuit" products.
+  // "regional" groups see "all" + "large" products.
+  const venueMatch = groupType === "circuit" ? ["all", "circuit"] : ["all", "large"];
+  const visibleCs = csProducts.filter((p) => venueMatch.includes(p.venueType ?? "all"));
+  const visibleFa = faProducts.filter((p) => venueMatch.includes(p.venueType ?? "all"));
+
+  const csLines = visibleCs.filter((p) => (qty[p.id] ?? 0) > 0).length;
+  const faLines = visibleFa.filter((p) => (qty[p.id] ?? 0) > 0).length;
   const totalLines = csLines + faLines;
-  const csValue = csProducts.reduce((s, p) => s + (qty[p.id] ?? 0) * p.unitCost, 0);
-  const faValue = faProducts.reduce((s, p) => s + (qty[p.id] ?? 0) * p.unitCost, 0);
+  const csValue = visibleCs.reduce((s, p) => s + (qty[p.id] ?? 0) * p.unitCost, 0);
+  const faValue = visibleFa.reduce((s, p) => s + (qty[p.id] ?? 0) * p.unitCost, 0);
   const grandValue = csValue + faValue;
   const fmtGbp = (n: number) => "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -200,8 +208,8 @@ export default function OrderFormClient({
     products
       .filter((p) => (qty[p.id] ?? 0) > 0)
       .map((p) => ({ ...p, qtyOrdered: qty[p.id] ?? 0, lineTotal: (qty[p.id] ?? 0) * p.unitCost }));
-  const csOrderItems = mkOrderItems(csProducts);
-  const faOrderItems = mkOrderItems(faProducts);
+  const csOrderItems = mkOrderItems(visibleCs);
+  const faOrderItems = mkOrderItems(visibleFa);
   const groupByCat = (items: OrderItem[]) =>
     items.reduce<Record<string, OrderItem[]>>((acc, item) => {
       (acc[item.category] ??= []).push(item);
@@ -516,7 +524,7 @@ export default function OrderFormClient({
 
               {/* Category filter tabs */}
               {(() => {
-                const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+                const activeProducts = activeTab === "CS" ? visibleCs : visibleFa;
                 const cats = [...new Set(activeProducts.map(p => CATEGORY_PARENT[p.category] ?? p.category))];
                 if (cats.length <= 1) return null;
                 return (
@@ -550,7 +558,7 @@ export default function OrderFormClient({
               {(() => {
                 let imgs: CarouselImage[] = [];
                 if (categoryFilter !== "all") {
-                  const activeProducts = activeTab === "CS" ? csProducts : faProducts;
+                  const activeProducts = activeTab === "CS" ? visibleCs : visibleFa;
                   const filtered = activeProducts.filter((p) => p.category === categoryFilter);
                   const seen = new Set<string>();
                   for (const p of filtered) {
@@ -573,7 +581,7 @@ export default function OrderFormClient({
               </div>
 
               {/* Products */}
-              {renderProducts(activeTab === "CS" ? csProducts : faProducts)}
+              {renderProducts(activeTab === "CS" ? visibleCs : visibleFa)}
             </div>
 
             {/* ── Right: sticky basket ── */}
