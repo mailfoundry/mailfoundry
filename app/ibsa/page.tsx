@@ -85,7 +85,7 @@ export default async function IbsaPage({ searchParams }: Props) {
     },
    }),
    prisma.ibsaGroupOrder.findMany({
-    where: { groupType: eventType },
+    where: { groupType: eventType, status: { notIn: ["complete", "cancelled"] } },
     orderBy: { submittedAt: "desc" },
     include: { lines: { include: { product: true } } },
    }),
