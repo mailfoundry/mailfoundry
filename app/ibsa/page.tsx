@@ -85,7 +85,7 @@ export default async function IbsaPage({ searchParams }: Props) {
     },
    }),
    prisma.ibsaGroupOrder.findMany({
-    where: { groupType: eventType, status: { notIn: ["complete", "cancelled"] } },
+    where: { groupType: eventType },
     orderBy: { submittedAt: "desc" },
     include: { lines: { include: { product: true } } },
    }),
@@ -192,18 +192,22 @@ export default async function IbsaPage({ searchParams }: Props) {
     0
   );
 
-  // Incoming group orders
-  const orderCsValue = incomingOrders.reduce(
+  // Split group orders into active and completed/cancelled
+  const activeOrders = incomingOrders.filter((o) => o.status !== "complete" && o.status !== "cancelled");
+  const completedOrders = incomingOrders.filter((o) => o.status === "complete" || o.status === "cancelled");
+
+  // Incoming group orders (active only for revenue/profit totals)
+  const orderCsValue = activeOrders.reduce(
     (sum, o) =>
       sum + o.lines.filter((l) => l.dept === "CS").reduce((s, l) => s + l.qty * l.product.unitCost, 0),
     0
   );
-  const orderFaValue = incomingOrders.reduce(
+  const orderFaValue = activeOrders.reduce(
     (sum, o) =>
       sum + o.lines.filter((l) => l.dept === "FA").reduce((s, l) => s + l.qty * l.product.unitCost, 0),
     0
   );
-  const orderProfit = incomingOrders.reduce(
+  const orderProfit = activeOrders.reduce(
     (sum, o) =>
       sum +
       o.lines.reduce(
@@ -462,9 +466,10 @@ export default async function IbsaPage({ searchParams }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {incomingOrders.map((o, i) => {
+                {[...activeOrders, ...completedOrders].map((o, i) => {
                   const csCount = o.lines.filter((l) => l.dept === "CS").length;
                   const faCount = o.lines.filter((l) => l.dept === "FA").length;
+                  const isCompleted = o.status === "complete" || o.status === "cancelled";
                   const STATUS_STYLES: Record<string, string> = {
                     submitted:  "bg-blue-100 text-blue-700",
                     processing: "bg-amber-100 text-amber-700",
@@ -472,7 +477,7 @@ export default async function IbsaPage({ searchParams }: Props) {
                     cancelled:  "bg-gray-100 text-gray-500",
                   };
                   return (
-                    <tr key={o.id} className={`${i > 0 ? "border-t border-gray-100" : ""} hover:bg-gray-50 transition-colors`}>
+                    <tr key={o.id} className={`${i > 0 ? "border-t border-gray-100" : ""} ${isCompleted ? "opacity-40" : "hover:bg-gray-50"} transition-colors`}>
                       <td className="px-4 py-3">
                         <Link href={`/ibsa/orders/${o.id}`} className="block font-semibold text-gray-900 hover:text-orange-500 transition-colors">
                           {o.groupName}
