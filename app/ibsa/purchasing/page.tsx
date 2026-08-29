@@ -86,6 +86,7 @@ export default async function PurchasingPage() {
   ]);
 
   const productIds = [...new Set(orderItems.map(i => i.product.id))];
+  const groupProductIds = [...new Set(groupOrders.flatMap(o => o.lines.map(l => l.product.id)))];
 
   // Fetch BOM lines first so we know the component IDs
   const bomLinesRaw = productIds.length > 0
@@ -111,9 +112,9 @@ export default async function PurchasingPage() {
       })
     : [];
 
-  // Fetch RS supplier links for direct order items AND BOM components
+  // Fetch RS supplier links for direct order items, group order items, AND BOM components
   const componentIds = bomLinesRaw.map(l => l.componentId);
-  const allProductIdsForRs = [...new Set([...productIds, ...componentIds])];
+  const allProductIdsForRs = [...new Set([...productIds, ...groupProductIds, ...componentIds])];
   const rsProducts = allProductIdsForRs.length > 0
     ? await prisma.rsProduct.findMany({
         where: { ibsaProductId: { in: allProductIdsForRs } },
