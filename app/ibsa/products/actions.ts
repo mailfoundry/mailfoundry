@@ -231,7 +231,7 @@ export async function duplicateProduct(id: string) {
     data: {
       name:              source.name + " (Copy)",
       variant:           source.variant,
-      code:              source.code,
+      code:              source.code + "-COPY",
       category:          source.category,
       type:              source.type,
       unitCost:          source.unitCost,
