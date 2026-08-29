@@ -136,9 +136,6 @@ export default function ProductsClient({ products, activeType }: Props) {
   // localOrder holds product IDs in the current drag-reordered sequence.
   // Empty = use server order (products array as-is).
   const [localOrder, setLocalOrder] = useState<string[]>([]);
-  // localSortOrders patches the server-loaded sortOrder values after each drag
-  // so that consecutive drags in the same session interpolate correctly.
-  const [localSortOrders, setLocalSortOrders] = useState<Record<string, number>>({});
   const [dragSrcId, setDragSrcId] = useState<string | null>(null);   // product ID being dragged
   const [dragSrcCat, setDragSrcCat] = useState<string | null>(null); // category being dragged
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -231,46 +228,18 @@ export default function ProductsClient({ products, activeType }: Props) {
     setDraft((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] ?? current) + delta) }));
 
   // ── Drag-and-drop handlers ──────────────────────────────────────────────
-  // movedId: when set, only that product gets a new sortOrder (interpolated between
-  // its new neighbours) so products outside the current filter view are undisturbed.
-  // Omit movedId for bulk operations (e.g. "Hidden to bottom") that intentionally
-  // renumber everything in the visible set.
-  function applyNewOrder(newIds: string[], movedId?: string) {
+  // newIds must always be the complete same-type product sequence (as loaded by
+  // page.tsx). Full renumber keeps category blocks contiguous and avoids any
+  // midpoint-interpolation complexity. Cross-type contamination is not possible
+  // because page.tsx fetches only one type at a time and the order forms sort
+  // each type independently.
+  function applyNewOrder(newIds: string[]) {
     setLocalOrder(newIds);
     setDragSrcId(null);
     setDragSrcCat(null);
     setDragOverId(null);
     setDragOverCat(null);
-
-    let updates: { id: string; sortOrder: number }[];
-
-    if (movedId) {
-      // Single-drag: interpolate between neighbours so out-of-view products stay put.
-      // Use localSortOrders first (updated after each drag) so consecutive drags in
-      // the same session don't use stale server-load values.
-      const idx = newIds.indexOf(movedId);
-      const prevId = idx > 0 ? newIds[idx - 1] : null;
-      const nextId = idx < newIds.length - 1 ? newIds[idx + 1] : null;
-      const getSO = (id: string) =>
-        localSortOrders[id] ?? products.find((p) => p.id === id)?.sortOrder ?? 0;
-      const prevSO = prevId ? getSO(prevId) : 0;
-      const lastSO = getSO(newIds[newIds.length - 1]);
-      const nextSO = nextId ? getSO(nextId) : lastSO + 20;
-      const mid = Math.round((prevSO + nextSO) / 2);
-      if (mid !== prevSO && mid !== nextSO) {
-        updates = [{ id: movedId, sortOrder: mid }];
-        setLocalSortOrders((prev) => ({ ...prev, [movedId]: mid }));
-      } else {
-        // No gap — fall back to full renumber of the visible set
-        updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
-        setLocalSortOrders({});
-      }
-    } else {
-      // Bulk operation — renumber everything in view, reset local patches
-      updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
-      setLocalSortOrders({});
-    }
-
+    const updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
     startSavingOrder(async () => { await updateProductSortOrder(updates); });
   }
 
@@ -279,17 +248,32 @@ export default function ProductsClient({ products, activeType }: Props) {
       setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null);
       return;
     }
+    // Reject cross-category drops — products may only be reordered within their
+    // own category block. Cross-category moves require an explicit recategorisation.
+    const srcProduct = products.find((p) => p.id === dragSrcId);
+    const tgtProduct = products.find((p) => p.id === targetProductId);
+    if (!srcProduct || !tgtProduct || srcProduct.category !== tgtProduct.category) {
+      setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null);
+      return;
+    }
+    // Build from the complete same-type sequence and move the product within it
     const base = localOrder.length > 0 ? localOrder : products.map((p) => p.id);
     const without = base.filter((id) => id !== dragSrcId);
     const targetIdx = without.indexOf(targetProductId);
     const newIds = [...without.slice(0, targetIdx), dragSrcId, ...without.slice(targetIdx)];
-    applyNewOrder(newIds, dragSrcId);
+    applyNewOrder(newIds);
   }
 
   function handleCategoryDrop(targetCat: string) {
     const base = localOrder.length > 0 ? localOrder : products.map((p) => p.id);
     if (dragSrcId) {
-      // Product dropped onto category header → move to start of that category
+      // Product dragged onto a category header — reject if different category
+      const srcProduct = products.find((p) => p.id === dragSrcId);
+      if (!srcProduct || srcProduct.category !== targetCat) {
+        setDragSrcId(null); setDragSrcCat(null); setDragOverId(null); setDragOverCat(null);
+        return;
+      }
+      // Same category: move to top of that category block
       const catIds = base.filter((id) => {
         const p = products.find((pr) => pr.id === id);
         return p?.category === targetCat && id !== dragSrcId;
@@ -302,7 +286,7 @@ export default function ProductsClient({ products, activeType }: Props) {
       const without = base.filter((id) => id !== dragSrcId);
       const targetIdx = without.indexOf(firstInCat);
       const newIds = [...without.slice(0, targetIdx), dragSrcId, ...without.slice(targetIdx)];
-      applyNewOrder(newIds, dragSrcId);
+      applyNewOrder(newIds);
     } else if (dragSrcCat && dragSrcCat !== targetCat) {
       // Category section dragged onto another category
       const srcIds = base.filter((id) => products.find((p) => p.id === id)?.category === dragSrcCat);
