@@ -137,6 +137,12 @@ export default function ProductsClient({ products, activeType }: Props) {
   // localOrder holds product IDs in the current drag-reordered sequence.
   // Empty = use server order (products array as-is).
   const [localOrder, setLocalOrder] = useState<string[]>([]);
+
+  // Reset localOrder whenever products changes (e.g. after create/duplicate/delete).
+  // Prevents stale IDs from causing P2025 on the next drag.
+  useEffect(() => {
+    setLocalOrder([]);
+  }, [products]);
   const [dragSrcId, setDragSrcId] = useState<string | null>(null);   // product ID being dragged
   const [dragSrcCat, setDragSrcCat] = useState<string | null>(null); // category being dragged
   const [dragOverId, setDragOverId] = useState<string | null>(null);
