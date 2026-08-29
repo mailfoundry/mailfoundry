@@ -219,6 +219,55 @@ export async function bulkUpdateInStock(
   revalidatePath("/ibsa/products");
 }
 
+export async function duplicateProduct(id: string) {
+  const source = await prisma.ibsaProduct.findUnique({
+    where: { id },
+    include: { rsProducts: true },
+  });
+  if (!source) return;
+
+  const copy = await prisma.ibsaProduct.create({
+    data: {
+      name:              source.name + " (Copy)",
+      variant:           source.variant,
+      code:              source.code,
+      category:          source.category,
+      type:              source.type,
+      unitCost:          source.unitCost,
+      xyloCost:          source.xyloCost,
+      description:       source.description,
+      groupDescription:  source.groupDescription,
+      imageUrl:          source.imageUrl,
+      groupImageUrl:     source.groupImageUrl,
+      groupWithVariants: source.groupWithVariants,
+      venueType:         source.venueType,
+      visibleInOrderForm: source.visibleInOrderForm,
+      sortOrder:         source.sortOrder + 5,
+      inStock:           0,
+      git:               0,
+    },
+  });
+
+  // Copy RS product links
+  if (source.rsProducts.length > 0) {
+    await prisma.rsProduct.createMany({
+      data: source.rsProducts.map((rp) => ({
+        ibsaProductId: copy.id,
+        supplier:      rp.supplier,
+        rsCode:        rp.rsCode,
+        rsVariant:     rp.rsVariant,
+        rsDescription: rp.rsDescription,
+        cartonSize:    rp.cartonSize,
+        cartonPrice:   rp.cartonPrice,
+      })),
+    });
+  }
+
+  revalidatePath("/ibsa/products");
+  revalidatePath("/ibsa/purchasing");
+  return copy.id;
+}
+
 export async function updateProductSortOrder(
   updates: { id: string; sortOrder: number }[]
 ) {

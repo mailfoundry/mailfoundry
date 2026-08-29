@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, updateRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility, updateProductSortOrder } from "./actions";
+import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, updateRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, uploadProductImage, deleteProduct, toggleProductVisibility, updateProductSortOrder, duplicateProduct } from "./actions";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -112,6 +112,7 @@ export default function ProductsClient({ products, activeType }: Props) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isDeletingProduct, startDeletingProduct] = useTransition();
+  const [isDuplicating, startDuplicating] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
 
   // Add supplier link form state
@@ -336,6 +337,10 @@ export default function ProductsClient({ products, activeType }: Props) {
     setLinkDraft({ supplier: "", rsCode: "", rsVariant: "", rsDescription: "", cartonSize: "", cartonPrice: "" });
     setShowAddBom(false);
     setBomDraft({ componentId: "", qty: "1" });
+  }
+
+  function handleDuplicate(id: string) {
+    startDuplicating(async () => { await duplicateProduct(id); });
   }
 
   function submitAddLink() {
@@ -660,15 +665,28 @@ export default function ProductsClient({ products, activeType }: Props) {
                           </span>
                         )
                       ) : (
-                        <button
-                          onClick={() => openEdit(p)}
-                          title="Edit product"
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900"
-                        >
-                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                          </svg>
-                        </button>
+                        <div className="flex shrink-0 items-center gap-1">
+                          <button
+                            onClick={() => handleDuplicate(p.id)}
+                            title="Duplicate product"
+                            disabled={isDuplicating}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
+                          >
+                            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                              <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                              <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => openEdit(p)}
+                            title="Edit product"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900"
+                          >
+                            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                          </button>
+                        </div>
                       )}
                     </div>
 
@@ -945,6 +963,17 @@ export default function ProductsClient({ products, activeType }: Props) {
                                 )}
                               </button>
                             </form>
+                            <button
+                              onClick={() => handleDuplicate(p.id)}
+                              title="Duplicate product"
+                              disabled={isDuplicating}
+                              className="flex h-7 w-7 items-center justify-center rounded text-gray-300 hover:bg-gray-200 hover:text-gray-900 disabled:opacity-40"
+                            >
+                              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                                <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                              </svg>
+                            </button>
                             <button
                               onClick={() => openEdit(p)}
                               title="Edit product"
