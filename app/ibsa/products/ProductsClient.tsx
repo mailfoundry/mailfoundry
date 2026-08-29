@@ -136,6 +136,9 @@ export default function ProductsClient({ products, activeType }: Props) {
   // localOrder holds product IDs in the current drag-reordered sequence.
   // Empty = use server order (products array as-is).
   const [localOrder, setLocalOrder] = useState<string[]>([]);
+  // localSortOrders patches the server-loaded sortOrder values after each drag
+  // so that consecutive drags in the same session interpolate correctly.
+  const [localSortOrders, setLocalSortOrders] = useState<Record<string, number>>({});
   const [dragSrcId, setDragSrcId] = useState<string | null>(null);   // product ID being dragged
   const [dragSrcCat, setDragSrcCat] = useState<string | null>(null); // category being dragged
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -242,23 +245,30 @@ export default function ProductsClient({ products, activeType }: Props) {
     let updates: { id: string; sortOrder: number }[];
 
     if (movedId) {
-      // Single-drag: interpolate between neighbours so out-of-view products stay put
+      // Single-drag: interpolate between neighbours so out-of-view products stay put.
+      // Use localSortOrders first (updated after each drag) so consecutive drags in
+      // the same session don't use stale server-load values.
       const idx = newIds.indexOf(movedId);
       const prevId = idx > 0 ? newIds[idx - 1] : null;
       const nextId = idx < newIds.length - 1 ? newIds[idx + 1] : null;
-      const getSO = (id: string) => products.find((p) => p.id === id)?.sortOrder ?? 0;
+      const getSO = (id: string) =>
+        localSortOrders[id] ?? products.find((p) => p.id === id)?.sortOrder ?? 0;
       const prevSO = prevId ? getSO(prevId) : 0;
-      const nextSO = nextId ? getSO(nextId) : getSO(newIds[newIds.length - 1]) + 20;
+      const lastSO = getSO(newIds[newIds.length - 1]);
+      const nextSO = nextId ? getSO(nextId) : lastSO + 20;
       const mid = Math.round((prevSO + nextSO) / 2);
       if (mid !== prevSO && mid !== nextSO) {
         updates = [{ id: movedId, sortOrder: mid }];
+        setLocalSortOrders((prev) => ({ ...prev, [movedId]: mid }));
       } else {
         // No gap — fall back to full renumber of the visible set
         updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
+        setLocalSortOrders({});
       }
     } else {
-      // Bulk operation — renumber everything in view
+      // Bulk operation — renumber everything in view, reset local patches
       updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
+      setLocalSortOrders({});
     }
 
     startSavingOrder(async () => { await updateProductSortOrder(updates); });
