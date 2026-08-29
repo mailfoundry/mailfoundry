@@ -220,6 +220,7 @@ export async function bulkUpdateInStock(
 }
 
 export async function duplicateProduct(id: string) {
+  try {
   const source = await prisma.ibsaProduct.findUnique({
     where: { id },
     include: { rsProducts: true },
@@ -250,22 +251,30 @@ export async function duplicateProduct(id: string) {
 
   // Copy RS product links
   if (source.rsProducts.length > 0) {
-    await prisma.rsProduct.createMany({
-      data: source.rsProducts.map((rp) => ({
-        ibsaProductId: copy.id,
-        supplier:      rp.supplier,
-        rsCode:        rp.rsCode,
-        rsVariant:     rp.rsVariant,
-        rsDescription: rp.rsDescription,
-        cartonSize:    rp.cartonSize,
-        cartonPrice:   rp.cartonPrice,
-      })),
-    });
+    await prisma.$transaction(
+      source.rsProducts.map((rp) =>
+        prisma.rsProduct.create({
+          data: {
+            ibsaProductId: copy.id,
+            supplier:      rp.supplier,
+            rsCode:        rp.rsCode,
+            rsVariant:     rp.rsVariant,
+            rsDescription: rp.rsDescription,
+            cartonSize:    rp.cartonSize,
+            cartonPrice:   rp.cartonPrice,
+          },
+        })
+      )
+    );
   }
 
   revalidatePath("/ibsa/products");
   revalidatePath("/ibsa/purchasing");
   return copy.id;
+  } catch (err) {
+    console.error("duplicateProduct error:", err);
+    return null;
+  }
 }
 
 export async function updateProductSortOrder(
