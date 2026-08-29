@@ -13,12 +13,12 @@ export default async function OrderPage({ searchParams }: Props) {
     prisma.ibsaProduct.findMany({
       where: { type: "CS", visibleInOrderForm: true },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-      select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true },
+      select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true, sectionLabel: true },
     }),
     prisma.ibsaProduct.findMany({
       where: { type: "FA", visibleInOrderForm: true },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-      select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true },
+      select: { id: true, name: true, variant: true, code: true, category: true, unitCost: true, description: true, groupDescription: true, imageUrl: true, groupImageUrl: true, groupWithVariants: true, venueType: true, sectionLabel: true },
     }),
   ]);
 

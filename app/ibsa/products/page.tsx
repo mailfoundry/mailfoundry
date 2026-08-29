@@ -32,6 +32,7 @@ export default async function IbsaProductsPage({
       groupDescription: true,
       visibleInOrderForm: true,
       venueType: true,
+      sectionLabel: true,
       sortOrder: true,
       inStock: true,
       git: true,

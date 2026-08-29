@@ -42,6 +42,7 @@ export type ProductRow = {
   groupDescription: string | null;
   visibleInOrderForm: boolean;
   venueType: string;
+  sectionLabel: string | null;
   sortOrder: number;
   inStock: number;
   git: number;
@@ -87,6 +88,7 @@ type EditDraft = {
   groupDescription: string;
   groupWithVariants: boolean;
   venueType: string;
+  sectionLabel: string;
 };
 
 type Props = { products: ProductRow[]; activeType: "CS" | "FA" };
@@ -105,7 +107,7 @@ export default function ProductsClient({ products, activeType }: Props) {
   // Edit modal state
   const [editingProduct, setEditingProduct] = useState<ProductRow | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({
-    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false, venueType: "all",
+    name: "", variant: "", code: "", category: "", type: "", unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false, venueType: "all", sectionLabel: "",
   });
   const [supplierDrafts, setSupplierDrafts] = useState<Map<string, string>>(new Map());
   const [isSavingEdit, startSavingEdit] = useTransition();
@@ -312,7 +314,7 @@ export default function ProductsClient({ products, activeType }: Props) {
     setConfirmDelete(false);
     setIsCreating(true);
     setEditingProduct(null);
-    setEditDraft({ name: "", variant: "", code: "", category: CATEGORIES[0].value, type: activeType, unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false, venueType: "all" });
+    setEditDraft({ name: "", variant: "", code: "", category: CATEGORIES[0].value, type: activeType, unitCost: "", xyloCost: "", description: "", groupDescription: "", imageUrl: "", groupImageUrl: "", groupWithVariants: false, venueType: "all", sectionLabel: "" });
     setShowAddLink(false);
     setShowAddBom(false);
   }
@@ -335,6 +337,7 @@ export default function ProductsClient({ products, activeType }: Props) {
       groupImageUrl: p.groupImageUrl ?? "",
       groupWithVariants: p.groupWithVariants,
       venueType: p.venueType ?? "all",
+      sectionLabel: p.sectionLabel ?? "",
     });
     const m = new Map<string, string>();
     for (const rp of p.rsProducts) m.set(rp.id, rp.supplier);
@@ -411,6 +414,7 @@ export default function ProductsClient({ products, activeType }: Props) {
     fd.set("groupImageUrl",      editDraft.groupImageUrl);
     fd.set("groupWithVariants",  String(editDraft.groupWithVariants));
     fd.set("venueType",          editDraft.venueType);
+    fd.set("sectionLabel",       editDraft.sectionLabel);
 
     if (isCreating) {
       startSavingEdit(async () => {
@@ -1133,6 +1137,18 @@ export default function ProductsClient({ products, activeType }: Props) {
                   <option value="large">Regional Venues Only</option>
                 </select>
                 <p className="mt-1 text-xs text-gray-400">Controls which venue mode this product appears under in the order form.</p>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-500">Section Label <span className="font-normal text-gray-400">(optional)</span></label>
+                <input
+                  type="text"
+                  value={editDraft.sectionLabel}
+                  onChange={set("sectionLabel")}
+                  placeholder="e.g. Red Broom Set"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500"
+                />
+                <p className="mt-1 text-xs text-gray-400">Products sharing the same label appear inside a named section in the order form.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

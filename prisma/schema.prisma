@@ -148,6 +148,8 @@ model IbsaProduct {
   venueType           String   @default("all")
   /// Display order in admin table and convention order form — lower numbers appear first
   sortOrder           Int      @default(0)
+  /// Optional label to visually group this product with adjacent products in the order form
+  sectionLabel        String?
   inStock   Int      @default(0)
   git       Int      @default(0)
   createdAt DateTime @default(now())

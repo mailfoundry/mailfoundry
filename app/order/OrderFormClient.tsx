@@ -19,6 +19,7 @@ type Product = {
   groupImageUrl: string | null;
   groupWithVariants: boolean;
   venueType: string;
+  sectionLabel: string | null;
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -307,6 +308,44 @@ export default function OrderFormClient({
     );
   }
 
+  function renderProductCard(p: Product) {
+    const imgSrc = getImageSrc(p.imageUrl);
+    const variantLabel = p.variant ?? "";
+    const swatchColors = getSwatchColors(variantLabel);
+    const ordered = (qty[p.id] ?? 0) > 0;
+    return (
+      <div key={p.id} className={`rounded-2xl border bg-white shadow-sm transition-colors ${ordered ? "border-orange-400 shadow-orange-100" : "border-gray-200"} ${bumped[p.id] ? "card-lift" : ""}`}>
+        <div className="flex items-center gap-4 p-4">
+          <div className="relative shrink-0 group cursor-zoom-in">
+            <div className="w-24 h-24 overflow-hidden rounded-xl bg-gray-50">
+              {imgSrc
+                ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
+                : <div className="h-full w-full" />}
+            </div>
+            {imgSrc && (
+              <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white p-2 shadow-2xl shadow-gray-400/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <Image src={imgSrc} alt={p.name} width={208} height={208} className="h-full w-full object-contain" />
+              </div>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
+              <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
+            </div>
+            {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
+            {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
+            <p className="mt-1 text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
+          </div>
+          <div className="shrink-0 flex items-center gap-2">
+            {renderStepper(p)}
+            <span className={`text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   function renderProducts(products: Product[]) {
     const filtered = products
       .filter((p) => categoryFilter === "all" || (CATEGORY_PARENT[p.category] ?? p.category) === categoryFilter)
@@ -316,41 +355,40 @@ export default function OrderFormClient({
         return p.name.toLowerCase().includes(q) || (p.variant ?? "").toLowerCase().includes(q);
       });
 
+    // Group consecutive products with the same sectionLabel into sections
+    type Item = { type: "standalone"; product: Product } | { type: "section"; label: string; products: Product[] };
+    const items: Item[] = [];
+    let i = 0;
+    while (i < filtered.length) {
+      const p = filtered[i];
+      if (!p.sectionLabel) {
+        items.push({ type: "standalone", product: p });
+        i++;
+      } else {
+        const label = p.sectionLabel;
+        const group: Product[] = [];
+        while (i < filtered.length && filtered[i].sectionLabel === label) {
+          group.push(filtered[i]);
+          i++;
+        }
+        items.push({ type: "section", label, products: group });
+      }
+    }
+
     return (
       <div className="space-y-3">
-        {filtered.map((p) => {
-          const imgSrc = getImageSrc(p.imageUrl);
-          const variantLabel = p.variant ?? "";
-          const swatchColors = getSwatchColors(variantLabel);
-          const ordered = (qty[p.id] ?? 0) > 0;
+        {items.map((item, idx) => {
+          if (item.type === "standalone") {
+            return renderProductCard(item.product);
+          }
+          const sectionOrdered = item.products.some((p) => (qty[p.id] ?? 0) > 0);
           return (
-            <div key={p.id} className={`rounded-2xl border bg-white shadow-sm transition-colors ${ordered ? "border-orange-400 shadow-orange-100" : "border-gray-200"} ${bumped[p.id] ? "card-lift" : ""}`}>
-              <div className="flex items-center gap-4 p-4">
-                <div className="relative shrink-0 group cursor-zoom-in">
-                  <div className="w-24 h-24 overflow-hidden rounded-xl bg-gray-50">
-                    {imgSrc
-                      ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
-                      : <div className="h-full w-full" />}
-                  </div>
-                  {imgSrc && (
-                    <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 h-52 w-52 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white p-2 shadow-2xl shadow-gray-400/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                      <Image src={imgSrc} alt={p.name} width={208} height={208} className="h-full w-full object-contain" />
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-                    <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
-                  </div>
-                  {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
-                  {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
-                  <p className="mt-1 text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
-                </div>
-                <div className="shrink-0 flex items-center gap-2">
-                  {renderStepper(p)}
-                  <span className={`text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
-                </div>
+            <div key={`section-${idx}`} className={`rounded-2xl border-2 ${sectionOrdered ? "border-orange-300 bg-orange-50/40" : "border-gray-200 bg-gray-50/60"} overflow-hidden`}>
+              <div className={`px-4 py-2 border-b ${sectionOrdered ? "border-orange-200 bg-orange-50" : "border-gray-200 bg-gray-100/80"}`}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">{item.label}</p>
+              </div>
+              <div className="p-3 space-y-2">
+                {item.products.map((p) => renderProductCard(p))}
               </div>
             </div>
           );

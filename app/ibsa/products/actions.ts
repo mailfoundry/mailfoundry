@@ -34,11 +34,12 @@ export async function createProduct(formData: FormData) {
   const groupImageUrl = (formData.get("groupImageUrl") as string | null)?.trim() || null;
   const groupWithVariants = formData.get("groupWithVariants") === "true";
   const venueType = (formData.get("venueType") as string | null)?.trim() || "all";
+  const sectionLabel = (formData.get("sectionLabel") as string | null)?.trim() || null;
 
   if (!name || !code || !category || !type) return;
 
   await prisma.ibsaProduct.create({
-    data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants, venueType },
+    data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants, venueType, sectionLabel },
   });
 
   revalidatePath("/ibsa/products");
@@ -61,6 +62,7 @@ export async function updateProduct(formData: FormData) {
   const groupImageUrl = (formData.get("groupImageUrl") as string | null)?.trim() || null;
   const groupWithVariants = formData.get("groupWithVariants") === "true";
   const venueType = (formData.get("venueType") as string | null)?.trim() || "all";
+  const sectionLabel = (formData.get("sectionLabel") as string | null)?.trim() || null;
 
   // Supplier changes: [{id: rsProductId, supplier: newName}]
   const supplierChangesRaw = (formData.get("supplierChanges") as string | null) ?? "[]";
@@ -71,7 +73,7 @@ export async function updateProduct(formData: FormData) {
   await prisma.$transaction([
     prisma.ibsaProduct.update({
       where: { id },
-      data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants, venueType },
+      data: { name, variant, code, category, type, unitCost, xyloCost, description, groupDescription, imageUrl, groupImageUrl, groupWithVariants, venueType, sectionLabel },
     }),
     ...supplierChanges
       .filter((sc) => sc.supplier.trim())
@@ -242,6 +244,7 @@ export async function duplicateProduct(id: string) {
       groupImageUrl:     source.groupImageUrl,
       groupWithVariants: source.groupWithVariants,
       venueType:         source.venueType,
+      sectionLabel:      source.sectionLabel,
       visibleInOrderForm: source.visibleInOrderForm,
       sortOrder:         source.sortOrder + 5,
       inStock:           0,
