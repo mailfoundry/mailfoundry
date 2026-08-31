@@ -382,12 +382,14 @@ export default function OrderFormClient({
             return renderProductCard(item.product);
           }
           const sectionOrdered = item.products.some((p) => (qty[p.id] ?? 0) > 0);
+          const sectionDesc = item.products.find((p) => p.groupDescription)?.groupDescription ?? null;
           return (
-            <div key={`section-${idx}`} className={`rounded-2xl border-2 ${sectionOrdered ? "border-orange-300 bg-orange-50/40" : "border-gray-200 bg-gray-50/60"} overflow-hidden`}>
-              <div className={`px-4 py-2 border-b ${sectionOrdered ? "border-orange-200 bg-orange-50" : "border-gray-200 bg-gray-100/80"}`}>
+            <div key={`section-${idx}`} className={`rounded-2xl border-2 overflow-hidden ${sectionOrdered ? "border-orange-300" : "border-gray-300"}`}>
+              <div className={`px-4 py-3 border-b ${sectionOrdered ? "border-orange-200 bg-orange-50" : "border-gray-200 bg-gray-100"}`}>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">{item.label}</p>
+                {sectionDesc && <p className="mt-0.5 text-sm text-gray-600">{sectionDesc}</p>}
               </div>
-              <div className="p-3 space-y-2">
+              <div className="bg-white p-3 space-y-2">
                 {item.products.map((p) => renderProductCard(p))}
               </div>
             </div>
