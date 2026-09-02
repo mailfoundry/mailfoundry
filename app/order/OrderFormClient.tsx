@@ -300,15 +300,15 @@ export default function OrderFormClient({
     );
     return (
       <>
-        {/* Mobile: vertical stack — − / qty / + */}
+        {/* Mobile: vertical stack — + / qty / − */}
         <div className="flex sm:hidden flex-col items-center overflow-hidden rounded-xl border border-gray-300 w-10">
-          <button type="button" onClick={() => adjust(p.id, -1)} disabled={q === 0}
-            className="flex h-9 w-full items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-200 active:bg-gray-300 disabled:opacity-25"
-            aria-label="Decrease">−</button>
-          <div className="border-y border-gray-300 w-full flex items-center justify-center">{inputEl}</div>
           <button type="button" onClick={() => adjust(p.id, 1)}
             className="flex h-9 w-full items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600"
             aria-label="Increase">+</button>
+          <div className="border-y border-gray-300 w-full flex items-center justify-center">{inputEl}</div>
+          <button type="button" onClick={() => adjust(p.id, -1)} disabled={q === 0}
+            className="flex h-9 w-full items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-200 active:bg-gray-300 disabled:opacity-25"
+            aria-label="Decrease">−</button>
         </div>
         {/* Desktop: horizontal − / qty / + */}
         <div className="hidden sm:flex items-center overflow-hidden rounded-xl border border-gray-300">
