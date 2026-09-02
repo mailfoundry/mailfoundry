@@ -850,7 +850,7 @@ export default function ProductsClient({ products, activeType }: Props) {
                           ? "opacity-40"
                           : changed
                           ? "bg-amber-50"
-                          : "hover:bg-orange-50 cursor-pointer"
+                          : "hover:bg-orange-100 cursor-pointer"
                       }`}
                     >
                       <td className="pl-3 py-3">
