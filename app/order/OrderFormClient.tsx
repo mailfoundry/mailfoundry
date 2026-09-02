@@ -315,9 +315,9 @@ export default function OrderFormClient({
     const ordered = (qty[p.id] ?? 0) > 0;
     return (
       <div key={p.id} className={`rounded-2xl border bg-white shadow-sm transition-colors ${ordered ? "border-orange-400 shadow-orange-100" : "border-gray-200"} ${bumped[p.id] ? "card-lift" : ""}`}>
-        <div className="flex items-center gap-4 p-4">
+        <div className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
           <div className="relative shrink-0 group cursor-zoom-in">
-            <div className="w-24 h-24 overflow-hidden rounded-xl bg-gray-50">
+            <div className="w-16 h-16 sm:w-24 sm:h-24 overflow-hidden rounded-xl bg-gray-50">
               {imgSrc
                 ? <Image src={imgSrc} alt={p.name} width={96} height={96} className="h-full w-full object-contain" />
                 : <div className="h-full w-full" />}
@@ -329,17 +329,17 @@ export default function OrderFormClient({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {swatchColors.length > 0 && <ColourDot colors={swatchColors} />}
-              <p className="text-base font-bold leading-snug text-gray-900">{p.name}</p>
+              <p className="text-sm sm:text-base font-bold leading-snug text-gray-900">{p.name}</p>
             </div>
-            {variantLabel && <p className="mt-0.5 text-sm text-gray-500">{variantLabel}</p>}
-            {p.description && <p className="mt-0.5 text-xs italic text-gray-500">{p.description}</p>}
+            {variantLabel && <p className="mt-0.5 text-xs sm:text-sm text-gray-500">{variantLabel}</p>}
+            {p.description && <p className="mt-0.5 text-xs italic text-gray-500 hidden sm:block">{p.description}</p>}
             <p className="mt-1 text-xs text-gray-600">£{p.unitCost.toFixed(2)} each</p>
           </div>
-          <div className="shrink-0 flex items-center gap-2">
+          <div className="shrink-0 flex flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
             {renderStepper(p)}
-            <span className={`text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
+            <span className={`hidden sm:inline text-sm font-semibold text-green-600 w-16 text-right ${ordered ? "visible" : "invisible"}`}>= {fmtGbp((qty[p.id] ?? 0) * p.unitCost)}</span>
           </div>
         </div>
       </div>
