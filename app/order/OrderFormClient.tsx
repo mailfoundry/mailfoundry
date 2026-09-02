@@ -280,31 +280,47 @@ export default function OrderFormClient({
 
   function renderStepper(p: Product) {
     const q = qty[p.id] ?? 0;
+    const inputEl = (
+      <input
+        type="number"
+        min={0}
+        value={q === 0 ? "" : q}
+        placeholder="0"
+        onChange={(e) => {
+          const val = parseInt(e.target.value, 10);
+          const next = isNaN(val) ? 0 : Math.max(0, val);
+          setQty((prev) => ({ ...prev, [p.id]: next }));
+          if (next > (qty[p.id] ?? 0)) {
+            setBumped((prev) => ({ ...prev, [p.id]: true }));
+            setTimeout(() => setBumped((prev) => ({ ...prev, [p.id]: false })), 400);
+          }
+        }}
+        className="h-10 w-10 sm:w-14 border-gray-300 text-center text-base font-bold tabular-nums text-gray-900 placeholder:text-gray-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none bg-white sm:border-x"
+      />
+    );
     return (
-      <div className="flex items-center overflow-hidden rounded-xl border border-gray-300">
-        <button type="button" onClick={() => adjust(p.id, -1)} disabled={q === 0}
-          className="flex h-10 w-10 items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-200 active:bg-gray-300 disabled:opacity-25"
-          aria-label="Decrease">−</button>
-        <input
-          type="number"
-          min={0}
-          value={q === 0 ? "" : q}
-          placeholder="0"
-          onChange={(e) => {
-            const val = parseInt(e.target.value, 10);
-            const next = isNaN(val) ? 0 : Math.max(0, val);
-            setQty((prev) => ({ ...prev, [p.id]: next }));
-            if (next > (qty[p.id] ?? 0)) {
-              setBumped((prev) => ({ ...prev, [p.id]: true }));
-              setTimeout(() => setBumped((prev) => ({ ...prev, [p.id]: false })), 400);
-            }
-          }}
-          className="h-10 w-14 border-x border-gray-300 text-center text-base font-bold tabular-nums text-gray-900 placeholder:text-gray-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none bg-white"
-        />
-        <button type="button" onClick={() => adjust(p.id, 1)}
-          className="flex h-10 w-10 items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600"
-          aria-label="Increase">+</button>
-      </div>
+      <>
+        {/* Mobile: vertical stack — − / qty / + */}
+        <div className="flex sm:hidden flex-col items-center overflow-hidden rounded-xl border border-gray-300 w-10">
+          <button type="button" onClick={() => adjust(p.id, -1)} disabled={q === 0}
+            className="flex h-9 w-full items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-200 active:bg-gray-300 disabled:opacity-25"
+            aria-label="Decrease">−</button>
+          <div className="border-y border-gray-300 w-full flex items-center justify-center">{inputEl}</div>
+          <button type="button" onClick={() => adjust(p.id, 1)}
+            className="flex h-9 w-full items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600"
+            aria-label="Increase">+</button>
+        </div>
+        {/* Desktop: horizontal − / qty / + */}
+        <div className="hidden sm:flex items-center overflow-hidden rounded-xl border border-gray-300">
+          <button type="button" onClick={() => adjust(p.id, -1)} disabled={q === 0}
+            className="flex h-10 w-10 items-center justify-center text-xl font-light text-gray-600 bg-gray-100 transition-colors hover:bg-gray-200 active:bg-gray-300 disabled:opacity-25"
+            aria-label="Decrease">−</button>
+          {inputEl}
+          <button type="button" onClick={() => adjust(p.id, 1)}
+            className="flex h-10 w-10 items-center justify-center text-xl font-light text-white bg-orange-500 transition-colors hover:bg-orange-400 active:bg-orange-600"
+            aria-label="Increase">+</button>
+        </div>
+      </>
     );
   }
 
