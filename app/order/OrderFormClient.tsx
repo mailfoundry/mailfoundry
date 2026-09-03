@@ -522,7 +522,8 @@ export default function OrderFormClient({
                 <label className="mb-1 block text-xs text-gray-500">Required by date</label>
                 <input type="date" name="requiredByDate" value={requiredByDate} onChange={(e) => setRequiredByDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
-                  className="w-full h-10 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 [color-scheme:light]" />
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-orange-500 [color-scheme:light] [&::-webkit-date-and-time-value]:text-left"
+                  style={{ height: "42px", lineHeight: "42px" }} />
                 <p className="mt-1 text-xs text-gray-400">Please place orders at least two weeks before the required date.</p>
               </div>
               <div>
