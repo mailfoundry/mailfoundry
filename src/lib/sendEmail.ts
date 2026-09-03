@@ -10,8 +10,8 @@ export async function sendEmail({ from, to, subject, text, html }: SendEmailInpu
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY is not set");
 
-  const fromAddress =
-    from ?? process.env.EMAIL_FROM ?? "IBSA · Xylo Supplies <noreply@xylouk.co.uk>";
+  const fromAddress = from ?? process.env.EMAIL_FROM;
+  if (!fromAddress) throw new Error("No FROM address provided and EMAIL_FROM env var is not set");
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",

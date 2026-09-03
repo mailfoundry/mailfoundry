@@ -3,6 +3,8 @@ import { prisma } from "@/src/lib/prisma";
 import { sendEmail } from "@/src/lib/sendEmail";
 import { addEmailFooter } from "@/src/lib/emailFooter";
 
+export const maxDuration = 300; // 5 minutes (Vercel Pro max)
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -201,7 +203,25 @@ export async function POST(
 
     const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
 
-    for (const contact of contacts) {
+    // On a resend, skip contacts who already received this campaign successfully
+    const alreadySentEmails = confirmResend
+      ? new Set(
+          (
+            await prisma.campaignSend.findMany({
+              where: { campaignId: id, status: "sent" },
+              select: { email: true },
+            })
+          ).map((r) => r.email)
+        )
+      : new Set<string>();
+
+    const contactsToSend = contacts.filter(
+      (contact) => !alreadySentEmails.has(contact.email)
+    );
+
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (const contact of contactsToSend) {
       try {
         const baseHtmlContent =
           campaign.html && campaign.html.trim().length > 0
@@ -255,6 +275,9 @@ export async function POST(
           email: contact.email,
           status: "sent",
         });
+
+        // Stay under Resend's 10 req/sec rate limit
+        await sleep(110);
       } catch (error) {
         console.error(`Failed to send to ${contact.email}:`, error);
 
