@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Image from "next/image";
 import { submitGroupOrder } from "./actions";
 import { getImageSrc } from "../../src/lib/image-utils";
@@ -187,6 +187,11 @@ export default function OrderFormClient({
   const [notes, setNotes]                     = useState("");
   const paymentMethod = "po";
   const [emailTouched, setEmailTouched]       = useState(false);
+
+  // Scroll to top after the new tab's content has rendered.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeTab]);
 
   // Filter products by venue type based on the selected group type.
   // "circuit" groups see "all" + "circuit" products.
@@ -568,7 +573,7 @@ export default function OrderFormClient({
                 {(["CS", ...(hasFa ? ["FA"] : [])] as ("CS" | "FA")[]).map((tab) => {
                   const count = tab === "CS" ? csLines : faLines;
                   return (
-                    <button key={tab} type="button" onClick={() => { setActiveTab(tab); setCategoryFilter("all"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    <button key={tab} type="button" onClick={() => { setActiveTab(tab); setCategoryFilter("all"); }}
                       className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "border border-gray-300 text-gray-500 hover:bg-gray-100"}`}>
                       {tab === "CS" ? "Cleaning Supplies" : "First Aid"}
                       {count > 0 && (
@@ -655,7 +660,7 @@ export default function OrderFormClient({
                     const count = tab === "CS" ? csLines : faLines;
                     return (
                       <button key={tab} type="button"
-                        onClick={() => { setActiveTab(tab); setCategoryFilter("all"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                        onClick={() => { setActiveTab(tab); setCategoryFilter("all"); }}
                         className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-100"}`}>
                         {tab === "CS" ? "Cleaning" : "First Aid"}
                         {count > 0 && (
