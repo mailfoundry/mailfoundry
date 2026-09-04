@@ -1,3 +1,4 @@
--- L-3: Remove unused `git` field from IbsaProduct
--- Run this in the Neon SQL console, then mark the migration as applied.
-ALTER TABLE "IbsaProduct" DROP COLUMN IF EXISTS "git";
+-- NOTE: git field is Goods In Transit, actively used by POS — do NOT drop.
+-- This file intentionally left as a no-op to avoid accidental re-execution.
+-- The column was briefly removed and must be re-added if missing:
+-- ALTER TABLE "IbsaProduct" ADD COLUMN IF NOT EXISTS "git" INTEGER NOT NULL DEFAULT 0;
