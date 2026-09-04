@@ -65,6 +65,27 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // ── API route auth — return 401 JSON, never a redirect ──────────────────
+  if (
+    pathname.startsWith("/api/campaigns/") ||
+    pathname.startsWith("/api/contacts/") ||
+    pathname.startsWith("/api/lists")
+  ) {
+    const auth = request.cookies.get(cookieName);
+    if (!auth?.value) {
+      return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/api/ibsa/")) {
+    const auth = request.cookies.get("ibsa_auth");
+    if (!auth?.value) {
+      return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
+
   // Group account portal: accessible with group_auth cookie only
   if (pathname.startsWith("/account")) {
     const isGroupLoggedIn = request.cookies.get("group_auth")?.value;
