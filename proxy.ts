@@ -71,16 +71,14 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/api/contacts/") ||
     pathname.startsWith("/api/lists")
   ) {
-    const auth = request.cookies.get(cookieName);
-    if (!auth?.value) {
+    if (!isMainLoggedIn) {
       return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
     }
     return NextResponse.next();
   }
 
   if (pathname.startsWith("/api/ibsa/")) {
-    const auth = request.cookies.get("ibsa_auth");
-    if (!auth?.value) {
+    if (!isMainLoggedIn && !isIbsaLoggedIn) {
       return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
     }
     return NextResponse.next();
