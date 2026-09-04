@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 
+/** Validate that a SNS SubscribeURL is genuinely from AWS SNS. */
+function isValidSnsSubscribeUrl(raw: string): boolean {
+  try {
+    const url = new URL(raw);
+    // Must be HTTPS and hosted on sns.*.amazonaws.com
+    return (
+      url.protocol === "https:" &&
+      /^sns\.[a-z0-9-]+\.amazonaws\.com$/.test(url.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.text();
@@ -17,10 +31,12 @@ export async function POST(request: Request) {
     // Handle SNS subscription confirmation
     if (messageType === "SubscriptionConfirmation") {
       const subscribeUrl = sns["SubscribeURL"] as string;
-      if (subscribeUrl) {
-        await fetch(subscribeUrl);
-        console.log("SNS subscription confirmed:", subscribeUrl);
+      if (!subscribeUrl || !isValidSnsSubscribeUrl(subscribeUrl)) {
+        console.warn("[ses-webhook] Rejected SubscribeURL:", subscribeUrl);
+        return NextResponse.json({ error: "Invalid SubscribeURL" }, { status: 400 });
       }
+      await fetch(subscribeUrl);
+      console.log("[ses-webhook] SNS subscription confirmed:", subscribeUrl);
       return NextResponse.json({ message: "Subscription confirmed" });
     }
 
@@ -58,7 +74,7 @@ export async function POST(request: Request) {
               data: { bouncedAt: new Date() },
             });
 
-            console.log(`Marked contact as bounced: ${email}`);
+            console.log(`[ses-webhook] Marked contact as bounced: ${email}`);
           }
         }
       } else if (notificationType === "Complaint") {
@@ -76,7 +92,7 @@ export async function POST(request: Request) {
             data: { complainedAt: new Date() },
           });
 
-          console.log(`Marked contact as complained: ${email}`);
+          console.log(`[ses-webhook] Marked contact as complained: ${email}`);
         }
       }
 
@@ -85,7 +101,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Ignored" });
   } catch (error) {
-    console.error("SES webhook error:", error);
+    console.error("[ses-webhook] Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

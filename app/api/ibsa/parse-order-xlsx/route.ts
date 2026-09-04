@@ -8,6 +8,21 @@ export async function POST(req: NextRequest) {
   const file = form.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
+  // Validate MIME type — accept .xlsx and .xls only
+  const ALLOWED_TYPES = [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+  ];
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return NextResponse.json({ error: "File must be an Excel spreadsheet (.xlsx or .xls)" }, { status: 400 });
+  }
+
+  // Cap at 5 MB
+  const MAX_BYTES = 5 * 1024 * 1024;
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ error: "File is too large (max 5 MB)" }, { status: 400 });
+  }
+
   const buffer = Buffer.from(await file.arrayBuffer());
   const wb = XLSX.read(buffer, { type: "buffer" });
   const ws = wb.Sheets[wb.SheetNames[0]];

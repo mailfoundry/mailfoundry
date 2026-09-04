@@ -8,19 +8,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/account/login?error=invalid-token", request.url));
   }
 
-  const record = await prisma.groupAccountToken.findUnique({
-    where: { token },
+  // Atomic update — prevents double-use if the link is clicked twice concurrently
+  const now = new Date();
+  const updated = await prisma.groupAccountToken.updateMany({
+    where: { token, usedAt: null, expiresAt: { gt: now } },
+    data: { usedAt: now },
   });
 
-  if (!record || record.usedAt || record.expiresAt < new Date()) {
+  if (updated.count === 0) {
     return NextResponse.redirect(new URL("/account/login?error=invalid-token", request.url));
   }
 
-  // Mark token as used
-  await prisma.groupAccountToken.update({
-    where: { id: record.id },
-    data: { usedAt: new Date() },
-  });
+  // Fetch the record to get the groupAccountId (safe — we just won the atomic race above)
+  const record = await prisma.groupAccountToken.findUnique({ where: { token } });
+  if (!record) {
+    return NextResponse.redirect(new URL("/account/login?error=invalid-token", request.url));
+  }
 
   // Set session cookie and redirect to portal
   const response = NextResponse.redirect(new URL("/account", request.url));

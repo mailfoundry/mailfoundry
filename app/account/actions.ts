@@ -6,7 +6,16 @@ import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
 
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
+
+/** HTML-escape user-supplied strings before inserting into email templates. */
+const esc = (s: string | null | undefined) =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+const BASE_URL = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 export async function accountLogout() {
   const jar = await cookies();
@@ -156,12 +165,12 @@ export async function reorder(orderId: string, formData: FormData) {
     html: `${baseHtml}
         <h1 style="color:#0f172a;font-size:20px;margin:0 0 20px;">Re-order received</h1>
         <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:4px;border:1px solid #e2e8f0;">
-          <p style="color:#0f172a;font-size:16px;font-weight:bold;margin:0 0 10px;">${original.groupName}</p>
-          <p style="color:#64748b;font-size:13px;margin:0 0 3px;"><strong style="color:#1e293b;">Contact:</strong> ${original.contactName} · ${original.contactEmail}${contactMobile ? ` · ${contactMobile}` : ""}</p>
-          ${requiredBy ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Required by:</strong> ${requiredBy}</p>` : ""}
-          ${deliveryAddress ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Delivery:</strong> ${String(deliveryAddress).replace(/\n/g, ", ")}</p>` : ""}
-          ${paymentMethod ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Payment:</strong> ${paymentLabel[paymentMethod] ?? paymentMethod}</p>` : ""}
-          ${notes ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Notes:</strong> ${notes}</p>` : ""}
+          <p style="color:#0f172a;font-size:16px;font-weight:bold;margin:0 0 10px;">${esc(original.groupName)}</p>
+          <p style="color:#64748b;font-size:13px;margin:0 0 3px;"><strong style="color:#1e293b;">Contact:</strong> ${esc(original.contactName)} · ${esc(original.contactEmail)}${contactMobile ? ` · ${esc(contactMobile)}` : ""}</p>
+          ${requiredBy ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Required by:</strong> ${esc(requiredBy)}</p>` : ""}
+          ${deliveryAddress ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Delivery:</strong> ${esc(String(deliveryAddress).replace(/\n/g, ", "))}</p>` : ""}
+          ${paymentMethod ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Payment:</strong> ${esc(paymentLabel[paymentMethod] ?? paymentMethod)}</p>` : ""}
+          ${notes ? `<p style="color:#64748b;font-size:13px;margin:3px 0 0;"><strong style="color:#1e293b;">Notes:</strong> ${esc(notes)}</p>` : ""}
         </div>
         ${sectionHtml("Cleaning Supplies", csLines)}
         ${sectionHtml("First Aid", faLines)}
@@ -179,9 +188,9 @@ export async function reorder(orderId: string, formData: FormData) {
     text: `Hi ${original.contactName},\n\nThank you — we've received your re-order for ${original.groupName}. We'll be in touch to confirm delivery details.${requiredBy ? `\n\nRequired by: ${requiredBy}` : ""}${deliveryAddress ? `\nDelivery: ${deliveryAddress}` : ""}\n\nOrder total: ${fmtGbp(grandTotal)}\n\nQuestions? Email ${IBSA_NOTIFY_EMAIL}.\n\nIBSA · Xylo (UK) Ltd`,
     html: `${baseHtml}
         <h1 style="color:#0f172a;font-size:20px;margin:0 0 4px;">Re-order received ✓</h1>
-        <p style="color:#64748b;font-size:14px;margin:0 0 6px;">Hi ${original.contactName}, thank you — we've received your re-order for <strong style="color:#1e293b;">${original.groupName}</strong> and will be in touch to confirm delivery details.</p>
-        ${requiredBy ? `<p style="color:#94a3b8;font-size:12px;margin:0 0 4px;"><strong style="color:#64748b;">Required by:</strong> ${requiredBy}</p>` : ""}
-        ${deliveryAddress ? `<p style="color:#94a3b8;font-size:12px;margin:0 0 16px;"><strong style="color:#64748b;">Delivery:</strong> ${String(deliveryAddress).replace(/\n/g, ", ")}</p>` : `<p style="margin:0 0 16px;"></p>`}
+        <p style="color:#64748b;font-size:14px;margin:0 0 6px;">Hi ${esc(original.contactName)}, thank you — we've received your re-order for <strong style="color:#1e293b;">${esc(original.groupName)}</strong> and will be in touch to confirm delivery details.</p>
+        ${requiredBy ? `<p style="color:#94a3b8;font-size:12px;margin:0 0 4px;"><strong style="color:#64748b;">Required by:</strong> ${esc(requiredBy)}</p>` : ""}
+        ${deliveryAddress ? `<p style="color:#94a3b8;font-size:12px;margin:0 0 16px;"><strong style="color:#64748b;">Delivery:</strong> ${esc(String(deliveryAddress).replace(/\n/g, ", "))}</p>` : `<p style="margin:0 0 16px;"></p>`}
         ${sectionHtml("Cleaning Supplies", csLines)}
         ${sectionHtml("First Aid", faLines)}
         ${grandTotalHtml}

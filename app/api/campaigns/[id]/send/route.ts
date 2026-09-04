@@ -51,6 +51,17 @@ export async function POST(
       );
     }
 
+    // M-2: Prevent concurrent sends — only one send may run at a time
+    if (campaign.status === "sending") {
+      return NextResponse.json(
+        { error: "This campaign is already being sent. Please wait for the current send to complete." },
+        { status: 409 }
+      );
+    }
+
+    // Lock: mark as "sending" before any work begins
+    await prisma.campaign.update({ where: { id }, data: { status: "sending" } });
+
     if (!campaign.list) {
       return NextResponse.json(
         { error: "This campaign is not attached to a list." },
@@ -131,87 +142,25 @@ export async function POST(
 
     const results = [];
 
-    for (const contact of skippedUnsubscribedContacts) {
-      await prisma.campaignSend.create({
-        data: {
-          campaignId: id,
-          contactId: contact.id,
-          email: contact.email,
-          status: "skipped_unsubscribed",
-        },
-      });
+    // M-4: Batch-insert all skipped records in one query per status
+    const skippedGroups: Array<{ contacts: typeof skippedUnsubscribedContacts; status: string }> = [
+      { contacts: skippedUnsubscribedContacts, status: "skipped_unsubscribed" },
+      { contacts: skippedArchivedContacts,     status: "skipped_archived" },
+      { contacts: skippedBouncedContacts,      status: "skipped_bounced" },
+      { contacts: skippedComplainedContacts,   status: "skipped_complained" },
+      { contacts: skippedUnknownContacts,      status: "skipped_unknown" },
+    ];
 
-      results.push({
-        email: contact.email,
-        status: "skipped_unsubscribed",
+    for (const { contacts: grp, status } of skippedGroups) {
+      if (grp.length === 0) continue;
+      await prisma.campaignSend.createMany({
+        data: grp.map((c) => ({ campaignId: id, contactId: c.id, email: c.email, status })),
+        skipDuplicates: true,
       });
+      for (const c of grp) results.push({ email: c.email, status });
     }
 
-    for (const contact of skippedArchivedContacts) {
-      await prisma.campaignSend.create({
-        data: {
-          campaignId: id,
-          contactId: contact.id,
-          email: contact.email,
-          status: "skipped_archived",
-        },
-      });
-
-      results.push({
-        email: contact.email,
-        status: "skipped_archived",
-      });
-    }
-
-    for (const contact of skippedBouncedContacts) {
-      await prisma.campaignSend.create({
-        data: {
-          campaignId: id,
-          contactId: contact.id,
-          email: contact.email,
-          status: "skipped_bounced",
-        },
-      });
-
-      results.push({
-        email: contact.email,
-        status: "skipped_bounced",
-      });
-    }
-
-    for (const contact of skippedComplainedContacts) {
-      await prisma.campaignSend.create({
-        data: {
-          campaignId: id,
-          contactId: contact.id,
-          email: contact.email,
-          status: "skipped_complained",
-        },
-      });
-
-      results.push({
-        email: contact.email,
-        status: "skipped_complained",
-      });
-    }
-
-    for (const contact of skippedUnknownContacts) {
-      await prisma.campaignSend.create({
-        data: {
-          campaignId: id,
-          contactId: contact.id,
-          email: contact.email,
-          status: "skipped_unknown",
-        },
-      });
-
-      results.push({
-        email: contact.email,
-        status: "skipped_unknown",
-      });
-    }
-
-    const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+    const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
     // Always skip contacts who already received this campaign successfully
     const alreadySentEmails = new Set(
@@ -382,6 +331,15 @@ export async function POST(
     });
   } catch (error) {
     console.error("Send campaign failed:", error);
+
+    // Release the "sending" lock on unexpected failure so the user can retry
+    try {
+      const { id: eid } = await params;
+      await prisma.campaign.update({
+        where: { id: eid },
+        data: { status: "draft" },
+      });
+    } catch { /* best-effort */ }
 
     return NextResponse.json(
       { error: "Failed to send campaign." },

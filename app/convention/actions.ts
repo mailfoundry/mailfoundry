@@ -6,6 +6,15 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
 
+/** Guard: ensure the caller holds a valid convention_auth cookie for this conventionId. */
+async function requireConventionAuth(conventionId: string) {
+  const jar = await cookies();
+  if (jar.get("convention_auth")?.value !== conventionId) {
+    redirect(`/convention?error=unauthorised`);
+  }
+}
+
+
 /** Step 1: overseer enters their email — find their convention and send a magic link */
 export async function requestConventionLink(formData: FormData) {
   const email = (formData.get("email") as string).trim().toLowerCase();
@@ -25,7 +34,7 @@ export async function requestConventionLink(formData: FormData) {
     redirect("/convention?error=not-found");
   }
 
-  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   const expiresAt  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   // Send one email with a link per convention (usually just one)
@@ -82,11 +91,21 @@ export async function verifyConventionToken(formData: FormData) {
   const token = (formData.get("token") as string).trim();
   if (!token) redirect("/convention?error=invalid-token");
 
-  const record = await prisma.conventionOrderToken.findUnique({ where: { token } });
+  // Atomic update — prevents double-use if the link is opened twice concurrently
+  const now = new Date();
+  const updated = await prisma.conventionOrderToken.updateMany({
+    where: { token, usedAt: null, expiresAt: { gt: now } },
+    data: { usedAt: now },
+  });
 
-  if (!record || record.usedAt || record.expiresAt < new Date()) {
-    redirect("/convention?error=invalid-token");
-  }
+  if (updated.count === 0) redirect("/convention?error=invalid-token");
+
+  // Safe to fetch — we just won the atomic race above
+  const record = await prisma.conventionOrderToken.findUnique({
+    where: { token },
+    select: { conventionId: true, email: true },
+  });
+  if (!record) redirect("/convention?error=invalid-token");
 
   // Skip access notification for internal preview tokens
   if (record.email !== "preview@xylo.internal") {
@@ -114,11 +133,6 @@ export async function verifyConventionToken(formData: FormData) {
     }
   }
 
-  await prisma.conventionOrderToken.update({
-    where: { id: record.id },
-    data: { usedAt: new Date() },
-  });
-
   const cookieStore = await cookies();
   cookieStore.set("convention_auth", record.conventionId, {
     httpOnly: true,
@@ -135,6 +149,7 @@ export async function verifyConventionToken(formData: FormData) {
 export async function notifyOrderConfirmed(formData: FormData) {
   const conventionId = (formData.get("conventionId") as string).trim();
   if (!conventionId) return;
+  await requireConventionAuth(conventionId);
 
   const convention = await prisma.ibsaConvention.findUnique({
     where: { id: conventionId },
@@ -166,6 +181,7 @@ export async function notifyOrderConfirmed(formData: FormData) {
 export async function saveConventionDetails(formData: FormData) {
   const conventionId = (formData.get("conventionId") as string).trim();
   if (!conventionId) return;
+  await requireConventionAuth(conventionId);
 
   const str = (key: string) => (formData.get(key) as string | null)?.trim() || null;
 
@@ -197,6 +213,7 @@ export async function confirmOrder(formData: FormData) {
   const conventionId = (formData.get("conventionId") as string).trim();
   const dept = (formData.get("dept") as string).trim() as "CS" | "FA";
   if (!conventionId) return;
+  await requireConventionAuth(conventionId);
 
   await prisma.ibsaConvention.update({
     where: { id: conventionId },
@@ -216,6 +233,7 @@ export async function saveOrderItem(formData: FormData) {
   const qty          = parseInt(formData.get("qty") as string) || 0;
 
   if (!conventionId || !productId) return;
+  await requireConventionAuth(conventionId);
 
   if (qty <= 0) {
     await prisma.ibsaOrderItem.deleteMany({

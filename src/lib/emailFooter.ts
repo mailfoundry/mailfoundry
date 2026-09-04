@@ -1,9 +1,16 @@
+import { createHmac } from "crypto";
+
+function signEmail(email: string): string {
+  const secret = process.env.UNSUBSCRIBE_HMAC_SECRET ?? "change-me-in-production";
+  return createHmac("sha256", secret).update(email).digest("hex");
+}
+
 export function addEmailFooter(html: string, recipientEmail?: string) {
-  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   const businessName = process.env.BUSINESS_NAME || "MailFoundry";
 
   const unsubscribePath = recipientEmail
-    ? `/unsubscribe?email=${encodeURIComponent(recipientEmail)}`
+    ? `/unsubscribe?email=${encodeURIComponent(recipientEmail)}&sig=${signEmail(recipientEmail.toLowerCase())}`
     : "/unsubscribe";
 
   const unsubscribeUrl = `${appBaseUrl}${unsubscribePath}`;

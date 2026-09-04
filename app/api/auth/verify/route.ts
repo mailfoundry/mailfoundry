@@ -9,18 +9,16 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=invalid-token", request.url));
   }
 
-  const loginToken = await prisma.loginToken.findUnique({ where: { token } });
+  // Atomic update — prevents double-use if the link is clicked twice concurrently
+  const now = new Date();
+  const updated = await prisma.loginToken.updateMany({
+    where: { token, usedAt: null, expiresAt: { gt: now } },
+    data: { usedAt: now },
+  });
 
-  // Invalid, already used, or expired
-  if (!loginToken || loginToken.usedAt || loginToken.expiresAt < new Date()) {
+  if (updated.count === 0) {
     return NextResponse.redirect(new URL("/login?error=invalid-token", request.url));
   }
-
-  // Mark token as used
-  await prisma.loginToken.update({
-    where: { id: loginToken.id },
-    data: { usedAt: new Date() },
-  });
 
   // Set the auth cookie directly on the redirect response
   const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";

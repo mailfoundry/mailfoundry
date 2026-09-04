@@ -1,12 +1,22 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { prisma } from "../../../../src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { sendEmail } from "../../../../src/lib/sendEmail";
 
+/** Guard: redirect to login if ibsa_auth cookie is absent. */
+async function requireIbsaAuth() {
+  const jar = await cookies();
+  if (!jar.get("ibsa_auth")?.value) {
+    redirect("/ibsa/login");
+  }
+}
+
 /** Send the convention order form magic link to the contact email on file */
 export async function sendOrderFormLink(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = (formData.get("conventionId") as string).trim();
   if (!conventionId) return { error: "Missing convention ID" };
 
@@ -17,7 +27,7 @@ export async function sendOrderFormLink(formData: FormData) {
 
   if (!convention?.contactEmail) return { error: "No contact email on file" };
 
-  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   const token      = crypto.randomUUID();
   const expiresAt  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -107,6 +117,7 @@ export async function sendOrderFormLink(formData: FormData) {
 
 /** Reset status/faStatus to "pending" so the order form can be tested from scratch */
 export async function resetOrderStatus(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = (formData.get("conventionId") as string).trim();
   if (!conventionId) return { error: "Missing convention ID" };
 
@@ -122,10 +133,11 @@ export async function resetOrderStatus(formData: FormData) {
 
 /** Generate a preview URL for the order form without sending an email */
 export async function getOrderFormPreviewUrl(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = (formData.get("conventionId") as string).trim();
   if (!conventionId) return { error: "Missing convention ID" };
 
-  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   const token      = crypto.randomUUID();
   const expiresAt  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -138,6 +150,7 @@ export async function getOrderFormPreviewUrl(formData: FormData) {
 }
 
 export async function updateOrderQty(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const productId = formData.get("productId")?.toString() ?? "";
   const dept = formData.get("dept")?.toString() ?? "CS";
@@ -158,9 +171,16 @@ export async function updateOrderQty(formData: FormData) {
 }
 
 export async function updateConventionStatus(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const status = formData.get("status")?.toString() ?? "";
   if (!conventionId || !status) return;
+
+  const CONVENTION_STATUSES = ["pending", "ordered", "complete", "cancelled"] as const;
+  if (!CONVENTION_STATUSES.includes(status as typeof CONVENTION_STATUSES[number])) {
+    console.warn(`[updateConventionStatus] Rejected invalid status: "${status}"`);
+    return;
+  }
   await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { status } });
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
@@ -172,6 +192,7 @@ export async function updateConventionStatus(formData: FormData) {
  * for every product in that shipment by its ordered qty.
  */
 export async function markCompleteAndDeductStock(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const dept = formData.get("dept")?.toString() ?? "CS"; // "CS" | "FA"
   const deductStock = formData.get("deductStock") !== "false"; // default: true
@@ -206,6 +227,7 @@ export async function markCompleteAndDeductStock(formData: FormData) {
 }
 
 export async function updateShippingCost(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const cost = parseFloat(formData.get("shippingCost")?.toString() ?? "0") || 0;
   const field = formData.get("field")?.toString() ?? "cs";
@@ -218,6 +240,7 @@ export async function updateShippingCost(formData: FormData) {
 }
 
 export async function updateConventionDate(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const date = formData.get("date")?.toString() ?? "";
   if (!conventionId || !date) return;
@@ -230,6 +253,7 @@ export async function updateConventionDate(formData: FormData) {
 }
 
 export async function updateDeliveryDate(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const date = formData.get("date")?.toString() ?? "";
   if (!conventionId) return;
@@ -242,6 +266,7 @@ export async function updateDeliveryDate(formData: FormData) {
 }
 
 export async function updateLogistics(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
 
@@ -271,6 +296,7 @@ export async function updateLogistics(formData: FormData) {
 }
 
 export async function markPaid(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   await prisma.ibsaConvention.update({
@@ -282,6 +308,7 @@ export async function markPaid(formData: FormData) {
 }
 
 export async function markUnpaid(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   await prisma.ibsaConvention.update({
@@ -293,6 +320,7 @@ export async function markUnpaid(formData: FormData) {
 }
 
 export async function enableFa(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { faEnabled: true } });
@@ -300,9 +328,16 @@ export async function enableFa(formData: FormData) {
 }
 
 export async function updateFaStatus(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const status = formData.get("status")?.toString() ?? "";
   if (!conventionId || !status) return;
+
+  const FA_STATUSES = ["pending", "ordered", "complete", "cancelled"] as const;
+  if (!FA_STATUSES.includes(status as typeof FA_STATUSES[number])) {
+    console.warn(`[updateFaStatus] Rejected invalid faStatus: "${status}"`);
+    return;
+  }
   await prisma.ibsaConvention.update({ where: { id: conventionId }, data: { faStatus: status } });
   revalidatePath(`/ibsa/conventions/${conventionId}`);
   revalidatePath("/ibsa");
@@ -310,6 +345,7 @@ export async function updateFaStatus(formData: FormData) {
 }
 
 export async function markFaPaid(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   await prisma.ibsaConvention.update({
@@ -321,6 +357,7 @@ export async function markFaPaid(formData: FormData) {
 }
 
 export async function markFaUnpaid(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   await prisma.ibsaConvention.update({
@@ -332,6 +369,7 @@ export async function markFaUnpaid(formData: FormData) {
 }
 
 export async function updateNotes(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const notes = formData.get("notes")?.toString() ?? "";
   if (!conventionId) return;
@@ -343,6 +381,7 @@ export async function updateNotes(formData: FormData) {
 }
 
 export async function importConventionOrder(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   const dept = formData.get("dept")?.toString() || "CS";
   const lines: { productId: string; qty: number }[] = JSON.parse(
@@ -364,6 +403,7 @@ export async function importConventionOrder(formData: FormData) {
 }
 
 export async function updateFaLogistics(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   const faCollectionDate  = formData.get("faCollectionDate")?.toString() ?? "";
@@ -386,6 +426,7 @@ export async function updateFaLogistics(formData: FormData) {
 }
 
 export async function deleteConvention(formData: FormData) {
+  await requireIbsaAuth();
   const conventionId = formData.get("conventionId")?.toString() ?? "";
   if (!conventionId) return;
   await prisma.ibsaConvention.delete({ where: { id: conventionId } });

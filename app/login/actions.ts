@@ -30,7 +30,7 @@ export async function login(formData: FormData) {
 
   if (allowedEmails.length > 0 && !allowedEmails.includes(email)) {
     // Notify all allowed users that someone tried to get in
-    const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+    const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
     for (const adminEmail of allowedEmails) {
       try {
         await sendEmail({
@@ -67,7 +67,7 @@ export async function login(formData: FormData) {
     data: { token, email, expiresAt },
   });
 
-  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   // Link goes to a confirmation PAGE — not a GET API route.
   // This prevents email scanners from consuming the token before the user clicks.
   const verifyUrl = `${appBaseUrl}/login/verify?token=${token}`;
@@ -109,17 +109,16 @@ export async function confirmVerify(formData: FormData) {
     redirect("/login?error=invalid-token");
   }
 
-  const loginToken = await prisma.loginToken.findUnique({ where: { token } });
+  // Atomic update — prevents double-use if the button is clicked twice concurrently
+  const now = new Date();
+  const updated = await prisma.loginToken.updateMany({
+    where: { token, usedAt: null, expiresAt: { gt: now } },
+    data: { usedAt: now },
+  });
 
-  if (!loginToken || loginToken.usedAt || loginToken.expiresAt < new Date()) {
+  if (updated.count === 0) {
     redirect("/login?error=invalid-token");
   }
-
-  // Mark as used
-  await prisma.loginToken.update({
-    where: { id: loginToken.id },
-    data: { usedAt: new Date() },
-  });
 
   // Set auth cookie — this works correctly inside a Server Action
   const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";

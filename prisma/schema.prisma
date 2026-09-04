@@ -151,7 +151,6 @@ model IbsaProduct {
   /// Optional label to visually group this product with adjacent products in the order form
   sectionLabel        String?
   inStock   Int      @default(0)
-  git       Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

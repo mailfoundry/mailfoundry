@@ -1,13 +1,22 @@
 "use server";
 
 import Stripe from "stripe"; // class only — no client instantiated here
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../src/lib/prisma";
 import { sendEmail } from "../../../../src/lib/sendEmail";
 
+/** Guard: redirect to login if ibsa_auth cookie is absent. */
+async function requireIbsaAuth() {
+  const jar = await cookies();
+  if (!jar.get("ibsa_auth")?.value) {
+    redirect("/ibsa/login");
+  }
+}
+
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
+const BASE_URL = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 const emailFooterHtml = `
   <div style="margin-top:28px;padding-top:16px;border-top:1px solid #f1f5f9;text-align:center;">
@@ -17,6 +26,7 @@ const emailFooterHtml = `
   </div>`;
 
 export async function sendStripeInvoice(orderId: string) {
+  await requireIbsaAuth();
   // Lazy import — keeps stripe.ts from running at module load time,
   // which would crash the page if STRIPE_SECRET_KEY isn't set.
   const { stripe } = await import("../../../../src/lib/stripe");
@@ -30,6 +40,9 @@ export async function sendStripeInvoice(orderId: string) {
 
   if (!order) throw new Error("Order not found");
   if (order.stripeInvoiceId) throw new Error("Invoice already sent");
+  if (!["submitted", "processing"].includes(order.status ?? "")) {
+    throw new Error(`Cannot send invoice for an order in "${order.status}" status`);
+  }
   if (order.lines.length === 0) throw new Error("Order has no line items");
 
   // ── Upsert Stripe customer ────────────────────────────────────────────────
@@ -147,9 +160,16 @@ export async function sendStripeInvoice(orderId: string) {
 }
 
 export async function updateOrderStatus(formData: FormData) {
+  await requireIbsaAuth();
   const orderId = (formData.get("orderId") as string).trim();
   const status  = (formData.get("status")  as string).trim();
   if (!orderId || !status) return;
+
+  const ORDER_STATUSES = ["submitted", "processing", "dispatched", "complete", "cancelled"] as const;
+  if (!ORDER_STATUSES.includes(status as typeof ORDER_STATUSES[number])) {
+    console.warn(`[updateOrderStatus] Rejected invalid status: "${status}"`);
+    return;
+  }
 
   const order = await prisma.ibsaGroupOrder.update({
     where: { id: orderId },
@@ -201,6 +221,7 @@ export async function updateOrderStatus(formData: FormData) {
 }
 
 export async function saveTrackingRef(formData: FormData) {
+  await requireIbsaAuth();
   const orderId    = (formData.get("orderId")    as string).trim();
   const trackingRef = (formData.get("trackingRef") as string).trim();
   if (!orderId) return;
@@ -240,6 +261,7 @@ export async function saveTrackingRef(formData: FormData) {
 }
 
 export async function saveAdminNotes(formData: FormData) {
+  await requireIbsaAuth();
   const orderId    = (formData.get("orderId")    as string).trim();
   const adminNotes = (formData.get("adminNotes") as string).trim();
   if (!orderId) return;
@@ -253,6 +275,7 @@ export async function saveAdminNotes(formData: FormData) {
 }
 
 export async function amendOrder(formData: FormData) {
+  await requireIbsaAuth();
   const orderId = (formData.get("orderId") as string).trim();
   if (!orderId) return;
 
@@ -409,6 +432,7 @@ export async function amendOrder(formData: FormData) {
 }
 
 export async function deleteOrder(formData: FormData) {
+  await requireIbsaAuth();
   const orderId   = (formData.get("orderId")   as string).trim();
   const groupType = (formData.get("groupType") as string).trim();
   if (!orderId) return;

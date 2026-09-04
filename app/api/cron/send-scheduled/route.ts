@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "No campaigns due.", fired: 0 });
   }
 
-  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
+  const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   let fired = 0;
 
   for (const campaign of scheduledCampaigns) {
@@ -63,6 +63,26 @@ export async function GET(request: Request) {
       continue;
     }
 
+    // ── L-5: Skip contacts already sent this campaign (dedup) ───────────────
+    const alreadySentEmails = new Set(
+      (
+        await prisma.campaignSend.findMany({
+          where: { campaignId: campaign.id, status: "sent" },
+          select: { email: true },
+        })
+      ).map((r) => r.email)
+    );
+    const contactsToSend = contacts.filter((c) => !alreadySentEmails.has(c.email));
+
+    if (contactsToSend.length === 0) {
+      await prisma.campaign.update({
+        where: { id: campaign.id },
+        data: { status: "sent", scheduledAt: null },
+      });
+      fired++;
+      continue;
+    }
+
     // ── Build all email payloads with tracking ────────────────────────────────
 
     type EmailPayload = {
@@ -78,7 +98,7 @@ export async function GET(request: Request) {
       };
     };
 
-    const payloads: EmailPayload[] = contacts.map((contact) => {
+    const payloads: EmailPayload[] = contactsToSend.map((contact) => {
       const sendId = crypto.randomUUID();
 
       const baseHtml =

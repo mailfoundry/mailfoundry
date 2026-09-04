@@ -5,12 +5,13 @@ import { sendEmail } from "../../../../src/lib/sendEmail";
 export const dynamic = "force-dynamic";
 
 const RECIPIENTS = ["paulwridge@gmail.com", "ridgejason@me.com", "carol@xylouk.co.uk"];
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
+const BASE_URL = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 export async function GET(request: NextRequest) {
   // ── Auth ──────────────────────────────────────────────────────────────────
-  const secret = request.nextUrl.searchParams.get("secret");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  // Use Authorization: Bearer header (not query param — query params appear in logs)
+  const authHeader = request.headers.get("authorization");
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
   }
 

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "../../../src/lib/prisma";
 import { sendEmail } from "../../../src/lib/sendEmail";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
+const BASE_URL = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
 
 export async function requestLoginLink(formData: FormData) {
