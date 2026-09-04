@@ -8,9 +8,9 @@ type SendCampaignButtonProps = {
   campaignStatus: string;
 };
 
-type SendResult = {
-  sent: number;
-  failed: number;
+type FinalResult = {
+  totalSent: number;
+  totalFailed: number;
   skipped: number;
   total: number;
   skippedUnsubscribed: number;
@@ -27,8 +27,13 @@ export default function SendCampaignButton({
   const router = useRouter();
   const [isSending, setIsSending] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
-  const [result, setResult] = useState<SendResult | null>(null);
+  const [result, setResult] = useState<FinalResult | null>(null);
   const [error, setError] = useState("");
+  const [progress, setProgress] = useState<{
+    sent: number;
+    remaining: number;
+    batch: number;
+  } | null>(null);
 
   const hasAlreadyBeenSent =
     campaignStatus === "sent" || campaignStatus === "partially_sent";
@@ -39,42 +44,83 @@ export default function SendCampaignButton({
     setError("");
     setResult(null);
 
+    let totalSent = 0;
+    let totalFailed = 0;
+    let skippedData = {
+      skipped: 0,
+      total: 0,
+      skippedUnsubscribed: 0,
+      skippedArchived: 0,
+      skippedBounced: 0,
+      skippedComplained: 0,
+      skippedUnknown: 0,
+    };
+    let batch = 0;
+    let remaining = 1; // seed > 0 to enter the loop
+
     try {
-      const response = await fetch(`/api/campaigns/${campaignId}/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          confirmResend: hasAlreadyBeenSent,
-        }),
-      });
+      while (remaining > 0) {
+        batch++;
+        setProgress({ sent: totalSent, remaining, batch });
 
-      const data = await response.json();
+        let data: Record<string, number & string>;
+        try {
+          const response = await fetch(`/api/campaigns/${campaignId}/send`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            // Always pass confirmResend: true — user confirmed on button click;
+            // subsequent batches need this because status will be "sent"/"partially_sent"
+            body: JSON.stringify({ confirmResend: true }),
+          });
 
-      if (!response.ok) {
-        setError(data.error || "Failed to send campaign.");
-        return;
+          data = await response.json();
+
+          if (!response.ok) {
+            setError((data.error as string) || "Failed to send campaign.");
+            break;
+          }
+        } catch {
+          // Network error or Vercel timeout mid-batch — wait and retry
+          // The DB already recorded everything sent so far, so no duplicates
+          await new Promise((r) => setTimeout(r, 3000));
+          continue;
+        }
+
+        totalSent += (data.sent as number) ?? 0;
+        totalFailed += (data.failed as number) ?? 0;
+        remaining = (data.remaining as number) ?? 0;
+
+        // Capture skipped totals from the first batch (they're the same for all batches)
+        if (batch === 1) {
+          skippedData = {
+            skipped: (data.skipped as number) ?? 0,
+            total: (data.total as number) ?? 0,
+            skippedUnsubscribed: (data.skippedUnsubscribed as number) ?? 0,
+            skippedArchived: (data.skippedArchived as number) ?? 0,
+            skippedBounced: (data.skippedBounced as number) ?? 0,
+            skippedComplained: (data.skippedComplained as number) ?? 0,
+            skippedUnknown: (data.skippedUnknown as number) ?? 0,
+          };
+        }
+
+        setProgress({ sent: totalSent, remaining, batch });
+
+        // Brief pause between batches to avoid hammering the server
+        if (remaining > 0) {
+          await new Promise((r) => setTimeout(r, 2000));
+        }
       }
 
-      setResult({
-        sent: data.sent ?? 0,
-        failed: data.failed ?? 0,
-        skipped: data.skipped ?? 0,
-        total: data.total ?? 0,
-        skippedUnsubscribed: data.skippedUnsubscribed ?? 0,
-        skippedArchived: data.skippedArchived ?? 0,
-        skippedBounced: data.skippedBounced ?? 0,
-        skippedComplained: data.skippedComplained ?? 0,
-        skippedUnknown: data.skippedUnknown ?? 0,
-      });
-
-      router.refresh();
-    } catch (error) {
-      console.error(error);
+      if (!error) {
+        setResult({ totalSent, totalFailed, ...skippedData });
+        router.refresh();
+      }
+    } catch (err) {
+      console.error(err);
       setError("Something went wrong while sending the campaign.");
     } finally {
       setIsSending(false);
+      setProgress(null);
     }
   }
 
@@ -88,7 +134,7 @@ export default function SendCampaignButton({
             </p>
             <p className="mt-1 text-sm text-gray-400">
               {hasAlreadyBeenSent
-                ? "This campaign has already been sent. Sending again will email eligible contacts in the selected list again."
+                ? "This campaign has already been sent. Sending again will reach only contacts who haven't received it yet."
                 : "Sends this campaign to eligible contacts in the selected list."}
             </p>
           </div>
@@ -138,8 +184,8 @@ export default function SendCampaignButton({
               }
             >
               {hasAlreadyBeenSent
-                ? "Sending again will email eligible contacts in the selected list again. Only continue if this is intentional."
-                : "This will send the campaign to eligible contacts in the selected list."}
+                ? "Only contacts who haven't received it yet will be emailed. It will keep sending automatically until everyone is reached."
+                : "This will send the campaign to eligible contacts. It will keep sending automatically until all contacts are reached."}
             </p>
           </div>
 
@@ -173,7 +219,37 @@ export default function SendCampaignButton({
         </div>
       )}
 
-      {result && (
+      {/* Live progress during send */}
+      {isSending && progress && (
+        <div className="mt-4 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blue-400" />
+            <p className="font-semibold text-blue-300">
+              Sending — batch {progress.batch}
+            </p>
+          </div>
+          <div className="mt-2 grid gap-2 text-gray-500 md:grid-cols-3">
+            <p>
+              Sent so far:{" "}
+              <span className="font-semibold text-green-500">
+                {progress.sent.toLocaleString()}
+              </span>
+            </p>
+            <p>
+              Still to send:{" "}
+              <span className="font-semibold text-blue-300">
+                {progress.remaining.toLocaleString()}
+              </span>
+            </p>
+            <p className="text-gray-600">
+              Will continue automatically…
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Final result */}
+      {result && !isSending && (
         <div className="mt-4 rounded-xl border border-green-500/20 bg-green-500/10 p-4 text-sm">
           <p className="font-semibold text-green-300">Campaign send complete</p>
 
@@ -181,53 +257,55 @@ export default function SendCampaignButton({
             <p>
               Sent:{" "}
               <span className="font-semibold text-green-600">
-                {result.sent}
+                {result.totalSent.toLocaleString()}
               </span>
             </p>
             <p>
               Failed:{" "}
               <span className="font-semibold text-red-500">
-                {result.failed}
+                {result.totalFailed.toLocaleString()}
               </span>
             </p>
             <p>
               Total processed:{" "}
-              <span className="font-semibold text-gray-900">{result.total}</span>
+              <span className="font-semibold text-gray-900">
+                {result.total.toLocaleString()}
+              </span>
             </p>
             <p>
               Total skipped:{" "}
               <span className="font-semibold text-yellow-400">
-                {result.skipped}
+                {result.skipped.toLocaleString()}
               </span>
             </p>
             <p>
               Unsubscribed:{" "}
               <span className="font-semibold text-yellow-400">
-                {result.skippedUnsubscribed}
+                {result.skippedUnsubscribed.toLocaleString()}
               </span>
             </p>
             <p>
               Archived:{" "}
               <span className="font-semibold text-gray-600">
-                {result.skippedArchived}
+                {result.skippedArchived.toLocaleString()}
               </span>
             </p>
             <p>
               Bounced:{" "}
               <span className="font-semibold text-orange-400">
-                {result.skippedBounced}
+                {result.skippedBounced.toLocaleString()}
               </span>
             </p>
             <p>
               Complained:{" "}
               <span className="font-semibold text-red-500">
-                {result.skippedComplained}
+                {result.skippedComplained.toLocaleString()}
               </span>
             </p>
             <p>
               Unknown:{" "}
               <span className="font-semibold text-gray-500">
-                {result.skippedUnknown}
+                {result.skippedUnknown.toLocaleString()}
               </span>
             </p>
           </div>

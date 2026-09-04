@@ -58,6 +58,16 @@ export async function POST(
       );
     }
 
+    if (!campaign.fromEmail) {
+      return NextResponse.json(
+        {
+          error:
+            "This campaign does not have a FROM address set. Open the campaign settings and fill in the FROM field before sending.",
+        },
+        { status: 400 }
+      );
+    }
+
     const allContacts = campaign.list.contacts
       .map((item) => item.contact)
       .filter((contact) => contact.email);
@@ -349,6 +359,12 @@ export async function POST(
       },
     });
 
+    // Count how many eligible contacts still haven't been successfully sent to
+    const totalSentForCampaign = await prisma.campaignSend.count({
+      where: { campaignId: id, status: "sent" },
+    });
+    const remaining = Math.max(0, contacts.length - totalSentForCampaign);
+
     return NextResponse.json({
       message: "Campaign send complete.",
       sent: sentCount,
@@ -360,6 +376,7 @@ export async function POST(
       skippedComplained: skippedComplainedCount,
       skippedUnknown: skippedUnknownCount,
       total: allContacts.length,
+      remaining,
       status: newStatus,
       results,
     });
