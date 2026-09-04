@@ -203,17 +203,15 @@ export async function POST(
 
     const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:3000";
 
-    // On a resend, skip contacts who already received this campaign successfully
-    const alreadySentEmails = confirmResend
-      ? new Set(
-          (
-            await prisma.campaignSend.findMany({
-              where: { campaignId: id, status: "sent" },
-              select: { email: true },
-            })
-          ).map((r) => r.email)
-        )
-      : new Set<string>();
+    // Always skip contacts who already received this campaign successfully
+    const alreadySentEmails = new Set(
+      (
+        await prisma.campaignSend.findMany({
+          where: { campaignId: id, status: "sent" },
+          select: { email: true },
+        })
+      ).map((r) => r.email)
+    );
 
     const contactsToSend = contacts.filter(
       (contact) => !alreadySentEmails.has(contact.email)
