@@ -2,7 +2,6 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { updateProductStock, bulkUpdateInStock, updateProduct, createProduct, createRsProductLink, updateRsProductLink, deleteRsProductLink, addBomLine, removeBomLine, deleteProduct, toggleProductVisibility, updateProductSortOrder, duplicateProduct } from "./actions";
-import { upload } from "@vercel/blob/client";
 import { getImageSrc } from "../../../src/lib/image-utils";
 
 export type RsProductLink = {
@@ -1229,12 +1228,15 @@ export default function ProductsClient({ products, activeType }: Props) {
                           if (!file) return;
                           setIsUploadingImage(true);
                           try {
-                            const ext = file.name.split(".").pop() ?? "bin";
-                            const blob = await upload(`product-images/${Date.now()}.${ext}`, file, {
-                              access: "public",
-                              handleUploadUrl: "/api/ibsa/blob-upload",
-                            });
-                            setEditDraft((prev) => ({ ...prev, imageUrl: blob.url }));
+                            const fd = new FormData();
+                            fd.set("file", file);
+                            const res = await fetch("/api/ibsa/upload-image", { method: "POST", body: fd });
+                            const result = await res.json();
+                            if (result.url) {
+                              setEditDraft((prev) => ({ ...prev, imageUrl: result.url }));
+                            } else {
+                              alert("Upload failed: " + (result.error ?? "Unknown error"));
+                            }
                           } catch (err) {
                             console.error("Image upload error:", err);
                             alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
@@ -1312,12 +1314,15 @@ export default function ProductsClient({ products, activeType }: Props) {
                               if (!file) return;
                               setIsUploadingImage(true);
                               try {
-                                const ext = file.name.split(".").pop() ?? "bin";
-                                const blob = await upload(`product-images/${Date.now()}.${ext}`, file, {
-                                  access: "public",
-                                  handleUploadUrl: "/api/ibsa/blob-upload",
-                                });
-                                setEditDraft((prev) => ({ ...prev, groupImageUrl: blob.url }));
+                                const fd = new FormData();
+                                fd.set("file", file);
+                                const res = await fetch("/api/ibsa/upload-image", { method: "POST", body: fd });
+                                const result = await res.json();
+                                if (result.url) {
+                                  setEditDraft((prev) => ({ ...prev, groupImageUrl: result.url }));
+                                } else {
+                                  alert("Upload failed: " + (result.error ?? "Unknown error"));
+                                }
                               } catch (err) {
                                 alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
                               } finally {
