@@ -1,7 +1,9 @@
 import { prisma } from "../../../src/lib/prisma";
 import Sidebar from "../../../src/components/sidebar";
 
-export const metadata = { title: "Tools" };
+export const metadata = { title: "Analytics" };
+
+const EXCLUDED_IPS = ["81.153.15.100"];
 export const dynamic = "force-dynamic";
 
 function parseBrowser(ua: string): string {
@@ -55,18 +57,21 @@ function groupTypeBadge(type: string) {
 }
 
 export default async function ToolsPage() {
+  const ipFilter = { ip: { notIn: EXCLUDED_IPS } };
+
   const [views, todayCount, weekCount, total, accounts] = await Promise.all([
     prisma.pageView.findMany({
+      where:   ipFilter,
       orderBy: { viewedAt: "desc" },
       take: 300,
     }),
     prisma.pageView.count({
-      where: { viewedAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
+      where: { ...ipFilter, viewedAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
     }),
     prisma.pageView.count({
-      where: { viewedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+      where: { ...ipFilter, viewedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
     }),
-    prisma.pageView.count(),
+    prisma.pageView.count({ where: ipFilter }),
     prisma.groupAccount.findMany({
       include: {
         tokens: {
@@ -101,98 +106,14 @@ export default async function ToolsPage() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 mb-2">
             Tools
           </p>
-          <h1 className="text-2xl font-black tracking-tight text-gray-900">Site Analytics</h1>
+          <h1 className="text-2xl font-black tracking-tight text-gray-900">Analytics</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Server-side page view tracking — both sites, no cookies.
+            Account activity and page view tracking. Your IP is excluded.
           </p>
         </div>
-
-        {/* Stat cards */}
-        <div className="mb-8 grid grid-cols-3 gap-4 max-w-lg">
-          <StatCard label="Total views" value={total} />
-          <StatCard label="This week" value={weekCount} />
-          <StatCard label="Today" value={todayCount} />
-        </div>
-
-        {/* Table */}
-        {views.length === 0 ? (
-          <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-12 text-center text-gray-400 text-sm">
-            No page views recorded yet.
-          </div>
-        ) : (
-          <div className="rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <Th>Time</Th>
-                  <Th>Site</Th>
-                  <Th>Page</Th>
-                  <Th>Device</Th>
-                  <Th>From</Th>
-                  <Th>IP</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {views.map((v) => {
-                  const site = siteLabel(v.hostname);
-                  const time = v.viewedAt.toLocaleString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    timeZone: "Europe/London",
-                  });
-                  return (
-                    <tr
-                      key={v.id}
-                      className="border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors"
-                    >
-                      <Td>
-                        <span className="tabular-nums text-gray-400 text-xs whitespace-nowrap">
-                          {time}
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className={`text-xs font-semibold ${site.colour}`}>
-                          {site.label}
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="font-mono text-xs text-gray-700">
-                          {v.pathname}
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="text-xs text-gray-500">
-                          {parseDevice(v.userAgent)} · {parseBrowser(v.userAgent)}
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="text-xs text-gray-500">
-                          {fromLabel(v.referer)}
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="font-mono text-xs text-gray-400">
-                          {v.ip}
-                        </span>
-                      </Td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {views.length === 300 && (
-          <p className="mt-3 text-xs text-gray-400 text-center">
-            Showing most recent 300 views
-          </p>
-        )}
 
         {/* Account activity */}
-        <div className="mt-12 mb-4 flex items-end gap-3">
+        <div className="mb-4 flex items-end gap-3">
           <div>
             <h2 className="text-xl font-black tracking-tight text-gray-900">Account Activity</h2>
             <p className="mt-0.5 text-sm text-gray-500">
@@ -292,6 +213,66 @@ export default async function ToolsPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Page views */}
+        <div className="mt-12 mb-4 flex items-end gap-3">
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-gray-900">Page Views</h2>
+            <p className="mt-0.5 text-sm text-gray-500">
+              Server-side tracking — both sites, no cookies, your IP excluded.
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-8 grid grid-cols-3 gap-4 max-w-lg">
+          <StatCard label="Total views" value={total} />
+          <StatCard label="This week"   value={weekCount} />
+          <StatCard label="Today"       value={todayCount} />
+        </div>
+
+        {views.length === 0 ? (
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-12 text-center text-gray-400 text-sm">
+            No page views recorded yet.
+          </div>
+        ) : (
+          <div className="rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <Th>Time</Th>
+                  <Th>Site</Th>
+                  <Th>Page</Th>
+                  <Th>Device</Th>
+                  <Th>From</Th>
+                  <Th>IP</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {views.map((v) => {
+                  const site = siteLabel(v.hostname);
+                  const time = v.viewedAt.toLocaleString("en-GB", {
+                    day: "numeric", month: "short",
+                    hour: "2-digit", minute: "2-digit",
+                    timeZone: "Europe/London",
+                  });
+                  return (
+                    <tr key={v.id} className="border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors">
+                      <Td><span className="tabular-nums text-gray-400 text-xs whitespace-nowrap">{time}</span></Td>
+                      <Td><span className={`text-xs font-semibold ${site.colour}`}>{site.label}</span></Td>
+                      <Td><span className="font-mono text-xs text-gray-700">{v.pathname}</span></Td>
+                      <Td><span className="text-xs text-gray-500">{parseDevice(v.userAgent)} · {parseBrowser(v.userAgent)}</span></Td>
+                      <Td><span className="text-xs text-gray-500">{fromLabel(v.referer)}</span></Td>
+                      <Td><span className="font-mono text-xs text-gray-400">{v.ip}</span></Td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {views.length === 300 && (
+          <p className="mt-3 text-xs text-gray-400 text-center">Showing most recent 300 views</p>
+        )}
       </main>
     </div>
   );
