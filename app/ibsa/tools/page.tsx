@@ -40,8 +40,22 @@ function siteLabel(hostname: string): { label: string; colour: string } {
   return { label: "Xylo", colour: "text-orange-500" };
 }
 
+function daysSince(date: Date | null | undefined): number | null {
+  if (!date) return null;
+  return Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function groupTypeBadge(type: string) {
+  const map: Record<string, string> = {
+    congregation: "bg-blue-50 text-blue-700",
+    circuit:      "bg-purple-50 text-purple-700",
+    regional:     "bg-green-50 text-green-700",
+  };
+  return map[type] ?? "bg-gray-100 text-gray-600";
+}
+
 export default async function ToolsPage() {
-  const [views, todayCount, weekCount] = await Promise.all([
+  const [views, todayCount, weekCount, total, accounts] = await Promise.all([
     prisma.pageView.findMany({
       orderBy: { viewedAt: "desc" },
       take: 300,
@@ -50,15 +64,32 @@ export default async function ToolsPage() {
       where: { viewedAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
     }),
     prisma.pageView.count({
-      where: {
-        viewedAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      where: { viewedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+    }),
+    prisma.pageView.count(),
+    prisma.groupAccount.findMany({
+      include: {
+        tokens: {
+          where:   { usedAt: { not: null } },
+          orderBy: { usedAt: "desc" },
+          take:    1,
         },
+        orders: {
+          orderBy: { createdAt: "desc" },
+          take:    1,
+          select:  { createdAt: true },
+        },
+        _count: { select: { orders: true } },
       },
     }),
   ]);
 
-  const total = await prisma.pageView.count();
+  // Sort: most recently logged in first, never-logged-in last
+  const sortedAccounts = [...accounts].sort((a, b) => {
+    const aLogin = a.tokens[0]?.usedAt?.getTime() ?? 0;
+    const bLogin = b.tokens[0]?.usedAt?.getTime() ?? 0;
+    return bLogin - aLogin;
+  });
 
   return (
     <div className="flex min-h-screen bg-gray-50 text-gray-900">
@@ -159,6 +190,108 @@ export default async function ToolsPage() {
             Showing most recent 300 views
           </p>
         )}
+
+        {/* Account activity */}
+        <div className="mt-12 mb-4 flex items-end gap-3">
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-gray-900">Account Activity</h2>
+            <p className="mt-0.5 text-sm text-gray-500">
+              Login history and order activity for all group accounts.
+            </p>
+          </div>
+          <span className="ml-auto text-xs text-gray-400">{accounts.length} accounts</span>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <Th>Group</Th>
+                <Th>Type</Th>
+                <Th>Email</Th>
+                <Th>Last login</Th>
+                <Th>Orders</Th>
+                <Th>Last order</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedAccounts.map((a) => {
+                const lastLogin  = a.tokens[0]?.usedAt ?? null;
+                const lastOrder  = a.orders[0]?.createdAt ?? null;
+                const daysAgo    = daysSince(lastLogin);
+                const loginLabel = lastLogin
+                  ? lastLogin.toLocaleString("en-GB", {
+                      day: "numeric", month: "short", year: "numeric",
+                      hour: "2-digit", minute: "2-digit", timeZone: "Europe/London",
+                    })
+                  : null;
+                const orderLabel = lastOrder
+                  ? lastOrder.toLocaleDateString("en-GB", {
+                      day: "numeric", month: "short", year: "numeric",
+                    })
+                  : null;
+
+                const agePill =
+                  daysAgo === null
+                    ? "bg-gray-100 text-gray-400"
+                    : daysAgo <= 7
+                    ? "bg-green-100 text-green-700"
+                    : daysAgo <= 30
+                    ? "bg-amber-100 text-amber-700"
+                    : "bg-red-100 text-red-600";
+
+                const ageText =
+                  daysAgo === null
+                    ? "Never"
+                    : daysAgo === 0
+                    ? "Today"
+                    : daysAgo === 1
+                    ? "Yesterday"
+                    : `${daysAgo}d ago`;
+
+                return (
+                  <tr key={a.id} className="border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors">
+                    <Td>
+                      <span className="font-medium text-gray-900">{a.groupName}</span>
+                      <span className="block text-xs text-gray-400">{a.contactName}</span>
+                    </Td>
+                    <Td>
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${groupTypeBadge(a.groupType)}`}>
+                        {a.groupType}
+                      </span>
+                    </Td>
+                    <Td>
+                      <a href={`mailto:${a.contactEmail}`} className="text-xs text-blue-600 hover:underline">
+                        {a.contactEmail}
+                      </a>
+                    </Td>
+                    <Td>
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${agePill}`}>
+                        {ageText}
+                      </span>
+                      {loginLabel && (
+                        <span className="block text-[10px] text-gray-400 mt-0.5 tabular-nums">{loginLabel}</span>
+                      )}
+                    </Td>
+                    <Td>
+                      <span className="font-semibold text-gray-900 tabular-nums">{a._count.orders}</span>
+                    </Td>
+                    <Td>
+                      <span className="text-xs text-gray-500">{orderLabel ?? "—"}</span>
+                    </Td>
+                  </tr>
+                );
+              })}
+              {sortedAccounts.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">
+                    No group accounts yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </main>
     </div>
   );
