@@ -28,6 +28,7 @@ model Contact {
   bouncedAt      DateTime?
   complainedAt   DateTime?
   source         String?
+  country        String?   // ISO 3166-1 alpha-2, e.g. "GB" — set on first real click
 
   lists         ContactList[]
   campaignSends CampaignSend[]
