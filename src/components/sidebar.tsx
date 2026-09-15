@@ -13,6 +13,7 @@ type SidebarProps = {
     | "lists"
     | "templates"
     | "campaigns"
+    | "segments"
     | "reports"
     | "settings"
     | "ibsa"
@@ -167,6 +168,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
         <Link href="/lists"      onClick={onClose} className={active === "lists"      ? activeClass : base}>Lists</Link>
         <Link href="/templates"  onClick={onClose} className={active === "templates"  ? activeClass : base}>Templates</Link>
         <Link href="/campaigns"  onClick={onClose} className={active === "campaigns"  ? activeClass : base}>Campaigns</Link>
+        <Link href="/segments"   onClick={onClose} className={active === "segments"   ? activeClass : base}>Segments</Link>
         <Link href="/reports"    onClick={onClose} className={active === "reports"    ? activeClass : base}>Reports</Link>
         <Link href="/settings"   onClick={onClose} className={active === "settings"   ? activeClass : base}>Settings</Link>
 

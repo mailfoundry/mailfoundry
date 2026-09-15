@@ -10,6 +10,7 @@ import {
   removeContactFromList,
   restoreContact,
 } from "./actions";
+import ContactWebBehaviour from "./ContactWebBehaviour";
 
 export const dynamic = "force-dynamic";
 
@@ -99,6 +100,16 @@ function formatDate(date: Date | null) {
   return date ? new Date(date).toLocaleString() : "—";
 }
 
+function shortUrl(url: string) {
+  try {
+    const u = new URL(url);
+    const path = u.pathname + u.search;
+    return path.length > 60 ? path.slice(0, 57) + "…" : path;
+  } catch {
+    return url.length > 60 ? url.slice(0, 57) + "…" : url;
+  }
+}
+
 export default async function ContactDetailPage({
   params,
 }: ContactDetailPageProps) {
@@ -119,11 +130,14 @@ export default async function ContactDetailPage({
         campaignSends: {
           include: {
             campaign: true,
+            clicks: {
+              orderBy: { clickedAt: "asc" },
+            },
           },
           orderBy: {
             sentAt: "desc",
           },
-          take: 10,
+          take: 20,
         },
       },
     }),
@@ -159,7 +173,7 @@ export default async function ContactDetailPage({
           <p className="text-sm text-gray-500">Audience</p>
           <h2 className="text-3xl font-bold">{contact.email}</h2>
           <p className="mt-2 text-sm text-gray-500">
-            Contact record and campaign history.
+            Contact record, campaign history, and web behaviour.
           </p>
         </div>
 
@@ -200,7 +214,7 @@ export default async function ContactDetailPage({
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-4">
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
           <p className="text-sm text-gray-500">Name</p>
           <p className="mt-3 text-lg font-semibold">
@@ -223,6 +237,11 @@ export default async function ContactDetailPage({
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
           <p className="text-sm text-gray-500">Source</p>
           <p className="mt-3 text-lg font-semibold">{contact.source || "—"}</p>
+        </div>
+
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+          <p className="text-sm text-gray-500">Country</p>
+          <p className="mt-3 text-lg font-semibold">{contact.country || "—"}</p>
         </div>
       </div>
 
@@ -355,56 +374,78 @@ export default async function ContactDetailPage({
         )}
       </div>
 
+      {/* Campaign activity + clicks */}
       <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
-        <h3 className="text-xl font-semibold">Recent Campaign Activity</h3>
+        <h3 className="text-xl font-semibold">Campaign Activity</h3>
 
         {contact.campaignSends.length === 0 ? (
           <p className="mt-4 text-sm text-gray-400">
             No campaign activity recorded for this contact yet.
           </p>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-500">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Campaign</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Sent At</th>
-                  <th className="px-4 py-3 font-medium">Error</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {contact.campaignSends.map((send) => (
-                  <tr key={send.id}>
-                    <td className="px-4 py-3 text-gray-600">
-                      <Link
-                        href={`/campaigns/${send.campaign.id}`}
-                        className="hover:underline"
-                      >
-                        {send.campaign.name}
-                      </Link>
-                    </td>
-
-                    <td className="px-4 py-3">
-                      <span className={getSendStatusClassName(send.status)}>
-                        {send.status}
+          <div className="mt-4 space-y-3">
+            {contact.campaignSends.map((send) => (
+              <div
+                key={send.id}
+                className="rounded-xl border border-gray-100 bg-gray-50 p-4"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/campaigns/${send.campaign.id}`}
+                      className="font-medium text-gray-800 hover:underline"
+                    >
+                      {send.campaign.name}
+                    </Link>
+                    <span className={getSendStatusClassName(send.status)}>
+                      {send.status}
+                    </span>
+                    {send.openedAt && (
+                      <span className="rounded-full bg-blue-500/10 px-2 py-1 text-xs font-semibold text-blue-600">
+                        Opened
                       </span>
-                    </td>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-xs text-gray-400">
+                    {new Date(send.sentAt).toLocaleString()}
+                  </span>
+                </div>
 
-                    <td className="px-4 py-3 text-gray-500">
-                      {new Date(send.sentAt).toLocaleString()}
-                    </td>
+                {send.clicks.length > 0 && (
+                  <div className="mt-3 space-y-1 border-t border-gray-200 pt-3">
+                    {send.clicks.map((click) => (
+                      <div
+                        key={click.id}
+                        className="flex items-center justify-between gap-2"
+                      >
+                        <a
+                          href={click.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-xs text-blue-600 hover:underline"
+                          title={click.url}
+                        >
+                          {shortUrl(click.url)}
+                        </a>
+                        <span className="shrink-0 text-[10px] text-gray-400">
+                          {new Date(click.clickedAt).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                    <td className="px-4 py-3 text-gray-400">
-                      {send.error || "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                {send.error && (
+                  <p className="mt-2 text-xs text-red-400">{send.error}</p>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Web behaviour — page views attributed via swf_cid cookie */}
+      <ContactWebBehaviour contactId={contact.id} />
     </AppShell>
   );
 }

@@ -8,6 +8,7 @@ type AppShellProps = {
     | "lists"
     | "templates"
     | "campaigns"
+    | "segments"
     | "reports"
     | "settings"
     | "ibsa"

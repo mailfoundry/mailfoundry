@@ -37,6 +37,32 @@ function getCountry(request: Request): string | null {
   return country && country.length === 2 ? country.toUpperCase() : null;
 }
 
+/** SWF domains — we inject swf_cid only into these so the ID never leaks to third parties. */
+const SWF_HOSTS = new Set([
+  "staffordshirewoodfuels.co.uk",
+  "www.staffordshirewoodfuels.co.uk",
+]);
+
+function isSWFDestination(destination: string): boolean {
+  try {
+    const host = new URL(destination).hostname;
+    return SWF_HOSTS.has(host);
+  } catch {
+    return false;
+  }
+}
+
+/** Append ?swf_cid=<contactId> to a URL, safely merging with any existing params. */
+function injectContactId(destination: string, contactId: string): string {
+  try {
+    const url = new URL(destination);
+    url.searchParams.set("swf_cid", contactId);
+    return url.toString();
+  } catch {
+    return destination;
+  }
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const sendId = searchParams.get("s");
@@ -48,6 +74,8 @@ export async function GET(request: Request) {
     return new NextResponse("Invalid destination", { status: 400 });
   }
 
+  let finalDestination = destination;
+
   if (sendId) {
     const country = getCountry(request);
 
@@ -57,17 +85,24 @@ export async function GET(request: Request) {
         data: { sendId, url: destination },
       });
 
-      // Tag the contact's country on first real click (never overwrites once set)
-      if (country) {
-        const send = await prisma.campaignSend.findUnique({
-          where: { id: sendId },
-          select: { contactId: true },
-        });
-        if (send?.contactId) {
+      // Look up the contact for country-tagging and swf_cid injection
+      const send = await prisma.campaignSend.findUnique({
+        where: { id: sendId },
+        select: { contactId: true },
+      });
+
+      if (send?.contactId) {
+        // Tag country on first real click (never overwrites once set)
+        if (country) {
           await prisma.contact.updateMany({
             where: { id: send.contactId, country: null },
             data: { country },
           });
+        }
+
+        // Inject swf_cid into SWF destination URLs so the site can attribute page views
+        if (isSWFDestination(destination)) {
+          finalDestination = injectContactId(destination, send.contactId);
         }
       }
     } catch {
@@ -75,5 +110,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(destination, { status: 302 });
+  return NextResponse.redirect(finalDestination, { status: 302 });
 }
