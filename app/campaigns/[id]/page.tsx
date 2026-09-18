@@ -60,25 +60,40 @@ export default async function CampaignDetailPage({
 }: CampaignPageProps) {
   const { id } = await params;
 
-  const campaign = await prisma.campaign.findUnique({
-    where: { id },
-    include: {
-      list: {
-        include: {
-          contacts: {
-            include: {
-              contact: true,
+  const [campaign, rawClicks] = await Promise.all([
+    prisma.campaign.findUnique({
+      where: { id },
+      include: {
+        list: {
+          include: {
+            contacts: {
+              include: {
+                contact: true,
+              },
             },
           },
         },
-      },
-      sends: {
-        orderBy: {
-          sentAt: "desc",
+        sends: {
+          orderBy: {
+            sentAt: "desc",
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.campaignClick.findMany({
+      where: { send: { campaignId: id } },
+      orderBy: { clickedAt: "desc" },
+      include: {
+        send: {
+          select: {
+            email: true,
+            contactId: true,
+            contact: { select: { id: true, firstName: true, lastName: true } },
+          },
+        },
+      },
+    }),
+  ]);
 
   if (!campaign) {
     notFound();
@@ -154,6 +169,35 @@ export default async function CampaignDetailPage({
   const skippedUnknownSends = campaign.sends.filter(
     (send) => send.status === "skipped_unknown"
   );
+
+  // ── Click pivot ───────────────────────────────────────────────────────────
+  // Group all clicks by URL, collect unique clickers per URL
+  type Clicker = { email: string; contactId: string | null; name: string };
+  const clickMap = new Map<string, { total: number; clickers: Map<string, Clicker> }>();
+
+  for (const click of rawClicks) {
+    if (!clickMap.has(click.url)) {
+      clickMap.set(click.url, { total: 0, clickers: new Map() });
+    }
+    const entry = clickMap.get(click.url)!;
+    entry.total++;
+    const key = click.send.contactId ?? click.send.email;
+    if (!entry.clickers.has(key)) {
+      entry.clickers.set(key, {
+        email: click.send.email,
+        contactId: click.send.contactId,
+        name: [click.send.contact?.firstName, click.send.contact?.lastName]
+          .filter(Boolean).join(" ") || click.send.email,
+      });
+    }
+  }
+
+  const clickRows = [...clickMap.entries()]
+    .map(([url, { total, clickers }]) => ({ url, total, clickers: [...clickers.values()] }))
+    .sort((a, b) => b.total - a.total);
+
+  const totalClicks = rawClicks.length;
+  const uniqueClickers = new Set(rawClicks.map(c => c.send.contactId ?? c.send.email)).size;
 
   return (
     <AppShell active="campaigns">
@@ -394,6 +438,90 @@ export default async function CampaignDetailPage({
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      {/* ── Click Breakdown ── */}
+      <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-xl font-semibold">Click Breakdown</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Which links were clicked and who clicked them.
+            </p>
+          </div>
+          {totalClicks > 0 && (
+            <div className="flex gap-4 text-right shrink-0">
+              <div>
+                <p className="text-2xl font-bold text-sky-500">{totalClicks}</p>
+                <p className="text-xs text-gray-400">total clicks</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-sky-500">{uniqueClickers}</p>
+                <p className="text-xs text-gray-400">unique clickers</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {clickRows.length === 0 ? (
+          <p className="text-sm text-gray-400">No clicks recorded for this campaign yet.</p>
+        ) : (
+          <div className="space-y-4">
+            {clickRows.map(({ url, total, clickers }) => {
+              let displayUrl: string;
+              try {
+                const u = new URL(url);
+                displayUrl = u.pathname + (u.search || "");
+              } catch {
+                displayUrl = url;
+              }
+              return (
+                <div key={url} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <div className="min-w-0">
+                      <p className="font-mono text-xs text-gray-500 truncate" title={url}>
+                        {displayUrl}
+                      </p>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-gray-300 hover:text-gray-500 hover:underline"
+                      >
+                        {url.length > 80 ? url.slice(0, 80) + "…" : url}
+                      </a>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <span className="text-lg font-bold text-gray-900">{total}</span>
+                      <span className="ml-1 text-xs text-gray-400">click{total !== 1 ? "s" : ""}</span>
+                      <p className="text-xs text-gray-400">{clickers.length} unique</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {clickers.map(c => (
+                      c.contactId ? (
+                        <Link
+                          key={c.contactId}
+                          href={`/contacts/${c.contactId}`}
+                          className="rounded-full bg-white border border-gray-200 px-3 py-1 text-xs text-gray-700 hover:border-gray-400 hover:text-gray-900 transition-colors"
+                        >
+                          {c.name}
+                        </Link>
+                      ) : (
+                        <span
+                          key={c.email}
+                          className="rounded-full bg-white border border-gray-200 px-3 py-1 text-xs text-gray-500"
+                        >
+                          {c.email}
+                        </span>
+                      )
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
