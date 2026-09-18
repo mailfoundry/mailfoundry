@@ -171,6 +171,9 @@ export default async function CampaignDetailPage({
   );
 
   // ── Click pivot ───────────────────────────────────────────────────────────
+  // Filter out bot/prefetch noise — static assets, tracking pixels, etc.
+  const JUNK_PATTERNS = [/_next\/static/, /\.(js|css|png|jpg|gif|ico|woff|svg)(\?|$)/, /api\/track/];
+
   // Group all clicks by URL, collect unique clickers per URL
   type Clicker = { email: string; contactId: string | null; name: string };
   const clickMap = new Map<string, { total: number; clickers: Map<string, Clicker> }>();
@@ -193,11 +196,13 @@ export default async function CampaignDetailPage({
   }
 
   const clickRows = [...clickMap.entries()]
+    .filter(([url]) => !JUNK_PATTERNS.some(p => p.test(url)))
     .map(([url, { total, clickers }]) => ({ url, total, clickers: [...clickers.values()] }))
     .sort((a, b) => b.total - a.total);
 
-  const totalClicks = rawClicks.length;
-  const uniqueClickers = new Set(rawClicks.map(c => c.send.contactId ?? c.send.email)).size;
+  const realClicks = rawClicks.filter(c => !JUNK_PATTERNS.some(p => p.test(c.url)));
+  const totalClicks = realClicks.length;
+  const uniqueClickers = new Set(realClicks.map(c => c.send.contactId ?? c.send.email)).size;
 
   return (
     <AppShell active="campaigns">
