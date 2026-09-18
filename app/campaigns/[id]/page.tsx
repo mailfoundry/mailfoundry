@@ -172,7 +172,7 @@ export default async function CampaignDetailPage({
 
   // ── Click pivot ───────────────────────────────────────────────────────────
   // Filter out bot/prefetch noise — static assets, tracking pixels, etc.
-  const JUNK_PATTERNS = [/_next\/static/, /\.(js|css|png|jpg|gif|ico|woff|svg)(\?|$)/, /api\/track/];
+  const JUNK_PATTERNS = [/_next\/static/, /\.(js|css|png|jpg|gif|ico|woff|svg)(\?|$)/, /api\/track/, /\/unsubscribe(\?|$)/];
 
   // Group all clicks by URL, collect unique clickers per URL
   type Clicker = { email: string; contactId: string | null; name: string };
