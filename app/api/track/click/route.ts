@@ -37,6 +37,34 @@ function getCountry(request: Request): string | null {
   return country && country.length === 2 ? country.toUpperCase() : null;
 }
 
+/**
+ * Returns true if the User-Agent looks like a bot, scanner, or email pre-fetcher.
+ * Gmail, Outlook SafeLinks, and security scanners all hit tracked links before
+ * the human ever sees the email — we redirect them but don't record a click.
+ */
+function isBotUserAgent(ua: string): boolean {
+  if (!ua) return true; // no UA at all → almost certainly a scanner
+  return /googlebot|google-safety|adsbot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver|msnbot|safedns|barracuda|proofpoint|symantec|messagelabs|mimecast|ironport|sophos|cisco|fireeye|outlook\.com|mail\.ru|postmaster|preview|prefetch|scanner|crawler|spider|headless|phantomjs|puppeteer|selenium|wget|curl\/|python-requests|java\//i.test(ua);
+}
+
+/**
+ * Returns true if the destination URL is one we should redirect but not record —
+ * e.g. unsubscribe links (the act of unsubscribing is already tracked separately).
+ */
+function isSilentDestination(destination: string): boolean {
+  try {
+    const url = new URL(destination);
+    // Unsubscribe paths on any of our domains
+    if (url.pathname.startsWith("/unsubscribe")) return true;
+    // Static assets that somehow ended up tracked
+    if (/\.(js|css|png|jpg|gif|ico|woff2?|svg|map)(\?|$)/i.test(url.pathname)) return true;
+    if (url.pathname.startsWith("/_next/")) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 /** SWF domains — we inject swf_cid only into these so the ID never leaks to third parties. */
 const SWF_HOSTS = new Set([
   "staffordshirewoodfuels.co.uk",
@@ -76,7 +104,11 @@ export async function GET(request: Request) {
 
   let finalDestination = destination;
 
-  if (sendId) {
+  const ua = request.headers.get("user-agent") ?? "";
+  const isBot    = isBotUserAgent(ua);
+  const isSilent = isSilentDestination(destination);
+
+  if (sendId && !isBot && !isSilent) {
     const country = getCountry(request);
 
     try {
