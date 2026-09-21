@@ -22,31 +22,22 @@ export async function unsubscribeContact(formData: FormData) {
     .toLowerCase();
   const sig = String(formData.get("sig") || "").trim();
 
-  if (!email) {
-    redirect("/unsubscribe?error=missing-email");
+  // Silently succeed on any invalid input — gives attackers nothing to probe,
+  // and a forged POST can never reach the DB write below anyway.
+  if (!email || !sig || !verifySignature(email, sig)) {
+    redirect(`/unsubscribe?success=1`);
   }
 
-  if (!sig || !verifySignature(email, sig)) {
-    redirect("/unsubscribe?error=invalid-link");
-  }
+  const contact = await prisma.contact.findUnique({ where: { email } });
 
-  const contact = await prisma.contact.findUnique({
-    where: {
-      email,
-    },
-  });
-
+  // Silently succeed if contact not found — avoids email enumeration via POST.
   if (!contact) {
-    redirect(`/unsubscribe?email=${encodeURIComponent(email)}&error=not-found`);
+    redirect(`/unsubscribe?email=${encodeURIComponent(email)}&success=1`);
   }
 
   await prisma.contact.update({
-    where: {
-      email,
-    },
-    data: {
-      unsubscribedAt: new Date(),
-    },
+    where: { email },
+    data: { unsubscribedAt: new Date() },
   });
 
   redirect(`/unsubscribe?email=${encodeURIComponent(email)}&success=1`);
