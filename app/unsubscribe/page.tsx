@@ -3,6 +3,7 @@ import { unsubscribeContact } from "./actions";
 type UnsubscribePageProps = {
   searchParams: Promise<{
     email?: string;
+    sig?: string;
     success?: string;
     error?: string;
   }>;
@@ -14,6 +15,7 @@ export default async function UnsubscribePage({
   const params = await searchParams;
 
   const email = params.email || "";
+  const sig = params.sig || "";
   const success = params.success === "1";
   const error = params.error;
   const businessName = process.env.BUSINESS_NAME || "MailFoundry";
@@ -58,6 +60,7 @@ export default async function UnsubscribePage({
             {email && (
               <form action={unsubscribeContact} className="mt-6 space-y-4">
                 <input type="hidden" name="email" value={email} />
+                <input type="hidden" name="sig" value={sig} />
 
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                   <p className="text-sm text-gray-500">Email address</p>
