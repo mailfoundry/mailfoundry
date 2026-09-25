@@ -3,7 +3,7 @@ import Sidebar from "../../../src/components/sidebar";
 
 export const metadata = { title: "Analytics" };
 
-const EXCLUDED_IPS = ["81.153.15.100"];
+const EXCLUDED_IPS = ["81.153.15.100", "31.94.62.165"];
 export const dynamic = "force-dynamic";
 
 function parseBrowser(ua: string): string {
