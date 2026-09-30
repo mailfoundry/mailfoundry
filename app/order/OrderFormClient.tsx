@@ -477,7 +477,7 @@ export default function OrderFormClient({
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Group type *</label>
                 <select name="groupType" value={groupType} onChange={(e) => setGroupType(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500">
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none focus:border-orange-500">
                   {GROUP_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </div>
@@ -487,13 +487,13 @@ export default function OrderFormClient({
                 </label>
                 <input type="text" name="groupName" value={groupName} onChange={(e) => setGroupName(e.target.value)}
                   placeholder={groupType === "circuit" ? "e.g. North West 10B" : "e.g. Regional Name / Venue"}
-                  required className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
+                  required className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Contact name *</label>
                 <input type="text" name="contactName" value={contactName} onChange={(e) => setContactName(e.target.value)}
                   placeholder="Your name" required
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
                 <label className="mb-1 flex items-center justify-between text-xs text-gray-500">
@@ -509,7 +509,7 @@ export default function OrderFormClient({
                   onChange={(e) => setContactEmail(e.target.value.toLowerCase())}
                   onBlur={(e) => { setContactEmail(e.target.value.trim().toLowerCase()); setEmailTouched(true); }}
                   placeholder="you@example.com" required
-                  className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 ${
+                  className={`w-full rounded-lg border bg-white px-3 py-2.5 text-base text-gray-900 outline-none placeholder:text-gray-400 ${
                     !emailTouched ? "border-gray-300 focus:border-orange-500" :
                     emailRegex.test(contactEmail) ? "border-green-400 focus:border-green-500" :
                     "border-red-400 focus:border-red-500"
@@ -521,14 +521,14 @@ export default function OrderFormClient({
                   onChange={(e) => setContactMobile(formatUKMobile(e.target.value))}
                   placeholder="07700 123 456"
                   required
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-gray-500">Required by date</label>
                 <input type="text" name="requiredByDate" value={requiredByDate}
                   onChange={(e) => setRequiredByDate(e.target.value)}
                   placeholder="DD/MM/YYYY"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400" />
                 <p className="mt-1 text-xs text-gray-400">Please place orders at least two weeks before the required date.</p>
               </div>
               <div>
@@ -536,14 +536,14 @@ export default function OrderFormClient({
                 <AddressAutocomplete
                   required
                   defaultValue={prefill?.deliveryAddress ?? ""}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs text-gray-500">Additional notes (optional)</label>
                 <textarea name="notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. preferred delivery time, access instructions…"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 resize-none" />
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 resize-none" />
               </div>
             </div>
           </div>
@@ -639,7 +639,7 @@ export default function OrderFormClient({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
                 </svg>
                 <input type="search" placeholder="Search products…" value={search} onChange={(e) => setSearch(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-9 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none" />
+                  className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-9 pr-4 text-base text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none" />
               </div>
 
               {/* Products */}
