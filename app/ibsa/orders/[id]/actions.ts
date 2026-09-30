@@ -7,10 +7,12 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../src/lib/prisma";
 import { sendEmail } from "../../../../src/lib/sendEmail";
 
-/** Guard: redirect to login if ibsa_auth cookie is absent. */
+/** Guard: redirect to login if neither mailfoundry_auth (main user) nor ibsa_auth (IBSA admin) cookie is present. */
 async function requireIbsaAuth() {
   const jar = await cookies();
-  if (!jar.get("ibsa_auth")?.value) {
+  const isMainUser = jar.get("mailfoundry_auth")?.value === "1";
+  const isIbsaUser = !!jar.get("ibsa_auth")?.value;
+  if (!isMainUser && !isIbsaUser) {
     redirect("/ibsa/login");
   }
 }
