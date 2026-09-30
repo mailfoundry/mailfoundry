@@ -57,7 +57,7 @@ function groupTypeBadge(type: string) {
 }
 
 export default async function ToolsPage() {
-  const ipFilter = { ip: { notIn: EXCLUDED_IPS }, path: { not: { startsWith: "/unsubscribe" } } };
+  const ipFilter = { ip: { notIn: EXCLUDED_IPS }, pathname: { not: { startsWith: "/unsubscribe" } } };
 
   const [views, todayCount, weekCount, total, accounts] = await Promise.all([
     prisma.pageView.findMany({

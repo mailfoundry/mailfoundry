@@ -433,11 +433,16 @@ export async function amendOrder(formData: FormData) {
 
 export async function deleteOrder(formData: FormData) {
   await requireIbsaAuth();
-  const orderId   = (formData.get("orderId")   as string).trim();
-  const groupType = (formData.get("groupType") as string).trim();
+  const orderId   = (formData.get("orderId")   as string | null)?.trim() ?? "";
+  const groupType = (formData.get("groupType") as string | null)?.trim() ?? "";
   if (!orderId) return;
 
-  await prisma.ibsaGroupOrder.delete({ where: { id: orderId } });
+  try {
+    await prisma.ibsaGroupOrder.delete({ where: { id: orderId } });
+  } catch (err) {
+    console.error("[deleteOrder] DB error:", err);
+    throw new Error("Failed to delete order — please try again.");
+  }
 
   revalidatePath("/ibsa");
   revalidatePath("/ibsa/orders");
