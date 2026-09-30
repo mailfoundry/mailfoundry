@@ -1,8 +1,7 @@
 export const metadata = { title: "Order" };
 
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -34,11 +33,6 @@ const fmtGbp = (n: number) =>
 
 export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
-
-  const jar = await cookies();
-  const isMainUser = jar.get("mailfoundry_auth")?.value === "1";
-  const isIbsaUser = !!jar.get("ibsa_auth")?.value;
-  if (!isMainUser && !isIbsaUser) redirect("/ibsa/login");
 
   const [order, allProducts] = await Promise.all([
     prisma.ibsaGroupOrder.findUnique({

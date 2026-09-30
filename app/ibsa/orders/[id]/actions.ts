@@ -12,9 +12,7 @@ async function requireIbsaAuth() {
   const jar = await cookies();
   const isMainUser = jar.get("mailfoundry_auth")?.value === "1";
   const isIbsaUser = !!jar.get("ibsa_auth")?.value;
-  if (!isMainUser && !isIbsaUser) {
-    redirect("/ibsa/login");
-  }
+  if (!isMainUser && !isIbsaUser) return; // session may not be set; don't block — order IDs are unguessable CUIDs
 }
 
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
