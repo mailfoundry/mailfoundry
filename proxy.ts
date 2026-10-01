@@ -106,7 +106,9 @@ export function proxy(request: NextRequest) {
     if (isMainLoggedIn || isIbsaLoggedIn) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/ibsa/login", request.url));
+    // Redirect to main login so the admin lands on the right page.
+    // IBSA-only users can still reach /ibsa/login directly (it's in publicPaths).
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // All other routes require main auth
