@@ -10,7 +10,8 @@ type Props = {
 
 export default async function IbsaAppShell({ active, children }: Props) {
   const cookieStore = await cookies();
-  const isMainUser = cookieStore.get("mailfoundry_auth")?.value === "1";
+  const cookieName = process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth";
+  const isMainUser = cookieStore.get(cookieName)?.value === "1";
   const ibsaOnly = !isMainUser && cookieStore.get("ibsa_auth")?.value === "1";
 
   const [groupOrderCounts, conventionCounts] = await Promise.all([

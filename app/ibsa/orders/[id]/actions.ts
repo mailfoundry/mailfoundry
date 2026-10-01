@@ -10,7 +10,7 @@ import { sendEmail } from "../../../../src/lib/sendEmail";
 /** Guard: redirect to login if neither mailfoundry_auth (main user) nor ibsa_auth (IBSA admin) cookie is present. */
 async function requireIbsaAuth() {
   const jar = await cookies();
-  const isMainUser = jar.get("mailfoundry_auth")?.value === "1";
+  const isMainUser = jar.get(process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth")?.value === "1";
   const isIbsaUser = !!jar.get("ibsa_auth")?.value;
   if (!isMainUser && !isIbsaUser) return; // session may not be set; don't block — order IDs are unguessable CUIDs
 }
