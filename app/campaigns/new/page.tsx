@@ -226,10 +226,13 @@ export default async function NewCampaignPage({
           <SubmitButton pendingText="Saving...">Save Campaign</SubmitButton>
         </form>
         <script dangerouslySetInnerHTML={{ __html: `
-          document.querySelector('form').addEventListener('submit', function() {
-            var local = document.getElementById('scheduledAtLocal').value;
-            if (local) document.getElementById('scheduledAtUtc').value = new Date(local).toISOString();
-          });
+          var inp = document.getElementById('scheduledAtLocal');
+          function syncUtc() {
+            var v = inp.value;
+            document.getElementById('scheduledAtUtc').value = v ? new Date(v).toISOString() : '';
+          }
+          inp.addEventListener('change', syncUtc);
+          syncUtc();
         `}} />
       </div>
     </AppShell>
