@@ -5,6 +5,7 @@ import { prisma } from "../../../src/lib/prisma";
 import AppShell from "../../../src/components/app-shell";
 import { createCampaign } from "./actions";
 import SubmitButton from "../../../src/components/submit-button";
+import ScheduledAtInput from "../../../src/components/scheduled-at-input";
 
 export const dynamic = "force-dynamic";
 
@@ -211,13 +212,7 @@ export default async function NewCampaignPage({
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Schedule Send <span className="text-gray-400">(optional)</span>
             </label>
-            <input
-              type="datetime-local"
-              id="scheduledAtLocal"
-              name="scheduledAt"
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none focus:border-orange-500"
-            />
-            <input type="hidden" name="scheduledAtUtc" id="scheduledAtUtc" />
+            <ScheduledAtInput />
             <p className="mt-2 text-sm text-gray-400">
               Leave blank to save as a draft and send manually. Set a time to schedule automatic sending.
             </p>
@@ -225,15 +220,6 @@ export default async function NewCampaignPage({
 
           <SubmitButton pendingText="Saving...">Save Campaign</SubmitButton>
         </form>
-        <script dangerouslySetInnerHTML={{ __html: `
-          var inp = document.getElementById('scheduledAtLocal');
-          function syncUtc() {
-            var v = inp.value;
-            document.getElementById('scheduledAtUtc').value = v ? new Date(v).toISOString() : '';
-          }
-          inp.addEventListener('change', syncUtc);
-          syncUtc();
-        `}} />
       </div>
     </AppShell>
   );

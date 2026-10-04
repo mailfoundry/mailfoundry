@@ -5,6 +5,7 @@ import { prisma } from "../../../../src/lib/prisma";
 import { notFound } from "next/navigation";
 import AppShell from "../../../../src/components/app-shell";
 import { updateCampaign } from "./actions";
+import ScheduledAtInput from "../../../../src/components/scheduled-at-input";
 
 export const dynamic = "force-dynamic";
 
@@ -232,20 +233,13 @@ export default async function EditCampaignPage({
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Schedule Send <span className="text-gray-400">(optional)</span>
             </label>
-            <input
-              type="datetime-local"
-              id="scheduledAtLocal"
-              name="scheduledAt"
+            <ScheduledAtInput
               defaultValue={
                 campaign.scheduledAt
-                  ? new Date(campaign.scheduledAt.getTime() - campaign.scheduledAt.getTimezoneOffset() * 60000)
-                      .toISOString()
-                      .slice(0, 16)
+                  ? campaign.scheduledAt.toISOString().slice(0, 16)
                   : ""
               }
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
             />
-            <input type="hidden" name="scheduledAtUtc" id="scheduledAtUtc" />
             <p className="mt-2 text-sm text-gray-400">
               Set a time to schedule, or leave blank to keep the current status ({campaign.status}).
             </p>
@@ -258,15 +252,6 @@ export default async function EditCampaignPage({
             Save Changes
           </button>
         </form>
-        <script dangerouslySetInnerHTML={{ __html: `
-          var inp = document.getElementById('scheduledAtLocal');
-          function syncUtc() {
-            var v = inp.value;
-            document.getElementById('scheduledAtUtc').value = v ? new Date(v).toISOString() : '';
-          }
-          inp.addEventListener('change', syncUtc);
-          syncUtc();
-        `}} />
       </div>
     </AppShell>
   );
