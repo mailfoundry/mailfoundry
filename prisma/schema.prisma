@@ -71,6 +71,7 @@ model Campaign {
   id          String    @id @default(cuid())
   name        String
   subject     String
+  preheader   String?
   fromEmail   String?
   body        String
   html        String?

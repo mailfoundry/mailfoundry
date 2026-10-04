@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
-import { addEmailFooter } from "@/src/lib/emailFooter";
+import { addEmailFooter, addPreheader } from "@/src/lib/emailFooter";
 
 // Allow up to 5 minutes on Vercel Pro for large sends
 export const maxDuration = 300;
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
           ? campaign.html
           : `<div style="font-family:Arial,sans-serif;line-height:1.6">${campaign.body.replace(/\n/g, "<br/>")}</div>`;
 
-      const htmlWithFooter = addEmailFooter(baseHtml, contact.email, campaign.fromEmail);
+      const htmlWithFooter = addPreheader(addEmailFooter(baseHtml, contact.email, campaign.fromEmail), campaign.preheader);
 
       const htmlWithClicks = htmlWithFooter.replace(
         /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,

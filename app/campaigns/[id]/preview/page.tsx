@@ -5,7 +5,7 @@ import { prisma } from "../../../../src/lib/prisma";
 import { notFound } from "next/navigation";
 import AppShell from "../../../../src/components/app-shell";
 import SendTestEmailForm from "../../../../src/components/send-test-email-form";
-import { addEmailFooter } from "../../../../src/lib/emailFooter";
+import { addEmailFooter, addPreheader } from "../../../../src/lib/emailFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,7 @@ export default async function PreviewCampaignPage({
       </div>
     `;
 
-  const previewHtml = addEmailFooter(basePreviewHtml, "preview@example.com", campaign.fromEmail);
+  const previewHtml = addPreheader(addEmailFooter(basePreviewHtml, "preview@example.com", campaign.fromEmail), campaign.preheader);
 
   return (
     <AppShell active="campaigns">

@@ -113,6 +113,21 @@ export default async function NewCampaignPage({
 
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
+              Preview Line <span className="text-gray-400">(optional)</span>
+            </label>
+            <input
+              type="text"
+              name="preheader"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
+              placeholder="The short text that appears in the inbox before opening…"
+            />
+            <p className="mt-2 text-sm text-gray-400">
+              Shown in most email clients as a preview after the subject line. Keep under 90 characters.
+            </p>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               From Name &amp; Email
             </label>
             <input

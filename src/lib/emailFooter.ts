@@ -11,6 +11,16 @@ function businessNameFromEmail(fromEmail?: string | null): string {
   return process.env.BUSINESS_NAME || "IBSA";
 }
 
+export function addPreheader(html: string, preheader?: string | null): string {
+  if (!preheader?.trim()) return html;
+  // Invisible preheader text — suppresses email clients from pulling in body copy as the preview
+  const tag = `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader.trim()}&zwnj;&nbsp;`.repeat(1) + `</div>`;
+  if (html.includes("<body")) {
+    return html.replace(/<body([^>]*)>/, `<body$1>${tag}`);
+  }
+  return `${tag}${html}`;
+}
+
 export function addEmailFooter(html: string, recipientEmail?: string, fromEmail?: string | null) {
   const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   const businessName = businessNameFromEmail(fromEmail);

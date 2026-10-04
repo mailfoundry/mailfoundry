@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 export async function createCampaign(formData: FormData) {
   const name        = formData.get("name")?.toString().trim() || "";
   const subject     = formData.get("subject")?.toString().trim() || "";
+  const preheader   = formData.get("preheader")?.toString().trim() || "";
   const fromEmail   = formData.get("fromEmail")?.toString().trim() || "";
   const body        = formData.get("body")?.toString().trim() || "";
   const html        = formData.get("html")?.toString().trim() || "";
@@ -29,6 +30,7 @@ export async function createCampaign(formData: FormData) {
     data: {
       name,
       subject,
+      preheader: preheader || null,
       fromEmail: fromEmail || null,
       body,
       html: html || null,
