@@ -5,9 +5,15 @@ function signEmail(email: string): string {
   return createHmac("sha256", secret).update(email).digest("hex");
 }
 
-export function addEmailFooter(html: string, recipientEmail?: string) {
+function businessNameFromEmail(fromEmail?: string | null): string {
+  if (fromEmail?.includes("staffordshirewoodfuels")) return "Staffordshire Wood Fuels";
+  if (fromEmail?.includes("staffordshirecleaningsupplies")) return "Staffordshire Cleaning Supplies";
+  return process.env.BUSINESS_NAME || "IBSA";
+}
+
+export function addEmailFooter(html: string, recipientEmail?: string, fromEmail?: string | null) {
   const appBaseUrl = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
-  const businessName = process.env.BUSINESS_NAME || "MailFoundry";
+  const businessName = businessNameFromEmail(fromEmail);
 
   const unsubscribePath = recipientEmail
     ? `/unsubscribe?email=${encodeURIComponent(recipientEmail)}&sig=${signEmail(recipientEmail.toLowerCase())}`

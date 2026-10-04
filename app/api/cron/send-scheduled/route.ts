@@ -106,7 +106,7 @@ export async function GET(request: Request) {
           ? campaign.html
           : `<div style="font-family:Arial,sans-serif;line-height:1.6">${campaign.body.replace(/\n/g, "<br/>")}</div>`;
 
-      const htmlWithFooter = addEmailFooter(baseHtml, contact.email);
+      const htmlWithFooter = addEmailFooter(baseHtml, contact.email, campaign.fromEmail);
 
       const htmlWithClicks = htmlWithFooter.replace(
         /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,

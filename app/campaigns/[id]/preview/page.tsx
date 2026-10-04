@@ -40,7 +40,7 @@ export default async function PreviewCampaignPage({
       </div>
     `;
 
-  const previewHtml = addEmailFooter(basePreviewHtml, "preview@example.com");
+  const previewHtml = addEmailFooter(basePreviewHtml, "preview@example.com", campaign.fromEmail);
 
   return (
     <AppShell active="campaigns">
