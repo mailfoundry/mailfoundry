@@ -62,7 +62,18 @@ export default function ImportContactsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ csv: csvText, listId: listId || undefined, markSubscribed }),
       });
-      const data = await response.json();
+      // The server can return a non-JSON page (e.g. a gateway timeout) — don't let that surface as a cryptic parse error
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(
+          response.ok
+            ? "Unexpected response from the server. Check the contact count before re-trying."
+            : `Server error ${response.status}${response.status === 502 || response.status === 504 ? " (timed out)" : ""}. Anything already imported is saved — it's safe to re-run this file.`
+        );
+      }
       if (!response.ok) throw new Error(data.error || "Import failed.");
       setSummary(data);
       setStatus("done");
