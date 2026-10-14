@@ -4,9 +4,10 @@ type SendEmailInput = {
   subject: string;
   text: string;
   html?: string;
+  headers?: Record<string, string>;
 };
 
-export async function sendEmail({ from, to, subject, text, html }: SendEmailInput) {
+export async function sendEmail({ from, to, subject, text, html, headers }: SendEmailInput) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY is not set");
 
@@ -28,6 +29,7 @@ export async function sendEmail({ from, to, subject, text, html }: SendEmailInpu
       subject,
       text,
       html: html ?? text.replace(/\n/g, "<br />"),
+      ...(headers ? { headers } : {}),
     }),
   });
 

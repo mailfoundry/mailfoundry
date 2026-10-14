@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { sendEmail } from "@/src/lib/sendEmail";
+import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 
 export async function POST(
   request: Request,
@@ -45,6 +46,8 @@ export async function POST(
       subject: campaign.subject,
       text: campaign.body,
       html: htmlContent,
+      // Same one-click unsubscribe headers as real campaign sends, so test results (e.g. mail-tester) match
+      headers: listUnsubscribeHeaders(testEmail),
     });
 
     return NextResponse.json({ success: true });

@@ -21,22 +21,30 @@ function verifySvix(body: string, headers: Headers, secret: string): boolean {
   const id = headers.get("svix-id");
   const timestamp = headers.get("svix-timestamp");
   const signatureHeader = headers.get("svix-signature");
-  if (!id || !timestamp || !signatureHeader) return false;
+  if (!id || !timestamp || !signatureHeader) {
+    console.warn("[resend-webhook] missing svix headers");
+    return false;
+  }
 
   // Reject stale / future-dated messages (replay protection)
   const ts = Number(timestamp);
-  if (!Number.isFinite(ts) || Math.abs(Date.now() / 1000 - ts) > TOLERANCE_SECONDS) return false;
+  if (!Number.isFinite(ts) || Math.abs(Date.now() / 1000 - ts) > TOLERANCE_SECONDS) {
+    console.warn(`[resend-webhook] timestamp outside tolerance: ${timestamp}`);
+    return false;
+  }
 
   const key = Buffer.from(secret.startsWith("whsec_") ? secret.slice(6) : secret, "base64");
   const expected = createHmac("sha256", key).update(`${id}.${timestamp}.${body}`).digest();
 
   // Header holds one or more space-separated "v1,<base64>" signatures
-  return signatureHeader.split(" ").some((part) => {
+  const ok = signatureHeader.split(" ").some((part) => {
     const [version, sig] = part.split(",");
     if (version !== "v1" || !sig) return false;
     const given = Buffer.from(sig, "base64");
     return given.length === expected.length && timingSafeEqual(given, expected);
   });
+  if (!ok) console.warn(`[resend-webhook] signature mismatch (secret starts ${secret.slice(0, 10)}…)`);
+  return ok;
 }
 
 type ResendEvent = {
@@ -56,7 +64,8 @@ function tagValue(tags: ResendEvent["data"]["tags"], name: string): string | und
 }
 
 export async function POST(request: Request) {
-  const secret = process.env.RESEND_WEBHOOK_SECRET;
+  // Trim: a stray space or newline pasted into Railway breaks the signature check
+  const secret = process.env.RESEND_WEBHOOK_SECRET?.trim().replace(/^["']|["']$/g, "");
   if (!secret) {
     console.error("[resend-webhook] RESEND_WEBHOOK_SECRET not set");
     return NextResponse.json({ error: "Not configured" }, { status: 500 });
