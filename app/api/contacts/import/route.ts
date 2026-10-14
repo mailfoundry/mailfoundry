@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 
+export const maxDuration = 300;
+
 type ImportRow = {
   email: string;
   firstName?: string;
@@ -95,52 +97,78 @@ export async function POST(request: Request) {
     const results: ImportResult[] = [];
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // ── Validate + de-duplicate within the file ───────────────────────────────
+    const valid = new Map<string, ImportRow>();
     for (const row of rows) {
       if (!row.email || !emailRegex.test(row.email)) {
         results.push({ email: row.email || "(empty)", status: "skipped", reason: "Invalid email" });
         continue;
       }
+      if (valid.has(row.email)) {
+        results.push({ email: row.email, status: "skipped", reason: "Duplicate in file" });
+        continue;
+      }
+      valid.set(row.email, row);
+    }
+    const emails = [...valid.keys()];
 
-      const existing = await prisma.contact.findUnique({ where: { email: row.email } });
+    // ── Batched writes (a handful of queries per 1,000 rows, not 3 per row) ─────
+    const BATCH = 1000;
+    for (let i = 0; i < emails.length; i += BATCH) {
+      const chunk = emails.slice(i, i + BATCH);
+      const existing = await prisma.contact.findMany({
+        where: { email: { in: chunk } },
+        select: { id: true, email: true, firstName: true, lastName: true, subscribedAt: true },
+      });
+      const existingByEmail = new Map(existing.map((c) => [c.email, c]));
 
-      let contactId: string;
-
-      if (existing) {
-        // Update name/source only if the CSV provides them and they're currently blank
-        await prisma.contact.update({
-          where: { id: existing.id },
-          data: {
-            firstName: row.firstName || existing.firstName,
-            lastName: row.lastName || existing.lastName,
-            source: row.source || existing.source,
-            ...(markSubscribed && !existing.subscribedAt
-              ? { subscribedAt: new Date() }
-              : {}),
-          },
+      // New contacts
+      const toCreate = chunk.filter((e) => !existingByEmail.has(e));
+      if (toCreate.length) {
+        const now = new Date();
+        await prisma.contact.createMany({
+          data: toCreate.map((e) => {
+            const r = valid.get(e)!;
+            return {
+              email: e,
+              firstName: r.firstName || null,
+              lastName: r.lastName || null,
+              source: r.source || "csv_import",
+              subscribedAt: markSubscribed ? now : null,
+            };
+          }),
+          skipDuplicates: true,
         });
-        contactId = existing.id;
-        results.push({ email: row.email, status: "updated" });
-      } else {
-        const contact = await prisma.contact.create({
-          data: {
-            email: row.email,
-            firstName: row.firstName || null,
-            lastName: row.lastName || null,
-            source: row.source || "csv_import",
-            subscribedAt: markSubscribed ? new Date() : null,
-          },
-        });
-        contactId = contact.id;
-        results.push({ email: row.email, status: "created" });
       }
 
-      // Add to list if provided (skip if already a member)
-      if (listId) {
-        await prisma.contactList.upsert({
-          where: { contactId_listId: { contactId, listId } },
-          create: { contactId, listId },
-          update: {},
+      // Existing contacts: mark subscribed only if never subscribed (never touches unsubscribed/bounced),
+      // and fill blank names. Source is left unchanged to preserve where they originally came from.
+      if (markSubscribed) {
+        await prisma.contact.updateMany({
+          where: { email: { in: chunk.filter((e) => existingByEmail.has(e)) }, subscribedAt: null },
+          data: { subscribedAt: new Date() },
         });
+      }
+      for (const c of existing) {
+        const r = valid.get(c.email)!;
+        const firstName = !c.firstName && r.firstName ? r.firstName : undefined;
+        const lastName = !c.lastName && r.lastName ? r.lastName : undefined;
+        if (firstName || lastName) {
+          await prisma.contact.update({ where: { id: c.id }, data: { firstName, lastName } });
+        }
+      }
+
+      // List membership
+      if (listId) {
+        const ids = await prisma.contact.findMany({ where: { email: { in: chunk } }, select: { id: true } });
+        await prisma.contactList.createMany({
+          data: ids.map((c) => ({ contactId: c.id, listId })),
+          skipDuplicates: true,
+        });
+      }
+
+      for (const e of chunk) {
+        results.push({ email: e, status: existingByEmail.has(e) ? "updated" : "created" });
       }
     }
 
