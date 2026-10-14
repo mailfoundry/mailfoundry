@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { addEmailFooter, addPreheader } from "@/src/lib/emailFooter";
+import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 
 // Immediately dispatches a campaign via Resend batch API.
 // Dedup via CampaignSend records means re-triggering is safe.
@@ -106,6 +107,8 @@ export async function POST(
         subject: string;
         text: string;
         html: string;
+        headers: Record<string, string>;
+        tags: { name: string; value: string }[];
       };
     };
 
@@ -140,6 +143,10 @@ export async function POST(
           subject: campaign.subject,
           text: campaign.body,
           html: htmlContent,
+          // One-click unsubscribe (Gmail/Yahoo bulk-sender requirement)
+          headers: listUnsubscribeHeaders(contact.email),
+          // Lets the Resend webhook tie bounces/complaints back to this send
+          tags: [{ name: "send_id", value: sendId }],
         },
       };
     });

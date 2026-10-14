@@ -1,9 +1,4 @@
-import { createHmac } from "crypto";
-
-function signEmail(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_HMAC_SECRET ?? "change-me-in-production";
-  return createHmac("sha256", secret).update(email).digest("hex");
-}
+import { signEmail } from "./unsubscribe";
 
 function businessNameFromEmail(fromEmail?: string | null): string {
   if (fromEmail?.includes("staffordshirewoodfuels")) return "Staffordshire Wood Fuels";
