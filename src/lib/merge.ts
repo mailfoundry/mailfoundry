@@ -53,7 +53,10 @@ function properCase(s: string): string {
 /** Returns a tidy name, or null if it looks like junk. */
 export function cleanName(raw: string | null | undefined): string | null {
   if (!raw) return null;
-  let s = raw.normalize("NFC").replace(/\s+/g, " ").trim().replace(TITLES, "").trim();
+  let s = raw.normalize("NFC").replace(/\s+/g, " ").trim();
+  // Strip stray leading/trailing punctuation from spreadsheet exports, e.g. "'+Anthony" → "Anthony"
+  s = s.replace(/^[^\p{L}]+/u, "").replace(/[^\p{L}]+$/u, "");
+  s = s.replace(TITLES, "").trim();
   if (!s) return null;
   if (s.includes("@") || /https?:|www\./i.test(s)) return null;      // an email or URL
   if (/\d/.test(s)) return null;                                     // digits → not a real name
@@ -65,7 +68,11 @@ export function cleanName(raw: string | null | undefined): string | null {
   // leave deliberate mixed case (e.g. "DeShawn", "McKenzie") alone
   s = s
     .split(/([\s'\-]+)/)
-    .map((part) => (/^[\s'\-]*$/.test(part) ? part : part === part.toUpperCase() || part === part.toLowerCase() ? properCase(part) : part))
+    .map((part) => {
+      if (/^[\s'\-]*$/.test(part)) return part;
+      if (/^[A-Z]{2,3}$/.test(part) && !/[AEIOUY]/.test(part)) return part; // initials like "GC", "TJ"
+      return part === part.toUpperCase() || part === part.toLowerCase() ? properCase(part) : part;
+    })
     .join("");
   if (/^[a-z]$/.test(s[0] ?? "")) s = s[0].toUpperCase() + s.slice(1);
   return s;
