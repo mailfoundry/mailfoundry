@@ -102,6 +102,7 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
           <h2 className="text-3xl font-bold">Contacts</h2>
         </div>
         <div className="flex items-center gap-3">
+          <Link href="/contacts/clean-names" className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100">Clean names</Link>
           <Link href="/contacts/import" className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100">Import CSV</Link>
           <Link href="/contacts/new" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900">Add Contact</Link>
         </div>
