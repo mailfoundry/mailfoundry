@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import AppShell from "../../../../src/components/app-shell";
 import SendTestEmailForm from "../../../../src/components/send-test-email-form";
 import { addEmailFooter, addPreheader } from "../../../../src/lib/emailFooter";
+import { applyMergeTags } from "@/src/lib/merge";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +41,12 @@ export default async function PreviewCampaignPage({
       </div>
     `;
 
-  const previewHtml = addPreheader(addEmailFooter(basePreviewHtml, "preview@example.com", campaign.fromEmail), campaign.preheader);
+  // Preview shows merge tags filled for a sample contact named "Jane"
+  const sample = { firstName: "Jane", lastName: "Smith", email: "preview@example.com" };
+  const previewHtml = addPreheader(
+    addEmailFooter(applyMergeTags(basePreviewHtml, sample, { html: true }), "preview@example.com", campaign.fromEmail),
+    campaign.preheader ? applyMergeTags(campaign.preheader, sample, { html: true }) : campaign.preheader
+  );
 
   return (
     <AppShell active="campaigns">

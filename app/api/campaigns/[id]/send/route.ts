@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { addEmailFooter, addPreheader } from "@/src/lib/emailFooter";
+import { applyMergeTags } from "@/src/lib/merge";
 import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 
 // Immediately dispatches a campaign via Resend batch API.
@@ -120,7 +121,11 @@ export async function POST(
           ? campaign.html
           : `<div style="font-family:Arial,sans-serif;line-height:1.6">${campaign.body.replace(/\n/g, "<br/>")}</div>`;
 
-      const htmlWithFooter = addPreheader(addEmailFooter(baseHtml, contact.email, campaign.fromEmail), campaign.preheader);
+      // Merge tags ({{firstName|there}} etc.) are filled per contact before footer/tracking are added
+      const htmlWithFooter = addPreheader(
+        addEmailFooter(applyMergeTags(baseHtml, contact, { html: true }), contact.email, campaign.fromEmail),
+        campaign.preheader ? applyMergeTags(campaign.preheader, contact, { html: true }) : campaign.preheader
+      );
 
       const htmlWithClicks = htmlWithFooter.replace(
         /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
@@ -140,8 +145,8 @@ export async function POST(
         resendPayload: {
           from: campaign.fromEmail ?? defaultFrom,
           to: contact.email,
-          subject: campaign.subject,
-          text: campaign.body,
+          subject: applyMergeTags(campaign.subject, contact),
+          text: applyMergeTags(campaign.body, contact),
           html: htmlContent,
           // One-click unsubscribe (Gmail/Yahoo bulk-sender requirement)
           headers: listUnsubscribeHeaders(contact.email),

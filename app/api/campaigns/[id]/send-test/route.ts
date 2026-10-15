@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { sendEmail } from "@/src/lib/sendEmail";
 import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
+import { applyMergeTags } from "@/src/lib/merge";
 
 export async function POST(
   request: Request,
@@ -40,12 +41,19 @@ export async function POST(
           </div>
         `;
 
+    // Fill merge tags as that contact would see them (falls back to e.g. "there" if not a contact / no name)
+    const mergeContact =
+      (await prisma.contact.findUnique({
+        where: { email: testEmail.toLowerCase() },
+        select: { firstName: true, lastName: true, email: true },
+      })) ?? { firstName: null, lastName: null, email: testEmail };
+
     await sendEmail({
       from: campaign.fromEmail ?? undefined,
       to: testEmail,
-      subject: campaign.subject,
-      text: campaign.body,
-      html: htmlContent,
+      subject: applyMergeTags(campaign.subject, mergeContact),
+      text: applyMergeTags(campaign.body, mergeContact),
+      html: applyMergeTags(htmlContent, mergeContact, { html: true }),
       // Same one-click unsubscribe headers as real campaign sends, so test results (e.g. mail-tester) match
       headers: listUnsubscribeHeaders(testEmail),
     });
