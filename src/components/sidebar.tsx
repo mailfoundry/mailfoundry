@@ -128,6 +128,7 @@ export default function Sidebar({ active, ibsaOnly = false, isMainUser = false, 
         <div className="my-3 border-t border-gray-200" />
 
         <Link href={productsHref} onClick={onClose} className={active === "ibsa-products" ? activeClass : base}>Products</Link>
+        <Link href="/ibsa/orders?type=scs" onClick={onClose} className={active === "ibsa-orders" ? activeClass : base}>SCS Web Orders</Link>
         <Link href="/ibsa/purchasing" onClick={onClose} className={active === "ibsa-purchasing" ? activeClass : base}>Purchasing</Link>
         <Link href="/ibsa/pos" onClick={onClose} className={active === "ibsa-pos" ? activeClass : base}>Purchase Orders</Link>
         <Link href="/ibsa/suppliers" onClick={onClose} className={active === "ibsa-suppliers" ? activeClass : base}>Suppliers</Link>

@@ -11,14 +11,15 @@ import { prisma } from "./prisma";
  *   SCS DISPATCHED/DELIVERED → "complete" + In Stock decremented once (stockDeductedAt)
  *   SCS CANCELLED            → "cancelled" (+ stock restored if it had already been deducted)
  *
- * Products are matched SCS variant SKU = IbsaProduct.code. Christeyns products that aren't in IBSA
- * yet are created automatically (hidden from the convention order form) with a Christeyns supplier
- * line so they can go on POs. Any other unmatched SKU is noted on the order for manual linking.
+ * Products are matched by SCS variant SKU = IbsaProduct.code, or an IbsaSkuAlias row
+ * (set from /ibsa/purchasing/scs-links). Christeyns products not in IBSA are created automatically.
+ * Any other unmatched SKU is left off the order and listed on the SCS links page; once linked,
+ * the next sync adds the missing lines to any order that hasn't been dispatched yet.
  *
  * Idempotent: each SCS order maps to exactly one group order via externalRef "scs:<orderNumber>".
  */
 
-type ScsItem = {
+export type ScsItem = {
   sku: string | null;
   name: string;
   productName: string;
@@ -27,7 +28,7 @@ type ScsItem = {
   costPrice: number | null;
   christeyns: boolean;
 };
-type ScsOrder = {
+export type ScsOrder = {
   orderNumber: number;
   status: "CONFIRMED" | "DISPATCHED" | "DELIVERED" | "CANCELLED";
   createdAt: string;
@@ -42,10 +43,22 @@ type ScsOrder = {
 export type ScsSyncResult = {
   fetched: number;
   created: number;
+  linesAdded: number;
   completed: number;
   cancelled: number;
   productsCreated: string[];
   unmatched: string[];
+};
+
+export type UnlinkedSku = {
+  sku: string;
+  name: string;
+  productName: string;
+  variant: string | null;
+  costPrice: number | null;
+  totalQty: number;
+  orders: number[];
+  supplierGuess: string;
 };
 
 function formatAddress(a: unknown): string | null {
@@ -54,25 +67,64 @@ function formatAddress(a: unknown): string | null {
   return parts.length ? parts.join(", ") : null;
 }
 
-export async function syncScsOrders(opts: { days?: number } = {}): Promise<ScsSyncResult> {
+export function guessSupplier(name: string, sku: string | null): string {
+  const n = name.toLowerCase();
+  if (n.startsWith("robert scott") || (sku ?? "").toUpperCase().startsWith("RS_")) return "Robert Scott";
+  if (n.includes("christeyns") || (sku ?? "").toUpperCase().startsWith("CHR-")) return "Christeyns";
+  return "Robert Scott";
+}
+
+export async function fetchScsOrders(days = 30): Promise<ScsOrder[]> {
   const secret = process.env.SCS_SYNC_SECRET;
   if (!secret) throw new Error("SCS_SYNC_SECRET is not set");
   const base = (process.env.SCS_SITE_URL ?? "https://www.staffordshirecleaningsupplies.co.uk").replace(/\/$/, "");
-  const since = new Date(Date.now() - (opts.days ?? 30) * 24 * 60 * 60 * 1000).toISOString();
-
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const res = await fetch(`${base}/api/internal/scs-orders?since=${encodeURIComponent(since)}`, {
     headers: { Authorization: `Bearer ${secret}` },
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`SCS feed returned ${res.status}`);
-  const { orders } = (await res.json()) as { orders: ScsOrder[] };
+  return ((await res.json()) as { orders: ScsOrder[] }).orders;
+}
 
-  const result: ScsSyncResult = { fetched: orders.length, created: 0, completed: 0, cancelled: 0, productsCreated: [], unmatched: [] };
+/** SKU (lower-case) → IbsaProduct.id, from product codes plus aliases. */
+export async function loadSkuLookup(): Promise<Map<string, string>> {
+  const [products, aliases] = await Promise.all([
+    prisma.ibsaProduct.findMany({ select: { id: true, code: true } }),
+    prisma.ibsaSkuAlias.findMany({ select: { sku: true, productId: true } }),
+  ]);
+  const map = new Map<string, string>(products.map((p: { id: string; code: string }) => [p.code.trim().toLowerCase(), p.id]));
+  for (const a of aliases as { sku: string; productId: string }[]) map.set(a.sku.trim().toLowerCase(), a.productId);
+  return map;
+}
+
+/** SCS SKUs from recent orders that don't match any IBSA product or alias (for the links page). */
+export async function findUnlinkedSkus(days = 90): Promise<UnlinkedSku[]> {
+  const [orders, lookup] = await Promise.all([fetchScsOrders(days), loadSkuLookup()]);
+  const out = new Map<string, UnlinkedSku>();
+  for (const o of orders) {
+    if (o.status === "CANCELLED") continue;
+    for (const i of o.items) {
+      const sku = i.sku?.trim();
+      if (!sku || lookup.has(sku.toLowerCase()) || i.christeyns) continue;
+      const row = out.get(sku) ?? {
+        sku, name: i.name, productName: i.productName, variant: i.variant, costPrice: i.costPrice,
+        totalQty: 0, orders: [], supplierGuess: guessSupplier(i.productName, sku),
+      };
+      row.totalQty += i.qty;
+      if (!row.orders.includes(o.orderNumber)) row.orders.push(o.orderNumber);
+      out.set(sku, row);
+    }
+  }
+  return [...out.values()].sort((a, b) => a.productName.localeCompare(b.productName));
+}
+
+export async function syncScsOrders(opts: { days?: number } = {}): Promise<ScsSyncResult> {
+  const orders = await fetchScsOrders(opts.days ?? 30);
+  const result: ScsSyncResult = { fetched: orders.length, created: 0, linesAdded: 0, completed: 0, cancelled: 0, productsCreated: [], unmatched: [] };
   if (!orders.length) return result;
 
-  // Product lookup by code (case-insensitive)
-  const products = await prisma.ibsaProduct.findMany({ select: { id: true, code: true } });
-  const byCode = new Map(products.map((p) => [p.code.trim().toLowerCase(), p.id]));
+  const byCode = await loadSkuLookup();
 
   async function resolveProduct(item: ScsItem): Promise<string | null> {
     const code = item.sku?.trim();
@@ -110,27 +162,43 @@ export async function syncScsOrders(opts: { days?: number } = {}): Promise<ScsSy
     return created.id;
   }
 
+  /** Work out the IBSA lines for an SCS order, plus any items that still can't be linked. */
+  async function resolveLines(o: ScsOrder) {
+    const qtyByProduct = new Map<string, number>();
+    const notLinked: string[] = [];
+    for (const item of o.items) {
+      const pid = await resolveProduct(item);
+      if (pid) qtyByProduct.set(pid, (qtyByProduct.get(pid) ?? 0) + item.qty);
+      else notLinked.push(`${item.sku ?? "no SKU"} × ${item.qty} (${item.name})`);
+    }
+    return { qtyByProduct, notLinked };
+  }
+  const notesFor = (notLinked: string[]) =>
+    notLinked.length ? `Not linked to IBSA stock: ${notLinked.join("; ")} — link at /ibsa/purchasing/scs-links` : null;
+
+  type GroupOrderLite = {
+    id: string;
+    status: string;
+    stockDeductedAt: Date | null;
+    adminNotes: string | null;
+    lines: { productId: string; qty: number }[];
+  };
+  const liteSelect = { id: true, status: true, stockDeductedAt: true, adminNotes: true, lines: { select: { productId: true, qty: true } } } as const;
+
   for (const o of orders) {
     const ref = `scs:${o.orderNumber}`;
-    let order = await prisma.ibsaGroupOrder.findUnique({
+    let order = (await prisma.ibsaGroupOrder.findUnique({
       where: { externalRef: ref },
-      select: { id: true, status: true, stockDeductedAt: true, lines: { select: { productId: true, qty: true } } },
-    });
+      select: liteSelect,
+    })) as GroupOrderLite | null;
 
-    // ── Create on first sight (skip orders that were cancelled before we ever saw them) ──
     if (!order) {
+      // Create on first sight (skip orders that were cancelled before we ever saw them)
       if (o.status === "CANCELLED") continue;
-
-      const qtyByProduct = new Map<string, number>();
-      const notLinked: string[] = [];
-      for (const item of o.items) {
-        const pid = await resolveProduct(item);
-        if (pid) qtyByProduct.set(pid, (qtyByProduct.get(pid) ?? 0) + item.qty);
-        else notLinked.push(`${item.sku ?? "no SKU"} × ${item.qty} (${item.name})`);
-      }
+      const { qtyByProduct, notLinked } = await resolveLines(o);
       if (notLinked.length) result.unmatched.push(...notLinked.map((n) => `SCS #${o.orderNumber}: ${n}`));
 
-      order = await prisma.ibsaGroupOrder.create({
+      order = (await prisma.ibsaGroupOrder.create({
         data: {
           externalRef: ref,
           groupType: "scs",
@@ -144,15 +212,32 @@ export async function syncScsOrders(opts: { days?: number } = {}): Promise<ScsSy
           submittedAt: new Date(o.createdAt),
           status: "submitted",
           trackingRef: o.trackingRef,
-          adminNotes: notLinked.length ? `Not linked to IBSA stock: ${notLinked.join("; ")}` : null,
+          adminNotes: notesFor(notLinked),
           lines: { create: [...qtyByProduct].map(([productId, qty]) => ({ productId, qty, dept: "CS" })) },
         },
-        select: { id: true, status: true, stockDeductedAt: true, lines: { select: { productId: true, qty: true } } },
-      });
+        select: liteSelect,
+      })) as GroupOrderLite;
       result.created++;
+    } else if (!order.stockDeductedAt && order.status !== "cancelled" && order.adminNotes?.startsWith("Not linked")) {
+      // Previously-unlinked items may now be linked → add any missing lines (existing lines are left as-is)
+      const { qtyByProduct, notLinked } = await resolveLines(o);
+      const have = new Set(order.lines.map((l) => l.productId));
+      const toAdd = [...qtyByProduct].filter(([pid]) => !have.has(pid));
+      if (toAdd.length || notesFor(notLinked) !== order.adminNotes) {
+        await prisma.ibsaGroupOrder.update({
+          where: { id: order.id },
+          data: {
+            adminNotes: notesFor(notLinked),
+            lines: { create: toAdd.map(([productId, qty]) => ({ productId, qty, dept: "CS" })) },
+          },
+        });
+        result.linesAdded += toAdd.length;
+        order = { ...order, lines: [...order.lines, ...toAdd.map(([productId, qty]) => ({ productId, qty }))] };
+      }
+      if (notLinked.length) result.unmatched.push(...notLinked.map((n) => `SCS #${o.orderNumber}: ${n}`));
     }
 
-    // ── Dispatched/delivered → complete + deduct stock once ──
+    // Dispatched/delivered → complete + deduct stock once
     if ((o.status === "DISPATCHED" || o.status === "DELIVERED") && !order.stockDeductedAt) {
       await prisma.$transaction([
         prisma.ibsaGroupOrder.update({
@@ -166,7 +251,7 @@ export async function syncScsOrders(opts: { days?: number } = {}): Promise<ScsSy
       result.completed++;
     }
 
-    // ── Cancelled → cancel (and put stock back if it had been deducted) ──
+    // Cancelled → cancel (and put stock back if it had been deducted)
     if (o.status === "CANCELLED" && order.status !== "cancelled") {
       await prisma.$transaction([
         prisma.ibsaGroupOrder.update({ where: { id: order.id }, data: { status: "cancelled", stockDeductedAt: null } }),

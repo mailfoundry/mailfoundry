@@ -159,6 +159,7 @@ model IbsaProduct {
 
   orderItems      IbsaOrderItem[]
   rsProducts      RsProduct[]
+  skuAliases      IbsaSkuAlias[]
   groupOrderLines IbsaGroupOrderLine[]
   bomAsComposite  IbsaProductBom[]     @relation("BomComposite")
   bomAsComponent  IbsaProductBom[]     @relation("BomComponent")
@@ -429,4 +430,14 @@ model IbsaSupplier {
   notes       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+/// Extra SKUs that map to an IBSA product — e.g. an SCS website SKU that differs from IbsaProduct.code.
+model IbsaSkuAlias {
+  sku       String      @id
+  productId String
+  product   IbsaProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@index([productId])
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { syncScsNow } from "./scs-sync-actions";
 
@@ -11,9 +12,10 @@ export default function SyncScsButton() {
     start(async () => {
       const r = await syncScsNow();
       if (!r.ok) return setMsg({ text: `Sync failed: ${r.error}`, error: true });
-      const { created, completed, cancelled, productsCreated, unmatched } = r.result;
+      const { created, linesAdded, completed, cancelled, productsCreated, unmatched } = r.result;
       const parts = [
         `${created} new SCS order${created === 1 ? "" : "s"}`,
+        linesAdded ? `${linesAdded} newly linked line${linesAdded === 1 ? "" : "s"} added` : null,
         `${completed} dispatched (stock deducted)`,
         cancelled ? `${cancelled} cancelled` : null,
         productsCreated.length ? `${productsCreated.length} Christeyns product${productsCreated.length === 1 ? "" : "s"} added` : null,
@@ -32,11 +34,17 @@ export default function SyncScsButton() {
       <div className="text-sm text-gray-600">
         <span className="font-semibold text-gray-800">SCS web orders</span> sync automatically every 15 minutes and count as demand below.
       </div>
+      <Link
+        href="/ibsa/purchasing/scs-links"
+        className="ml-auto rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100"
+      >
+        Unlinked SCS products →
+      </Link>
       <button
         type="button"
         onClick={run}
         disabled={pending}
-        className="ml-auto rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-gray-700 disabled:opacity-60"
+        className=" rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-gray-700 disabled:opacity-60"
       >
         {pending ? "Syncing…" : "Sync SCS orders now"}
       </button>

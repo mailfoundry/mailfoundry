@@ -15,13 +15,16 @@ const GROUP_LABELS: Record<string, string> = {
   congregation: "Congregation",
   circuit:      "Circuit Assembly",
   regional:     "Regional",
+  scs:          "SCS web order",
 };
 
 const fmtGbp = (n: number) =>
   "£" + n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-export default async function OrdersPage() {
+export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  const { type } = await searchParams;
   const orders = await prisma.ibsaGroupOrder.findMany({
+    where: type ? { groupType: type } : undefined,
     orderBy: { submittedAt: "desc" },
     include: {
       lines: {
@@ -43,7 +46,7 @@ export default async function OrdersPage() {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Public Orders</h1>
+          <h1 className="text-xl font-bold text-gray-900">{type === "scs" ? "SCS Web Orders" : "Public Orders"}</h1>
           <p className="mt-0.5 text-sm text-gray-500">{orders.length} order{orders.length !== 1 ? "s" : ""} received</p>
         </div>
       </div>

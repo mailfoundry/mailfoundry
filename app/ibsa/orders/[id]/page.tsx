@@ -19,6 +19,7 @@ const GROUP_LABELS: Record<string, string> = {
   congregation: "Congregation",
   circuit:      "Circuit Assembly",
   regional:     "Regional",
+  scs:          "SCS web order",
 };
 
 const STATUS_STYLES: Record<string, string> = {
@@ -68,7 +69,7 @@ export default async function OrderDetailPage({ params }: Props) {
     <IbsaAppShell active="ibsa-orders">
     <div className="p-6">
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/ibsa/orders" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+        <Link href={order.groupType === "scs" ? "/ibsa/orders?type=scs" : "/ibsa/orders"} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
           ← Orders
         </Link>
       </div>
@@ -83,6 +84,14 @@ export default async function OrderDetailPage({ params }: Props) {
           {order.status}
         </span>
       </div>
+
+      {order.groupType === "scs" && order.adminNotes?.startsWith("Not linked") && (
+        <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-semibold">Some items on this SCS order aren&apos;t linked to IBSA stock yet</p>
+          <p className="mt-1 text-amber-800">{order.adminNotes.replace(/^Not linked to IBSA stock:\s*/, "").replace(/\s*—\s*link at .*$/, "")}</p>
+          <Link href="/ibsa/purchasing/scs-links" className="mt-2 inline-block font-semibold text-amber-900 underline">Link them now →</Link>
+        </div>
+      )}
 
       {/* Contact & delivery */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
