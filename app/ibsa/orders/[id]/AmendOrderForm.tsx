@@ -22,12 +22,14 @@ type Props = {
   orderId: string;
   lines: Line[];
   availableProducts: Product[];
+  /** SCS web orders: no customer email is sent on amend */
+  isScs?: boolean;
 };
 
 const fmtGbp = (n: number) =>
   n.toLocaleString("en-GB", { style: "currency", currency: "GBP" });
 
-export default function AmendOrderForm({ orderId, lines, availableProducts }: Props) {
+export default function AmendOrderForm({ orderId, lines, availableProducts, isScs = false }: Props) {
   const [qtys, setQtys] = useState<Record<string, number>>(
     Object.fromEntries(lines.map((l) => [l.id, l.qty]))
   );
@@ -95,7 +97,7 @@ export default function AmendOrderForm({ orderId, lines, availableProducts }: Pr
                 className={`flex items-center gap-3 px-4 py-2.5 ${removed ? "opacity-40 bg-red-50" : ""}`}
               >
                 <input type="hidden" name={`line_${l.id}`} value={q} readOnly />
-                <span className="font-mono text-xs text-gray-400 w-14 shrink-0">{l.product.code}</span>
+                <span className="font-mono text-[11px] text-gray-400 w-44 shrink-0 truncate" title={l.product.code}>{l.product.code}</span>
                 <span className="flex-1 text-sm text-gray-900">
                   {l.product.name}
                   {l.product.variant && (
@@ -242,7 +244,7 @@ export default function AmendOrderForm({ orderId, lines, availableProducts }: Pr
           disabled={!changed || saving}
           className="rounded-lg bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          {saving ? "Saving…" : "Save changes & notify customer"}
+          {saving ? "Saving…" : isScs ? "Save changes" : "Save changes & notify customer"}
         </button>
         {saved && (
           <span className="text-sm text-green-600 font-medium">✓ Saved — emails sent</span>

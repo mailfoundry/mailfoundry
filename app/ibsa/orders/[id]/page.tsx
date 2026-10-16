@@ -88,7 +88,13 @@ export default async function OrderDetailPage({ params }: Props) {
       {order.groupType === "scs" && order.adminNotes?.startsWith("Not linked") && (
         <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           <p className="font-semibold">Some items on this SCS order aren&apos;t linked to IBSA stock yet</p>
-          <p className="mt-1 text-amber-800">{order.adminNotes.replace(/^Not linked to IBSA stock:\s*/, "").replace(/\s*—\s*link at .*$/, "")}</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-amber-800">
+            {order.adminNotes
+              .replace(/^Not linked to IBSA stock:\s*/, "")
+              .replace(/\s*—\s*link at .*$/, "")
+              .split("; ")
+              .map((item) => <li key={item}>{item}</li>)}
+          </ul>
           <Link href="/ibsa/purchasing/scs-links" className="mt-2 inline-block font-semibold text-amber-900 underline">Link them now →</Link>
         </div>
       )}
@@ -214,9 +220,10 @@ export default async function OrderDetailPage({ params }: Props) {
       {/* Amend order */}
       <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 shadow-sm p-4">
         <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-amber-700">Amend Order</p>
-        <p className="mb-4 text-xs text-amber-600">Adjust quantities, remove items, or add missed products. The customer will receive an email summary of all changes.</p>
+        <p className="mb-4 text-xs text-amber-600">Adjust quantities, remove items, or add missed products. {order.groupType === "scs" ? "SCS web customers are not emailed — this only changes IBSA demand and stock." : "The customer will receive an email summary of all changes."}</p>
         <AmendOrderForm
           orderId={order.id}
+          isScs={order.groupType === "scs"}
           lines={order.lines.map((l) => ({
             id: l.id,
             dept: l.dept,
