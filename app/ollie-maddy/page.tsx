@@ -57,19 +57,13 @@ export default function OllieMaddyPage() {
           </h1>
         </StarDust>
 
-        <div className="-mt-2 flex items-center gap-3 text-[#3f5f9e]">
-          <span className="h-px w-8 bg-[#b9c8e6] sm:w-12" aria-hidden />
-          <span className="text-lg italic">are getting married</span>
-          <span className="h-px w-8 bg-[#b9c8e6] sm:w-12" aria-hidden />
-        </div>
-
-        <div className="mt-6 w-full space-y-4 sm:mt-8 sm:space-y-5">
+        <div className="mt-3 w-full space-y-4 sm:mt-8 sm:space-y-5">
           {EVENTS.map((e) => {
             const endsAt = new Date(Date.parse(e.startsAt) + (e.timeKnown ? e.durationMins : 24 * 60) * 60000).toISOString();
             return (
               <section
                 key={e.id}
-                className={`relative rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8 ${e.id === "wedding" ? "!mt-[6.25rem] !pt-7" : ""}`}
+                className={`relative rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8 ${e.id === "wedding" ? "!mt-[3.25rem] !pt-7" : ""} ${e.id === "legal" ? "!pb-7" : ""}`}
               >
                 {e.id === "wedding" &&
                   BEARS.map((b, i) => (
