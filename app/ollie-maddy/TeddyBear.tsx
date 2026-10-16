@@ -17,8 +17,19 @@ export default function TeddyBear({
     <>
       <style>{`
         @keyframes om-sway { 0%,100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
-        @media (prefers-reduced-motion: reduce) { .om-bear { animation: none !important; } }
+        /* a cheeky little hop every few seconds */
+        @keyframes om-hop {
+          0%, 78%, 100% { transform: translateY(0) scale(1, 1); }
+          82% { transform: translateY(1px) scale(1.04, 0.95); }
+          88% { transform: translateY(-9px) scale(0.97, 1.04); }
+          94% { transform: translateY(0) scale(1.03, 0.97); }
+        }
+        @media (prefers-reduced-motion: reduce) { .om-bear, .om-hop { animation: none !important; } }
       `}</style>
+      <span
+        className="om-hop block"
+        style={{ transformOrigin: "50% 100%", animation: `om-hop 4.6s ease-in-out ${delay * 1.9 + 1}s infinite` }}
+      >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
@@ -34,6 +45,7 @@ export default function TeddyBear({
           filter: "drop-shadow(0 4px 5px rgba(31,53,102,0.28))",
         }}
       />
+      </span>
     </>
   );
 }
