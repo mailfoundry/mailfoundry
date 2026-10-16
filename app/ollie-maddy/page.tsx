@@ -2,9 +2,19 @@ import type { Metadata } from "next";
 import Countdown from "./Countdown";
 import ShareButton from "./ShareButton";
 import StarDust from "./StarDust";
+import TeddyBear from "./TeddyBear";
 import { COUPLE, EVENTS } from "./config";
 
 const names = `${COUPLE.a} & ${COUPLE.b}`;
+
+// Teddy bears sitting on the top corners of "The Wedding" card
+const BEAR_W = 86;
+const BEAR_H = Math.round((BEAR_W * 416) / 320); // image aspect
+const BEAR_OVERLAP = 16; // px of the bear resting over the card's top edge
+const BEARS = [
+  { name: "Ollie", src: "/ollie-maddy-bear-ollie.webp", side: "left" as const },
+  { name: "Maddie", src: "/ollie-maddy-bear-maddie.webp", side: "right" as const },
+];
 
 export const metadata: Metadata = {
   title: `${names} — counting down`,
@@ -57,7 +67,20 @@ export default function OllieMaddyPage() {
           {EVENTS.map((e) => {
             const endsAt = new Date(Date.parse(e.startsAt) + (e.timeKnown ? e.durationMins : 24 * 60) * 60000).toISOString();
             return (
-              <section key={e.id} className="rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8">
+              <section
+                key={e.id}
+                className={`relative rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8 ${e.id === "wedding" ? "!mt-[6.25rem] !pt-7" : ""}`}
+              >
+                {e.id === "wedding" &&
+                  BEARS.map((b, i) => (
+                    <div
+                      key={b.name}
+                      className={`pointer-events-none absolute z-10 ${b.side === "left" ? "left-1 sm:left-6" : "right-1 sm:right-6"}`}
+                      style={{ top: -(BEAR_H - BEAR_OVERLAP) }}
+                    >
+                      <TeddyBear name={b.name} src={b.src} width={BEAR_W} delay={i * 1.1} />
+                    </div>
+                  ))}
                 <h2 className="font-serif text-[1.65rem] leading-tight sm:text-3xl">{e.title}</h2>
                 <p className="mt-1.5 text-[14.5px] text-[#3f5f9e] sm:text-base">
                   {fmtDate(e.startsAt)}

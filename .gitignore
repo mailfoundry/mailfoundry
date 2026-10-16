@@ -42,3 +42,7 @@ next-env.d.ts
 
 /app/generated/prisma
 /src/generated/prisma
+
+# Original family photos used to make the wedding-page cut-outs — never publish
+/public/ollie.jpg
+/public/maddie.jpg
