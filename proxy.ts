@@ -27,7 +27,7 @@ function fireTrack(request: NextRequest, hostname: string, pathname: string) {
   }).catch(() => {});
 }
 
-const publicPaths = ["/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/api/cron", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
+const publicPaths = ["/ollie-maddy", "/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/api/cron", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
@@ -42,6 +42,16 @@ export function proxy(request: NextRequest) {
 
   // Track every real page visit (fire and forget)
   fireTrack(request, hostname, pathname);
+
+  // Ollie & Maddy wedding countdown — ollieandmaddy.xylouk.co.uk serves /ollie-maddy (public, no login)
+  if (hostname === "ollieandmaddy.xylouk.co.uk") {
+    if (pathname.startsWith("/ollie-maddy") || pathname.startsWith("/_next") || pathname === "/favicon.ico") {
+      return NextResponse.next();
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = `/ollie-maddy${pathname === "/" ? "" : pathname}`;
+    return NextResponse.rewrite(url);
+  }
 
   const isXylo = hostname === "www.xylouk.co.uk" || hostname === "xylouk.co.uk";
 

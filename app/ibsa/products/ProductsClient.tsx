@@ -114,6 +114,9 @@ export default function ProductsClient({ products, activeType }: Props) {
   const [isSavingEdit, startSavingEdit] = useTransition();
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [needsMerge, setNeedsMerge] = useState(false);
+  const [mergeIntoId, setMergeIntoId] = useState("");
   const [isDeletingProduct, startDeletingProduct] = useTransition();
   const [isDuplicating, startDuplicating] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
@@ -250,7 +253,14 @@ export default function ProductsClient({ products, activeType }: Props) {
     setDragOverId(null);
     setDragOverCat(null);
     const updates = newIds.map((id, i) => ({ id, sortOrder: (i + 1) * 10 }));
-    startSavingOrder(async () => { await updateProductSortOrder(updates); });
+    startSavingOrder(async () => {
+      try {
+        await updateProductSortOrder(updates);
+      } catch (err) {
+        console.error("Saving product order failed", err);
+        alert("Couldn't save the new order — please refresh and try again.");
+      }
+    });
   }
 
   function handleProductDrop(targetProductId: string) {
@@ -1708,26 +1718,56 @@ export default function ProductsClient({ products, activeType }: Props) {
                   Delete product
                 </button>
               ) : (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-red-500">Are you sure?</span>
+                <div className="flex max-w-md flex-wrap items-center gap-2">
+                  {deleteError ? (
+                    <span className="w-full text-xs text-red-600">{deleteError}</span>
+                  ) : (
+                    <span className="text-sm text-red-500">Are you sure?</span>
+                  )}
+                  {needsMerge && editingProduct && (
+                    <select
+                      value={mergeIntoId}
+                      onChange={(e) => setMergeIntoId(e.target.value)}
+                      className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-900"
+                    >
+                      <option value="">Merge into…</option>
+                      {products
+                        .filter((p) => p.id !== editingProduct.id)
+                        .sort((a, b) => (a.category === editingProduct.category ? 0 : 1) - (b.category === editingProduct.category ? 0 : 1) || a.name.localeCompare(b.name))
+                        .map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}{p.variant ? ` — ${p.variant}` : ""} ({p.code})
+                          </option>
+                        ))}
+                    </select>
+                  )}
                   <button
                     onClick={() => {
                       if (!editingProduct) return;
                       startDeletingProduct(async () => {
                         const fd = new FormData();
                         fd.set("id", editingProduct.id);
-                        await deleteProduct(fd);
+                        if (needsMerge && mergeIntoId) fd.set("mergeIntoId", mergeIntoId);
+                        const res = await deleteProduct(fd);
+                        if (!res?.ok) {
+                          setDeleteError(res?.error ?? "Couldn't delete this product.");
+                          setNeedsMerge(!!res?.needsMerge);
+                          return;
+                        }
                         setEditingProduct(null);
                         setConfirmDelete(false);
+                        setDeleteError(null);
+                        setNeedsMerge(false);
+                        setMergeIntoId("");
                       });
                     }}
-                    disabled={isDeletingProduct}
-                    className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-red-500 disabled:opacity-40"
+                    disabled={isDeletingProduct || (needsMerge && !mergeIntoId)}
+                    className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-40"
                   >
-                    {isDeletingProduct ? "Deleting…" : "Yes, delete"}
+                    {isDeletingProduct ? "Deleting…" : needsMerge ? "Merge & delete" : "Yes, delete"}
                   </button>
                   <button
-                    onClick={() => setConfirmDelete(false)}
+                    onClick={() => { setConfirmDelete(false); setDeleteError(null); setNeedsMerge(false); setMergeIntoId(""); }}
                     className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100"
                   >
                     Cancel
