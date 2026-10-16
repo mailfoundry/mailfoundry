@@ -19,7 +19,7 @@ export const EVENTS: WeddingEvent[] = [
     id: "legal",
     title: "The Legal Ceremony",
     subtitle: "Making it official",
-    startsAt: "2026-10-20T11:30:00+01:00",
+    startsAt: "2026-10-20T11:20:00+01:00",
     timeKnown: true,
     durationMins: 45,
     location: "",
