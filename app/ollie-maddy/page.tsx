@@ -2,19 +2,18 @@ import type { Metadata } from "next";
 import Countdown from "./Countdown";
 import ShareButton from "./ShareButton";
 import StarDust from "./StarDust";
-import TeddyBear from "./TeddyBear";
+import TeddyBear, { KIDS, kidSeat } from "./TeddyBear";
 import { COUPLE, EVENTS } from "./config";
 
 const names = `${COUPLE.a} & ${COUPLE.b}`;
 
-// Teddy bears sitting on the top corners of "The Wedding" card
-const BEAR_W = 86;
-const BEAR_H = Math.round((BEAR_W * 416) / 320); // image aspect
-const BEAR_OVERLAP = 16; // px of the bear resting over the card's top edge
-const BEARS = [
-  { name: "Ollie", src: "/ollie-maddy-bear-ollie.webp", side: "left" as const },
-  { name: "Maddie", src: "/ollie-maddy-bear-maddie.webp", side: "right" as const },
+// Ollie & Maddie (in teddy onesies) sitting on the top corners of "The Wedding" card, legs dangling
+const KID_W = 92;
+const SITTERS = [
+  { kid: KIDS.ollie, side: "left" as const, delay: 0.4 },
+  { kid: KIDS.maddie, side: "right" as const, delay: 2.1 },
 ];
+const SEAT_PX = Math.max(...SITTERS.map((s) => kidSeat(s.kid, KID_W)));
 
 export const metadata: Metadata = {
   title: `${names} — counting down`,
@@ -63,16 +62,17 @@ export default function OllieMaddyPage() {
             return (
               <section
                 key={e.id}
-                className={`relative rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8 ${e.id === "wedding" ? "!mt-[3.25rem] !pt-7" : ""} ${e.id === "legal" ? "!pb-7" : ""}`}
+                style={e.id === "wedding" ? { marginTop: SEAT_PX - 40 } : undefined}
+                className={`relative rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8 ${e.id === "wedding" ? "!pt-9" : ""} ${e.id === "legal" ? "!pb-7" : ""}`}
               >
                 {e.id === "wedding" &&
-                  BEARS.map((b, i) => (
+                  SITTERS.map((s) => (
                     <div
-                      key={b.name}
-                      className={`pointer-events-none absolute z-10 ${b.side === "left" ? "left-1 sm:left-6" : "right-1 sm:right-6"}`}
-                      style={{ top: -(BEAR_H - BEAR_OVERLAP) }}
+                      key={s.kid.key}
+                      className={`pointer-events-none absolute z-10 ${s.side === "left" ? "left-1 sm:left-6" : "right-1 sm:right-6"}`}
+                      style={{ top: -kidSeat(s.kid, KID_W) }}
                     >
-                      <TeddyBear name={b.name} src={b.src} width={BEAR_W} delay={i * 1.1} />
+                      <TeddyBear kid={s.kid} width={KID_W} delay={s.delay} />
                     </div>
                   ))}
                 <h2 className="font-serif text-[1.65rem] leading-tight sm:text-3xl">{e.title}</h2>
