@@ -39,6 +39,7 @@ export async function sendStripeInvoice(orderId: string) {
   });
 
   if (!order) throw new Error("Order not found");
+  if (order.groupType === "scs") throw new Error("SCS web orders are already paid on the SCS website — no invoice needed");
   if (order.stripeInvoiceId) throw new Error("Invoice already sent");
   if (!["submitted", "processing"].includes(order.status ?? "")) {
     throw new Error(`Cannot send invoice for an order in "${order.status}" status`);
@@ -179,6 +180,9 @@ export async function updateOrderStatus(formData: FormData) {
   revalidatePath(`/ibsa/orders/${orderId}`);
   revalidatePath("/ibsa/orders");
 
+  // SCS web orders: the customer is emailed by the SCS website, never by the IBSA portal
+  if (order.groupType === "scs") return;
+
   // ── Status update email to customer ────────────────────────────────────────
   const baseCard = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;padding:8px;">
@@ -231,8 +235,8 @@ export async function saveTrackingRef(formData: FormData) {
     data: { trackingRef: trackingRef || null, status: "processing" },
   });
 
-  // Email customer with tracking link
-  if (trackingRef) {
+  // Email customer with tracking link (not for SCS web orders — the SCS website handles those)
+  if (trackingRef && order.groupType !== "scs") {
     const baseCard = `
       <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;padding:8px;">
         <div style="background:#ffffff;padding:32px;border-radius:12px;border:1px solid #e2e8f0;">
@@ -411,8 +415,8 @@ export async function amendOrder(formData: FormData) {
     </div>`,
   });
 
-  // ── 6. Notify customer ────────────────────────────────────────────────────
-  await sendEmail({
+  // ── 6. Notify customer (never for SCS web orders — those customers aren't IBSA customers) ──
+  if (before.groupType !== "scs" && before.contactEmail) await sendEmail({
     to: before.contactEmail,
     subject: `Your order has been updated — Xylo (UK) Ltd`,
     text: `Hi ${before.contactName},\n\nYour order for ${before.groupName} has been updated by IBSA. Here's a summary of the changes:\n\n${changeText}\n\nNew total: ${fmtGbp(newTotal)}\n\nIf you have any questions please email ${IBSA_NOTIFY_EMAIL}.\n\nIBSA · Xylo (UK) Ltd`,

@@ -37,6 +37,7 @@ const GROUP_TYPE_LABELS: Record<string, string> = {
   congregation: "Congregation",
   circuit:      "Circuit Assembly",
   regional:     "Regional",
+  scs:          "SCS web order",
 };
 
 const fmtDate = (iso: string) =>

@@ -363,6 +363,11 @@ model IbsaGroupOrder {
   trackingRef     String?
   adminNotes      String?
 
+  /// Set for orders imported from another channel, e.g. "scs:1234" (SCS web order #1234). Unique so syncs are idempotent.
+  externalRef     String?   @unique
+  /// When In Stock was decremented for this order (SCS orders: on dispatch). Guards against double deduction.
+  stockDeductedAt DateTime?
+
   lines IbsaGroupOrderLine[]
 
   @@index([status])

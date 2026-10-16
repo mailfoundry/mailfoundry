@@ -46,7 +46,10 @@ cron.schedule("*/5 * * * *", () => callCron("/api/cron/send-scheduled"));
 // Purge expired tokens — daily 3am
 cron.schedule("0 3 * * *",   () => callCron("/api/cron/purge-tokens"));
 
+// Pull paid SCS web orders into IBSA purchasing/stock — every 15 minutes
+cron.schedule("*/15 * * * *", () => callCron("/api/cron/scs-sync"));
+
 // ────────────────────────────────────────────────────────────────────────────
 
 console.log(`✅  SendForge cron worker started — pointing at ${APP_URL}`);
-console.log("    Schedules: send-scheduled(*/5 min), purge-tokens(3am daily)");
+console.log("    Schedules: send-scheduled(*/5 min), purge-tokens(3am daily), scs-sync(*/15 min)");

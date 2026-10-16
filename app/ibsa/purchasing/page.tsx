@@ -2,6 +2,7 @@ export const metadata = { title: "Purchasing" };
 
 import { prisma } from "../../../src/lib/prisma";
 import IbsaAppShell from "../../../src/components/ibsa-app-shell";
+import SyncScsButton from "./SyncScsButton";
 import PurchasingClient, { type BomComponentLine, type Convention, type OrderItemFlat, type RsProductLine } from "./purchasing-client";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +23,7 @@ export default async function PurchasingPage() {
   };
 
   const GROUP_TYPE_LABEL: Record<string, string> = {
-    regional: "Regional", circuit: "Circuit Assembly", congregation: "Congregation",
+    regional: "Regional", circuit: "Circuit Assembly", congregation: "Congregation", scs: "SCS web order",
   };
 
   const [conventions, orderItems, groupOrders] = await Promise.all([
@@ -229,6 +230,7 @@ export default async function PurchasingPage() {
 
   return (
     <IbsaAppShell active="ibsa-purchasing">
+      <SyncScsButton />
       <PurchasingClient
         conventions={[...conventionData, ...groupConventions]}
         orderItems={orderItemData}
