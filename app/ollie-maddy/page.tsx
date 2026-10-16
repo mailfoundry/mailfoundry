@@ -23,42 +23,54 @@ const fmtTime = (iso: string) =>
 
 export default function OllieMaddyPage() {
   return (
-    <main className="min-h-screen bg-[#faf6ef] text-[#3d3326]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-      <div className="mx-auto flex max-w-2xl flex-col items-center px-5 py-14 text-center sm:py-20">
-        <p className="text-xs uppercase tracking-[0.35em] text-[#9b8b72]">Together with their families</p>
+    <main
+      className="min-h-screen text-[#1f3566]"
+      style={{
+        fontFamily: "Georgia, 'Times New Roman', serif",
+        // soft watercolour washes, echoing the invitation's blue florals
+        background:
+          "radial-gradient(ellipse 60% 40% at 0% 0%, rgba(90,124,196,0.18), transparent 70%)," +
+          "radial-gradient(ellipse 55% 35% at 100% 8%, rgba(63,95,158,0.16), transparent 70%)," +
+          "radial-gradient(ellipse 60% 40% at 100% 100%, rgba(90,124,196,0.14), transparent 70%)," +
+          "radial-gradient(ellipse 50% 35% at 0% 85%, rgba(63,95,158,0.12), transparent 70%), #f7f9fd",
+      }}
+    >
+      <div className="mx-auto flex max-w-2xl flex-col items-center px-3 pb-10 pt-8 text-center sm:px-5 sm:py-16">
+        <p className="text-[11px] uppercase tracking-[0.3em] text-[#7486ad]">Together with their families</p>
 
-        <h1 className="mt-6 font-serif text-5xl leading-tight sm:text-7xl">
+        <h1 className="mt-3 font-serif text-[3.4rem] leading-none sm:text-7xl">
           {COUPLE.a}
-          <span className="mx-3 inline-block italic text-[#b8935a]">&amp;</span>
+          <span className="mx-3 inline-block italic text-[#5a7cc4]">&amp;</span>
           {COUPLE.b}
         </h1>
 
-        <div className="mt-6 flex items-center gap-3 text-[#b8935a]" aria-hidden>
-          <span className="h-px w-12 bg-[#d9c7a6]" />
+        <div className="mt-4 flex items-center gap-3 text-[#5a7cc4]" aria-hidden>
+          <span className="h-px w-12 bg-[#b9c8e6]" />
           <span>❦</span>
-          <span className="h-px w-12 bg-[#d9c7a6]" />
+          <span className="h-px w-12 bg-[#b9c8e6]" />
         </div>
 
-        <p className="mt-6 max-w-md text-lg italic text-[#6b5c47]">are getting married</p>
+        <p className="mt-3 max-w-md text-lg italic text-[#3f5f9e]">are getting married</p>
 
-        <div className="mt-12 w-full space-y-8">
+        <div className="mt-7 w-full space-y-4">
           {EVENTS.map((e) => {
             const endsAt = new Date(Date.parse(e.startsAt) + (e.timeKnown ? e.durationMins : 24 * 60) * 60000).toISOString();
             return (
-              <section key={e.id} className="rounded-3xl bg-[#f3ece0] px-5 py-8 shadow-sm ring-1 ring-[#e7dcc8] sm:px-10">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#9b8b72]">{e.subtitle}</p>
-                <h2 className="mt-2 font-serif text-3xl">{e.title}</h2>
-                <p className="mt-3 text-[#6b5c47]">
+              <section key={e.id} className="rounded-3xl bg-white/80 px-2 py-6 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8">
+                <p className="text-[10px] uppercase tracking-[0.28em] text-[#7486ad]">{e.subtitle}</p>
+                <h2 className="mt-1 font-serif text-[1.9rem] leading-tight">{e.title}</h2>
+                <p className="mt-2 text-[15px] text-[#3f5f9e]">
                   {fmtDate(e.startsAt)}
-                  {e.timeKnown ? <> · <strong className="font-semibold text-[#3d3326]">{fmtTime(e.startsAt)}</strong></> : <span className="italic"> · time to be confirmed</span>}
+                  {e.timeKnown ? <> · <strong className="font-semibold text-[#1f3566]">{fmtTime(e.startsAt)}</strong></> : <span className="italic"> · time to be confirmed</span>}
                 </p>
-                {e.location && <p className="mt-1 text-sm text-[#8a7a62]">{e.location}</p>}
-                <div className="mt-6">
+                {e.location && <p className="mt-1 text-sm text-[#5a6f9c]">{e.location}</p>}
+                {e.extra && <p className="mt-1 text-sm italic text-[#5a6f9c]">{e.extra}</p>}
+                <div className="mt-5">
                   <Countdown target={e.startsAt} endsAt={endsAt} />
                 </div>
                 <a
                   href={`/ollie-maddy/calendar/${e.id}`}
-                  className="mt-6 inline-block text-sm text-[#8a6d3b] underline decoration-[#d9c7a6] underline-offset-4 hover:text-[#3d3326]"
+                  className="mt-4 inline-block text-sm text-[#3f5f9e] underline decoration-[#b9c8e6] underline-offset-4 hover:text-[#1f3566]"
                 >
                   Add to calendar
                 </a>
@@ -67,11 +79,11 @@ export default function OllieMaddyPage() {
           })}
         </div>
 
-        <div className="mt-12">
+        <div className="mt-8">
           <ShareButton title={`${names} are getting married`} />
         </div>
 
-        <p className="mt-14 text-sm italic text-[#9b8b72]">With love, from Mum &amp; Dad</p>
+        <p className="mt-8 text-sm italic text-[#7486ad]">With love, from Mum &amp; Dad</p>
       </div>
     </main>
   );

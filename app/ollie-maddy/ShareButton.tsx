@@ -19,7 +19,7 @@ export default function ShareButton({ title }: { title: string }) {
     <button
       type="button"
       onClick={share}
-      className="rounded-full bg-[#3d3326] px-6 py-2.5 text-sm font-medium tracking-wide text-[#faf6ef] shadow hover:bg-[#2b241b]"
+      className="rounded-full bg-[#1f3566] px-6 py-2.5 text-sm font-medium tracking-wide text-white shadow hover:bg-[#2a4580]"
     >
       {copied ? "Link copied ✓" : "Share with family & friends"}
     </button>

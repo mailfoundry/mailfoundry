@@ -1,5 +1,5 @@
 /** Ollie & Maddy wedding countdown — edit details here. Times are UK local (BST = +01:00 until 25 Oct 2026). */
-export const COUPLE = { a: "Ollie", b: "Maddy" };
+export const COUPLE = { a: "Ollie", b: "Maddie" };
 
 export type WeddingEvent = {
   id: string;
@@ -10,6 +10,8 @@ export type WeddingEvent = {
   timeKnown: boolean;
   durationMins: number;
   location: string;
+  /** Optional extra line, e.g. reception details */
+  extra?: string;
 };
 
 export const EVENTS: WeddingEvent[] = [
@@ -17,10 +19,11 @@ export const EVENTS: WeddingEvent[] = [
     id: "legal",
     title: "The Legal Ceremony",
     subtitle: "Making it official",
-    startsAt: "2026-10-20T00:00:00+01:00",
-    timeKnown: false,
-    durationMins: 60,
+    startsAt: "2026-10-20T11:30:00+01:00",
+    timeKnown: true,
+    durationMins: 45,
     location: "",
+    extra: "A private registration ceremony",
   },
   {
     id: "wedding",
@@ -29,6 +32,7 @@ export const EVENTS: WeddingEvent[] = [
     startsAt: "2026-10-24T12:45:00+01:00",
     timeKnown: true,
     durationMins: 90,
-    location: "Kingdom Hall of Jehovah's Witnesses, Leek",
+    location: "Leek Kingdom Hall",
+    extra: "Followed by a reception at 3:45pm · Bagnall Village Hall",
   },
 ];
