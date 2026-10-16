@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Countdown from "./Countdown";
 import ShareButton from "./ShareButton";
+import StarDust from "./StarDust";
 import { COUPLE, EVENTS } from "./config";
 
 const names = `${COUPLE.a} & ${COUPLE.b}`;
@@ -38,13 +39,15 @@ export default function OllieMaddyPage() {
       <div className="mx-auto flex min-h-[100svh] max-w-2xl flex-col items-center justify-center px-3 py-6 text-center sm:px-5 sm:py-14">
         <p className="text-[11px] uppercase tracking-[0.3em] text-[#7486ad]">Together with their families</p>
 
-        <h1 className="mt-3 font-serif text-[3rem] leading-none sm:text-7xl">
-          {COUPLE.a}
-          <span className="mx-2 inline-block italic text-[#5a7cc4] sm:mx-3">&amp;</span>
-          {COUPLE.b}
-        </h1>
+        <StarDust>
+          <h1 className="font-serif text-[3rem] leading-none sm:text-7xl">
+            {COUPLE.a}
+            <span className="mx-2 inline-block italic text-[#5a7cc4] sm:mx-3">&amp;</span>
+            {COUPLE.b}
+          </h1>
+        </StarDust>
 
-        <div className="mt-3 flex items-center gap-3 text-[#3f5f9e]">
+        <div className="-mt-2 flex items-center gap-3 text-[#3f5f9e]">
           <span className="h-px w-8 bg-[#b9c8e6] sm:w-12" aria-hidden />
           <span className="text-lg italic">are getting married</span>
           <span className="h-px w-8 bg-[#b9c8e6] sm:w-12" aria-hidden />
