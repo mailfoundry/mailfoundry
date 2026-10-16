@@ -33,6 +33,6 @@ export const EVENTS: WeddingEvent[] = [
     timeKnown: true,
     durationMins: 90,
     location: "Leek Kingdom Hall",
-    extra: "Followed by a reception at 3:45pm · Bagnall Village Hall",
+    extra: "Reception 3:45pm, Bagnall Village Hall",
   },
 ];

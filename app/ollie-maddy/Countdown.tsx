@@ -91,18 +91,18 @@ function FlipCard({ digit }: { digit: string }) {
 function Group({ value, label }: { value: number; label: string }) {
   const digits = String(value).padStart(2, "0").split("");
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
       <div style={{ display: "flex", gap: 3 }}>
         {digits.map((d, i) => <FlipCard key={`${label}-${digits.length - i}`} digit={d} />)}
       </div>
-      <span style={{ fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: LABEL }}>{label}</span>
+      <span style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: LABEL }}>{label}</span>
     </div>
   );
 }
 
 function Colon() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, height: "var(--h)", marginBottom: 20 }}>
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, height: "var(--h)", marginBottom: 17 }}>
       <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: DOT }} />
       <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: DOT }} />
     </div>
@@ -126,7 +126,7 @@ export default function Countdown({ target, endsAt }: { target: string; endsAt: 
   const end = Date.parse(endsAt);
   const vars = {
     // card width scales with the screen: ~31px on a small phone, up to 50px on desktop
-    "--w": "clamp(28px, 8.2vw, 50px)",
+    "--w": "clamp(24px, 6.8vw, 50px)",
     "--h": "calc(var(--w) * 1.35)",
     "--fs": "calc(var(--w) * 0.95)",
   } as React.CSSProperties;
