@@ -35,44 +35,44 @@ export default function OllieMaddyPage() {
           "radial-gradient(ellipse 50% 35% at 0% 85%, rgba(63,95,158,0.12), transparent 70%), #f7f9fd",
       }}
     >
-      <div className="mx-auto flex max-w-2xl flex-col items-center px-3 pb-8 pt-5 text-center sm:px-5 sm:py-14">
-        <p className="text-[10px] uppercase tracking-[0.3em] text-[#7486ad]">Together with their families</p>
+      <div className="mx-auto flex min-h-[100svh] max-w-2xl flex-col items-center justify-center px-3 py-6 text-center sm:px-5 sm:py-14">
+        <p className="text-[11px] uppercase tracking-[0.3em] text-[#7486ad]">Together with their families</p>
 
-        <h1 className="mt-2 font-serif text-[2.7rem] leading-none sm:text-7xl">
+        <h1 className="mt-3 font-serif text-[3rem] leading-none sm:text-7xl">
           {COUPLE.a}
           <span className="mx-2 inline-block italic text-[#5a7cc4] sm:mx-3">&amp;</span>
           {COUPLE.b}
         </h1>
 
-        <div className="mt-2 flex items-center gap-3 text-[#3f5f9e]">
+        <div className="mt-3 flex items-center gap-3 text-[#3f5f9e]">
           <span className="h-px w-8 bg-[#b9c8e6] sm:w-12" aria-hidden />
-          <span className="text-base italic sm:text-lg">are getting married</span>
+          <span className="text-lg italic">are getting married</span>
           <span className="h-px w-8 bg-[#b9c8e6] sm:w-12" aria-hidden />
         </div>
 
-        <div className="mt-4 w-full space-y-3 sm:mt-8 sm:space-y-5">
+        <div className="mt-6 w-full space-y-4 sm:mt-8 sm:space-y-5">
           {EVENTS.map((e) => {
             const endsAt = new Date(Date.parse(e.startsAt) + (e.timeKnown ? e.durationMins : 24 * 60) * 60000).toISOString();
             return (
-              <section key={e.id} className="rounded-3xl bg-white/80 px-2 pb-3 pt-4 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8">
-                <h2 className="font-serif text-[1.45rem] leading-tight sm:text-3xl">{e.title}</h2>
-                <p className="mt-1 text-[13.5px] text-[#3f5f9e] sm:text-base">
+              <section key={e.id} className="rounded-3xl bg-white/80 px-2 pb-4 pt-5 shadow-sm ring-1 ring-[#d6e0f2] backdrop-blur-sm sm:px-10 sm:py-8">
+                <h2 className="font-serif text-[1.65rem] leading-tight sm:text-3xl">{e.title}</h2>
+                <p className="mt-1.5 text-[14.5px] text-[#3f5f9e] sm:text-base">
                   {fmtDate(e.startsAt)}
                   {e.timeKnown ? <> · <strong className="font-semibold text-[#1f3566]">{fmtTime(e.startsAt)}</strong></> : <span className="italic"> · time to be confirmed</span>}
                 </p>
                 {(e.location || e.extra) && (
-                  <p className="mt-0.5 text-[12.5px] text-[#5a6f9c] sm:text-sm">
+                  <p className="mt-1 text-[13px] text-[#5a6f9c] sm:text-sm">
                     {e.location}
                     {e.location && e.extra ? " · " : ""}
                     {e.extra && <span className="italic">{e.extra}</span>}
                   </p>
                 )}
-                <div className="mt-3">
+                <div className="mt-4">
                   <Countdown target={e.startsAt} endsAt={endsAt} />
                 </div>
                 <a
                   href={`/ollie-maddy/calendar/${e.id}`}
-                  className="mt-2 inline-block text-xs text-[#3f5f9e] sm:text-sm underline decoration-[#b9c8e6] underline-offset-4 hover:text-[#1f3566]"
+                  className="mt-3 inline-block text-sm text-[#3f5f9e] underline decoration-[#b9c8e6] underline-offset-4 hover:text-[#1f3566]"
                 >
                   Add to calendar
                 </a>
@@ -81,11 +81,11 @@ export default function OllieMaddyPage() {
           })}
         </div>
 
-        <div className="mt-5">
+        <div className="mt-6">
           <ShareButton title={`${names} are getting married`} />
         </div>
 
-        <p className="mt-5 text-sm italic text-[#7486ad]">With love, from Mum &amp; Dad</p>
+        <p className="mt-6 text-sm italic text-[#7486ad]">With love, from Mum &amp; Dad</p>
       </div>
     </main>
   );

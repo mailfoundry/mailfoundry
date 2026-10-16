@@ -126,7 +126,7 @@ export default function Countdown({ target, endsAt }: { target: string; endsAt: 
   const end = Date.parse(endsAt);
   const vars = {
     // card width scales with the screen: ~31px on a small phone, up to 50px on desktop
-    "--w": "clamp(24px, 6.8vw, 50px)",
+    "--w": "clamp(26px, 7.6vw, 50px)",
     "--h": "calc(var(--w) * 1.35)",
     "--fs": "calc(var(--w) * 0.95)",
   } as React.CSSProperties;
