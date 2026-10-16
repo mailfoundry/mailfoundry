@@ -1,5 +1,5 @@
 /**
- * Ollie / Maddie in teddy-bear onesies, sitting on the top edge of a card with their legs hanging
+ * Ollie / Maddy in teddy-bear onesies, sitting on the top edge of a card with their legs hanging
  * over the front. Built from 3 layers (body + each leg) so the legs can swing from the knee like kids do:
  * a few swings, then a rest, out of step with each other. Includes the occasional little bounce.
  *
@@ -18,7 +18,7 @@ export type Kid = {
 
 export const KIDS: Record<"ollie" | "maddie", Kid> = {
   ollie: { name: "Ollie", key: "ollie", aspect: 659 / 360, seatPct: 65.13, legLPct: 37.09, legRPct: 72.16 },
-  maddie: { name: "Maddie", key: "maddie", aspect: 692 / 360, seatPct: 64.61, legLPct: 33.67, legRPct: 64.04 },
+  maddie: { name: "Maddy", key: "maddie", aspect: 692 / 360, seatPct: 64.61, legLPct: 33.67, legRPct: 64.04 },
 };
 
 export const kidHeight = (k: Kid, width: number) => Math.round(width * k.aspect);

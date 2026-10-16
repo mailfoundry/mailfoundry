@@ -1,5 +1,5 @@
 /** Ollie & Maddy wedding countdown — edit details here. Times are UK local (BST = +01:00 until 25 Oct 2026). */
-export const COUPLE = { a: "Ollie", b: "Maddie" };
+export const COUPLE = { a: "Ollie", b: "Maddy" };
 
 export type WeddingEvent = {
   id: string;

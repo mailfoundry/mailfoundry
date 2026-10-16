@@ -7,7 +7,7 @@ import { COUPLE, EVENTS } from "./config";
 
 const names = `${COUPLE.a} & ${COUPLE.b}`;
 
-// Ollie & Maddie (in teddy onesies) sitting on the top corners of "The Wedding" card, legs dangling
+// Ollie & Maddy (in teddy onesies) sitting on the top corners of "The Wedding" card, legs dangling
 const KID_W = 92;
 const SITTERS = [
   { kid: KIDS.ollie, side: "left" as const, delay: 0.4 },
