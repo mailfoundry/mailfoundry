@@ -1,18 +1,15 @@
 "use server";
 
 import Stripe from "stripe"; // class only — no client instantiated here
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../src/lib/prisma";
 import { sendEmail } from "../../../../src/lib/sendEmail";
+import { requireMainOrIbsa } from "../../../../src/lib/auth";
 
 /** Guard: redirect to login if neither mailfoundry_auth (main user) nor ibsa_auth (IBSA admin) cookie is present. */
 async function requireIbsaAuth() {
-  const jar = await cookies();
-  const isMainUser = jar.get(process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth")?.value === "1";
-  const isIbsaUser = !!jar.get("ibsa_auth")?.value;
-  if (!isMainUser && !isIbsaUser) return; // session may not be set; don't block — order IDs are unguessable CUIDs
+  await requireMainOrIbsa(); // signed session required — redirects to /login otherwise
 }
 
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";

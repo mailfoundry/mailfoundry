@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { getConventionId } from "../../../src/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "../../../src/lib/prisma";
 import OrderFormClient from "./OrderFormClient";
@@ -8,9 +8,8 @@ type Props = { params: Promise<{ id: string }> };
 export default async function ConventionOrderPage({ params }: Props) {
   const { id } = await params;
 
-  // Auth: convention_auth cookie must match this convention
-  const cookieStore = await cookies();
-  const authConventionId = cookieStore.get("convention_auth")?.value;
+  // Auth: signed convention_auth cookie must match this convention
+  const authConventionId = await getConventionId();
   if (authConventionId !== id) {
     redirect(`/convention?error=invalid-token`);
   }

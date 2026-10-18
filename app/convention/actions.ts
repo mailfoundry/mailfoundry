@@ -1,15 +1,14 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
+import { getConventionId, startSession } from "../../src/lib/auth";
 
 /** Guard: ensure the caller holds a valid convention_auth cookie for this conventionId. */
 async function requireConventionAuth(conventionId: string) {
-  const jar = await cookies();
-  if (jar.get("convention_auth")?.value !== conventionId) {
+  if (!conventionId || (await getConventionId()) !== conventionId) {
     redirect(`/convention?error=unauthorised`);
   }
 }
@@ -133,14 +132,7 @@ export async function verifyConventionToken(formData: FormData) {
     }
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set("convention_auth", record.conventionId, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 8, // 8 hours
-  });
+  await startSession("conv", record.conventionId);
 
   redirect(`/convention/${record.conventionId}`);
 }

@@ -1,12 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { isMainOrIbsa } from "@/src/lib/auth";
 import { revalidatePath } from "next/cache";
 import { syncScsOrders, type ScsSyncResult } from "../../../src/lib/scs-sync";
 
 export async function syncScsNow(): Promise<{ ok: true; result: ScsSyncResult } | { ok: false; error: string }> {
-  const jar = await cookies();
-  const authed = jar.get(process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth")?.value === "1" || !!jar.get("ibsa_auth")?.value;
+  const authed = await isMainOrIbsa();
   if (!authed) return { ok: false, error: "Not signed in" };
   try {
     // Manual sync looks back further than the 15-min cron, to catch anything missed

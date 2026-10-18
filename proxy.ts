@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CONV_COOKIE, GROUP_COOKIE, IBSA_COOKIE, MAIN_COOKIE, verifySession } from "./src/lib/session";
 
 const BOT_PATTERN =
   /bot|crawler|spider|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|semrushbot|ahrefsbot|ia_archiver|mj12bot|dotbot/i;
@@ -27,7 +28,7 @@ function fireTrack(request: NextRequest, hostname: string, pathname: string) {
   }).catch(() => {});
 }
 
-const publicPaths = ["/ollie-maddy", "/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/auth", "/api/cron", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
+const publicPaths = ["/ollie-maddy", "/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/cron", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
@@ -36,7 +37,7 @@ function isPublicPath(pathname: string) {
   });
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const hostname = request.headers.get("host") ?? "";
   const { pathname } = request.nextUrl;
 
@@ -62,9 +63,13 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const isMainLoggedIn = request.cookies.get(cookieName)?.value === "1";
-  const isIbsaLoggedIn = request.cookies.get("ibsa_auth")?.value === "1";
+  // Signed session cookies — a forged or expired cookie verifies as null
+  const [mainUser, ibsaUser] = await Promise.all([
+    verifySession(request.cookies.get(MAIN_COOKIE)?.value, "main"),
+    verifySession(request.cookies.get(IBSA_COOKIE)?.value, "ibsa"),
+  ]);
+  const isMainLoggedIn = !!mainUser;
+  const isIbsaLoggedIn = !!ibsaUser;
 
   // Logged-in users hitting the homepage go straight to the dashboard
   if (pathname === "/" && isMainLoggedIn) {
@@ -96,14 +101,14 @@ export function proxy(request: NextRequest) {
 
   // Group account portal: accessible with group_auth cookie only
   if (pathname.startsWith("/account")) {
-    const isGroupLoggedIn = request.cookies.get("group_auth")?.value;
+    const isGroupLoggedIn = await verifySession(request.cookies.get(GROUP_COOKIE)?.value, "group");
     if (isGroupLoggedIn) return NextResponse.next();
     return NextResponse.redirect(new URL("/account/login", request.url));
   }
 
-  // Convention order form: protected by convention_auth cookie (contains the conventionId)
+  // Convention order form: protected by a signed convention_auth cookie for this conventionId
   if (pathname.startsWith("/convention/") && !pathname.startsWith("/convention/check-email") && !pathname.startsWith("/convention/verify")) {
-    const conventionAuth = request.cookies.get("convention_auth")?.value;
+    const conventionAuth = await verifySession(request.cookies.get(CONV_COOKIE)?.value, "conv");
     const conventionId = pathname.split("/")[2];
     if (!conventionAuth || conventionAuth !== conventionId) {
       return NextResponse.redirect(new URL("/convention?error=invalid-token", request.url));

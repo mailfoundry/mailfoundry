@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { cookies } from "next/headers";
+import { getIbsaUser, getMainUser } from "../lib/auth";
 import AppShell from "./app-shell";
 import { prisma } from "../lib/prisma";
 
@@ -9,10 +9,8 @@ type Props = {
 };
 
 export default async function IbsaAppShell({ active, children }: Props) {
-  const cookieStore = await cookies();
-  const cookieName = process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth";
-  const isMainUser = cookieStore.get(cookieName)?.value === "1";
-  const ibsaOnly = !isMainUser && cookieStore.get("ibsa_auth")?.value === "1";
+  const [mainUser, ibsaUser] = await Promise.all([getMainUser(), getIbsaUser()]);
+  const ibsaOnly = !mainUser && !!ibsaUser;
 
   const [groupOrderCounts, conventionCounts] = await Promise.all([
     prisma.ibsaGroupOrder.groupBy({
@@ -34,7 +32,7 @@ export default async function IbsaAppShell({ active, children }: Props) {
     <AppShell
       active={active}
       ibsaOnly={true}
-      isMainUser={isMainUser}
+      isMainUser={!!mainUser}
       orderCounts={{
         regional:     goCount("regional")     + convCount("regional"),
         circuit:      goCount("circuit")      + convCount("circuit"),

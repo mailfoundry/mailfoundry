@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../src/lib/prisma";
+import { GROUP_COOKIE, sessionCookieOptions, signSession } from "../../../src/lib/session";
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
@@ -27,13 +28,7 @@ export async function GET(request: NextRequest) {
 
   // Set session cookie and redirect to portal
   const response = NextResponse.redirect(new URL("/account", request.url));
-  response.cookies.set("group_auth", record.groupAccountId, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-  });
+  response.cookies.set(GROUP_COOKIE, await signSession("group", record.groupAccountId), sessionCookieOptions("group"));
 
   return response;
 }

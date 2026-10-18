@@ -1,19 +1,14 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { prisma } from "../../../../src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { sendEmail } from "../../../../src/lib/sendEmail";
+import { isMainOrIbsa } from "../../../../src/lib/auth";
 
 /** Guard: redirect to login if neither mailfoundry_auth (main user) nor ibsa_auth (IBSA admin) cookie is present. */
 async function requireIbsaAuth() {
-  const jar = await cookies();
-  const isMainUser = jar.get(process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth")?.value === "1";
-  const isIbsaUser = !!jar.get("ibsa_auth")?.value;
-  if (!isMainUser && !isIbsaUser) {
-    redirect("/ibsa/login");
-  }
+  if (!(await isMainOrIbsa())) redirect("/ibsa/login");
 }
 
 /** Send the convention order form magic link to the contact email on file */

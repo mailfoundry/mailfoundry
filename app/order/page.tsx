@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { getGroupAccountId } from "../../src/lib/auth";
 import { prisma } from "../../src/lib/prisma";
 import OrderFormClient from "./OrderFormClient";
 
@@ -28,8 +28,7 @@ export default async function OrderPage({ searchParams }: Props) {
     contactEmail: string; contactMobile: string; deliveryAddress: string;
   } | null = null;
 
-  const jar = await cookies();
-  const groupAccountId = jar.get("group_auth")?.value;
+  const groupAccountId = await getGroupAccountId();
   if (groupAccountId) {
     const lastOrder = await prisma.ibsaGroupOrder.findFirst({
       where: { groupAccountId },

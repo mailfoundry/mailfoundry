@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "../../../src/lib/prisma";
 import { scryptVerify } from "../../../src/lib/scrypt";
 import { verifyTotp } from "../../../src/lib/totp";
+import { endSession, startSession } from "../../../src/lib/auth";
+import { signSession, verifySession } from "../../../src/lib/session";
 
 const TOTP_PENDING_COOKIE = "_ibsa_2fa_pending";
 
@@ -24,20 +26,14 @@ export async function ibsaLogin(formData: FormData) {
 
   // No TOTP secret configured → skip 2FA and log straight in
   if (!totpSecret) {
-    const jar = await cookies();
-    jar.set("ibsa_auth", "1", {
-      httpOnly: true,
-      sameSite: "lax",
-      secure:   process.env.NODE_ENV === "production",
-      path:     "/",
-      maxAge:   60 * 60 * 12,
-    });
+    await startSession("ibsa", user.id);
     redirect("/ibsa");
   }
 
   // Set pending cookie and move to TOTP step
   const jar = await cookies();
-  jar.set(TOTP_PENDING_COOKIE, "1", {
+  // Signed + 5-minute expiry, bound to this user (a forged "1" no longer skips the password step)
+  jar.set(TOTP_PENDING_COOKIE, await signSession("ibsa", `pending:${user.id}`, 5 * 60), {
     httpOnly: true,
     sameSite: "lax",
     secure:   process.env.NODE_ENV === "production",
@@ -52,26 +48,20 @@ export async function ibsaVerifyTotp(formData: FormData) {
   const totpSecret = process.env.IBSA_TOTP_SECRET ?? "";
 
   const jar     = await cookies();
-  const pending = jar.get(TOTP_PENDING_COOKIE)?.value;
-  if (!pending) redirect("/ibsa/login");
+  const pending = await verifySession(jar.get(TOTP_PENDING_COOKIE)?.value, "ibsa");
+  if (!pending || !pending.startsWith("pending:")) redirect("/ibsa/login");
+  const userId = pending.slice("pending:".length);
 
   if (!code || !verifyTotp(totpSecret, code)) {
     redirect("/ibsa/login?step=totp&error=code");
   }
 
   jar.delete(TOTP_PENDING_COOKIE);
-  jar.set("ibsa_auth", "1", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure:   process.env.NODE_ENV === "production",
-    path:     "/",
-    maxAge:   60 * 60 * 12,
-  });
+  await startSession("ibsa", userId);
   redirect("/ibsa");
 }
 
 export async function ibsaLogout() {
-  const cookieStore = await cookies();
-  cookieStore.delete("ibsa_auth");
+  await endSession("ibsa");
   redirect("/ibsa/login");
 }

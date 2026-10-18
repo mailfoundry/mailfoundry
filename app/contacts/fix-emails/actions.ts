@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { requireMain } from "@/src/lib/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../src/lib/prisma";
@@ -13,8 +13,7 @@ import { checkEmail } from "./logic";
  *  - invalid address → archive
  */
 export async function applyEmailFixes() {
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  if ((await cookies()).get(cookieName)?.value !== "1") throw new Error("Unauthorised");
+  await requireMain();
 
   const contacts = await prisma.contact.findMany({
     where: { archivedAt: null },

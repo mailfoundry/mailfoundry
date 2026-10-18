@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { getGroupAccountId } from "../../src/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Logo from "../../src/components/logo";
@@ -19,8 +19,7 @@ const STATUS_LABEL: Record<string, { label: string; colour: string }> = {
 type Props = { searchParams: Promise<{ reordered?: string; error?: string }> };
 
 export default async function AccountPage({ searchParams }: Props) {
-  const jar = await cookies();
-  const groupAccountId = jar.get("group_auth")?.value;
+  const groupAccountId = await getGroupAccountId();
   if (!groupAccountId) redirect("/account/login");
 
   const account = await prisma.groupAccount.findUnique({
@@ -34,8 +33,7 @@ export default async function AccountPage({ searchParams }: Props) {
   });
 
   if (!account) {
-    jar.delete("group_auth");
-    redirect("/account/login");
+    redirect("/account/login"); // account deleted — signed cookie simply expires
   }
 
   const params = await searchParams;

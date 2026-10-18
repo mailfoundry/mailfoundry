@@ -1,14 +1,13 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { isMainOrIbsa } from "@/src/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
 import { syncScsOrders } from "../../../../src/lib/scs-sync";
 
 async function requireAuth() {
-  const jar = await cookies();
-  const ok = jar.get(process.env.APP_AUTH_COOKIE ?? "mailfoundry_auth")?.value === "1" || !!jar.get("ibsa_auth")?.value;
+  const ok = await isMainOrIbsa();
   if (!ok) throw new Error("Not signed in");
 }
 

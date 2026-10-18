@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { sendEmail } from "@/src/lib/sendEmail";
+import { endSession, startSession } from "@/src/lib/auth";
 
 export async function login(formData: FormData) {
   const password = String(formData.get("password") || "");
@@ -120,23 +120,20 @@ export async function confirmVerify(formData: FormData) {
     redirect("/login?error=invalid-token");
   }
 
-  // Set auth cookie — this works correctly inside a Server Action
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const cookieStore = await cookies();
-  cookieStore.set(cookieName, "1", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
+  const record = await prisma.loginToken.findUnique({ where: { token }, select: { email: true } });
+  if (!record) redirect("/login?error=invalid-token");
+
+  // Signed session cookie (subject = the verified email)
+  try {
+    await startSession("main", record.email);
+  } catch {
+    redirect("/login?error=missing-config"); // SESSION_SECRET not set
+  }
 
   redirect("/dashboard");
 }
 
 export async function logout() {
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  const cookieStore = await cookies();
-  cookieStore.delete(cookieName);
+  await endSession("main");
   redirect("/login");
 }

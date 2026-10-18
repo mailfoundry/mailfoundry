@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { requireMain } from "@/src/lib/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../src/lib/prisma";
@@ -15,8 +15,7 @@ const MAX_BATCH = 20000;
  *   the campaign's "Continue Sending" then emails only the newly added contacts.
  */
 export async function saveSegmentAsList(formData: FormData) {
-  const cookieName = process.env.APP_AUTH_COOKIE || "mailfoundry_auth";
-  if ((await cookies()).get(cookieName)?.value !== "1") throw new Error("Unauthorised");
+  await requireMain();
 
   const get = (k: string) => formData.get(k)?.toString();
   const filters = readFilterParams({

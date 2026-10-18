@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "../../src/lib/prisma";
 import { sendEmail } from "../../src/lib/sendEmail";
+import { endSession, getGroupAccountId } from "../../src/lib/auth";
 
 const IBSA_NOTIFY_EMAIL = "ibsa@xylouk.co.uk";
 
@@ -18,14 +18,12 @@ const esc = (s: string | null | undefined) =>
 const BASE_URL = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://ibsa.xylouk.co.uk";
 
 export async function accountLogout() {
-  const jar = await cookies();
-  jar.delete("group_auth");
+  await endSession("group");
   redirect("/account/login");
 }
 
 export async function reorder(orderId: string, formData: FormData) {
-  const jar = await cookies();
-  const groupAccountId = jar.get("group_auth")?.value;
+  const groupAccountId = await getGroupAccountId();
   if (!groupAccountId) redirect("/account/login");
 
   // Fetch original order — must belong to this account

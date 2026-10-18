@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { getIbsaUser, getMainUser } from "../src/lib/auth";
 import Logo from "../src/components/logo";
 import ProductMarquee from "./ProductMarquee";
 
 export default async function HomePage() {
-  const cookieStore = await cookies();
-  const isMainUser  = cookieStore.get("mailfoundry_auth")?.value === "1";
-  const isIbsaUser  = cookieStore.get("ibsa_auth")?.value === "1";
+  const [isMainUser, isIbsaUser] = (await Promise.all([getMainUser(), getIbsaUser()])).map(Boolean);
   const isLoggedIn  = isMainUser || isIbsaUser;
   const dashHref    = isMainUser ? "/dashboard" : "/ibsa?type=regional";
 
