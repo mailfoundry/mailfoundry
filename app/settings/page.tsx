@@ -35,6 +35,10 @@ export default function SettingsPage() {
         <p className="mt-2 text-sm text-gray-500">
           Read-only environment settings for this installation.
         </p>
+        <div className="mt-4 flex gap-3">
+          <a href="/settings/brands" className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white">Brands &amp; sending rules</a>
+          <a href="/settings/agent" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700">ChatGPT agent access</a>
+        </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -1,44 +1,29 @@
 "use server";
 
-import { prisma } from "../../../src/lib/prisma";
 import { redirect } from "next/navigation";
+import { requireMain } from "../../../src/lib/auth";
+import { createCampaignRecord, parseCohort } from "../../../src/lib/campaign-save";
 
 export async function createCampaign(formData: FormData) {
-  const name        = formData.get("name")?.toString().trim() || "";
-  const subject     = formData.get("subject")?.toString().trim() || "";
-  const preheader   = formData.get("preheader")?.toString().trim() || "";
-  const fromEmail   = formData.get("fromEmail")?.toString().trim() || "";
-  const body        = formData.get("body")?.toString().trim() || "";
-  const html        = formData.get("html")?.toString().trim() || "";
-  const listId      = formData.get("listId")?.toString().trim() || "";
-  const scheduledAtRaw    = formData.get("scheduledAt")?.toString().trim() || "";
-  const scheduledAtUtcRaw = formData.get("scheduledAtUtc")?.toString().trim() || "";
+  const user = await requireMain();
+  const get = (k: string) => formData.get(k)?.toString().trim() || "";
+  // scheduledAtUtc is populated by client JS as an ISO string; fall back to the raw value if JS was disabled.
+  const sendAtStr = get("scheduledAtUtc") || get("scheduledAt");
 
-  if (!name || !subject || !body || !listId) {
-    throw new Error("Campaign name, subject, body and target list are required");
-  }
-
-  const list = await prisma.list.findUnique({ where: { id: listId } });
-  if (!list) throw new Error("Selected list could not be found");
-
-  // scheduledAtUtc is populated by client JS as a proper ISO string (with timezone).
-  // Fall back to scheduledAtRaw only if JS was disabled (treats it as UTC).
-  const scheduledAtStr = scheduledAtUtcRaw || scheduledAtRaw;
-  const scheduledAt = scheduledAtStr ? new Date(scheduledAtStr) : null;
-
-  await prisma.campaign.create({
-    data: {
-      name,
-      subject,
-      preheader: preheader || null,
-      fromEmail: fromEmail || null,
-      body,
-      html: html || null,
-      listId,
-      status: scheduledAt ? "scheduled" : "draft",
-      scheduledAt,
+  const campaign = await createCampaignRecord(
+    {
+      name: get("name"),
+      subject: get("subject"),
+      preheader: get("preheader") || null,
+      fromEmail: get("fromEmail") || null,
+      body: get("body"),
+      html: get("html") || null,
+      listId: get("listId"),
+      cohort: parseCohort(get("cohort")),
+      sendAt: sendAtStr ? new Date(sendAtStr) : undefined,
     },
-  });
+    user
+  );
 
-  redirect("/campaigns");
+  redirect(campaign.brandKey ? `/campaigns/${campaign.id}` : "/campaigns");
 }

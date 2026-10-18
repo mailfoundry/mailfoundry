@@ -6,6 +6,7 @@ import AppShell from "../../../src/components/app-shell";
 import SendCampaignButton from "../../../src/components/send-campaign-button";
 import SendTestEmailForm from "../../../src/components/send-test-email-form";
 import { prisma } from "../../../src/lib/prisma";
+import ApprovalPanel from "./ApprovalPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ type CampaignPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{ flash?: string }>;
 };
 
 function getSendStatusClassName(status: string) {
@@ -57,8 +59,10 @@ function getFriendlySendError(error: string | null) {
 
 export default async function CampaignDetailPage({
   params,
+  searchParams,
 }: CampaignPageProps) {
   const { id } = await params;
+  const { flash } = await searchParams;
 
   const [campaign, rawClicks] = await Promise.all([
     prisma.campaign.findUnique({
@@ -317,6 +321,12 @@ export default async function CampaignDetailPage({
           </div>
         </div>
       </div>
+
+      {flash && (
+        <p className="mt-8 rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-800">{flash}</p>
+      )}
+
+      <ApprovalPanel campaignId={campaign.id} />
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <SendTestEmailForm campaignId={campaign.id} />

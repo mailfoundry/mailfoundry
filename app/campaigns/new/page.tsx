@@ -167,7 +167,7 @@ export default async function NewCampaignPage({
 
               {listsWithCounts.map((list) => (
                 <option key={list.id} value={list.id}>
-                  {list.name} — {list.eligibleContacts} eligible of{" "}
+                  {list.brandKey ? `[${list.brandKey.toUpperCase()}] ` : ""}{list.isTest ? "[TEST] " : ""}{list.name} — {list.eligibleContacts} eligible of{" "}
                   {list.totalContacts} contacts
                 </option>
               ))}
@@ -179,6 +179,26 @@ export default async function NewCampaignPage({
             </p>
           </div>
 
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600">
+              Group <span className="text-gray-400">(branded lists only)</span>
+            </label>
+            <select
+              name="cohort"
+              defaultValue={""}
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
+            >
+              <option value="">Whole list</option>
+              <option value="A">Group A (one third)</option>
+              <option value="B">Group B (one third)</option>
+              <option value="C">Group C (one third)</option>
+            </select>
+            <p className="mt-2 text-sm text-gray-400">
+              On an SCS or SWF list the From address is set automatically, the send time needs Jason&apos;s final
+              approval before it&apos;s scheduled, and per-contact frequency caps apply.
+            </p>
+          </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Email Body

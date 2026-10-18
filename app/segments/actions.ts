@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../src/lib/prisma";
 import { buildContactWhere, readFilterParams, hasAnyFilter, ELIGIBLE_WHERE } from "../../src/lib/segments";
+import { audit } from "../../src/lib/brand-rules";
 
 const MAX_BATCH = 20000;
 
@@ -15,7 +16,7 @@ const MAX_BATCH = 20000;
  *   the campaign's "Continue Sending" then emails only the newly added contacts.
  */
 export async function saveSegmentAsList(formData: FormData) {
-  await requireMain();
+  const user = await requireMain();
 
   const get = (k: string) => formData.get(k)?.toString();
   const filters = readFilterParams({
@@ -35,8 +36,13 @@ export async function saveSegmentAsList(formData: FormData) {
     if (!newListName) throw new Error("Choose a list or enter a new list name");
     const existing = await prisma.list.findFirst({ where: { name: newListName } });
     listId = existing ? existing.id : (await prisma.list.create({ data: { name: newListName } })).id;
-  } else if (!(await prisma.list.findUnique({ where: { id: listId } }))) {
-    throw new Error("List not found");
+  } else {
+    const target = await prisma.list.findUnique({ where: { id: listId }, include: { brand: true } });
+    if (!target) throw new Error("List not found");
+    // Warm-up protection: a brand on Hold or Stop can't grow its lists
+    if (target.brand && target.brand.status !== "go") {
+      throw new Error(`${target.brand.name} is on ${target.brand.status.toUpperCase()} — its lists can't grow until Jason sets it back to Go`);
+    }
   }
 
   const contacts = await prisma.contact.findMany({
@@ -60,6 +66,8 @@ export async function saveSegmentAsList(formData: FormData) {
       });
     }
   }
+
+  await audit(user, "list_grown", { detail: { listId, added: contacts.length, filters } });
 
   revalidatePath("/lists");
   revalidatePath(`/lists/${listId}`);

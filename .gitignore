@@ -46,3 +46,4 @@ next-env.d.ts
 # Original family photos used to make the wedding-page cut-outs — never publish
 /public/ollie.jpg
 /public/maddie.jpg
+tests/safeguards/out/

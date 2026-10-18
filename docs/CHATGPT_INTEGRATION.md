@@ -1,6 +1,6 @@
 # MailFoundry: ChatGPT campaign workflow (response to development request)
 
-Prepared by Claude (lead developer, MailFoundry) · 18 October 2026
+Prepared by Claude (lead developer, MailFoundry) · 18 October 2026 · **updated same day: 6A–6D built**
 
 Status labels used throughout:
 
@@ -8,7 +8,7 @@ Status labels used throughout:
 - **[BUILD]**: needs development (nothing in this category exists yet)
 - **[JASON]**: requires Jason's approval or action
 
-Nothing in this document has been activated. No sending behaviour has changed.
+**Implementation status (18 Oct 2026):** 6A–6D are built, type-checked and covered by 69 automated safeguard tests (`bash tests/safeguards/run.sh`). They go live when Jason runs the migration and pushes. **Nothing changes for existing campaigns until Jason assigns a list to a brand** (Settings → Brands). The three-a-week SCS schedule is **not** active, and SWF starts on **Hold**.
 
 ---
 
@@ -112,11 +112,14 @@ Key principles:
 
 ## 5. Setup Jason must complete **[JASON]**
 
-1. **Deploy the signed-session security fix** already prepared: add `SESSION_SECRET` in Railway, then push. Required before any API work.
-2. **Remove ChatGPT's write access to Neon.** Give it a read-only database user, or remove access once the API is live. With write access it can change suppression records and bypass every safeguard. GitHub read access is fine; no push rights.
-3. **After 6C is built:** generate the agent API token in MailFoundry → Settings (shown once). Add it to the custom GPT as an Action using the published `openapi.json`, with Authentication set to "API key, Bearer".
-4. **Create the test list** "Agent Test", containing only Jason's own addresses.
-5. **Weekly:** enter the Postmaster spam rate for each brand in MailFoundry. Google's Postmaster data can't easily be pulled in automatically.
+1. ~~Deploy the signed-session security fix~~ **Done** (commit 3701d9c, live 18 Oct).
+2. **Run the migration** `prisma/migrations/20261018000000_brands_approvals_agent/migration.sql` in Neon (**MailFoundry** project), then push.
+3. **Remove ChatGPT's write access to Neon.** Use a read-only database user, or remove access. With write access it can change suppression records and bypass every safeguard. GitHub read access is fine; no push rights.
+4. **Create the "Agent Test" list** containing only your own addresses. In Settings → Brands → Lists, set it to SCS and tick **test list**.
+5. **Create the agent token** in Settings → ChatGPT agent access (shown once). In the custom GPT: Configure → Actions → Import from URL `https://ibsa.xylouk.co.uk/api/agent/v1/openapi.json`, then Authentication: API key, Bearer, and paste the token.
+6. **Run the end-to-end test:** `node scripts/agent-e2e.mjs` (see section 7).
+7. **Later, when approving the new SCS schedule:** assign SCS Warm-up to SCS, set the ramp cap and send days, and decide whether to allow agent scheduling.
+8. **Weekly:** enter the Postmaster spam rate for each brand in Settings → Brands.
 
 ## 6. Database and application changes
 
@@ -133,7 +136,7 @@ Key principles:
 - SCS and SWF sending from separate verified domains.
 - Signed login sessions (prepared; deploys with item 5.1).
 
-### 6A. Brand rules, limits, Hold/Stop **[BUILD]**, required before three a week
+### 6A. Brand rules, limits, Hold/Stop **[BUILT, awaiting deploy]**
 
 - **New `Brand` table** (swf, scs):
     - fixed From name and address
@@ -142,14 +145,14 @@ Key principles:
     - weekly limit per contact
     - status Go / Hold / Stop, plus who set it and when
 - **Each campaign belongs to a brand.** Its From address and list must match that brand; anything else is rejected.
-- **Group assignment for SCS** (A/B/C) stored per contact.
+- **Group assignment** (A/B/C): each contact's group is worked out from their ID, so it never changes and needs no storage. Each campaign can target one group.
 - **Limits enforced at send time:** contacts over their weekly or daily limit are skipped and recorded as `capped`.
 - **Status worked out automatically** from the last 7 days' complaints, bounces and unsubscribes, plus the Postmaster figure Jason enters.
     - **Hold:** blocks adding to the warm-up list and blocks scheduling to a larger audience than last week's.
     - **Stop:** blocks scheduling, and the send job skips the brand.
     - Only Jason can clear a Stop.
 
-### 6B. Approvals and audit trail **[BUILD]**, required before three a week
+### 6B. Approvals and audit trail **[BUILT, awaiting deploy]**
 
 - **New `CampaignApproval` table:** campaign, type (concept / final), approved by, approved at, and a fingerprint (hash) of the approved version.
     - Concept fingerprint covers: subject, angle, product, planned date.
@@ -160,7 +163,7 @@ Key principles:
 - **The send job re-checks the fingerprint** just before sending. A mismatch means it doesn't send and the campaign is flagged.
 - **New `AuditLog` table:** every create, edit, approval, schedule, cancel, Hold/Stop change and agent API call, with who/what/when.
 
-### 6C. Agent API **[BUILD]**
+### 6C. Agent API **[BUILT, awaiting deploy]**
 
 All under `/api/agent/v1/`, bearer token required. Every action is logged.
 
@@ -185,7 +188,7 @@ The API can't send immediately, approve, change brand settings, edit contacts or
 
 New campaign status: `cancelled`. New send status: `capped`.
 
-### 6D. Weekly summary **[BUILD]**
+### 6D. Weekly summary **[BUILT, awaiting deploy]**
 
 `GET /summary` returns, per brand:
 
@@ -202,44 +205,85 @@ Opens are labelled unreliable (Apple Mail opens emails automatically); planning 
 
 ## 7. Test plan and implementation status
 
-**Status today:** design complete. Nothing in 6A–6D is built yet.
+**Automated (done):** `bash tests/safeguards/run.sh` runs 69 tests against an in-memory database (no Neon, no Resend):
 
-Test, run against the "Agent Test" list only. **No production send without Jason's separate authorisation.**
+- **26 unit tests:** UK time across the 25 Oct clock change, A/B/C group balance, fingerprints, ISO weeks.
+- **43 safeguard tests:**
+    - **Sender and lists:** From address forced to the brand's; an SCS campaign can't use an SWF or unassigned list.
+    - **Approvals:** scheduling is blocked without final approval; editing after approval revokes it; a content change made directly in the database is caught at send time; audience growth after approval blocks the send.
+    - **Content rules:** a bare `{{firstName}}` is rejected.
+    - **Send days, window and ramp:** wrong day and outside-window times are refused; the ramp cap holds; group sends reach only their group.
+    - **Stop and Hold:** both block; health escalates automatically (0.2% complaints → Hold, 0.5% → Stop, Postmaster 0.3% → Stop) and never relaxes on its own.
+    - **Frequency limits:** the weekly limit, the cross-brand daily limit, and complaints counting towards limits all work.
+    - **Suppression and sending:** unsubscribed, bounced and complained contacts are never emailed; re-sending doesn't double-send; a legacy campaign on a newly branded list is blocked.
+    - **Audit trail:** written for every action.
 
-| # | Test | Expected result |
+**Live end-to-end (Jason runs after deploy):** `node scripts/agent-e2e.mjs`, using only the Agent Test list. It pauses twice for you to approve in MailFoundry. The test campaign is planned 3 hours ahead and cancelled at the end, so only `[TEST]` copies are sent, to your own addresses.
+
+| # | Check | Covered by |
 | --- | --- | --- |
-| 1 | ChatGPT creates a draft via `POST /campaigns` | 201, campaign in `draft` |
-| 2 | Draft visible in MailFoundry | Appears under the correct brand |
-| 3 | Content preserved | Subject, preview, HTML, plain text identical to what was sent |
-| 4 | Brand and list | SCS From address set automatically; an SWF list is rejected |
-| 5 | Test send | Arrives at Jason's address with List-Unsubscribe header |
-| 6 | Schedule before approval | Refused: `final_approval_required` |
-| 7 | Jason approves in MailFoundry, ChatGPT schedules | Status `scheduled`, approval recorded in audit log |
-| 8 | Edit after approval | Approval cancelled; schedule refused until re-approved |
-| 9 | View and cancel | Status `cancelled`, never sent |
-| 10 | Brand set to Stop | Schedule refused; send job skips |
-| 11 | Suppressed contact on list | Never sent to |
-| 12 | Contact already emailed this week | Skipped as `capped` |
-| 13 | Direct send attempt via API | No such endpoint |
+| 1 | ChatGPT creates a draft via the API | E2E step 2 |
+| 2 | Draft visible in MailFoundry | E2E prints the link |
+| 3 | Subject, preview, HTML, plain text preserved | E2E step 3 |
+| 4 | Correct brand + test audience; wrong-brand list refused | E2E step 3 + tests |
+| 5 | Test email to test list only | E2E step 4 |
+| 6 | Scheduling blocked until concept + final approval | E2E step 5 + tests |
+| 7 | Scheduled after approval | E2E step 7 |
+| 8 | Viewed, rescheduled, cancelled | E2E step 7 |
+| 9 | No bypass: no send endpoint, UI send needs your login, suppression/caps/Hold/Stop enforced | E2E step 8 + tests |
 
 ## 8. Operating instructions for ChatGPT
 
 **Role:** propose, draft, and (once approved) schedule SWF and SCS campaigns. Review results weekly. Claude is lead developer; any change to sending setup, domains, lists, segments, ramp or limits goes to Jason, who checks it with Claude.
 
+**Connection:** custom GPT Action using `https://ibsa.xylouk.co.uk/api/agent/v1/openapi.json`, with a Bearer token. All times are **UK local**, written `YYYY-MM-DDTHH:MM` (e.g. `2026-10-27T10:00`).
+
+**Operations**
+
+| Operation | Call | Notes |
+| --- | --- | --- |
+| Rules + status | `GET /brands` | Go/Hold/Stop, From address, limits, send days and window, whether agent scheduling is on |
+| Lists | `GET /lists?brand=scs` | Only brand lists; eligible counts and A/B/C group sizes |
+| Weekly summary | `GET /summary` (`?week=2026-W43`) | Last week's results, list sizes, upcoming campaigns, warnings |
+| List campaigns | `GET /campaigns?brand=&status=` | `stage` = draft → concept_approved → final_approved → scheduled → sent |
+| Campaign detail | `GET /campaigns/{id}` | Includes `issues` (what blocks approval or scheduling) |
+| Create draft | `POST /campaigns` | `brand, name, subject, previewText, html, text, listId, group (A/B/C or blank), plannedSendAt, conceptNotes` |
+| Edit | `PATCH /campaigns/{id}` | Any subset of the fields above. Revokes final approval if approved fields change |
+| Submit concept | `POST /campaigns/{id}/concept` | `conceptNotes` (angle, products, why), optional `plannedSendAt` |
+| Preview | `GET /campaigns/{id}/preview` | Sample name "Jane"; also shows what no-name contacts see |
+| Test send | `POST /campaigns/{id}/test` | Test list only, `[TEST]` subject, max 10/hour |
+| Schedule | `POST /campaigns/{id}/schedule` | Only with concept + matching final approval and all rules passing |
+| Reschedule | `POST /campaigns/{id}/reschedule` | `plannedSendAt`; unschedules and needs re-approval |
+| Cancel | `POST /campaigns/{id}/cancel` | Any unsent campaign |
+| Stats | `GET /campaigns/{id}/stats` | Lead on clicks; opens are unreliable |
+
+**Refusal codes:**
+
+- `concept_approval_required` / `final_approval_required` / `final_approval_stale` / `audience_grew`: ask Jason to (re)approve.
+- `agent_scheduling_disabled`: Jason schedules it himself.
+- `rules_failed`: report `issues` to Jason.
+
+Never retry by changing things to get round a refusal.
+
 **Weekly cycle:**
 
-1. `GET /summary` and `GET /brands`. If a brand is on **Stop**, propose nothing for it and tell Jason. On **Hold**, propose only for the existing audience.
-2. Propose the week's concepts (subject, angle, product, date, brand, list). Create drafts and submit each concept. Wait for Jason's concept approval in MailFoundry.
-3. Build the finished content in the drafts (`PATCH`), following the content rules in `SCS Email Warm-up Handover` (greeting `{{firstName|there}}`, unsubscribe line near the top, one main call to action, ex-VAT prices from the live site, no attachments).
-4. Send a test (`POST /test`) and ask Jason to review. Wait for **final approval** in MailFoundry.
-5. Schedule (`POST /schedule`) at the approved UK date and time. If refused, report the reason to Jason. Don't work around it.
-6. After sends, read `/stats` and use clicks (not opens) to shape next week's proposals.
+1. `GET /summary`. If a brand is on **Stop**, propose nothing for it and tell Jason. On **Hold**, propose only for the existing audience (no larger than `holdAudienceLimit`).
+2. Propose the week's concepts. For each, create a draft with `conceptNotes` and `plannedSendAt` within the brand's days and window. Ask Jason to approve concepts in MailFoundry.
+3. Build the finished content (`PATCH`) following the content rules in the SCS Email Warm-up Handover:
+    - greeting `{{firstName|there}}`
+    - unsubscribe line near the top
+    - one main call to action
+    - ex-VAT prices from the live site
+    - no attachments
+4. Check `GET /campaigns/{id}` has no `issues`. Send a test, then ask Jason for **final approval**.
+5. Schedule (if agent scheduling is on for the brand), otherwise tell Jason it's ready for him to schedule.
+6. After sends, read stats and use clicks to shape next week.
 
 **Never:**
 
 - Write to the Neon database.
-- Try to send immediately or bypass a refusal.
-- Edit a campaign after final approval without telling Jason it needs re-approval.
-- Use a From address or list from the other brand.
-- Add contacts beyond the ramp allowance, or re-add suppressed contacts.
-- Schedule SWF automatically until Jason confirms reputation has recovered.
+- Try to send immediately or work around a refusal.
+- Edit after final approval without telling Jason it needs re-approval.
+- Use a list from the other brand.
+- Add contacts to lists (only Jason grows lists).
+- Schedule SWF until Jason confirms reputation has recovered.

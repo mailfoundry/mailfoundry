@@ -39,8 +39,12 @@ model List {
   name      String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  brandKey  String?       // null = unassigned (legacy rules); "swf" | "scs" = brand rules apply
+  isTest    Boolean       @default(false) // test lists (e.g. "Agent Test") — the only target for agent test sends
   contacts  ContactList[]
   campaigns Campaign[]
+
+  brand Brand? @relation(fields: [brandKey], references: [key], onDelete: SetNull)
 }
 
 model ContactList {
@@ -82,9 +86,88 @@ model Campaign {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  list     List           @relation(fields: [listId], references: [id], onDelete: Cascade)
-  template Template?      @relation(fields: [templateId], references: [id], onDelete: SetNull)
-  sends    CampaignSend[]
+  // ── Brand rules / approvals (docs/CHATGPT_INTEGRATION.md 6A–6B) ──
+  brandKey      String?   // set when the target list belongs to a brand
+  cohort        String?   // "A" | "B" | "C" — send to one third of the list; null = whole list
+  conceptNotes  String?   // angle / product / reasoning for the concept approval
+  plannedSendAt DateTime? // the UK send time Jason approves; scheduling uses this
+  createdBy     String?   // "agent:<token name>" or the user's email
+  blockedReason String?   // why the scheduler refused to send (fingerprint changed, Stop, caps…)
+  cancelledAt   DateTime?
+
+  list      List               @relation(fields: [listId], references: [id], onDelete: Cascade)
+  template  Template?          @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  brand     Brand?             @relation(fields: [brandKey], references: [key], onDelete: SetNull)
+  sends     CampaignSend[]
+  approvals CampaignApproval[]
+}
+
+/// Sending identity + deliverability rules per brand. Only Jason edits these (Settings → Brands).
+model Brand {
+  key                    String    @id // "swf" | "scs"
+  name                   String
+  fromName               String
+  fromEmail              String
+  status                 String    @default("go") // go | hold | stop
+  statusReason           String?
+  statusSetBy            String?
+  statusSetAt            DateTime?
+  postmasterSpamRate     Float?    // percent, entered weekly by Jason
+  postmasterUpdatedAt    DateTime?
+  weeklyCapPerContact    Int       @default(1) // max emails per contact per rolling 7 days
+  maxAudiencePerSend     Int?      // ramp cap for any single send; null = no cap
+  sendDays               String    @default("2,3,4") // ISO weekdays (1 = Mon … 7 = Sun), UK time
+  sendWindowStart        String    @default("10:00")
+  sendWindowEnd          String    @default("11:00")
+  agentSchedulingEnabled Boolean   @default(false) // the API may schedule only when true
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  lists     List[]
+  campaigns Campaign[]
+}
+
+/// Concept and final approvals. A final approval is only valid while the campaign's fingerprint matches.
+model CampaignApproval {
+  id            String    @id @default(cuid())
+  campaignId    String
+  kind          String    // concept | final
+  fingerprint   String
+  audienceSize  Int?      // eligible contacts at approval time (final)
+  sendAt        DateTime? // approved send time (final)
+  approvedBy    String
+  approvedAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  revokedReason String?
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  at         DateTime @default(now())
+  actor      String   // user email, "agent:<name>" or "system"
+  action     String
+  campaignId String?
+  brandKey   String?
+  detail     Json?
+
+  @@index([at])
+  @@index([campaignId])
+}
+
+/// Bearer tokens for the ChatGPT agent API. Only the SHA-256 hash is stored.
+model AgentToken {
+  id         String    @id @default(cuid())
+  name       String
+  tokenHash  String    @unique
+  prefix     String    // first characters, for recognising a token in the UI
+  createdBy  String
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
 }
 
 model LoginToken {

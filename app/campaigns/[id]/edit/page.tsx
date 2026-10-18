@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import AppShell from "../../../../src/components/app-shell";
 import { updateCampaign } from "./actions";
 import ScheduledAtInput from "../../../../src/components/scheduled-at-input";
+import { ukParts } from "../../../../src/lib/brand-rules";
 
 export const dynamic = "force-dynamic";
 
@@ -187,7 +188,7 @@ export default async function EditCampaignPage({
 
               {listsWithCounts.map((list) => (
                 <option key={list.id} value={list.id}>
-                  {list.name} — {list.eligibleContacts} eligible of{" "}
+                  {list.brandKey ? `[${list.brandKey.toUpperCase()}] ` : ""}{list.isTest ? "[TEST] " : ""}{list.name} — {list.eligibleContacts} eligible of{" "}
                   {list.totalContacts} contacts
                 </option>
               ))}
@@ -199,6 +200,26 @@ export default async function EditCampaignPage({
             </p>
           </div>
 
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600">
+              Group <span className="text-gray-400">(branded lists only)</span>
+            </label>
+            <select
+              name="cohort"
+              defaultValue={campaign.cohort ?? ""}
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none"
+            >
+              <option value="">Whole list</option>
+              <option value="A">Group A (one third)</option>
+              <option value="B">Group B (one third)</option>
+              <option value="C">Group C (one third)</option>
+            </select>
+            <p className="mt-2 text-sm text-gray-400">
+              On an SCS or SWF list the From address is set automatically, the send time needs Jason&apos;s final
+              approval before it&apos;s scheduled, and per-contact frequency caps apply.
+            </p>
+          </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Email Body
@@ -234,11 +255,12 @@ export default async function EditCampaignPage({
               Schedule Send <span className="text-gray-400">(optional)</span>
             </label>
             <ScheduledAtInput
-              defaultValue={
-                campaign.scheduledAt
-                  ? campaign.scheduledAt.toISOString().slice(0, 16)
-                  : ""
-              }
+              defaultValue={(() => {
+                const d = campaign.plannedSendAt ?? campaign.scheduledAt;
+                if (!d) return "";
+                const p = ukParts(d);
+                return `${p.ymd}T${p.hhmm}`; // UK local time for the datetime-local input
+              })()}
             />
             <p className="mt-2 text-sm text-gray-400">
               Set a time to schedule, or leave blank to keep the current status ({campaign.status}).

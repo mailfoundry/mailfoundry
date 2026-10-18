@@ -1,234 +1,37 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
-import { addEmailFooter, addPreheader } from "@/src/lib/emailFooter";
-import { applyMergeTags } from "@/src/lib/merge";
-import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
+import { dispatchCampaign } from "@/src/lib/dispatch";
+import { getMainUser } from "@/src/lib/auth";
 
-// Immediately dispatches a campaign via Resend batch API.
-// Dedup via CampaignSend records means re-triggering is safe.
-export async function POST(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// "Send Campaign" button. Sends now via the shared dispatcher (brand rules, approvals and caps apply).
+// Dedup via CampaignSend records means re-triggering ("Continue Sending") is safe.
+export const maxDuration = 300;
+
+export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const user = await getMainUser();
+    if (!user) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
     const { id } = await params;
 
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "RESEND_API_KEY not set" }, { status: 500 });
-    }
-
-    const campaign = await prisma.campaign.findUnique({
-      where: { id },
-      include: {
-        list: {
-          include: { contacts: { include: { contact: true } } },
-        },
-      },
+    // Lock: only one send at a time per campaign
+    const claimed = await prisma.campaign.updateMany({
+      where: { id, status: { notIn: ["sending", "cancelled"] } },
+      data: { status: "sending" },
     });
-
-    if (!campaign) {
-      return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    if (claimed.count === 0) {
+      return NextResponse.json({ error: "This campaign is already sending, or was cancelled." }, { status: 409 });
     }
 
-    if (!campaign.list) {
+    const result = await dispatchCampaign(id, user);
+    if (!result.ok) {
+      // Put the status back unless the dispatcher set it (blocked)
+      await prisma.campaign.updateMany({ where: { id, status: "sending" }, data: { status: "draft" } });
       return NextResponse.json(
-        { error: "This campaign is not attached to a list." },
+        { error: result.blocked ? `Blocked: ${result.blocked.join(" · ")}` : result.error },
         { status: 400 }
       );
     }
-
-    if (!campaign.fromEmail) {
-      return NextResponse.json(
-        { error: "This campaign does not have a FROM address set. Open the campaign settings and fill in the FROM field before sending." },
-        { status: 400 }
-      );
-    }
-
-    const eligibleContacts = campaign.list.contacts
-      .map((c) => c.contact)
-      .filter(
-        (c) =>
-          c.email &&
-          c.subscribedAt &&
-          !c.unsubscribedAt &&
-          !c.archivedAt &&
-          !c.bouncedAt &&
-          !c.complainedAt
-      );
-
-    if (eligibleContacts.length === 0) {
-      return NextResponse.json(
-        { error: "No eligible contacts found in this campaign list." },
-        { status: 400 }
-      );
-    }
-
-    // Dedup: skip contacts already successfully sent this campaign
-    const alreadySentEmails = new Set(
-      (
-        await prisma.campaignSend.findMany({
-          where: { campaignId: id, status: "sent" },
-          select: { email: true },
-        })
-      ).map((r) => r.email)
-    );
-    const contactsToSend = eligibleContacts.filter(
-      (c) => !alreadySentEmails.has(c.email)
-    );
-
-    if (contactsToSend.length === 0) {
-      await prisma.campaign.update({
-        where: { id },
-        data: { status: "sent", scheduledAt: null },
-      });
-      return NextResponse.json({ ok: true, sent: 0, message: "Already fully sent." });
-    }
-
-    // Mark as sending immediately so UI shows progress
-    await prisma.campaign.update({
-      where: { id },
-      data: { status: "sending", scheduledAt: null },
-    });
-
-    const appBaseUrl =
-      process.env.APP_BASE_URL ??
-      process.env.NEXT_PUBLIC_BASE_URL ??
-      "https://ibsa.xylouk.co.uk";
-
-    const defaultFrom = "IBSA · Xylo Supplies <noreply@xylouk.co.uk>";
-
-    type EmailPayload = {
-      sendId: string;
-      contactId: string;
-      email: string;
-      resendPayload: {
-        from: string;
-        to: string;
-        subject: string;
-        text: string;
-        html: string;
-        headers: Record<string, string>;
-        tags: { name: string; value: string }[];
-      };
-    };
-
-    const payloads: EmailPayload[] = contactsToSend.map((contact) => {
-      const sendId = crypto.randomUUID();
-
-      const baseHtml =
-        campaign.html?.trim()
-          ? campaign.html
-          : `<div style="font-family:Arial,sans-serif;line-height:1.6">${campaign.body.replace(/\n/g, "<br/>")}</div>`;
-
-      // Merge tags ({{firstName|there}} etc.) are filled per contact before footer/tracking are added
-      const htmlWithFooter = addPreheader(
-        addEmailFooter(applyMergeTags(baseHtml, contact, { html: true }), contact.email, campaign.fromEmail),
-        campaign.preheader ? applyMergeTags(campaign.preheader, contact, { html: true }) : campaign.preheader
-      );
-
-      const htmlWithClicks = htmlWithFooter.replace(
-        /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
-        (_m, pre, url, post) =>
-          `<a ${pre}href="${appBaseUrl}/api/track/click?s=${sendId}&u=${encodeURIComponent(url)}"${post}>`
-      );
-
-      const pixelTag = `<img src="${appBaseUrl}/api/track/open?s=${sendId}" width="1" height="1" style="display:none" alt="" />`;
-      const htmlContent = htmlWithClicks.includes("</body>")
-        ? htmlWithClicks.replace("</body>", `${pixelTag}</body>`)
-        : `${htmlWithClicks}${pixelTag}`;
-
-      return {
-        sendId,
-        contactId: contact.id,
-        email: contact.email,
-        resendPayload: {
-          from: campaign.fromEmail ?? defaultFrom,
-          to: contact.email,
-          subject: applyMergeTags(campaign.subject, contact),
-          text: applyMergeTags(campaign.body, contact),
-          html: htmlContent,
-          // One-click unsubscribe (Gmail/Yahoo bulk-sender requirement)
-          headers: listUnsubscribeHeaders(contact.email),
-          // Lets the Resend webhook tie bounces/complaints back to this send
-          tags: [{ name: "send_id", value: sendId }],
-        },
-      };
-    });
-
-    // Send in batches of 100 (Resend batch limit)
-    const BATCH_SIZE = 100;
-    const sendRecords: {
-      id?: string;
-      campaignId: string;
-      contactId: string;
-      email: string;
-      status: string;
-      error?: string;
-    }[] = [];
-
-    for (let i = 0; i < payloads.length; i += BATCH_SIZE) {
-      const chunk = payloads.slice(i, i + BATCH_SIZE);
-
-      try {
-        const res = await fetch("https://api.resend.com/emails/batch", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(chunk.map((p) => p.resendPayload)),
-        });
-
-        if (res.ok) {
-          for (const p of chunk) {
-            sendRecords.push({
-              id: p.sendId,
-              campaignId: id,
-              contactId: p.contactId,
-              email: p.email,
-              status: "sent",
-            });
-          }
-        } else {
-          const errBody = await res.text().catch(() => "unknown");
-          for (const p of chunk) {
-            sendRecords.push({
-              campaignId: id,
-              contactId: p.contactId,
-              email: p.email,
-              status: "failed",
-              error: `Batch error ${res.status}: ${errBody}`.slice(0, 200),
-            });
-          }
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        for (const p of chunk) {
-          sendRecords.push({
-            campaignId: id,
-            contactId: p.contactId,
-            email: p.email,
-            status: "failed",
-            error: msg.slice(0, 200),
-          });
-        }
-      }
-    }
-
-    await prisma.campaignSend.createMany({ data: sendRecords });
-
-    const sentCount = sendRecords.filter((r) => r.status === "sent").length;
-
-    await prisma.campaign.update({
-      where: { id },
-      data: {
-        status: sentCount > 0 ? "sent" : "draft",
-        scheduledAt: null,
-      },
-    });
-
-    return NextResponse.json({ ok: true, sent: sentCount, failed: sendRecords.length - sentCount });
+    return NextResponse.json({ ok: true, sent: result.sent, failed: result.failed, capped: result.capped, eligible: result.sent + result.capped });
   } catch (error) {
     console.error("Send campaign failed:", error);
     return NextResponse.json({ error: "Failed to send campaign." }, { status: 500 });

@@ -1,64 +1,29 @@
 "use server";
 
-import { prisma } from "../../../../src/lib/prisma";
 import { redirect } from "next/navigation";
+import { requireMain } from "../../../../src/lib/auth";
+import { parseCohort, updateCampaignRecord } from "../../../../src/lib/campaign-save";
 
 export async function updateCampaign(campaignId: string, formData: FormData) {
-  const name           = formData.get("name")?.toString().trim() || "";
-  const subject        = formData.get("subject")?.toString().trim() || "";
-  const preheader      = formData.get("preheader")?.toString().trim() || "";
-  const fromEmail      = formData.get("fromEmail")?.toString().trim() || "";
-  const body           = formData.get("body")?.toString().trim() || "";
-  const html           = formData.get("html")?.toString().trim() || "";
-  const listId         = formData.get("listId")?.toString().trim() || "";
-  const scheduledAtRaw    = formData.get("scheduledAt")?.toString().trim() || "";
-  const scheduledAtUtcRaw = formData.get("scheduledAtUtc")?.toString().trim() || "";
-  // Prefer the UTC ISO string populated by client JS; fall back to raw only if JS disabled.
-  const scheduledAtStr = scheduledAtUtcRaw || scheduledAtRaw;
+  const user = await requireMain();
+  const get = (k: string) => formData.get(k)?.toString().trim() || "";
+  const sendAtStr = get("scheduledAtUtc") || get("scheduledAt");
 
-  if (!name || !subject || !body || !listId) {
-    throw new Error(
-      "Campaign name, subject, body and target list are required"
-    );
-  }
-
-  const [campaign, list] = await Promise.all([
-    prisma.campaign.findUnique({
-      where: {
-        id: campaignId,
-      },
-    }),
-    prisma.list.findUnique({
-      where: {
-        id: listId,
-      },
-    }),
-  ]);
-
-  if (!campaign) {
-    throw new Error("Campaign could not be found");
-  }
-
-  if (!list) {
-    throw new Error("Selected list could not be found");
-  }
-
-  await prisma.campaign.update({
-    where: {
-      id: campaignId,
+  await updateCampaignRecord(
+    campaignId,
+    {
+      name: get("name"),
+      subject: get("subject"),
+      preheader: get("preheader") || null,
+      fromEmail: get("fromEmail") || null,
+      body: get("body"),
+      html: get("html") || null,
+      listId: get("listId"),
+      cohort: parseCohort(get("cohort")),
+      sendAt: sendAtStr ? new Date(sendAtStr) : undefined,
     },
-    data: {
-      name,
-      subject,
-      preheader: preheader || null,
-      fromEmail: fromEmail || null,
-      body,
-      html: html || null,
-      listId,
-      scheduledAt: scheduledAtStr ? new Date(scheduledAtStr) : campaign.scheduledAt,
-      status: scheduledAtStr ? "scheduled" : campaign.status,
-    },
-  });
+    user
+  );
 
   redirect(`/campaigns/${campaignId}`);
 }
