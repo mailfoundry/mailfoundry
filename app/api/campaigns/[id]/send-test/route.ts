@@ -3,6 +3,7 @@ import { prisma } from "@/src/lib/prisma";
 import { sendEmail } from "@/src/lib/sendEmail";
 import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 import { applyMergeTags } from "@/src/lib/merge";
+import { addEmailFooter, addPreheader, addTextFooter } from "@/src/lib/emailFooter";
 
 export async function POST(
   request: Request,
@@ -52,8 +53,12 @@ export async function POST(
       from: campaign.fromEmail ?? undefined,
       to: testEmail,
       subject: applyMergeTags(campaign.subject, mergeContact),
-      text: applyMergeTags(campaign.body, mergeContact),
-      html: applyMergeTags(htmlContent, mergeContact, { html: true }),
+      text: addTextFooter(applyMergeTags(campaign.body, mergeContact), testEmail, campaign.fromEmail),
+      // Same footer / branded-unsubscribe handling as real sends
+      html: addPreheader(
+        addEmailFooter(applyMergeTags(htmlContent, mergeContact, { html: true }), testEmail, campaign.fromEmail),
+        campaign.preheader ? applyMergeTags(campaign.preheader, mergeContact, { html: true }) : campaign.preheader
+      ),
       // Same one-click unsubscribe headers as real campaign sends, so test results (e.g. mail-tester) match
       headers: listUnsubscribeHeaders(testEmail),
     });

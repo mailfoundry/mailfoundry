@@ -8,6 +8,7 @@
 import { createHash } from "node:crypto";
 import type { Prisma } from "../generated/prisma/client";
 import { prisma } from "./prisma";
+import { checkUnsubscribe } from "./emailFooter";
 
 // Send records that reached Resend (the webhook later re-labels some as bounced/complained)
 export const DELIVERED_STATUSES = ["sent", "bounced", "soft_bounced", "complained"];
@@ -323,6 +324,12 @@ export async function preflight(campaignId: string, phase: Phase, now = new Date
     errors.push("Use {{firstName|there}} — a bare {{firstName}} shows \"Hi ,\" to contacts with no name");
   }
   if (!c.preheader?.trim()) warnings.push("No preview text");
+  const unsub = checkUnsubscribe(c.html);
+  if (unsub.malformed.length) {
+    errors.push(`Malformed unsubscribe tag ${unsub.malformed.join(", ")} — use exactly {{unsubscribe_url}} inside <a href="…">`);
+  }
+  if (unsub.hiddenLinks) warnings.push("An {{unsubscribe_url}} link is hidden or has no text — the standard footer will be added");
+  else if (c.html?.trim() && unsub.validLinks === 0) warnings.push("No branded {{unsubscribe_url}} link — the standard MailFoundry footer will be added");
 
   // Brand status + ramp (test lists only reach Jason's own addresses, so these don't apply)
   if (!isTest) {

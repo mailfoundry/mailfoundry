@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { agentRoute, apiError, readJson } from "@/src/lib/agent-auth";
-import { addEmailFooter, addPreheader } from "@/src/lib/emailFooter";
+import { addEmailFooter, addPreheader, addTextFooter } from "@/src/lib/emailFooter";
 import { applyMergeTags } from "@/src/lib/merge";
 import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 import { sendEmail } from "@/src/lib/sendEmail";
@@ -38,7 +38,7 @@ export const POST = agentRoute<{ id: string }>("campaigns.test", async ({ req, a
       from: c.fromEmail ?? undefined,
       to: ct.email,
       subject: `[TEST] ${applyMergeTags(c.subject, ct)}`,
-      text: applyMergeTags(c.body, ct),
+      text: addTextFooter(applyMergeTags(c.body, ct), ct.email, c.fromEmail),
       html: addPreheader(addEmailFooter(applyMergeTags(base, ct, { html: true }), ct.email, c.fromEmail), c.preheader ? applyMergeTags(c.preheader, ct, { html: true }) : c.preheader),
       headers: listUnsubscribeHeaders(ct.email),
     });

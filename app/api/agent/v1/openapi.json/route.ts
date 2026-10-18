@@ -12,7 +12,7 @@ export function GET() {
       name: { type: "string", description: "Internal name, e.g. 'SCS wk44 Tue — Christeyns floor care'" },
       subject: { type: "string", description: "Plain, specific, under ~50 chars. No ALL CAPS, emoji or £ in subject." },
       previewText: { type: "string", description: "Preview/preheader text, different from the first sentence" },
-      html: { type: "string", description: "Full HTML. Greeting must be 'Hi {{firstName|there}},'. Footer + unsubscribe are added automatically." },
+      html: { type: "string", description: "Full HTML. Greeting must be 'Hi {{firstName|there}},'. Put the brand footer's unsubscribe link as exactly <a href=\"{{unsubscribe_url}}\">Unsubscribe</a> (visible, with text) — MailFoundry fills in the secure link and adds no second footer. Without it, a standard footer is appended. Look-alike tags are rejected." },
       text: { type: "string", description: "Plain-text version (required)" },
       listId: { type: "string", description: "A list id from GET /lists for the same brand" },
       group: { type: "string", enum: ["A", "B", "C", ""], description: "One third of the list (SCS warm-up: one group per send day). Blank = whole list." },

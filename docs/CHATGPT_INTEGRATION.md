@@ -272,6 +272,7 @@ Never retry by changing things to get round a refusal.
 3. Build the finished content (`PATCH`) following the content rules in the SCS Email Warm-up Handover:
     - greeting `{{firstName|there}}`
     - unsubscribe line near the top
+    - branded footer unsubscribe link written exactly as `<a href="{{unsubscribe_url}}">Unsubscribe</a>` (visible, with text). MailFoundry fills in the secure link and adds no second footer. Without it, MailFoundry appends its standard footer. Look-alikes such as `{{unsubscribeUrl}}` are rejected. Plain text can include `{{unsubscribe_url}}` too, or MailFoundry adds an unsubscribe line.
     - one main call to action
     - ex-VAT prices from the live site
     - no attachments

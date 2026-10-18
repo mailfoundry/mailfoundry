@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { agentRoute, apiError } from "@/src/lib/agent-auth";
-import { addEmailFooter, addPreheader } from "@/src/lib/emailFooter";
+import { addEmailFooter, addPreheader, addTextFooter, checkUnsubscribe } from "@/src/lib/emailFooter";
 import { applyMergeTags } from "@/src/lib/merge";
 import { loadCampaign } from "@/src/lib/agent-views";
 
@@ -23,7 +23,16 @@ export const GET = agentRoute<{ id: string }>("campaigns.preview", async ({ req,
     from: c.fromEmail,
     subject: applyMergeTags(c.subject, SAMPLE),
     previewText: c.preheader,
-    text: applyMergeTags(c.body, SAMPLE),
+    text: addTextFooter(applyMergeTags(c.body, SAMPLE), SAMPLE.email, c.fromEmail),
+    unsubscribe: (() => {
+      const u = checkUnsubscribe(c.html);
+      return {
+        brandedLinkUsed: u.validLinks > 0,
+        standardFooterAdded: u.validLinks === 0,
+        malformedTags: u.malformed,
+        hiddenOrEmptyLinks: u.hiddenLinks,
+      };
+    })(),
     firstLineForContactWithNoName: noName,
     html,
   });

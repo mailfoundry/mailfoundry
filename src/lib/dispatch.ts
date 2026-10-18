@@ -4,7 +4,7 @@
  * frequency caps are applied here, at the moment of sending.
  */
 import { prisma } from "./prisma";
-import { addEmailFooter, addPreheader } from "./emailFooter";
+import { addEmailFooter, addPreheader, addTextFooter, isUnsubscribeUrl } from "./emailFooter";
 import { applyMergeTags } from "./merge";
 import { listUnsubscribeHeaders } from "./unsubscribe";
 import { audit, campaignAudience, cappedContacts, preflight, refreshBrandStatus } from "./brand-rules";
@@ -95,7 +95,9 @@ export async function dispatchCampaign(campaignId: string, actor: string): Promi
     );
     const htmlWithClicks = htmlWithFooter.replace(
       /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
-      (_m, pre, url, post) => `<a ${pre}href="${appBaseUrl}/api/track/click?s=${sendId}&u=${encodeURIComponent(url)}"${post}>`
+      (m, pre, url, post) =>
+        // unsubscribe links go straight to the unsubscribe page — never tracked as a "click"
+        isUnsubscribeUrl(url.replace(/&amp;/g, "&")) ? m : `<a ${pre}href="${appBaseUrl}/api/track/click?s=${sendId}&u=${encodeURIComponent(url)}"${post}>`
     );
     const pixel = `<img src="${appBaseUrl}/api/track/open?s=${sendId}" width="1" height="1" style="display:none" alt="" />`;
     const html = htmlWithClicks.includes("</body>") ? htmlWithClicks.replace("</body>", `${pixel}</body>`) : `${htmlWithClicks}${pixel}`;
@@ -107,7 +109,7 @@ export async function dispatchCampaign(campaignId: string, actor: string): Promi
         from: campaign.fromEmail ?? DEFAULT_FROM,
         to: contact.email,
         subject: applyMergeTags(campaign.subject, contact),
-        text: applyMergeTags(campaign.body, contact),
+        text: addTextFooter(applyMergeTags(campaign.body, contact), contact.email, campaign.fromEmail),
         html,
         headers: listUnsubscribeHeaders(contact.email), // one-click unsubscribe
         tags: [{ name: "send_id", value: sendId }], // lets the Resend webhook tie bounces/complaints back
