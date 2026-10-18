@@ -1,4 +1,5 @@
 /** Read models shared by the agent API (campaign view, stats, weekly summary). */
+import { createHash } from "node:crypto";
 import { prisma } from "./prisma";
 import {
   activeApproval, campaignAudience, cohortOf, computeBrandHealth, describeDays, ELIGIBLE_CONTACT,
@@ -11,7 +12,7 @@ export function loadCampaign(id: string) {
   return prisma.campaign.findUnique({ where: { id }, include: { list: true, brand: true } });
 }
 
-export async function campaignView(c: CampaignRow, opts: { full?: boolean } = {}) {
+export async function campaignView(c: CampaignRow, opts: { full?: boolean; includeHtml?: boolean } = {}) {
   const [concept, final] = await Promise.all([activeApproval(c.id, "concept"), activeApproval(c.id, "final")]);
   const finalValid = !!final && final.fingerprint === finalFingerprint(c);
   const stage =
@@ -50,8 +51,14 @@ export async function campaignView(c: CampaignRow, opts: { full?: boolean } = {}
   return {
     ...base,
     conceptNotes: c.conceptNotes,
-    html: c.html,
-    text: c.body,
+    // Compact by default so responses stay small enough for ChatGPT; verify saves with htmlSha256/htmlBytes.
+    ...(opts.includeHtml ? { html: c.html, text: c.body } : {}),
+    htmlBytes: Buffer.byteLength(c.html ?? "", "utf8"),
+    htmlSha256: c.html ? createHash("sha256").update(c.html).digest("hex") : null,
+    htmlStart: (c.html ?? "").slice(0, 160),
+    htmlEnd: (c.html ?? "").slice(-160),
+    textBytes: Buffer.byteLength(c.body ?? "", "utf8"),
+    textSha256: createHash("sha256").update(c.body ?? "").digest("hex"),
     audienceSize: check.audienceSize,
     issues: check.errors,
     warnings: check.warnings,

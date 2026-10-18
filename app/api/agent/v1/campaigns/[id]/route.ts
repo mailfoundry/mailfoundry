@@ -8,10 +8,11 @@ type P = { id: string };
 const has = (b: Record<string, unknown>, k: string) => Object.prototype.hasOwnProperty.call(b, k);
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
-export const GET = agentRoute<P>("campaigns.get", async ({ params }) => {
+export const GET = agentRoute<P>("campaigns.get", async ({ req, params }) => {
   const c = await loadCampaign(params.id);
   if (!c?.brandKey) return apiError("not_found", "Campaign not found", 404);
-  return NextResponse.json({ campaign: await campaignView(c, { full: true }) });
+  const includeHtml = new URL(req.url).searchParams.get("includeHtml") === "true";
+  return NextResponse.json({ campaign: await campaignView(c, { full: true, includeHtml }) });
 });
 
 // Partial update of an unsent campaign. Any change to approved content/audience/time revokes final approval.

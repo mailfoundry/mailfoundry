@@ -12,3 +12,4 @@ cp tests/safeguards/fake-prisma.js "$OUT/lib/prisma.js"   # swap the real client
 node tests/safeguards/unit.js
 node tests/safeguards/safeguards.js
 node tests/safeguards/unsubscribe.js
+node tests/safeguards/html-limits.js

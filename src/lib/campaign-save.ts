@@ -20,6 +20,8 @@ export type CampaignInput = {
   conceptNotes?: string | null;
 };
 
+const MAX_HTML_BYTES = 90 * 1024;
+
 export class CampaignInputError extends Error {
   name = "CampaignInputError";
 }
@@ -41,6 +43,15 @@ async function resolve(input: CampaignInput, requireBrand?: string) {
     throw new CampaignInputError(`List "${list.name}" is not a ${requireBrand.toUpperCase()} list`);
   }
   if (input.sendAt && Number.isNaN(input.sendAt.getTime())) throw new CampaignInputError("Invalid send time");
+  const htmlBytes = Buffer.byteLength(input.html ?? "", "utf8");
+  if (htmlBytes > MAX_HTML_BYTES) {
+    throw new CampaignInputError(
+      `HTML is ${Math.round(htmlBytes / 1024)} KB — keep it under ${MAX_HTML_BYTES / 1024} KB (Gmail clips emails over ~102 KB). Use hosted image URLs, not embedded images.`
+    );
+  }
+  if (/src\s*=\s*["']?\s*data:/i.test(input.html ?? "")) {
+    throw new CampaignInputError("Embedded (data:) images aren't allowed — use hosted image URLs, e.g. from the product pages on the website.");
+  }
   return list;
 }
 

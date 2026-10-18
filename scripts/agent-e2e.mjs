@@ -81,7 +81,7 @@ console.log(`     campaign: ${BASE}/campaigns/${c.id}`);
 
 // 3. Content preserved, brand + list correct
 console.log("3. Content, brand and audience");
-const got = (await call("GET", `/campaigns/${c.id}`)).data?.campaign;
+const got = (await call("GET", `/campaigns/${c.id}?includeHtml=true`)).data?.campaign;
 ok("subject preserved", got?.subject === draft.subject);
 ok("preview text preserved", got?.previewText === draft.previewText);
 ok("HTML preserved", got?.html === draft.html);

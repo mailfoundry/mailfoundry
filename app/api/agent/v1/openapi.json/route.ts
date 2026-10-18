@@ -65,7 +65,7 @@ export function GET() {
         },
         post: {
           operationId: "createDraft",
-          summary: "Create a DRAFT campaign (never sends or schedules)",
+          summary: "Create a DRAFT campaign (never sends or schedules). Can include the full html. Max HTML 90 KB, hosted image URLs only. Response is compact (htmlBytes/htmlStart/htmlEnd).",
           requestBody: {
             required: true,
             content: { "application/json": { schema: { ...draft, required: ["brand", "name", "subject", "text", "listId"], properties: { brand: { type: "string", enum: ["scs", "swf"] }, ...draft.properties } } } },
@@ -74,10 +74,10 @@ export function GET() {
         },
       },
       "/campaigns/{id}": {
-        get: { operationId: "getCampaign", summary: "Full campaign incl. html/text, approvals, issues blocking approval/scheduling", parameters: [id], responses: ok("Campaign") },
+        get: { operationId: "getCampaign", summary: "Campaign details, approvals and issues. Returns htmlBytes/htmlStart/htmlEnd (not the full HTML) unless includeHtml=true — use these to confirm a save.", parameters: [id, { name: "includeHtml", in: "query", schema: { type: "string", enum: ["true", "false"] }, description: "Return the full html/text (large). Default false." }], responses: ok("Campaign") },
         patch: {
           operationId: "updateDraft",
-          summary: "Update an unsent campaign (partial). Revokes final approval if approved content/audience/time changes.",
+          summary: "Update an unsent campaign (partial; send only the fields you change). Response is compact: confirm the save by checking htmlBytes, htmlStart and htmlEnd match what you sent. Max HTML 90 KB, hosted image URLs only (no data: images). Revokes final approval if approved content/audience/time changes.",
           parameters: [id],
           requestBody: { required: true, content: { "application/json": { schema: draft } } },
           responses: ok("Campaign"),
