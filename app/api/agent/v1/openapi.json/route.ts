@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 export function GET() {
   const server = process.env.APP_BASE_URL ?? "https://ibsa.xylouk.co.uk";
   const id = { name: "id", in: "path", required: true, schema: { type: "string" } };
-  const ok = (description: string) => ({ "200": { description, content: { "application/json": { schema: { type: "object" } } } } });
+  const obj = { type: "object", properties: {}, additionalProperties: true };
+  const ok = (description: string) => ({ "200": { description, content: { "application/json": { schema: obj } } } });
   const draft = {
     type: "object",
     properties: {
@@ -28,7 +29,7 @@ export function GET() {
         "Create and manage SWF/SCS marketing campaigns. The agent can draft, preview, test-send (test list only), schedule ONLY after Jason's final approval in MailFoundry, cancel and report. It cannot approve, send immediately or change brand rules. Any edit after final approval revokes it.",
     },
     servers: [{ url: `${server}/api/agent/v1` }],
-    components: { securitySchemes: { bearer: { type: "http", scheme: "bearer" } } },
+    components: { schemas: {}, securitySchemes: { bearer: { type: "http", scheme: "bearer" } } },
     security: [{ bearer: [] }],
     paths: {
       "/brands": { get: { operationId: "getBrands", summary: "Brand rules, status (go/hold/stop), health and lists", responses: ok("Brands") } },
@@ -69,7 +70,7 @@ export function GET() {
             required: true,
             content: { "application/json": { schema: { ...draft, required: ["brand", "name", "subject", "text", "listId"], properties: { brand: { type: "string", enum: ["scs", "swf"] }, ...draft.properties } } } },
           },
-          responses: { "201": { description: "Created", content: { "application/json": { schema: { type: "object" } } } } },
+          responses: { "201": { description: "Created", content: { "application/json": { schema: obj } } } },
         },
       },
       "/campaigns/{id}": {
