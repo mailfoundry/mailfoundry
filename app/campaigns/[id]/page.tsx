@@ -322,9 +322,20 @@ export default async function CampaignDetailPage({
         </div>
       </div>
 
-      {flash && (
-        <p className="mt-8 rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-800">{flash}</p>
-      )}
+      {flash && (() => {
+        const problem = /^(Not |Can't|Approve the concept first)/.test(flash);
+        return (
+          <p
+            role="status"
+            className={`mt-8 flex items-center gap-2 rounded-lg border p-3 text-sm font-medium ${
+              problem ? "border-amber-300 bg-amber-50 text-amber-900" : "border-green-300 bg-green-50 text-green-800"
+            }`}
+          >
+            <span aria-hidden="true">{problem ? "⚠" : "✓"}</span>
+            {flash}
+          </p>
+        );
+      })()}
 
       <ApprovalPanel campaignId={campaign.id} />
 

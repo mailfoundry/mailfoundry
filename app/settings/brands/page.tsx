@@ -2,6 +2,7 @@ export const metadata = { title: "Brands & sending rules" };
 export const dynamic = "force-dynamic";
 
 import AppShell from "../../../src/components/app-shell";
+import ActionButton from "../../../src/components/action-button";
 import { prisma } from "../../../src/lib/prisma";
 import { computeBrandHealth, describeDays, describePreferred, ELIGIBLE_CONTACT, THRESHOLDS } from "../../../src/lib/brand-rules";
 import { assignList, deleteException, setBrandStatus, setPostmaster, updateBrandRules } from "./actions";
@@ -39,7 +40,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
         </p>
       </header>
 
-      {flash && <p className="mb-6 rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm">{flash}</p>}
+      {flash && <p role="status" className="mb-6 flex items-center gap-2 rounded-lg border border-green-300 bg-green-50 p-3 text-sm font-medium text-green-800"><span aria-hidden="true">✓</span>{flash}</p>}
 
       <div className="grid gap-6 xl:grid-cols-2">
         {brands.map((b) => {
@@ -83,7 +84,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                   <label className={label}>Reason</label>
                   <input name="reason" className={input} placeholder="e.g. Week 2 passed — growing to 2,000" />
                 </div>
-                <button className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white">Save status</button>
+                <ActionButton pendingText="Saving…" className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white">Save status</ActionButton>
               </form>
 
               <form action={setPostmaster.bind(null, b.key)} className="mb-5 flex items-end gap-2">
@@ -93,7 +94,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                   </label>
                   <input name="rate" defaultValue={b.postmasterSpamRate ?? ""} className={input} placeholder="e.g. 0.05" />
                 </div>
-                <button className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold">Save</button>
+                <ActionButton pendingText="Saving…" className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold">Save</ActionButton>
               </form>
 
               <form action={updateBrandRules.bind(null, b.key)} className="grid grid-cols-2 gap-3">
@@ -119,7 +120,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                   <input type="checkbox" name="agentSchedulingEnabled" defaultChecked={b.agentSchedulingEnabled} />
                   Allow the ChatGPT agent to schedule approved {b.key.toUpperCase()} campaigns
                 </label>
-                <button className="col-span-2 rounded-lg bg-orange-600 px-3 py-2 text-sm font-semibold text-white">Save rules</button>
+                <ActionButton pendingText="Saving rules…" className="col-span-2 justify-center rounded-lg bg-orange-600 px-3 py-2 text-sm font-semibold text-white">Save rules</ActionButton>
               </form>
             </section>
           );
@@ -140,7 +141,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                   {e.endTime !== e.startTime ? `–${e.endTime}` : ""} UK · <a className="underline" href={`/campaigns/${e.campaignId}`}>{campaignNames[e.campaignId] ?? e.campaignId}</a> · {e.reason}
                 </span>
                 <form action={deleteException.bind(null, e.id)}>
-                  <button className="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700">Remove</button>
+                  <ActionButton pendingText="Removing…" className="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700">Remove</ActionButton>
                 </form>
               </li>
             ))}
@@ -167,7 +168,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
               <label className="flex items-center gap-1">
                 <input type="checkbox" name="isTest" defaultChecked={l.isTest} /> test list
               </label>
-              <button className="rounded-lg border border-gray-300 px-3 py-1 font-semibold">Save</button>
+              <ActionButton pendingText="Saving…" className="rounded-lg border border-gray-300 px-3 py-1 font-semibold">Save</ActionButton>
             </form>
           ))}
         </div>

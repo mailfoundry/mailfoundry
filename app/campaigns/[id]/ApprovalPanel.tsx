@@ -1,5 +1,6 @@
 import { prisma } from "../../../src/lib/prisma";
 import { activeApproval, finalFingerprint, preflight } from "../../../src/lib/brand-rules";
+import ActionButton from "../../../src/components/action-button";
 import { approveConcept, approveFinal, cancelCampaign, revokeFinal, scheduleApproved, unschedule } from "./approval-actions";
 
 const fmt = (d: Date | null | undefined) =>
@@ -70,7 +71,7 @@ export default async function ApprovalPanel({ campaignId }: { campaignId: string
           {c.conceptNotes && <p className="mt-2 whitespace-pre-wrap text-sm text-gray-700">{c.conceptNotes}</p>}
           {editable && !concept && (
             <form action={approveConcept.bind(null, c.id)} className="mt-3">
-              <button className={`${btn} bg-gray-900 text-white`}>Approve concept</button>
+              <ActionButton pendingText="Approving concept…" className={`${btn} bg-gray-900 text-white`}>Approve concept</ActionButton>
             </form>
           )}
         </div>
@@ -87,31 +88,31 @@ export default async function ApprovalPanel({ campaignId }: { campaignId: string
           <div className="mt-3 flex flex-wrap gap-2">
             {editable && !finalValid && (
               <form action={approveFinal.bind(null, c.id)}>
-                <button className={`${btn} bg-orange-600 text-white`} disabled={!approveCheck.ok}>
+                <ActionButton pendingText="Recording final approval…" className={`${btn} bg-orange-600 text-white`} disabled={!approveCheck.ok}>
                   Approve final for {approveCheck.audienceSize} contacts
-                </button>
+                </ActionButton>
               </form>
             )}
             {finalValid && ["draft", "blocked"].includes(c.status) && (
               <form action={scheduleApproved.bind(null, c.id)}>
-                <button className={`${btn} bg-green-700 text-white`} disabled={!scheduleCheck.ok}>
+                <ActionButton pendingText="Scheduling…" className={`${btn} bg-green-700 text-white`} disabled={!scheduleCheck.ok}>
                   Schedule for {fmt(c.plannedSendAt)}
-                </button>
+                </ActionButton>
               </form>
             )}
             {c.status === "scheduled" && (
               <form action={unschedule.bind(null, c.id)}>
-                <button className={`${btn} border border-gray-300 bg-white text-gray-700`}>Unschedule</button>
+                <ActionButton pendingText="Unscheduling…" className={`${btn} border border-gray-300 bg-white text-gray-700`}>Unschedule</ActionButton>
               </form>
             )}
             {finalValid && editable && (
               <form action={revokeFinal.bind(null, c.id)}>
-                <button className={`${btn} border border-gray-300 bg-white text-gray-700`}>Revoke approval</button>
+                <ActionButton pendingText="Revoking…" className={`${btn} border border-gray-300 bg-white text-gray-700`}>Revoke approval</ActionButton>
               </form>
             )}
             {editable && (
               <form action={cancelCampaign.bind(null, c.id)}>
-                <button className={`${btn} border border-red-300 bg-white text-red-700`}>Cancel campaign</button>
+                <ActionButton pendingText="Cancelling…" className={`${btn} border border-red-300 bg-white text-red-700`}>Cancel campaign</ActionButton>
               </form>
             )}
           </div>
