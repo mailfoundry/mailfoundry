@@ -84,6 +84,28 @@ const DAY_NAMES = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const describeDays = (sendDays: string) =>
   sendDays.split(",").map((d) => DAY_NAMES[Number(d)] ?? d).join("/");
 
+/** "1=09:30,3=09:30" → { 1: "09:30", 3: "09:30" } (preferred, not the only permitted time). */
+export function parsePreferredTimes(raw: string | null | undefined): Record<number, string> {
+  const out: Record<number, string> = {};
+  for (const part of String(raw ?? "").split(",")) {
+    const m = part.trim().match(/^([1-7])\s*=\s*([01]\d|2[0-3]):([0-5]\d)$/);
+    if (m) out[Number(m[1])] = `${m[2]}:${m[3]}`;
+  }
+  return out;
+}
+
+export function describePreferred(raw: string | null | undefined): string {
+  const p = parsePreferredTimes(raw);
+  return Object.entries(p).map(([d, t]) => `${DAY_NAMES[Number(d)]} ${t}`).join(", ");
+}
+
+/** Monday 00:00 UK of the week containing `d` (DST-safe). */
+export function ukWeekStart(d: Date): Date {
+  const noon = new Date(ukMidnight(d).getTime() + 12 * 3600_000);
+  const dow = (ukParts(noon).weekday + 6) % 7; // 0 = Mon
+  return ukMidnight(new Date(noon.getTime() - dow * 86400_000));
+}
+
 // ── Audit log ───────────────────────────────────────────────────────────────
 
 export async function audit(
@@ -250,6 +272,43 @@ export function conceptFingerprint(c: { brandKey: string | null; subject: string
     .digest("hex");
 }
 
+/** What a test send covers: the content and sender (not the time or audience). */
+export function contentFingerprint(c: { brandKey: string | null; fromEmail: string | null; subject: string; preheader: string | null; html: string | null; body: string }): string {
+  return createHash("sha256")
+    .update(JSON.stringify([c.brandKey, c.fromEmail ?? "", c.subject, c.preheader ?? "", c.html ?? "", c.body]))
+    .digest("hex");
+}
+
+/** Record that the current content was test-sent (final approval requires this). */
+export async function recordTestSend(campaignId: string) {
+  const c = await prisma.campaign.findUnique({ where: { id: campaignId } });
+  if (!c) return;
+  await prisma.campaign.update({ where: { id: campaignId }, data: { testSentAt: new Date(), testFingerprint: contentFingerprint(c) } });
+}
+
+/** A one-off exception covering this campaign at this UK time, if any. */
+export async function matchingException(brandKey: string, campaignId: string, sendAt: Date) {
+  const { ymd, hhmm } = ukParts(sendAt);
+  const rows = await prisma.scheduleException.findMany({ where: { brandKey, campaignId, date: ymd } });
+  return rows.find((e) => hhmm >= e.startTime && hhmm <= e.endTime) ?? null;
+}
+
+/** Other campaigns of this brand already planned/approved/scheduled/sent in the same UK week. */
+export async function campaignsInWeek(brandKey: string, sendAt: Date, excludeId: string): Promise<number> {
+  const start = ukWeekStart(sendAt);
+  const end = ukWeekStart(new Date(start.getTime() + 8 * 86400_000));
+  return prisma.campaign.count({
+    where: {
+      brandKey,
+      id: { not: excludeId },
+      list: { isTest: false },
+      plannedSendAt: { gte: start, lt: end },
+      status: { notIn: ["cancelled", "failed"] },
+      OR: [{ status: { in: ["scheduled", "sending", "sent", "blocked"] } }, { approvals: { some: { kind: "final", revokedAt: null } } }],
+    },
+  });
+}
+
 export async function activeApproval(campaignId: string, kind: "concept" | "final") {
   return prisma.campaignApproval.findFirst({
     where: { campaignId, kind, revokedAt: null },
@@ -342,6 +401,17 @@ export async function preflight(campaignId: string, phase: Phase, now = new Date
     if (brand.maxAudiencePerSend != null && audienceSize > brand.maxAudiencePerSend) {
       errors.push(`Audience ${audienceSize} is over the ${brand.name} ramp cap of ${brand.maxAudiencePerSend} per send`);
     }
+    if (brand.requiredListId && c.listId !== brand.requiredListId) {
+      errors.push(`${brand.name} is in recovery — campaigns must use its engaged list only`);
+    }
+    if (brand.maxCampaignsPerWeek != null && c.plannedSendAt) {
+      const others = await campaignsInWeek(brand.key, c.plannedSendAt, c.id);
+      if (others >= brand.maxCampaignsPerWeek) {
+        errors.push(
+          `${brand.name} is limited to ${brand.maxCampaignsPerWeek} campaign${brand.maxCampaignsPerWeek === 1 ? "" : "s"} per week — ${others} already planned/approved that week`
+        );
+      }
+    }
   }
 
   // Send time
@@ -353,11 +423,27 @@ export async function preflight(campaignId: string, phase: Phase, now = new Date
     if (!isTest) {
       const { weekday, hhmm } = ukParts(sendAt);
       const days = brand.sendDays.split(",").map(Number);
-      if (!days.includes(weekday)) errors.push(`${brand.name} sends only on ${describeDays(brand.sendDays)} (UK)`);
-      if (hhmm < brand.sendWindowStart || hhmm > brand.sendWindowEnd) {
-        errors.push(`${brand.name} sends only between ${brand.sendWindowStart} and ${brand.sendWindowEnd} UK time`);
+      const exception = await matchingException(brand.key, c.id, sendAt);
+      if (exception) {
+        warnings.push(`One-off exception: ${exception.date} ${exception.startTime}${exception.endTime !== exception.startTime ? `–${exception.endTime}` : ""} UK (${exception.reason})`);
+      } else {
+        if (!days.includes(weekday)) errors.push(`${brand.name} sends only on ${describeDays(brand.sendDays)} (UK)`);
+        if (hhmm < brand.sendWindowStart || hhmm > brand.sendWindowEnd) {
+          errors.push(`${brand.name} sends only between ${brand.sendWindowStart} and ${brand.sendWindowEnd} UK time`);
+        }
+      }
+      const preferred = parsePreferredTimes(brand.preferredTimes)[weekday];
+      if (!exception && preferred && preferred !== hhmm && days.includes(weekday)) {
+        warnings.push(`Preferred ${brand.key.toUpperCase()} time on ${DAY_NAMES[weekday]} is ${preferred} (planned ${hhmm})`);
       }
     }
+  }
+
+  // A test of the current content must have been sent before final approval
+  if (phase === "approve" && c.testFingerprint !== contentFingerprint(c)) {
+    errors.push(
+      c.testFingerprint ? "test_required: content changed since the last test — send a new test before final approval" : "test_required: send a test email before final approval"
+    );
   }
 
   // Approval

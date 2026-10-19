@@ -16,7 +16,7 @@ export function GET() {
       text: { type: "string", description: "Plain-text version (required)" },
       listId: { type: "string", description: "A list id from GET /lists for the same brand" },
       group: { type: "string", enum: ["A", "B", "C", ""], description: "One third of the list (SCS warm-up: one group per send day). Blank = whole list." },
-      plannedSendAt: { type: "string", description: "UK local time 'YYYY-MM-DDTHH:MM', within the brand's send days/window" },
+      plannedSendAt: { type: "string", description: "UK local time 'YYYY-MM-DDTHH:MM'. Use the brand's preferred time (getBrands preferredTimesUk): SCS Mon/Wed/Fri 09:30 (window 09:00–11:00), SWF Tue/Thu/Sat 08:15 (window 08:00–10:00). SWF max 1 campaign/week, SWF Engaged list only." },
       conceptNotes: { type: "string", description: "Angle, product(s), reasoning — what Jason approves at concept stage" },
     },
   };

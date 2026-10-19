@@ -2,7 +2,7 @@
 import { createHash } from "node:crypto";
 import { prisma } from "./prisma";
 import {
-  activeApproval, campaignAudience, cohortOf, computeBrandHealth, describeDays, ELIGIBLE_CONTACT,
+  activeApproval, campaignAudience, cohortOf, computeBrandHealth, describeDays, describePreferred, ELIGIBLE_CONTACT,
   finalFingerprint, largestRecentSend, preflight, ukIso, ukMidnight, DELIVERED_STATUSES,
 } from "./brand-rules";
 
@@ -38,6 +38,7 @@ export async function campaignView(c: CampaignRow, opts: { full?: boolean; inclu
     scheduledAt: ukIso(c.scheduledAt),
     createdBy: c.createdBy,
     blockedReason: c.blockedReason,
+    testSentAt: c.testSentAt?.toISOString() ?? null,
     updatedAt: c.updatedAt.toISOString(),
     approvals: {
       concept: concept ? { approvedBy: concept.approvedBy, approvedAt: concept.approvedAt.toISOString() } : null,
@@ -177,6 +178,10 @@ export async function brandSummary(brandKey: string, range: { start: Date; end: 
       sendDays: describeDays(brand.sendDays),
       sendWindowUk: `${brand.sendWindowStart}–${brand.sendWindowEnd}`,
       agentSchedulingEnabled: brand.agentSchedulingEnabled,
+      preferredTimesUk: describePreferred(brand.preferredTimes),
+      maxCampaignsPerWeek: brand.maxCampaignsPerWeek,
+      requiredListId: brand.requiredListId,
+      oneOffExceptions: (await prisma.scheduleException.findMany({ where: { brandKey } })).map((e) => ({ campaignId: e.campaignId, dateUk: e.date, timeUk: e.startTime === e.endTime ? e.startTime : `${e.startTime}–${e.endTime}` })),
       holdAudienceLimit: brand.status === "hold" ? await largestRecentSend(brandKey) : null,
     },
     health,

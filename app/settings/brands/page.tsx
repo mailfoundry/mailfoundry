@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 
 import AppShell from "../../../src/components/app-shell";
 import { prisma } from "../../../src/lib/prisma";
-import { computeBrandHealth, describeDays, ELIGIBLE_CONTACT, THRESHOLDS } from "../../../src/lib/brand-rules";
-import { assignList, setBrandStatus, setPostmaster, updateBrandRules } from "./actions";
+import { computeBrandHealth, describeDays, describePreferred, ELIGIBLE_CONTACT, THRESHOLDS } from "../../../src/lib/brand-rules";
+import { assignList, deleteException, setBrandStatus, setPostmaster, updateBrandRules } from "./actions";
 
 const input = "w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none";
 const label = "mb-1 block text-xs font-medium text-gray-500";
@@ -16,10 +16,14 @@ const STATUS_STYLE: Record<string, string> = {
 
 export default async function BrandsPage({ searchParams }: { searchParams: Promise<{ flash?: string }> }) {
   const { flash } = await searchParams;
-  const [brands, lists] = await Promise.all([
+  const [brands, lists, exceptions] = await Promise.all([
     prisma.brand.findMany({ orderBy: { key: "asc" } }),
     prisma.list.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { contacts: { where: { contact: ELIGIBLE_CONTACT } } } } } }),
+    prisma.scheduleException.findMany({ orderBy: [{ date: "desc" }, { startTime: "asc" }] }),
   ]);
+  const campaignNames = Object.fromEntries(
+    (await prisma.campaign.findMany({ where: { id: { in: exceptions.map((e) => e.campaignId) } }, select: { id: true, name: true } })).map((c) => [c.id, c.name])
+  );
   const health = Object.fromEntries(await Promise.all(brands.map(async (b) => [b.key, await computeBrandHealth(b.key)] as const)));
 
   return (
@@ -102,6 +106,15 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                   <div><label className={label}>Window from (UK)</label><input name="sendWindowStart" defaultValue={b.sendWindowStart} className={input} /></div>
                   <div><label className={label}>to</label><input name="sendWindowEnd" defaultValue={b.sendWindowEnd} className={input} /></div>
                 </div>
+                <div><label className={label}>Preferred times (e.g. 1=09:30,3=09:30) — {describePreferred(b.preferredTimes) || "none"}</label><input name="preferredTimes" defaultValue={b.preferredTimes ?? ""} className={input} /></div>
+                <div><label className={label}>Max campaigns per week (blank = none)</label><input name="maxCampaignsPerWeek" type="number" min={0} defaultValue={b.maxCampaignsPerWeek ?? ""} className={input} /></div>
+                <div className="col-span-2">
+                  <label className={label}>Recovery: campaigns must use this list (blank = any {b.key.toUpperCase()} list)</label>
+                  <select name="requiredListId" defaultValue={b.requiredListId ?? ""} className={input}>
+                    <option value="">— any list —</option>
+                    {lists.filter((l) => l.brandKey === b.key && !l.isTest).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                </div>
                 <label className="col-span-2 flex items-center gap-2 text-sm">
                   <input type="checkbox" name="agentSchedulingEnabled" defaultChecked={b.agentSchedulingEnabled} />
                   Allow the ChatGPT agent to schedule approved {b.key.toUpperCase()} campaigns
@@ -112,6 +125,28 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
           );
         })}
       </div>
+
+      <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="text-xl font-semibold">One-off schedule exceptions</h3>
+        <p className="mb-4 mt-1 text-sm text-gray-500">Each lets ONE campaign send outside its brand&apos;s days/window, on one date and time. Every other rule and approval still applies.</p>
+        {exceptions.length === 0 ? (
+          <p className="text-sm text-gray-400">None.</p>
+        ) : (
+          <ul className="divide-y divide-gray-100 text-sm">
+            {exceptions.map((e) => (
+              <li key={e.id} className="flex items-center justify-between gap-3 py-2">
+                <span>
+                  <strong>{e.brandKey.toUpperCase()}</strong> · {e.date} {e.startTime}
+                  {e.endTime !== e.startTime ? `–${e.endTime}` : ""} UK · <a className="underline" href={`/campaigns/${e.campaignId}`}>{campaignNames[e.campaignId] ?? e.campaignId}</a> · {e.reason}
+                </span>
+                <form action={deleteException.bind(null, e.id)}>
+                  <button className="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700">Remove</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h3 className="text-xl font-semibold">Lists</h3>

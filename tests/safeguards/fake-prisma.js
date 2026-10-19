@@ -1,5 +1,5 @@
 // In-memory fake of the Prisma calls used by brand-rules / dispatch / agent-views (tests only).
-const db = { campaign: [], list: [], brand: [], contact: [], contactList: [], campaignSend: [], campaignClick: [], campaignApproval: [], auditLog: [], agentToken: [] };
+const db = { campaign: [], list: [], brand: [], contact: [], contactList: [], campaignSend: [], campaignClick: [], campaignApproval: [], auditLog: [], agentToken: [], scheduleException: [] };
 let seq = 0;
 const id = () => "id" + ++seq;
 const PK = { brand: "key" };
@@ -75,7 +75,7 @@ function order(rows, orderBy) {
   return [...rows].sort((a, b) => (dir === "desc" ? -1 : 1) * cmp(a[k] ?? 0, b[k] ?? 0));
 }
 const DEFAULTS = {
-  campaign: () => ({ status: "draft", preheader: null, html: null, cohort: null, conceptNotes: null, plannedSendAt: null, createdBy: null, blockedReason: null, cancelledAt: null, scheduledAt: null, brandKey: null, createdAt: new Date(), updatedAt: new Date() }),
+  campaign: () => ({ testSentAt: null, testFingerprint: null, status: "draft", preheader: null, html: null, cohort: null, conceptNotes: null, plannedSendAt: null, createdBy: null, blockedReason: null, cancelledAt: null, scheduledAt: null, brandKey: null, createdAt: new Date(), updatedAt: new Date() }),
   campaignSend: () => ({ sentAt: new Date(), openedAt: null, error: null }),
   campaignApproval: () => ({ approvedAt: new Date(), revokedAt: null, revokedReason: null, audienceSize: null, sendAt: null }),
   auditLog: () => ({ at: new Date() }),
@@ -90,6 +90,7 @@ function api(model) {
     create: async ({ data }) => { const r = { [pk(model)]: id(), ...(DEFAULTS[model]?.() ?? {}), ...data }; T().push(r); return { ...r }; },
     createMany: async ({ data }) => { for (const d of data) T().push({ id: id(), ...(DEFAULTS[model]?.() ?? {}), ...d }); return { count: data.length }; },
     update: async ({ where, data }) => { const r = T().find((x) => match(model, x, where)); if (!r) throw new Error("not found"); Object.assign(r, data, { updatedAt: new Date() }); return { ...r }; },
+    delete: async ({ where }) => { const i = T().findIndex((x) => match(model, x, where)); const [r] = T().splice(i, 1); return r; },
     updateMany: async ({ where, data }) => { const rs = T().filter((x) => match(model, x, where)); rs.forEach((r) => Object.assign(r, data)); return { count: rs.length }; },
     groupBy: async ({ by, where }) => {
       const g = new Map();

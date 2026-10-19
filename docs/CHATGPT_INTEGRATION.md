@@ -8,6 +8,8 @@ Status labels used throughout:
 - **[BUILD]**: needs development (nothing in this category exists yet)
 - **[JASON]**: requires Jason's approval or action
 
+**Calendar (from 19 Oct 2026):** SCS Mon/Wed/Fri, preferred 09:30, permitted 09:00–11:00. SWF Tue/Thu/Sat, preferred 08:15, permitted 08:00–10:00, max 1 campaign/week, SWF Engaged list only (recovery). One-off exceptions per campaign in Settings → Brands. Final approval requires a test of the current content. Planner: Campaigns → Planner.
+
 **Implementation status (18 Oct 2026):** 6A–6D are built, type-checked and covered by 69 automated safeguard tests (`bash tests/safeguards/run.sh`). They go live when Jason runs the migration and pushes. **Nothing changes for existing campaigns until Jason assigns a list to a brand** (Settings → Brands). The three-a-week SCS schedule is **not** active, and SWF starts on **Hold**.
 
 ---

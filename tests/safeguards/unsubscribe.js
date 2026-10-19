@@ -85,6 +85,7 @@ t("List-Unsubscribe header present", h["List-Unsubscribe"].includes("/unsubscrib
   const html = swfBranded.replace("Hi Jane, logs are in.", 'Hi {{firstName|there}}, <a href="https://www.staffordshirewoodfuels.co.uk/products">Shop logs</a>');
   db.campaign.push({ id: "camp", name: "c", subject: "Ready for the colder evenings?", preheader: "p", fromEmail: SWF, body: "Hi {{firstName|there}}", html, listId: "eng", brandKey: "swf", cohort: null, plannedSendAt: planned, status: "scheduled", conceptNotes: "x", createdBy: "agent:t", blockedReason: null, cancelledAt: null, scheduledAt: planned, createdAt: new Date(), updatedAt: new Date() });
 
+  await R.recordTestSend("camp");
   let pf = await R.preflight("camp", "approve", new Date("2026-10-18T12:00:00Z"));
   t("branded campaign passes preflight, no footer warning", pf.ok && !pf.warnings.some((w) => w.includes("standard MailFoundry footer")), pf);
   const c = db.campaign[0];
@@ -107,6 +108,7 @@ t("List-Unsubscribe header present", h["List-Unsubscribe"].includes("/unsubscrib
   pf = await R.preflight("camp", "approve", new Date("2026-10-18T12:00:00Z"));
   t("malformed tag blocks approval", !pf.ok && pf.errors.some((e) => e.includes("Malformed unsubscribe tag")), pf.errors);
   db.campaign[0].html = "<p>Hi, no footer</p>";
+  await R.recordTestSend("camp");
   pf = await R.preflight("camp", "approve", new Date("2026-10-18T12:00:00Z"));
   t("no branded link → allowed, with footer warning", pf.ok && pf.warnings.some((w) => w.includes("standard MailFoundry footer")), pf);
 

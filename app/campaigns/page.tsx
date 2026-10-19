@@ -43,12 +43,17 @@ export default async function CampaignsPage() {
           <h2 className="text-3xl font-bold">Campaigns</h2>
         </div>
 
-        <Link
-          href="/campaigns/new"
-          className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
-        >
-          New Campaign
-        </Link>
+        <div className="flex gap-3">
+          <Link href="/campaigns/planner" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700">
+            Planner
+          </Link>
+          <Link
+            href="/campaigns/new"
+            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900"
+          >
+            New Campaign
+          </Link>
+        </div>
       </header>
 
       {campaigns.length === 0 ? (

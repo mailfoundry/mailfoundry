@@ -13,3 +13,4 @@ node tests/safeguards/unit.js
 node tests/safeguards/safeguards.js
 node tests/safeguards/unsubscribe.js
 node tests/safeguards/html-limits.js
+node tests/safeguards/schedule.js

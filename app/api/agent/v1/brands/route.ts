@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { agentRoute } from "@/src/lib/agent-auth";
-import { computeBrandHealth, describeDays, refreshBrandStatus } from "@/src/lib/brand-rules";
+import { computeBrandHealth, describeDays, describePreferred, refreshBrandStatus } from "@/src/lib/brand-rules";
 
 export const GET = agentRoute("brands", async () => {
   const brands = await prisma.brand.findMany({ orderBy: { key: "asc" }, include: { lists: { select: { id: true, name: true, isTest: true } } } });
@@ -20,6 +20,9 @@ export const GET = agentRoute("brands", async () => {
       sendDays: describeDays(b.sendDays),
       sendWindowUk: `${b.sendWindowStart}–${b.sendWindowEnd}`,
       agentSchedulingEnabled: b.agentSchedulingEnabled,
+      preferredTimesUk: describePreferred(b.preferredTimes),
+      maxCampaignsPerWeek: b.maxCampaignsPerWeek,
+      recoveryListOnly: b.requiredListId,
       lists: b.lists,
       health: await computeBrandHealth(b.key),
     });

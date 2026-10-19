@@ -5,7 +5,7 @@ import { addEmailFooter, addPreheader, addTextFooter } from "@/src/lib/emailFoot
 import { applyMergeTags } from "@/src/lib/merge";
 import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 import { sendEmail } from "@/src/lib/sendEmail";
-import { audit, ELIGIBLE_CONTACT } from "@/src/lib/brand-rules";
+import { audit, ELIGIBLE_CONTACT, recordTestSend } from "@/src/lib/brand-rules";
 import { loadCampaign } from "@/src/lib/agent-views";
 
 const MAX_RECIPIENTS = 5;
@@ -44,6 +44,7 @@ export const POST = agentRoute<{ id: string }>("campaigns.test", async ({ req, a
     });
     sentTo.push(ct.email);
   }
+  await recordTestSend(c.id);
   await audit(agent.actor, "test_sent", { campaignId: c.id, brandKey: c.brandKey, detail: { to: sentTo } });
   return NextResponse.json({ ok: true, sentTo });
 });

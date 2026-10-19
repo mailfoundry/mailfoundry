@@ -34,8 +34,9 @@ async function seed() {
 }
 
 async function newCampaign(over = {}) {
-  const c = await createCampaignRecord({ name: "T", subject: "Floor care tips", preheader: "Save on dilution", fromEmail: "Someone <spoof@evil.com>", body: "Hi {{firstName|there}},\nText", html: "<p>Hi {{firstName|there}},</p>", listId: "warm", cohort: null, sendAt: TUE_10, ...over }, "agent:test");
-  return c;
+  const c0 = await createCampaignRecord({ name: "T", subject: "Floor care tips", preheader: "Save on dilution", fromEmail: "Someone <spoof@evil.com>", body: "Hi {{firstName|there}},\nText", html: "<p>Hi {{firstName|there}},</p>", listId: "warm", cohort: null, sendAt: TUE_10, ...over }, "agent:test");
+  await R.recordTestSend(c0.id);
+  return db.campaign.find((x) => x.id === c0.id);
 }
 async function approve(id) {
   const c = db.campaign.find((x) => x.id === id);

@@ -4,6 +4,7 @@ import { sendEmail } from "@/src/lib/sendEmail";
 import { listUnsubscribeHeaders } from "@/src/lib/unsubscribe";
 import { applyMergeTags } from "@/src/lib/merge";
 import { addEmailFooter, addPreheader, addTextFooter } from "@/src/lib/emailFooter";
+import { audit, recordTestSend } from "@/src/lib/brand-rules";
 
 export async function POST(
   request: Request,
@@ -62,6 +63,9 @@ export async function POST(
       // Same one-click unsubscribe headers as real campaign sends, so test results (e.g. mail-tester) match
       headers: listUnsubscribeHeaders(testEmail),
     });
+
+    await recordTestSend(campaign.id);
+    await audit("ui", "test_sent", { campaignId: campaign.id, brandKey: campaign.brandKey, detail: { to: testEmail } });
 
     return NextResponse.json({ success: true });
   } catch (error) {

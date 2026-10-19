@@ -50,10 +50,26 @@ export async function updateBrandRules(key: string, formData: FormData) {
     sendWindowStart: time(get("sendWindowStart"), "10:00"),
     sendWindowEnd: time(get("sendWindowEnd"), "11:00"),
     agentSchedulingEnabled: formData.get("agentSchedulingEnabled") === "on",
+    preferredTimes:
+      get("preferredTimes")
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => /^[1-7]\s*=\s*([01]\d|2[0-3]):[0-5]\d$/.test(p))
+        .map((p) => p.replace(/\s/g, ""))
+        .join(",") || null,
+    maxCampaignsPerWeek: int("maxCampaignsPerWeek"),
+    requiredListId: get("requiredListId") || null,
   };
   await prisma.brand.update({ where: { key }, data });
   await audit(user, "brand_rules_updated", { brandKey: key, detail: data });
   back(`${key.toUpperCase()} rules saved`);
+}
+
+export async function deleteException(id: string) {
+  const user = await requireMain();
+  const e = await prisma.scheduleException.delete({ where: { id } });
+  await audit(user, "schedule_exception_deleted", { brandKey: e.brandKey, campaignId: e.campaignId, detail: { date: e.date, startTime: e.startTime } });
+  back("Exception removed");
 }
 
 export async function assignList(listId: string, formData: FormData) {
