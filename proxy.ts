@@ -28,7 +28,7 @@ function fireTrack(request: NextRequest, hostname: string, pathname: string) {
   }).catch(() => {});
 }
 
-const publicPaths = ["/ollie-maddy", "/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/agent", "/api/cron", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
+const publicPaths = ["/ollie-maddy", "/", "/login", "/unsubscribe", "/favicon.ico", "/api/webhooks", "/api/track", "/api/agent", "/api/internal", "/api/cron", "/ibsa/login", "/convention", "/convention/check-email", "/convention/verify", "/order", "/xylo", "/account/login", "/account/verify"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => {
