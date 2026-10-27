@@ -71,7 +71,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                 {h.reasons.length ? ` — ${h.reasons.join(", ")}` : ""}
               </p>
 
-              <form action={setBrandStatus.bind(null, b.key)} className="mb-5 flex flex-wrap items-end gap-2">
+              <form key={`${b.key}-status-${b.updatedAt.getTime()}`} action={setBrandStatus.bind(null, b.key)} className="mb-5 flex flex-wrap items-end gap-2">
                 <div>
                   <label className={label}>Set status</label>
                   <select name="status" defaultValue={b.status} className={input}>
@@ -87,7 +87,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                 <ActionButton pendingText="Saving…" className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white">Save status</ActionButton>
               </form>
 
-              <form action={setPostmaster.bind(null, b.key)} className="mb-5 flex items-end gap-2">
+              <form key={`${b.key}-pm-${b.updatedAt.getTime()}`} action={setPostmaster.bind(null, b.key)} className="mb-5 flex items-end gap-2">
                 <div className="flex-1">
                   <label className={label}>
                     Postmaster spam rate % {b.postmasterUpdatedAt ? `(last entered ${b.postmasterUpdatedAt.toLocaleDateString("en-GB")})` : "(not entered)"} — blank = no data
@@ -97,7 +97,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
                 <ActionButton pendingText="Saving…" className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold">Save</ActionButton>
               </form>
 
-              <form action={updateBrandRules.bind(null, b.key)} className="grid grid-cols-2 gap-3">
+              <form key={`${b.key}-rules-${b.updatedAt.getTime()}`} action={updateBrandRules.bind(null, b.key)} className="grid grid-cols-2 gap-3">
                 <div><label className={label}>From name</label><input name="fromName" defaultValue={b.fromName} className={input} /></div>
                 <div><label className={label}>From email</label><input name="fromEmail" defaultValue={b.fromEmail} className={input} /></div>
                 <div><label className={label}>Max emails per contact / 7 days</label><input name="weeklyCapPerContact" type="number" min={1} defaultValue={b.weeklyCapPerContact} className={input} /></div>
