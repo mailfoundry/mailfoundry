@@ -109,7 +109,7 @@ export async function updateCampaignRecord(campaignId: string, input: CampaignIn
             plannedSendAt: input.sendAt === undefined ? existing.plannedSendAt : input.sendAt,
             blockedReason: null,
             // Newly branded or previously blocked → back to draft; it needs final approval to be scheduled
-            ...(existing.status === "blocked" || (!existing.brandKey && existing.status === "scheduled")
+            ...(existing.status === "blocked" || existing.status === "failed" || (!existing.brandKey && existing.status === "scheduled")
               ? { status: "draft", scheduledAt: null }
               : {}),
           }

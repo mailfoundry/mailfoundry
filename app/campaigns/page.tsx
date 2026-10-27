@@ -22,6 +22,11 @@ function getCampaignStatusBadge(status: string) {
     return { label: "Scheduled", className: "bg-sky-500/10 text-sky-400" };
   }
 
+  if (status === "sending") return { label: "Sending", className: "bg-indigo-100 text-indigo-700" };
+  if (status === "blocked") return { label: "Blocked", className: "bg-red-100 text-red-700" };
+  if (status === "failed") return { label: "Failed", className: "bg-red-100 text-red-700" };
+  if (status === "cancelled") return { label: "Cancelled", className: "bg-gray-100 text-gray-400 line-through" };
+
   return { label: "Draft", className: "bg-gray-100 text-gray-600" };
 }
 
@@ -104,7 +109,7 @@ export default async function CampaignsPage() {
                   </td>
                   <td className="px-6 py-4 text-gray-500">
                     {campaign.scheduledAt
-                      ? new Date(campaign.scheduledAt).toLocaleString()
+                      ? new Date(campaign.scheduledAt).toLocaleString("en-GB", { timeZone: "Europe/London", dateStyle: "short", timeStyle: "short" }) + " UK"
                       : "—"}
                   </td>
                   <td className="px-6 py-4">

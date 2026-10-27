@@ -47,9 +47,14 @@ export default async function ApprovalPanel({ campaignId }: { campaignId: string
         </span>
       </div>
 
-      {c.status === "blocked" && c.blockedReason && (
+      {["blocked", "failed"].includes(c.status) && c.blockedReason && (
         <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          <strong>Blocked at send time:</strong> {c.blockedReason}
+          <strong>{c.status === "failed" ? "Send failed:" : "Blocked at send time:"}</strong> {c.blockedReason}
+        </p>
+      )}
+      {c.status === "sending" && (
+        <p className="mb-4 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-800">
+          <strong>Sending now.</strong> If this doesn&apos;t finish within 20 minutes it&apos;s marked failed so you can reschedule it.
         </p>
       )}
 
@@ -93,7 +98,7 @@ export default async function ApprovalPanel({ campaignId }: { campaignId: string
                 </ActionButton>
               </form>
             )}
-            {finalValid && ["draft", "blocked"].includes(c.status) && (
+            {finalValid && ["draft", "blocked", "failed"].includes(c.status) && (
               <form action={scheduleApproved.bind(null, c.id)}>
                 <ActionButton pendingText="Scheduling…" className={`${btn} bg-green-700 text-white`} disabled={!scheduleCheck.ok}>
                   Schedule for {fmt(c.plannedSendAt)}
@@ -116,7 +121,7 @@ export default async function ApprovalPanel({ campaignId }: { campaignId: string
               </form>
             )}
           </div>
-          {finalValid && !scheduleCheck.ok && ["draft", "blocked"].includes(c.status) && (
+          {finalValid && !scheduleCheck.ok && ["draft", "blocked", "failed"].includes(c.status) && (
             <p className="mt-2 text-xs text-red-600">{scheduleCheck.errors.join(" · ")}</p>
           )}
         </div>

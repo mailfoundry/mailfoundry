@@ -13,7 +13,7 @@ export const POST = agentRoute<{ id: string }>("campaigns.schedule", async ({ ag
   if (!c.brand.agentSchedulingEnabled && !c.list.isTest) {
     return apiError("agent_scheduling_disabled", `Agent scheduling is off for ${c.brand.name}. Ask Jason to schedule it in MailFoundry.`, 403);
   }
-  if (!["draft", "blocked"].includes(c.status)) return apiError("invalid_state", `Campaign is ${c.status}`, 409);
+  if (!["draft", "blocked", "failed"].includes(c.status)) return apiError("invalid_state", `Campaign is ${c.status}`, 409);
   if (!(await activeApproval(c.id, "concept"))) return apiError("concept_approval_required", "Jason has not approved the concept", 409);
 
   await refreshBrandStatus(c.brandKey);

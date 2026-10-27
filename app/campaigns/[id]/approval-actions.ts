@@ -86,7 +86,7 @@ export async function revokeFinal(id: string) {
 export async function scheduleApproved(id: string) {
   const user = await requireMain();
   const c = await load(id);
-  if (!["draft", "blocked"].includes(c.status)) done(id, `Can't schedule a ${c.status} campaign`);
+  if (!["draft", "blocked", "failed"].includes(c.status)) done(id, `Can't schedule a ${c.status} campaign`);
   await refreshBrandStatus(c.brandKey!);
   const pf = await preflight(id, "schedule");
   if (!pf.ok) done(id, `Not scheduled: ${pf.errors.join(" · ")}`);
