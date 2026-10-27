@@ -197,6 +197,14 @@ export async function refreshBrandStatus(brandKey: string) {
   if (!brand) return null;
   const health = await computeBrandHealth(brandKey);
   const current = (LEVELS.includes(brand.status as Level) ? brand.status : "stop") as Level;
+  // Jason's manual GO overrides an automatic HOLD for 7 days. STOP always applies.
+  const manualGo =
+    current === "go" &&
+    brand.statusSetBy != null &&
+    brand.statusSetBy !== "system" &&
+    brand.statusSetAt != null &&
+    Date.now() - brand.statusSetAt.getTime() < 7 * 86400_000;
+  if (manualGo && health.recommended === "hold") return { brand, health };
   if (worse(current, health.recommended) !== current) {
     const reason = `auto: ${health.reasons.join(", ")}`;
     const updated = await prisma.brand.update({
