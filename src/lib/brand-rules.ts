@@ -483,8 +483,11 @@ export async function preflight(campaignId: string, phase: Phase, now = new Date
 export async function cappedContacts(brandKey: string, weeklyCap: number, contactIds: string[], now = new Date()) {
   const capped = new Map<string, string>();
   if (contactIds.length === 0) return capped;
-  const weekAgo = new Date(now.getTime() - 7 * 86400_000);
+  // "Per 7 days" = the last 7 UK calendar days including today, so last week's send on the same
+  // weekday never counts, whatever time it went out (a 09:15 send last Tuesday used to block
+  // this Tuesday's 08:15 send).
   const today = ukMidnight(now);
+  const weekAgo = ukMidnight(new Date(today.getTime() - 6 * 86400_000 + 12 * 3600_000));
 
   for (let i = 0; i < contactIds.length; i += 5000) {
     const chunk = contactIds.slice(i, i + 5000);

@@ -97,6 +97,12 @@ async function approveFinal(c) {
   t("6. contact emailed 15 Oct capped on 21 Oct", capped.has("c3") && !capped.has("c4"));
   const capped2 = await R.cappedContacts("scs", 1, ["c3"], new Date("2026-10-23T08:30:00Z"));
   t("6b. same contact allowed again on 23 Oct", !capped2.has("c3"));
+  // 6c. Same weekday last week, later in the day (09:20 Tue 27 Oct) must not cap 08:15 Tue 3 Nov
+  db.campaignSend.push({ id: "p2", campaignId: prev.id, contactId: "c4", email: "c4@x.com", status: "sent", sentAt: new Date("2026-10-27T09:20:00Z") });
+  const capped3 = await R.cappedContacts("scs", 1, ["c4"], new Date("2026-11-03T08:15:00Z"));
+  t("6c. last Tuesday's later send doesn't cap this Tuesday", !capped3.has("c4"));
+  const capped4 = await R.cappedContacts("scs", 1, ["c4"], new Date("2026-11-02T08:15:00Z"));
+  t("6d. but it does cap the following Monday", capped4.has("c4"));
 
   // 7. Approvals invalidated by time change; test-before-approval enforced
   seed();
