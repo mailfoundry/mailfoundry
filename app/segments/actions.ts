@@ -22,6 +22,7 @@ export async function saveSegmentAsList(formData: FormData) {
   const filters = readFilterParams({
     status: get("status"), country: get("country"), list: get("list"), source: get("source"),
     activity: get("activity"), campaign: get("campaign"), engagement: get("engagement"), urlContains: get("urlContains"),
+    purchase: get("purchase"),
   });
   if (!hasAnyFilter(filters)) throw new Error("Apply at least one filter first");
 
@@ -72,4 +73,20 @@ export async function saveSegmentAsList(formData: FormData) {
   revalidatePath("/lists");
   revalidatePath(`/lists/${listId}`);
   redirect(`/lists/${listId}?added=${contacts.length}`);
+}
+
+/** "Sync purchases now" — same as the nightly job, for when Jason doesn't want to wait. */
+export async function syncPurchasesNow() {
+  const user = await requireMain();
+  const { syncCustomerPurchases } = await import("../../src/lib/customer-sync");
+  let msg: string;
+  try {
+    const r = await syncCustomerPurchases();
+    msg = `Purchases synced: ${r.matchedContacts} contacts updated (${r.swfBuyers} SWF, ${r.scsBuyers} SCS buyers); ${r.notInMailFoundry} shop customers aren't MailFoundry contacts`;
+    await audit(user, "purchases_synced", { detail: r });
+  } catch (err) {
+    msg = `Purchase sync failed: ${err instanceof Error ? err.message : String(err)}`;
+  }
+  revalidatePath("/segments");
+  redirect(`/segments?flash=${encodeURIComponent(msg)}`);
 }

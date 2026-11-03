@@ -29,6 +29,12 @@ model Contact {
   complainedAt   DateTime?
   source         String?
   country        String?   // ISO 3166-1 alpha-2, e.g. "GB" — set on first real click
+  // Web-shop purchase history, synced nightly from the shop (scripts/cron-worker.mjs → /api/cron/customer-sync)
+  swfLastOrderAt DateTime?
+  swfOrders      Int       @default(0)
+  scsLastOrderAt DateTime?
+  scsOrders      Int       @default(0)
+  purchasesSyncedAt DateTime?
 
   lists         ContactList[]
   campaignSends CampaignSend[]

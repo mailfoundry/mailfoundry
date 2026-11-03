@@ -11,7 +11,21 @@ export type FilterParams = {
   campaign?:    string; // campaignId
   engagement?:  string; // sent | opened | clicked | failed | not_sent (for the selected campaign)
   urlContains?: string; // substring match on click URL
+  purchase?:    string; // web-shop purchases — see PURCHASE_OPTIONS (synced nightly from the shop)
 };
+
+export const PURCHASE_OPTIONS: { value: string; label: string }[] = [
+  { value: "any",    label: "Any" },
+  { value: "swf_6",  label: "Bought from SWF in last 6 months" },
+  { value: "swf_12", label: "Bought from SWF in last 12 months" },
+  { value: "swf_24", label: "Bought from SWF in last 2 years" },
+  { value: "swf_36", label: "Bought from SWF in last 3 years" },
+  { value: "scs_6",  label: "Bought from SCS in last 6 months" },
+  { value: "scs_12", label: "Bought from SCS in last 12 months" },
+  { value: "scs_24", label: "Bought from SCS in last 2 years" },
+  { value: "scs_36", label: "Bought from SCS in last 3 years" },
+  { value: "none",   label: "Never bought online (SWF or SCS)" },
+];
 
 export const ACTIVITY_OPTIONS: { value: string; label: string }[] = [
   { value: "any",           label: "Any" },
@@ -72,6 +86,16 @@ export function buildContactWhere(f: FilterParams): Prisma.ContactWhereInput {
     and.push({ campaignSends: { none: { status: "sent" } } });
   }
 
+  // Web-shop purchases (Contact.swfLastOrderAt / scsLastOrderAt, synced nightly)
+  const bought = (f.purchase ?? "any").match(/^(swf|scs)_(\d+)$/);
+  if (bought) {
+    const since = new Date();
+    since.setMonth(since.getMonth() - Number(bought[2]));
+    and.push(bought[1] === "swf" ? { swfLastOrderAt: { gte: since } } : { scsLastOrderAt: { gte: since } });
+  } else if (f.purchase === "none") {
+    and.push({ swfLastOrderAt: null, scsLastOrderAt: null });
+  }
+
   // Per-campaign engagement
   if (f.campaign && f.engagement && f.engagement !== "any") {
     const campaignId = f.campaign;
@@ -110,12 +134,13 @@ export function readFilterParams(src: Record<string, string | undefined>): Filte
     campaign:    src.campaign    || "",
     engagement:  src.engagement  || "any",
     urlContains: (src.urlContains || "").trim(),
+    purchase:    src.purchase    || "any",
   };
 }
 
 export function hasAnyFilter(f: FilterParams): boolean {
   return (
     f.status !== "any" || f.country !== "any" || !!f.list || !!f.source ||
-    f.activity !== "any" || !!f.campaign || !!f.urlContains
+    f.activity !== "any" || !!f.campaign || !!f.urlContains || (f.purchase ?? "any") !== "any"
   );
 }

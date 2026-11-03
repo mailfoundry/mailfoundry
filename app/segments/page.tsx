@@ -4,9 +4,9 @@ import Link from "next/link";
 import AppShell from "../../src/components/app-shell";
 import { prisma } from "../../src/lib/prisma";
 import {
-  ACTIVITY_OPTIONS, ELIGIBLE_WHERE, buildContactWhere, hasAnyFilter, readFilterParams,
+  ACTIVITY_OPTIONS, PURCHASE_OPTIONS, ELIGIBLE_WHERE, buildContactWhere, hasAnyFilter, readFilterParams,
 } from "../../src/lib/segments";
-import { saveSegmentAsList } from "./actions";
+import { saveSegmentAsList, syncPurchasesNow } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +27,7 @@ export default async function SegmentsPage({ searchParams }: { searchParams: Sea
     prisma.list.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);
 
+  const lastPurchaseSync = (await prisma.contact.aggregate({ _max: { purchasesSyncedAt: true } }))._max.purchasesSyncedAt;
   const isFiltered = hasAnyFilter(f);
   const where = buildContactWhere(f);
 
@@ -126,6 +127,13 @@ export default async function SegmentsPage({ searchParams }: { searchParams: Sea
           </div>
 
           <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Bought online</label>
+            <select name="purchase" defaultValue={f.purchase} className={selectCls}>
+              {PURCHASE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">Country</label>
             <select name="country" defaultValue={f.country} className={selectCls}>
               <option value="any">Any country</option>
@@ -176,6 +184,16 @@ export default async function SegmentsPage({ searchParams }: { searchParams: Sea
           </Link>
         </div>
       </form>
+
+      {/* Purchase data sync */}
+      <form action={syncPurchasesNow} className="mt-4 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+        <span>
+          Purchase data (from the SWF/SCS web shops, Amazon excluded) syncs nightly
+          {lastPurchaseSync ? ` — last synced ${lastPurchaseSync.toLocaleString("en-GB", { timeZone: "Europe/London", dateStyle: "medium", timeStyle: "short" })}` : " — not synced yet"}.
+        </span>
+        <button type="submit" className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 font-semibold text-gray-700 hover:bg-gray-50">Sync purchases now</button>
+      </form>
+      {sp.flash && <p role="status" className="mt-3 rounded-lg border border-green-300 bg-green-50 p-3 text-sm font-medium text-green-800">{sp.flash}</p>}
 
       {/* Save as list */}
       {isFiltered && eligible > 0 && (
