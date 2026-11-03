@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type SendTestEmailFormProps = {
   campaignId: string;
@@ -22,6 +23,7 @@ export default function SendTestEmailForm({
     "idle"
   );
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   async function handleSendTest() {
     setStatus("sending");
@@ -44,6 +46,7 @@ export default function SendTestEmailForm({
 
       setStatus("sent");
       setMessage("Test email sent successfully.");
+      router.refresh(); // re-check approvals so "Approve final" unlocks without a manual reload
     } catch (error) {
       setStatus("error");
       const errorMessage =
