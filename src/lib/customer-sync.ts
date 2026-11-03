@@ -26,21 +26,24 @@ export async function syncCustomerPurchases(months = 36) {
 
   const now = new Date();
   const matched = feed.filter((r) => idOf.has(r.email));
-  for (let i = 0; i < matched.length; i += 200) {
-    await prisma.$transaction(
-      matched.slice(i, i + 200).map((r) =>
-        prisma.contact.update({
-          where: { id: idOf.get(r.email)! },
-          data: {
-            swfLastOrderAt: r.swfLastOrderAt ? new Date(r.swfLastOrderAt) : null,
-            swfOrders: r.swfOrders,
-            scsLastOrderAt: r.scsLastOrderAt ? new Date(r.scsLastOrderAt) : null,
-            scsOrders: r.scsOrders,
-            purchasesSyncedAt: now,
-          },
-        })
-      )
-    );
+  // One bulk UPDATE per 1,000 contacts (individual updates in a transaction were too slow over Neon)
+  for (let i = 0; i < matched.length; i += 1000) {
+    const batch = matched.slice(i, i + 1000);
+    const ids = batch.map((r) => idOf.get(r.email)!);
+    const swfAt = batch.map((r) => r.swfLastOrderAt);
+    const swfN = batch.map((r) => r.swfOrders);
+    const scsAt = batch.map((r) => r.scsLastOrderAt);
+    const scsN = batch.map((r) => r.scsOrders);
+    await prisma.$executeRaw`
+      UPDATE "Contact" AS c SET
+        "swfLastOrderAt" = (v.swf_at::timestamptz AT TIME ZONE 'UTC'),
+        "swfOrders" = v.swf_n,
+        "scsLastOrderAt" = (v.scs_at::timestamptz AT TIME ZONE 'UTC'),
+        "scsOrders" = v.scs_n,
+        "purchasesSyncedAt" = ${now}
+      FROM unnest(${ids}::text[], ${swfAt}::text[], ${swfN}::int[], ${scsAt}::text[], ${scsN}::int[])
+        AS v(id, swf_at, swf_n, scs_at, scs_n)
+      WHERE c.id = v.id`;
   }
 
   // Contacts with purchase data that are no longer in the feed (orders now older than the window) keep
