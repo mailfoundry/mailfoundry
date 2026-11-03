@@ -35,7 +35,7 @@ export default async function BrandsPage({ searchParams }: { searchParams: Promi
         <p className="mt-2 max-w-3xl text-sm text-gray-500">
           These rules apply to every campaign on a list assigned to a brand, whether it&apos;s created here or by the ChatGPT agent.
           Status escalates automatically (Go → Hold → Stop) from the last 7 days&apos; complaints ({THRESHOLDS.complaints.hold}% / {THRESHOLDS.complaints.stop}%),
-          bounces ({THRESHOLDS.bounces.hold}% / {THRESHOLDS.bounces.stop}%), unsubscribes ({THRESHOLDS.unsubscribes.hold}% / {THRESHOLDS.unsubscribes.stop}%) and the Postmaster
+          bounces ({THRESHOLDS.bounces.hold}% / {THRESHOLDS.bounces.stop}%), unsubscribes ({THRESHOLDS.unsubscribes.hold}%, Hold only) and the Postmaster
           rate you enter. Only you can move a brand back down.
         </p>
       </header>

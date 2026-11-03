@@ -173,15 +173,19 @@ export async function computeBrandHealth(brandKey: string, windowDays = 7): Prom
 
   let recommended: Level = "go";
   const reasons: string[] = [];
-  const check = (label: string, value: number, t: { hold: number; stop: number }, inclusiveStop: boolean) => {
-    const g = grade(value, t, inclusiveStop);
+  const check = (label: string, value: number, t: { hold: number; stop: number }, inclusiveStop: boolean, maxLevel: Level = "stop") => {
+    let g = grade(value, t, inclusiveStop);
+    if (g === "stop" && maxLevel === "hold") g = "hold";
     if (g !== "go") reasons.push(`${label} ${value}% (${g})`);
     recommended = worse(recommended, g);
   };
   if (sends > 0) {
     check("complaints", complaintRate, THRESHOLDS.complaints, false);
     check("bounces", bounceRate, THRESHOLDS.bounces, false);
-    check("unsubscribes", unsubscribeRate, THRESHOLDS.unsubscribes, false);
+    // Unsubscribes are people using the unsubscribe link as intended (the healthy alternative to
+    // a spam report), so they can slow a brand down (HOLD) but never stop it. Complaints, bounces
+    // and the Postmaster spam rate can still trigger STOP.
+    check("unsubscribes", unsubscribeRate, THRESHOLDS.unsubscribes, false, "hold");
   }
   if (postmasterSpamRate != null) check("Postmaster spam rate", postmasterSpamRate, THRESHOLDS.postmaster, true);
 
