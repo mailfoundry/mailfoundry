@@ -40,7 +40,10 @@ t("W43 start " + w.start.toISOString(), w.start.toISOString() === "2026-10-18T23
 t("W43 end " + w.end.toISOString(), w.end.toISOString() === "2026-10-26T00:00:00.000Z");   // Mon 26 Oct 00:00 GMT
 t("W43 label " + w.label, w.label === "2026-W43");
 const def = v.weekRange();
-t("default label is last full week " + def.label, /^2026-W4[12]$/.test(def.label));
+{ // last full week relative to today, not a fixed date
+  const exp = v.weekRange(); const prevMonday = new Date(exp.end.getTime() + 12 * 3600_000);
+  t("default label is last full week " + def.label, /^\d{4}-W\d{2}$/.test(def.label) && exp.end <= new Date() && new Date() - exp.end < 7 * 86400_000 && prevMonday.getUTCDay() === 1);
+}
 
 // describeDays
 t("describeDays", r.describeDays("2,3,4") === "Tue/Wed/Thu");

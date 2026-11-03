@@ -4,6 +4,7 @@ import { agentRoute, apiError, readJson } from "@/src/lib/agent-auth";
 import { parseUkDateTime } from "@/src/lib/brand-rules";
 import { createCampaignRecord, parseCohort } from "@/src/lib/campaign-save";
 import { campaignView, loadCampaign } from "@/src/lib/agent-views";
+import { renderBrandEmail, validateContent } from "@/src/lib/brand-email";
 
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
@@ -26,6 +27,11 @@ export const POST = agentRoute("campaigns.create", async ({ req, agent }) => {
   const b = await readJson(req);
   const brand = str(b.brand).toLowerCase();
   if (!["scs", "swf"].includes(brand)) return apiError("invalid_input", "brand must be \"scs\" or \"swf\"", 422);
+  if (b.html !== undefined || b.text !== undefined) {
+    return apiError("html_not_allowed", "Send `content` (headline, intro, products, cta) instead of html/text — MailFoundry builds the branded email and plain-text version from the brand layout.", 422);
+  }
+  if (!b.content) return apiError("invalid_input", "content is required (headline, intro, cta and optional products)", 422);
+  const { html, text } = renderBrandEmail(brand as "swf" | "scs", validateContent(brand as "swf" | "scs", b.content));
   const plannedSendAt = b.plannedSendAt ? parseUkDateTime(b.plannedSendAt) : null;
   if (b.plannedSendAt && !plannedSendAt) return apiError("invalid_input", "plannedSendAt must be e.g. 2026-10-27T10:00 (UK time)", 422);
 
@@ -35,8 +41,8 @@ export const POST = agentRoute("campaigns.create", async ({ req, agent }) => {
       subject: str(b.subject),
       preheader: str(b.previewText) || null,
       fromEmail: null, // forced to the brand's sender
-      body: str(b.text),
-      html: str(b.html) || null,
+      body: text,
+      html,
       listId: str(b.listId),
       cohort: parseCohort(b.group),
       sendAt: plannedSendAt,

@@ -13,9 +13,9 @@ let resendCalls = [];
 global.fetch = async (url, opts) => { const body = JSON.parse(opts.body); resendCalls.push(...body.map((p) => p.to)); return { ok: true, text: async () => "" }; };
 
 const NOW = new Date();
-const TUE_10 = R.parseUkDateTime("2026-10-27T10:00"); // Tuesday, GMT
-const MON_10 = R.parseUkDateTime("2026-10-26T10:00");
-const TUE_12 = R.parseUkDateTime("2026-10-27T12:00");
+const TUE_10 = R.parseUkDateTime("2027-11-02T10:00"); // Tuesday, GMT
+const MON_10 = R.parseUkDateTime("2027-11-01T10:00");
+const TUE_12 = R.parseUkDateTime("2027-11-02T12:00");
 const SENT = new Date("2026-10-20T09:00:00Z");
 
 async function seed() {

@@ -12,11 +12,50 @@ export function GET() {
       name: { type: "string", description: "Internal name, e.g. 'SCS wk44 Tue — Christeyns floor care'" },
       subject: { type: "string", description: "Plain, specific, under ~50 chars. No ALL CAPS, emoji or £ in subject." },
       previewText: { type: "string", description: "Preview/preheader text, different from the first sentence" },
-      html: { type: "string", description: "Full HTML. Greeting must be 'Hi {{firstName|there}},'. Put the brand footer's unsubscribe link as exactly <a href=\"{{unsubscribe_url}}\">Unsubscribe</a> (visible, with text) — MailFoundry fills in the secure link and adds no second footer. Without it, a standard footer is appended. Look-alike tags are rejected." },
-      text: { type: "string", description: "Plain-text version (required)" },
+      content: {
+        type: "object",
+        description:
+          "Campaign content. MailFoundry builds the email from the brand's fixed layout (logo/header, colours, product cards, sign-off, footer with unsubscribe) and the plain-text version. Plain text only, no HTML. Send the FULL content object on every update.",
+        required: ["headline", "intro", "cta"],
+        properties: {
+          eyebrow: { type: "string", description: "Small label above the headline, e.g. 'Get ready for winter' (optional, max 40)" },
+          headline: { type: "string", description: "Main headline (max 90)" },
+          intro: { type: "string", description: "Opening copy after 'Hi {{firstName|there}},' (added automatically). Separate paragraphs with a blank line. Max 900." },
+          heroImage: {
+            type: "object",
+            description: "Optional full-width image. Must be a real hosted image from the brand's shop.",
+            properties: { url: { type: "string" }, alt: { type: "string" }, link: { type: "string" } },
+          },
+          highlight: {
+            type: "object",
+            description: "Optional offer/banner box, e.g. 'FREE Saturday Delivery'. Button is optional.",
+            properties: { eyebrow: { type: "string" }, title: { type: "string" }, text: { type: "string" }, buttonText: { type: "string" }, url: { type: "string" } },
+          },
+          productsHeading: { type: "string", description: "Heading above the product cards, e.g. 'Your winter fuel essentials'" },
+          products: {
+            type: "array",
+            description: "Up to 4 products. Each becomes a card with image, name, description and a SHOP button; image, name and button all link to url. Take url and imageUrl from GET /products — don't invent them.",
+            items: {
+              type: "object",
+              required: ["name", "description", "url", "imageUrl"],
+              properties: {
+                name: { type: "string" },
+                description: { type: "string", description: "One or two short sentences (max 200)" },
+                url: { type: "string", description: "Product or category page on the brand's site" },
+                imageUrl: { type: "string", description: "imageUrl from GET /products" },
+                buttonText: { type: "string", description: "e.g. 'SHOP LOGS' (default 'SHOP <NAME>')" },
+              },
+            },
+          },
+          closingHeading: { type: "string" },
+          closingText: { type: "string" },
+          cta: { type: "object", required: ["text", "url"], properties: { text: { type: "string", description: "e.g. 'SHOP WINTER FUELS →'" }, url: { type: "string", description: "Page on the brand's site" } } },
+          signOff: { type: "string", description: "Default 'Stay warm,' (SWF) / 'Best wishes,' (SCS)" },
+        },
+      },
       listId: { type: "string", description: "A list id from GET /lists for the same brand" },
       group: { type: "string", enum: ["A", "B", "C", ""], description: "One third of the list (SCS warm-up: one group per send day). Blank = whole list." },
-      plannedSendAt: { type: "string", description: "UK local time 'YYYY-MM-DDTHH:MM'. Use the brand's preferred time (getBrands preferredTimesUk): SCS Mon/Wed/Fri 09:30 (window 09:00–11:00), SWF Tue/Thu/Sat 08:15 (window 08:00–10:00). SWF max 1 campaign/week, SWF Engaged list only." },
+      plannedSendAt: { type: "string", description: "UK local time 'YYYY-MM-DDTHH:MM'. Use the brand's preferred time (getBrands preferredTimesUk): SCS Mon/Wed/Fri 09:30 (window 09:00–11:00), SWF Tue/Thu/Sat 08:15 (window 08:00–10:00). SWF max 2 campaigns/week (Tue/Thu), SWF Engaged list only." },
       conceptNotes: { type: "string", description: "Angle, product(s), reasoning — what Jason approves at concept stage" },
     },
   };
@@ -24,7 +63,7 @@ export function GET() {
     openapi: "3.1.0",
     info: {
       title: "MailFoundry agent API",
-      version: "1.0.0",
+      version: "1.1.0",
       description:
         "Create and manage SWF/SCS marketing campaigns. The agent can draft, preview, test-send (test list only), schedule ONLY after Jason's final approval in MailFoundry, cancel and report. It cannot approve, send immediately or change brand rules. Any edit after final approval revokes it.",
     },
@@ -33,6 +72,18 @@ export function GET() {
     security: [{ bearer: [] }],
     paths: {
       "/brands": { get: { operationId: "getBrands", summary: "Brand rules, status (go/hold/stop), health and lists", responses: ok("Brands") } },
+      "/products": {
+        get: {
+          operationId: "searchProducts",
+          summary: "Search the brand's shop for real products (name, page url, hosted imageUrl, price, availability). Use these url/imageUrl values in content.products.",
+          parameters: [
+            { name: "brand", in: "query", required: true, schema: { type: "string", enum: ["scs", "swf"] } },
+            { name: "q", in: "query", schema: { type: "string" }, description: "e.g. 'kindling', 'wet floor sign'" },
+            { name: "limit", in: "query", schema: { type: "integer" } },
+          ],
+          responses: ok("Products"),
+        },
+      },
       "/lists": {
         get: {
           operationId: "getLists",
@@ -65,19 +116,19 @@ export function GET() {
         },
         post: {
           operationId: "createDraft",
-          summary: "Create a DRAFT campaign (never sends or schedules). Can include the full html. Max HTML 90 KB, hosted image URLs only. Response is compact (htmlBytes/htmlStart/htmlEnd).",
+          summary: "Create a DRAFT campaign (never sends or schedules) from structured content. MailFoundry builds the branded HTML and plain text; html/text fields are refused. Check the result with previewCampaign.",
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { ...draft, required: ["brand", "name", "subject", "text", "listId"], properties: { brand: { type: "string", enum: ["scs", "swf"] }, ...draft.properties } } } },
+            content: { "application/json": { schema: { ...draft, required: ["brand", "name", "subject", "content", "listId"], properties: { brand: { type: "string", enum: ["scs", "swf"] }, ...draft.properties } } } },
           },
           responses: { "201": { description: "Created", content: { "application/json": { schema: obj } } } },
         },
       },
       "/campaigns/{id}": {
-        get: { operationId: "getCampaign", summary: "Campaign details, approvals and issues. Returns htmlBytes/htmlStart/htmlEnd (not the full HTML) unless includeHtml=true — use these to confirm a save.", parameters: [id, { name: "includeHtml", in: "query", schema: { type: "string", enum: ["true", "false"] }, description: "Return the full html/text (large). Default false." }], responses: ok("Campaign") },
+        get: { operationId: "getCampaign", summary: "Campaign details, approvals, issues and the content the email was built from (content is null for older hand-written HTML). Full HTML only with includeHtml=true.", parameters: [id, { name: "includeHtml", in: "query", schema: { type: "string", enum: ["true", "false"] }, description: "Return the full html/text (large). Default false." }], responses: ok("Campaign") },
         patch: {
           operationId: "updateDraft",
-          summary: "Update an unsent campaign (partial; send only the fields you change). Response is compact: confirm the save by checking htmlBytes, htmlStart and htmlEnd match what you sent. Max HTML 90 KB, hosted image URLs only (no data: images). Revokes final approval if approved content/audience/time changes.",
+          summary: "Update an unsent campaign (partial; send only the fields you change, but if you change content send the whole content object). html/text are refused — MailFoundry rebuilds them from content. The response includes the saved content. Revokes final approval if approved content/audience/time changes.",
           parameters: [id],
           requestBody: { required: true, content: { "application/json": { schema: draft } } },
           responses: ok("Campaign"),

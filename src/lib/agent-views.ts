@@ -5,6 +5,7 @@ import {
   activeApproval, campaignAudience, cohortOf, computeBrandHealth, describeDays, describePreferred, ELIGIBLE_CONTACT,
   finalFingerprint, largestRecentSend, preflight, ukIso, ukMidnight, DELIVERED_STATUSES,
 } from "./brand-rules";
+import { extractContent } from "./brand-email";
 
 type CampaignRow = NonNullable<Awaited<ReturnType<typeof loadCampaign>>>;
 
@@ -52,6 +53,9 @@ export async function campaignView(c: CampaignRow, opts: { full?: boolean; inclu
   return {
     ...base,
     conceptNotes: c.conceptNotes,
+    // Branded layout: the content MailFoundry built this email from (null = older hand-written HTML)
+    template: extractContent(c.html)?.template ?? null,
+    content: extractContent(c.html)?.content ?? null,
     // Compact by default so responses stay small enough for ChatGPT; verify saves with htmlSha256/htmlBytes.
     ...(opts.includeHtml ? { html: c.html, text: c.body } : {}),
     htmlBytes: Buffer.byteLength(c.html ?? "", "utf8"),

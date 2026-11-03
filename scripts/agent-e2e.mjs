@@ -67,8 +67,11 @@ const draft = {
   name: `E2E test ${new Date().toISOString().slice(0, 16)}`,
   subject: "E2E test — please ignore",
   previewText: "Agent workflow test",
-  html: "<p>Hi {{firstName|there}},</p><p>This is an <strong>end-to-end test</strong> of the agent workflow.</p>",
-  text: "Hi {{firstName|there}},\n\nThis is an end-to-end test of the agent workflow.",
+  content: {
+    headline: "End-to-end test",
+    intro: "This is an end-to-end test of the agent workflow.",
+    cta: { text: "SHOP NOW", url: "https://www.staffordshirecleaningsupplies.co.uk/products" },
+  },
   listId: testList.id,
   plannedSendAt: planned,
   conceptNotes: "E2E test: checks drafts, approvals, scheduling and cancel.",
@@ -84,8 +87,9 @@ console.log("3. Content, brand and audience");
 const got = (await call("GET", `/campaigns/${c.id}?includeHtml=true`)).data?.campaign;
 ok("subject preserved", got?.subject === draft.subject);
 ok("preview text preserved", got?.previewText === draft.previewText);
-ok("HTML preserved", got?.html === draft.html);
-ok("plain text preserved", got?.text === draft.text);
+ok("content saved", got?.content?.headline === draft.content.headline && got?.template === "scs-v1", got?.template);
+ok("branded layout used (logo + unsubscribe)", /logo-scs\.png/.test(got?.html ?? "") && /\{\{unsubscribe_url\}\}/.test(got?.html ?? ""));
+ok("plain text generated", /End-to-end test/.test(got?.text ?? ""));
 ok("From forced to SCS sender", /info@staffordshirecleaningsupplies\.co\.uk/.test(got?.from ?? ""), got?.from);
 ok("status draft, stage draft", got?.status === "draft" && got?.stage === "draft", got);
 ok("test list selected", got?.testList === true && got?.listId === testList.id);
@@ -93,9 +97,10 @@ if (swfList) {
   const wrong = await call("POST", "/campaigns", { ...draft, listId: swfList.id });
   ok("SCS campaign on an SWF list refused", wrong.status === 422, wrong.data);
 }
-const bare = await call("PATCH", `/campaigns/${c.id}`, { html: "<p>Hi {{firstName}},</p>" });
-ok("bare {{firstName}} flagged as an issue", (bare.data?.campaign?.issues ?? []).some((i) => i.includes("firstName|there")), bare.data);
-await call("PATCH", `/campaigns/${c.id}`, { html: draft.html });
+const raw = await call("PATCH", `/campaigns/${c.id}`, { html: "<p>Hi {{firstName}},</p>" });
+ok("hand-written HTML refused", raw.status === 422 && raw.data?.error?.code === "html_not_allowed", raw.data);
+const badImg = await call("PATCH", `/campaigns/${c.id}`, { content: { ...draft.content, products: [{ name: "X", description: "Y", url: "https://www.staffordshirecleaningsupplies.co.uk/products", imageUrl: "https://example.com/x.png" }] } });
+ok("non-shop image refused", badImg.status === 422, badImg.data);
 
 // 4. Preview + test send
 console.log("4. Preview and test send");

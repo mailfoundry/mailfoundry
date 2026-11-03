@@ -3,6 +3,7 @@ import { agentRoute, apiError, readJson } from "@/src/lib/agent-auth";
 import { parseUkDateTime } from "@/src/lib/brand-rules";
 import { parseCohort, updateCampaignRecord } from "@/src/lib/campaign-save";
 import { campaignView, loadCampaign } from "@/src/lib/agent-views";
+import { isBrandKey, renderBrandEmail, validateContent } from "@/src/lib/brand-email";
 
 type P = { id: string };
 const has = (b: Record<string, unknown>, k: string) => Object.prototype.hasOwnProperty.call(b, k);
@@ -21,6 +22,10 @@ export const PATCH = agentRoute<P>("campaigns.update", async ({ req, agent, para
   if (!c?.brandKey) return apiError("not_found", "Campaign not found", 404);
   const b = await readJson(req);
   if (has(b, "brand") && str(b.brand).toLowerCase() !== c.brandKey) return apiError("invalid_input", "brand can't be changed", 422);
+  if (has(b, "html") || has(b, "text")) {
+    return apiError("html_not_allowed", "Send `content` (headline, intro, products, cta) instead of html/text — MailFoundry builds the branded email and plain-text version from the brand layout. Send the full content object each time.", 422);
+  }
+  const rendered = has(b, "content") && isBrandKey(c.brandKey) ? renderBrandEmail(c.brandKey, validateContent(c.brandKey, b.content)) : null;
   let plannedSendAt: Date | null | undefined = undefined; // undefined = keep
   if (has(b, "plannedSendAt")) {
     plannedSendAt = b.plannedSendAt ? parseUkDateTime(b.plannedSendAt) : null;
@@ -34,8 +39,8 @@ export const PATCH = agentRoute<P>("campaigns.update", async ({ req, agent, para
       subject: has(b, "subject") ? str(b.subject) : c.subject,
       preheader: has(b, "previewText") ? str(b.previewText) || null : c.preheader,
       fromEmail: null,
-      body: has(b, "text") ? str(b.text) : c.body,
-      html: has(b, "html") ? str(b.html) || null : c.html,
+      body: rendered ? rendered.text : c.body,
+      html: rendered ? rendered.html : c.html,
       listId: has(b, "listId") ? str(b.listId) : c.listId,
       cohort: has(b, "group") ? parseCohort(b.group) : c.cohort,
       sendAt: plannedSendAt,
