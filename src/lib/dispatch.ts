@@ -74,6 +74,13 @@ export async function dispatchCampaign(campaignId: string, actor: string): Promi
 
   if (toSend.length === 0) {
     if (cappedRecords.length) await prisma.campaignSend.createMany({ data: cappedRecords });
+    if (skippedAlreadySent === 0 && cappedRecords.length > 0) {
+      // Nobody was emailed at all — leave it editable/reschedulable rather than marking it "sent"
+      const reason = `Nobody was emailed: all ${cappedRecords.length} contacts were over a frequency limit (${cappedRecords[0].error}). Reschedule it, or Continue Sending later.`;
+      await prisma.campaign.update({ where: { id: campaignId }, data: { status: "failed", scheduledAt: null, blockedReason: reason } });
+      await audit(actor, "send_all_capped", { campaignId, brandKey: campaign.brandKey, detail: { capped: cappedRecords.length } });
+      return { ok: false, ...empty, capped: cappedRecords.length, skippedAlreadySent, error: reason };
+    }
     await prisma.campaign.update({ where: { id: campaignId }, data: { status: "sent", scheduledAt: null, blockedReason: null } });
     return { ok: true, ...empty, capped: cappedRecords.length, skippedAlreadySent };
   }

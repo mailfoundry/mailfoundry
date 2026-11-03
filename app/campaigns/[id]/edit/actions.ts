@@ -9,6 +9,7 @@ export async function updateCampaign(campaignId: string, formData: FormData) {
   const get = (k: string) => formData.get(k)?.toString().trim() || "";
   const sendAtStr = get("scheduledAtUtc") || get("scheduledAt");
 
+  try {
   await updateCampaignRecord(
     campaignId,
     {
@@ -24,6 +25,13 @@ export async function updateCampaign(campaignId: string, formData: FormData) {
     },
     user
   );
+  } catch (err) {
+    // Show the reason on the campaign page instead of crashing the editor
+    if (err instanceof Error && err.name === "CampaignInputError") {
+      redirect(`/campaigns/${campaignId}?flash=${encodeURIComponent(`Not saved: ${err.message}`)}`);
+    }
+    throw err;
+  }
 
   redirect(`/campaigns/${campaignId}`);
 }
