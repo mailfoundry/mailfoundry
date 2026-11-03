@@ -36,10 +36,11 @@ export async function syncCustomerPurchases(months = 36) {
     const scsN = batch.map((r) => r.scsOrders);
     await prisma.$executeRaw`
       UPDATE "Contact" AS c SET
-        "swfLastOrderAt" = (v.swf_at::timestamptz AT TIME ZONE 'UTC'),
-        "swfOrders" = v.swf_n,
-        "scsLastOrderAt" = (v.scs_at::timestamptz AT TIME ZONE 'UTC'),
-        "scsOrders" = v.scs_n,
+        -- GREATEST keeps older history loaded from other sources (e.g. the old Shopify store)
+        "swfLastOrderAt" = GREATEST(c."swfLastOrderAt", (v.swf_at::timestamptz AT TIME ZONE 'UTC')),
+        "swfOrders" = GREATEST(c."swfOrders", v.swf_n),
+        "scsLastOrderAt" = GREATEST(c."scsLastOrderAt", (v.scs_at::timestamptz AT TIME ZONE 'UTC')),
+        "scsOrders" = GREATEST(c."scsOrders", v.scs_n),
         "purchasesSyncedAt" = ${now}
       FROM unnest(${ids}::text[], ${swfAt}::text[], ${swfN}::int[], ${scsAt}::text[], ${scsN}::int[])
         AS v(id, swf_at, swf_n, scs_at, scs_n)
